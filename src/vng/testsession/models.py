@@ -16,4 +16,4 @@ class Session(models.Model):
     stopped = models.DateTimeField()
     status = models.CharField(max_length=10,choices=status_choiches)
     user = models.ForeignKey(User, on_delete=models.SET_NULL,null=True)
-    API_endpoint = models.URLField(max_length=200)
+    api_endpoint = models.URLField(max_length=200)

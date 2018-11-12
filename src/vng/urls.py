@@ -22,7 +22,12 @@ urlpatterns = [
     url(r'^reset/done/$', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
 
     # Simply show the master template.
-    url(r'^$', TemplateView.as_view(template_name='demo.html')),
+    url(r'^m', TemplateView.as_view(template_name='demo.html')),
+
+    url(r'^login/',auth_views.LoginView.as_view(template_name="login.html"), name='login'),
+    # redirect the request to the testession
+    url(r'^session/', include('vng.testsession.urls'))
+
 ]
 
 # NOTE: The staticfiles_urlpatterns also discovers static files (ie. no need to run collectstatic). Both the static

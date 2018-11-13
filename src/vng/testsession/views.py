@@ -6,7 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import CreateView
 from rest_framework import routers, serializers, viewsets
 from vng.testsession.models import Session, SessionType
-from .serializers import SessionSerializer
+from .serializers import SessionSerializer,SessionTypesSerializer
 
 class SessionListView(LoginRequiredMixin,ListView):
     template_name = 'sessions-list.html'
@@ -38,6 +38,6 @@ class SessionViewSet(viewsets.ModelViewSet):
         return Session.objects.filter(user=self.request.user)
 
 
-class SessionTypesViewSet(viewsets.ModelViewSet):
-    serializer_class = SessionSerializer
+class SessionTypesViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = SessionTypesSerializer
     queryset = SessionType.objects.all()

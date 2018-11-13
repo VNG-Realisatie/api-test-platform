@@ -7,7 +7,7 @@ from . import views
 
 router=routers.DefaultRouter()
 router.register(r'testsessions', views.SessionViewSet, 'testSession')
-router.register(r'sessiontypes', views.SessionViewSet, 'sessionTypes')
+router.register(r'sessiontypes', views.SessionTypesViewSet, 'sessionTypes')
 
 urlpatterns = [
     path('sessions/', views.SessionListView.as_view(), name='sessions'),

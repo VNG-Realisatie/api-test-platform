@@ -1,7 +1,8 @@
 from vng.accounts.models import User
 from django.db import models
+from djchoices import DjangoChoices, ChoiceItem
 
-class Session_type(models.Model):
+class SessionType(models.Model):
     name = models.CharField(max_length=200, unique=True)
     docker_image = models.CharField(max_length=200)
 
@@ -10,15 +11,15 @@ class Session_type(models.Model):
 
 
 class Session(models.Model):
-    status_choiches = [
-        ('1','starting'),
-        ('2','running'),
-        ('3','stopped')
-        ]
-    type_session = models.ForeignKey(Session_type, on_delete=models.SET_NULL,null=True)
+    class StatusChoices(DjangoChoices):
+        starting = ChoiceItem("1")
+        running = ChoiceItem("2")
+        stopped = ChoiceItem("3")
+
+    sessionType = models.ForeignKey(SessionType, on_delete=models.SET_NULL,null=True)
     started = models.DateTimeField()
     stopped = models.DateTimeField(null=True,blank=True)
-    status = models.CharField(max_length=10,choices=status_choiches)
+    status = models.CharField(max_length=10,choices=StatusChoices.choices)
     user = models.ForeignKey(User, on_delete=models.SET_NULL,null=True)
     api_endpoint = models.URLField(max_length=200)
 

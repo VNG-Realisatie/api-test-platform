@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.views.generic.list import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import CreateView
-from vng.testsession.models import Session, Session_type
+from vng.testsession.models import Session, SessionType
 
 
 class SessionListView(LoginRequiredMixin,ListView):
@@ -18,7 +18,7 @@ class SessionListView(LoginRequiredMixin,ListView):
 class SessionCreate(CreateView):
     template_name = 'start-session.html'
     model = Session
-    fields = ['type_session']
+    fields = ['sessionType']
 
     def get_success_url(self):
         return '/session/sessions/'

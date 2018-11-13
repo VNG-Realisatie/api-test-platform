@@ -1,17 +1,17 @@
 from django_webtest import WebTest
 from django.urls import reverse
-from ..models import Session_type
+from ..models import SessionType,Session
 
-class MyTestCase(WebTest):
+class TestCaseBase(WebTest):
 
-    def testStatus(self):
+    def test(self):
         index = self.app.get('/')
         assert index.status == '200 OK'
 
 
-class MyTestAuth(WebTest):
+class TestAuth(WebTest):
 
-    def testAuth(self):
+    def test(self):
         call = self.app.get('/session/sessions/')
         assert call.status != '200 OK'
         call = self.app.get('/session/sessions/',user='test')
@@ -20,8 +20,8 @@ class MyTestAuth(WebTest):
 
 class SessionCreation(WebTest):
 
-    def testAuth(self):
-        Session_type(name='test_type',docker_image='di').save()
+    def test(self):
+        SessionType(name='test_type',docker_image='di').save()
         call = self.app.get('/session/start-session/',user='admin')
         form = call.forms[1]
         form['type_session'].select(value='1')
@@ -31,9 +31,9 @@ class SessionCreation(WebTest):
         
 class MultipleSessionCreation(WebTest):
 
-    def testAuth(self):
+    def test(self):
         n_sess = 10
-        Session_type(name='test_type',docker_image='di').save()
+        SessionType(name='test_type',docker_image='di').save()
         for i in range(n_sess):
             call = self.app.get('/session/start-session/',user='admin')
             form = call.forms[1]

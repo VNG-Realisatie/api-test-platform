@@ -16,10 +16,10 @@ class Session(models.Model):
         running = ChoiceItem("2")
         stopped = ChoiceItem("3")
 
-    sessionType = models.ForeignKey(SessionType, on_delete=models.SET_NULL,null=True)
+    session_type = models.ForeignKey(SessionType, on_delete=models.SET_NULL,null=True)
     started = models.DateTimeField()
     stopped = models.DateTimeField(null=True,blank=True)
-    status = models.CharField(max_length=10,choices=StatusChoices.choices)
+    status = models.CharField(max_length=10,choices=StatusChoices.choices,default=StatusChoices.starting)
     user = models.ForeignKey(User, on_delete=models.SET_NULL,null=True)
     api_endpoint = models.URLField(max_length=200)
 

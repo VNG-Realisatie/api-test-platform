@@ -1,5 +1,7 @@
 from django_webtest import WebTest
 from django.urls import reverse
+from factory.django import DjangoModelFactory as Dmf
+import factory
 from ..models import SessionType,Session
 
 class TestCaseBase(WebTest):
@@ -17,27 +19,34 @@ class TestAuth(WebTest):
         call = self.app.get('/session/sessions/',user='test')
         assert call.status == '200 OK'
         
+class SessionTypeFactory(Dmf):
+    class Meta:
+        model = SessionType
+    name=factory.sequence(lambda n:'testype %d' % n)
+    docker_image='di'
+
 
 class SessionCreation(WebTest):
 
     def test(self):
-        SessionType(name='test_type',docker_image='di').save()
+        SessionTypeFactory()
         call = self.app.get('/session/start-session/',user='admin')
         form = call.forms[1]
-        form['type_session'].select(value='1')
+        form['session_type'].select(value='1')
         response = form.submit()
         call = self.app.get('/session/sessions/',user='admin')
         assert 'no session' not in str(call.body)
         
+
 class MultipleSessionCreation(WebTest):
 
     def test(self):
         n_sess = 10
-        SessionType(name='test_type',docker_image='di').save()
         for i in range(n_sess):
+            SessionTypeFactory()
             call = self.app.get('/session/start-session/',user='admin')
             form = call.forms[1]
-            form['type_session'].select(value='1')
+            form['session_type'].select(value='1')
             response = form.submit()
         call = self.app.get('/session/sessions/',user='admin')
         assert str(call.body).count('<tr>') == n_sess+1

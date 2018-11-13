@@ -18,7 +18,7 @@ class SessionListView(LoginRequiredMixin,ListView):
 class SessionCreate(CreateView):
     template_name = 'start-session.html'
     model = Session
-    fields = ['sessionType']
+    fields = ['session_type']
 
     def get_success_url(self):
         return '/session/sessions/'

@@ -1,8 +1,10 @@
-
+from datetime import datetime
+from django.utils import timezone
 from django.shortcuts import render
 from django.views.generic.list import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Session, Session_type
+from django.views.generic.edit import CreateView
+from vng.testsession.models import Session, Session_type
 
 
 class SessionListView(LoginRequiredMixin,ListView):
@@ -12,3 +14,18 @@ class SessionListView(LoginRequiredMixin,ListView):
 
     def get_queryset(self):
         return Session.objects.filter(user=self.request.user)
+
+class SessionCreate(CreateView):
+    template_name = 'start-session.html'
+    model = Session
+    fields = ['type_session']
+
+    def get_success_url(self):
+        return '/session/sessions/'
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        form.instance.started = timezone.now()
+        form.instance.status = 'started'
+        form.instance.api_endpoint = 'http://www.google.com'
+        return super().form_valid(form)

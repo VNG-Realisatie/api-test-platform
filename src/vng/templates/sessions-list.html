@@ -14,7 +14,7 @@
     </div>
 
     <div class="col-sm-3">
-        <button class="btn btn-primary">Start Session</button>
+        <input type="button" class="btn btn-primary" value="Start Session" onclick="location.href = '/session/start-session/';">
     </div>
 </div>
 <div class="row">
@@ -31,26 +31,26 @@
                 </tr>
             </thead>
             <tbody>
-                    {% if object_list %}
+                {% if object_list %}
                 <ul>
                     {% for session in object_list %}
                     <tr>
-                        <th scope="row">1</th>
                         <td>{{ session.started }}</td>
                         <td>{{ session.stopped }}</td>
                         <td>{{ session.status }}</td>
-                        <td>{{ session.user.name }}</td>
+                        <td>{{ session.type_session.name }}</td>
+                        <td>{{ session.user.username }}</td>
                         <td>{{ session.api_endpoint }}</td>
                     </tr>
                     {% endfor %}
                 </ul>
                 {% else %}
-                    <ul>There are no session in the library.</ul>
-                {% endif %}  
-                
+                <ul>There are no session in the library.</ul>
+                {% endif %}
+
             </tbody>
         </table>
     </div>
 </div>
-      
+
 {% endblock %}

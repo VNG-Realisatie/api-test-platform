@@ -31,9 +31,9 @@
                 </tr>
             </thead>
             <tbody>
-                    {% if session_list %}
+                    {% if object_list %}
                 <ul>
-                    {% for session in session_list %}
+                    {% for session in object_list %}
                     <tr>
                         <th scope="row">1</th>
                         <td>{{ session.started }}</td>
@@ -45,26 +45,12 @@
                     {% endfor %}
                 </ul>
                 {% else %}
-                    <p>There are no session in the library.</p>
+                    <ul>There are no session in the library.</ul>
                 {% endif %}  
                 
             </tbody>
         </table>
     </div>
 </div>
-
-
-
-  <h1>session List</h1>
-  {% if session_list %}
-  <ul>
-    {% for session in session_list %}
-      <li>
-        {{ session.status_choiches }}
-      </li>
-    {% endfor %}
-  </ul>
-  {% else %}
-    <p>There are no session in the library.</p>
-  {% endif %}       
+      
 {% endblock %}

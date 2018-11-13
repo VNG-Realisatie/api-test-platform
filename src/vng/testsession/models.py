@@ -13,7 +13,7 @@ class Session(models.Model):
         ('3','stopped')
         ]
     started = models.DateTimeField()
-    stopped = models.DateTimeField()
+    stopped = models.DateTimeField(null=True,blank=True)
     status = models.CharField(max_length=10,choices=status_choiches)
     user = models.ForeignKey(User, on_delete=models.SET_NULL,null=True)
     api_endpoint = models.URLField(max_length=200)

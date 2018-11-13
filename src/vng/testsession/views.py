@@ -7,7 +7,7 @@ from .models import Session, Session_type
 
 class SessionListView(LoginRequiredMixin,ListView):
     template_name = 'sessions-list.html'
-    context_object_name = 'sessions'
+    context_object_name = 'sessions_list'
     paginate_by = 10
 
     def get_queryset(self):

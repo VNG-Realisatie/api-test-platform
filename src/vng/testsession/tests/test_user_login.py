@@ -2,7 +2,8 @@ from django_webtest import WebTest
 from django.urls import reverse
 from factory.django import DjangoModelFactory as Dmf
 import factory
-from ..models import SessionType,Session
+from rest_framwork import viewsets, generics
+from ..models import SessionType, Session
 
 class TestCaseBase(WebTest):
 
@@ -20,10 +21,12 @@ class TestAuth(WebTest):
         assert call.status == '200 OK'
         
 class SessionTypeFactory(Dmf):
+
     class Meta:
         model = SessionType
-    name=factory.sequence(lambda n:'testype %d' % n)
-    docker_image='di'
+
+    name = factory.sequence(lambda n:'testype %d' % n)
+    docker_image = 'di'
 
 
 class SessionCreation(WebTest):

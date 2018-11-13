@@ -4,8 +4,9 @@ from django.shortcuts import render
 from django.views.generic.list import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import CreateView
+from rest_framework import routers, serializers, viewsets
 from vng.testsession.models import Session, SessionType
-
+from .serializers import SessionSerializer
 
 class SessionListView(LoginRequiredMixin,ListView):
     template_name = 'sessions-list.html'
@@ -29,3 +30,9 @@ class SessionCreate(CreateView):
         form.instance.status = 'started'
         form.instance.api_endpoint = 'http://www.google.com'
         return super().form_valid(form)
+
+class SessionViewSet(viewsets.ModelViewSet):
+    serializer_class = SessionSerializer
+
+    def get_queryset(self):
+        return Session.objects.filter(user=self.request.user)

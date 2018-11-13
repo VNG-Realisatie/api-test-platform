@@ -36,3 +36,8 @@ class SessionViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Session.objects.filter(user=self.request.user)
+
+
+class SessionTypesViewSet(viewsets.ModelViewSet):
+    serializer_class = SessionSerializer
+    queryset = SessionType.objects.all()

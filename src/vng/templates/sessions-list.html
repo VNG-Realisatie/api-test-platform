@@ -9,6 +9,7 @@
 <hr>
 
 <div class="row">
+    
     <div class="col-sm-2">
         <button class="btn btn-primary">View Sessions</button>
     </div>
@@ -36,7 +37,11 @@
                     {% for session in object_list %}
                     <tr>
                         <td>{{ session.started }}</td>
-                        <td>{{ session.stopped }}</td>
+                        {% if session.stopped %}
+                            <td>{{ session.stopped }}</td>
+                        {% else %}
+                            <td></td>
+                        {% endif %}
                         <td>{{ session.status }}</td>
                         <td>{{ session.type_session.name }}</td>
                         <td>{{ session.user.username }}</td>

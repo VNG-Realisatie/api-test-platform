@@ -18,6 +18,9 @@ DEBUG = False
 
 ALLOWED_HOSTS = []
 
+LOGIN_REDIRECT_URL = "/session/sessions/" 
+LOGOUT_REDIRECT_URL = "/login"
+
 # Application definition
 
 INSTALLED_APPS = [

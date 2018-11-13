@@ -1,4 +1,6 @@
+{% load static %}
 <!doctype html>
+
 <html lang="en">
 
 <head>
@@ -7,26 +9,53 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="../../../../favicon.ico">
-    <link href="//cdn.rawgit.com/Eonasdan/bootstrap-datetimepicker/e8bddc60e73c1ec2475f827be36e1957af72e2ea/build/css/bootstrap-datetimepicker.css" rel="stylesheet">
+    <link href="//cdn.rawgit.com/Eonasdan/bootstrap-datetimepicker/e8bddc60e73c1ec2475f827be36e1957af72e2ea/build/css/bootstrap-datetimepicker.css"
+        rel="stylesheet">
 
     <title>Page 1</title>
 
     <!-- Bootstrap core CSS -->
     <link href="https://getbootstrap.com/docs/4.1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href=" https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.standalone.css" rel="stylesheet">
-
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.standalone.css" rel="stylesheet">
+    <link href="{% static 'css/start-template.css' %}" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
-    
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.js"></script>
     <!-- Custom styles for this template -->
     <link href="grid.css" rel="stylesheet">
 </head>
 
 <body>
-    <div class="container">
-        {% block content %}
-        {% endblock %}
-    </div> <!-- /container -->
+
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+        <a class="navbar-brand" href="#">Navbar</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
+            aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0">
+                {% if request.user.is_anonymous %}
+                <a href="/login" class="btn btn-primary">Login</a>
+                {% else %}
+                <a href="/logout" class="btn btn-primary">Logout</a>
+                {% endif %}
+            </form>
+        </div>
+    </nav>
+
+    <main role="main" class="container">
+        <div class="content">
+            {% block content %}
+            {% endblock %}        
+        </div>
+        </main> <!-- /container -->
 </body>
 
 </html>

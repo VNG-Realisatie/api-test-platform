@@ -13,7 +13,7 @@ from .serializers import SessionSerializer,SessionTypesSerializer
 class SessionListView(LoginRequiredMixin,ListView):
     template_name = 'sessions-list.html'
     context_object_name = 'sessions_list'
-    paginate_by = 10
+    paginate_by = 1
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

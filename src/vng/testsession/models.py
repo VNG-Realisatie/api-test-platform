@@ -25,6 +25,6 @@ class Session(models.Model):
 
     def __str__(self):
         if self.user:
-            return "{} - {}".format(self.type_session,self.user.username)
+            return "{} - {}".format(self.session_type,self.user.username)
         else:
-            return "{}".format(self.type_session)
+            return "{}".format(self.session_type)

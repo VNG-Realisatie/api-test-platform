@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.views.generic.list import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import CreateView
+from django.http import HttpResponse
 from rest_framework import routers, serializers, viewsets
 from vng.testsession.models import Session, SessionType
 from .serializers import SessionSerializer,SessionTypesSerializer
@@ -25,6 +26,8 @@ class SessionCreate(CreateView):
         return '/session/sessions/'
 
     def form_valid(self, form):
+        if self.request.user.is_anonymous:
+            return HttpResponse('Unauthorized', status=401)
         form.instance.user = self.request.user
         form.instance.started = timezone.now()
         form.instance.status = 'started'

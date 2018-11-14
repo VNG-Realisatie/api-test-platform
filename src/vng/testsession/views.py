@@ -7,13 +7,16 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic.edit import CreateView
 from django.http import HttpResponse
 from rest_framework import routers, serializers, viewsets
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication,TokenAuthentication
+from rest_framework import permissions,generics
 from vng.testsession.models import Session, SessionType
 from .serializers import SessionSerializer,SessionTypesSerializer
+
 
 class SessionListView(LoginRequiredMixin,ListView):
     template_name = 'sessions-list.html'
     context_object_name = 'sessions_list'
-    paginate_by = 1
+    paginate_by = 10
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -52,13 +55,17 @@ class SessionCreate(CreateView):
         form.instance.api_endpoint = 'http://www.google.com'
         return super().form_valid(form)
 
-class SessionViewSet(viewsets.ModelViewSet):
+class SessionViewSet(generics.ListAPIView):
     serializer_class = SessionSerializer
+    authentication_classes = (SessionAuthentication, TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,) 
 
     def get_queryset(self):
         return Session.objects.filter(user=self.request.user)
 
 
-class SessionTypesViewSet(viewsets.ReadOnlyModelViewSet):
+class SessionTypesViewSet(generics.ListAPIView):
+    authentication_classes = ( SessionAuthentication, TokenAuthentication)
+    permission_classes = (permissions.IsAuthenticated,) 
     serializer_class = SessionTypesSerializer
     queryset = SessionType.objects.all()

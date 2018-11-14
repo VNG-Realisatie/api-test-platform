@@ -1,4 +1,5 @@
 {% extends 'main.html' %}
+{}
 {% block title %}Session List{% endblock%}
 {% block content %}
 <h1>VNG Testplatform</h1>
@@ -23,6 +24,7 @@
                     <th scope="col">Stopped</th>
                     <th scope="col">Status</th>
                     <th scope="col">Type</th>
+                    <th scope="col">User</th>
                     <th scope="col">API endpoint URL</th>
                     <th scope="col">Action</th>
                 </tr>
@@ -42,6 +44,15 @@
                         <td>{{ session.type_session.name }}</td>
                         <td>{{ session.user.username }}</td>
                         <td>{{ session.api_endpoint }}</td>
+                        <td>
+                        {% ifnotequal session.status stop %}
+                            <form method="POST" action='/session/stop-session/{{ session.id }}'>
+                                {% csrf_token %}
+                                <input type="submit" type="button" class="btn btn-primary" value="Stop">
+                            </form>
+                        
+                        {% endifnotequal %}
+                        </td>
                     </tr>
                     {% endfor %}
                 </ul>

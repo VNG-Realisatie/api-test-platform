@@ -12,9 +12,9 @@ class SessionType(models.Model):
 
 class Session(models.Model):
     class StatusChoices(DjangoChoices):
-        starting = ChoiceItem("1")
-        running = ChoiceItem("2")
-        stopped = ChoiceItem("3")
+        starting = ChoiceItem("starting")
+        running = ChoiceItem("running")
+        stopped = ChoiceItem("stopped")
 
     session_type = models.ForeignKey(SessionType, on_delete=models.SET_NULL,null=True)
     started = models.DateTimeField()

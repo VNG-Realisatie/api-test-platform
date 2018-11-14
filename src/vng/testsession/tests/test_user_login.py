@@ -72,4 +72,4 @@ class MultipleSessionCreation(WebTest):
             form['session_type'].select(value='1')
             form.submit()
         call = self.app.get('/session/sessions/',user='admin')
-        assert str(call.body).count('<tr>') == n_sess+1
+        self.assertEqual(str(call.body).count('<tr>'), n_sess+1)

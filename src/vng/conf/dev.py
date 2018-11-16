@@ -25,8 +25,8 @@ DATABASES = {
 }
 
 CMS_TEMPLATES = (
-    ('template_1.html', 'Template One'),
     ('template_2.html', 'Template Two'),
+    ('template_1.html', 'Template One'),
 )
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
@@ -80,15 +80,13 @@ INSTALLED_APPS += [
     'rest_framework',  
     'rest_auth', 
     'rest_framework.authtoken',
-    'cms',  # django CMS itself
-    'treebeard',  # utilities for implementing a tree
-    'menus',  # helper for model independent hierarchical website navigation
-    'sekizai',  # for JavaScript and CSS management
-    'djangocms_admin_style',  # for the admin skin. You **must** add 'djangocms_admin_style' in the list **before** 'django.contrib.admin'.
-    'django.contrib.sites'
 ]
 
 SITE_ID = 1
+
+LANGUAGES = [
+    ('en', 'English'),
+]
 
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,

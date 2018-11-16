@@ -63,7 +63,7 @@ class SessionViewSet(generics.ListAPIView,generics.CreateAPIView):
     def get_queryset(self):
         return Session.objects.filter(user=self.request.user)
  
-class SessionEditViewSet(generics.RetrieveAPIView,generics.UpdateAPIView):
+class SessionEditViewSet(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = SessionSerializer
     authentication_classes = (SessionAuthentication, TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,) 

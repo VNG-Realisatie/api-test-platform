@@ -55,15 +55,7 @@ class SessionCreate(CreateView):
         form.instance.api_endpoint = 'http://www.google.com'
         return super().form_valid(form)
 
-class SessionViewSet(generics.ListAPIView,generics.CreateAPIView):
-    serializer_class = SessionSerializer
-    authentication_classes = (SessionAuthentication, TokenAuthentication,)
-    permission_classes = (permissions.IsAuthenticated,) 
-
-    def get_queryset(self):
-        return Session.objects.filter(user=self.request.user)
- 
-class SessionEditViewSet(generics.RetrieveUpdateDestroyAPIView):
+class SessionViewSet(viewsets.ModelViewSet):
     serializer_class = SessionSerializer
     authentication_classes = (SessionAuthentication, TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,) 

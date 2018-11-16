@@ -25,8 +25,8 @@ DATABASES = {
 }
 
 CMS_TEMPLATES = (
-    ('template_2.html', 'Template Two'),
     ('template_1.html', 'Template One'),
+    ('template_2.html', 'Template Two'),
 )
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False

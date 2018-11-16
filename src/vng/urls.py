@@ -27,7 +27,7 @@ urlpatterns = [
 
     # redirect the request to the testession
     url(r'^api/auth/', include('vng.apiAuthentication.urls')),
-    url(r'^api/v1/', include('vng.testsession.urls')),
+    url(r'^api/v1/', include('vng.testsession.urls_api')),
     url(r'^session/', include('vng.testsession.urls')), 
     
     #url for the CMS

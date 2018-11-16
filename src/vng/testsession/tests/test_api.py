@@ -68,7 +68,7 @@ class AuthorizationTests(WebTest):
 
     def test2(self):
         print(User.objects.all()[0].password)
-        call = self.app.post('/api/v1/login/',params=collections.OrderedDict([
+        call = self.app.post('/api/auth/login/',params=collections.OrderedDict([
             ('username', 'test'),
             ('password', 'pippopippo')]))
         print(call.body.decode('utf-8'))

@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'vng.accounts',
     'vng.utils',
     'vng.testsession',
+    'vng.apiAuthentication'
 ]
 
 MIDDLEWARE = [

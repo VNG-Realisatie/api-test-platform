@@ -27,7 +27,8 @@ urlpatterns = [
     url(r'^logout/',auth_views.LogoutView.as_view(), {'next_page': '/login'}, name='logout'),
 
     # redirect the request to the testession
-    url(r'^api/', include('vng.testsession.urls')) ,
+    url(r'^api/auth/', include('vng.apiAuthentication.urls')),
+    url(r'^api/v1/', include('vng.testsession.urls')),
     url(r'^session/', include('vng.testsession.urls')) 
 
 ]

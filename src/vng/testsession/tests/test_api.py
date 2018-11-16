@@ -47,14 +47,14 @@ class RetrieveSessionType(WebTest):
         SessionTypeFactory()
 
     def test(self):
-        call = self.app.get('/api/v1/sessiontypes',user='admin')
+        call = self.app.get('/api/v1/sessiontypes/',user='admin')
         t = get_object(call.body)
         self.assertEqual(t[0]['id'],1)
     
     def test2(self):
         for i in range(10):
             SessionTypeFactory()
-        call = self.app.get('/api/v1/sessiontypes',user='admin')
+        call = self.app.get('/api/v1/sessiontypes/',user='admin')
         t = json.loads(call.body.decode('utf-8'))
         self.assertEqual(t[9]['id'],10)
 
@@ -64,7 +64,7 @@ class AuthorizationTests(WebTest):
         UserFactory()
 
     def test(self):
-        self.app.get('/session/v1/testsessions',expect_errors=True)
+        self.app.get('/session/v1/testsessions/',expect_errors=True)
 
     def test2(self):
         print(User.objects.all()[0].password)
@@ -80,6 +80,11 @@ class AuthorizationTests(WebTest):
             'password': 'wrong'
         },expect_errors=True)
         
+class CreationAndDeletion(WebTest):
+
+    def test(self):
+        pass
+
 
     
         

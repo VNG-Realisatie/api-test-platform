@@ -109,6 +109,8 @@ CACHES = {
     }
 }
 
+APPEND_SLASH = True
+
 AXES_CACHE = 'axes_cache'
 
 

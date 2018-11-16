@@ -13,5 +13,11 @@ django-rosetta
 django-sniplates
 django-redis
 django_admin_index
+django-cms
+django-import-export
+django-countries
+djangorestframework-filters
+django-solo
+django-dynamic-raw-id
 
 # djangorestframework

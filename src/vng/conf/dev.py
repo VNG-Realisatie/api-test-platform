@@ -24,6 +24,11 @@ DATABASES = {
     }
 }
 
+CMS_TEMPLATES = (
+    ('template_1.html', 'Template One'),
+    ('template_2.html', 'Template Two'),
+)
+
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
@@ -75,7 +80,15 @@ INSTALLED_APPS += [
     'rest_framework',  
     'rest_auth', 
     'rest_framework.authtoken',
+    'cms',  # django CMS itself
+    'treebeard',  # utilities for implementing a tree
+    'menus',  # helper for model independent hierarchical website navigation
+    'sekizai',  # for JavaScript and CSS management
+    'djangocms_admin_style',  # for the admin skin. You **must** add 'djangocms_admin_style' in the list **before** 'django.contrib.admin'.
+    'django.contrib.sites'
 ]
+
+SITE_ID = 1
 
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
@@ -112,7 +125,6 @@ CACHES = {
 APPEND_SLASH = True
 
 AXES_CACHE = 'axes_cache'
-
 
 # THOU SHALT NOT USE NAIVE DATETIMES
 warnings.filterwarnings(

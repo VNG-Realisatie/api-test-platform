@@ -1,0 +1,11 @@
+{% extends 'main.html' %}
+{% block title %}Start Session{% endblock%}
+{% block content %}
+<h1>Start a new session</h1>
+<hr>
+<form method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" class="btn btn-primary" value="Create Session">
+    <input type="button" class="btn btn-primary" value="Sessions list" onclick="location.href = '/session/sessions/';">
+</form>
+{% endblock %}

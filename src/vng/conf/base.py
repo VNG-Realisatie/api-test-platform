@@ -18,6 +18,9 @@ DEBUG = False
 
 ALLOWED_HOSTS = []
 
+LOGIN_REDIRECT_URL = "/session/sessions/" 
+LOGOUT_REDIRECT_URL = "/login"
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -56,6 +59,7 @@ INSTALLED_APPS = [
     # Project applications.
     'vng.accounts',
     'vng.utils',
+    'vng.testsession',
 ]
 
 MIDDLEWARE = [
@@ -127,7 +131,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
 
-LANGUAGE_CODE = 'nl-nl'
+LANGUAGE_CODE = 'en-US'
 
 TIME_ZONE = 'Europe/Amsterdam'
 

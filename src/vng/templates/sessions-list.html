@@ -1,0 +1,57 @@
+{% extends 'main.html' %}
+{% block title %}Session List{% endblock%}
+{% block content %}
+<h1>VNG Testplatform</h1>
+<hr>
+
+<div class="row">
+    
+    <div class="col-sm-2">
+        <button class="btn btn-primary">View Sessions</button>
+    </div>
+
+    <div class="col-sm-3">
+        <input type="button" class="btn btn-primary" value="Start Session" onclick="location.href = '/session/start-session/';">
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Started</th>
+                    <th scope="col">Stopped</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">API endpoint URL</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if object_list %}
+                <ul>
+                    {% for session in object_list %}
+                    <tr>
+                        <td>{{ session.started }}</td>
+                        {% if session.stopped %}
+                            <td>{{ session.stopped }}</td>
+                        {% else %}
+                            <td></td>
+                        {% endif %}
+                        <td>{{ session.status }}</td>
+                        <td>{{ session.type_session.name }}</td>
+                        <td>{{ session.user.username }}</td>
+                        <td>{{ session.api_endpoint }}</td>
+                    </tr>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <ul>There are no session in the library.</ul>
+                {% endif %}
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

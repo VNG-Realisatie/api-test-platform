@@ -77,12 +77,8 @@ ENVIRONMENT = 'development'
 # Django debug toolbar
 INSTALLED_APPS += [
     'debug_toolbar',
-    'rest_framework',  
-    'rest_auth', 
-    'rest_framework.authtoken',
 ]
 
-SITE_ID = 1
 
 LANGUAGES = [
     ('en', 'English'),

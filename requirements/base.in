@@ -19,5 +19,6 @@ django-countries
 djangorestframework-filters
 django-solo
 django-dynamic-raw-id
-
-# djangorestframework
+djangocms-picture
+django-filer
+djangorestframework

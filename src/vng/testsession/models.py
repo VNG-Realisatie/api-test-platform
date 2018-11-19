@@ -1,6 +1,11 @@
-from vng.accounts.models import User
 from django.db import models
+from cms.models.pluginmodel import CMSPlugin
 from djchoices import DjangoChoices, ChoiceItem
+from vng.accounts.models import User
+
+class TextPluginModel(CMSPlugin):
+    text = models.CharField(max_length=20000, unique=True)
+
 
 class SessionType(models.Model):
     name = models.CharField(max_length=200, unique=True)
@@ -8,7 +13,6 @@ class SessionType(models.Model):
 
     def __str__(self):
         return self.name
-
 
 class Session(models.Model):
     class StatusChoices(DjangoChoices):

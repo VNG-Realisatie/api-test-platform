@@ -60,7 +60,18 @@ INSTALLED_APPS = [
     'treebeard',  # utilities for implementing a tree
     'menus',  # helper for model independent hierarchical website navigation
     'sekizai',  # for JavaScript and CSS management
+
+    # Django CMS plugins
+    'djangocms_text_ckeditor',
+
+    
+    'rest_framework',  
+    'rest_auth', 
+    'rest_framework.authtoken',
+
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -140,6 +151,10 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
 
 LANGUAGES = (('en','English'),)
+
+DJANGOCMS_PICTURE_TEMPLATES = [
+    ('background', ('Background image')),
+]
 
 LANGUAGE_CODE = 'en'
 

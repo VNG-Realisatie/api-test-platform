@@ -49,6 +49,9 @@ INSTALLED_APPS = [
     'hijack',
     'compat',  # Part of hijack
     'hijack_admin',
+    'easy_thumbnails',
+    'filer',
+    'mptt',
 
     # Project applications.
     'vng.accounts',
@@ -63,8 +66,9 @@ INSTALLED_APPS = [
 
     # Django CMS plugins
     'djangocms_text_ckeditor',
+    'djangocms_picture',
 
-    
+
     'rest_framework',  
     'rest_auth', 
     'rest_framework.authtoken',

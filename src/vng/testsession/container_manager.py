@@ -3,7 +3,7 @@ import subprocess
 def runCommand(command):
     print('running the command: {}'.format(command))
     subp = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    return (subp.stdout.read(), subp.stderr.read())
+    return (subp.stdout.read(), subp.stderr.read()) 
 
 class ContainerManagerHelper():
 

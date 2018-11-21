@@ -28,7 +28,7 @@ class SessionListView(LoginRequiredMixin,ListView):
         return context
 
     def get_queryset(self):
-        return Session.objects.filter(user=self.request.user)
+        return Session.objects.filter(user=self.request.user).order_by('-started')
 
 @login_required
 def stop_session(request,session_id):
@@ -37,7 +37,8 @@ def stop_session(request,session_id):
         return HttpResponse('Unauthorized', status=401)
     session.status = Session.StatusChoices.stopped
     session.save()
-    delete = K8S().delete(session)
+    delete = K8S().delete(session.name)
+    print(delete)
     return redirect('/session/sessions')
 
 

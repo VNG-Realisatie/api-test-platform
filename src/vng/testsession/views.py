@@ -1,4 +1,5 @@
 from datetime import datetime
+import time
 from django.utils import timezone
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic.list import ListView
@@ -11,6 +12,7 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework import permissions,generics
 from vng.testsession.models import Session, SessionType
 from .serializers import SessionSerializer,SessionTypesSerializer
+from .container_manager import ContainerManagerHelper, K8S
 
 
 class SessionListView(LoginRequiredMixin,ListView):
@@ -35,6 +37,7 @@ def stop_session(request,session_id):
         return HttpResponse('Unauthorized', status=401)
     session.status = Session.StatusChoices.stopped
     session.save()
+    delete = K8S().delete(session)
     return redirect('/session/sessions')
 
 
@@ -42,6 +45,11 @@ class SessionCreate(CreateView):
     template_name = 'start-session.html'
     model = Session
     fields = ['session_type']
+
+    def start_app(self, form):
+        kuber = K8S()
+        r = kuber.deploy(form.name,form.session_type.docker_image)
+        print(r)
 
     def get_success_url(self):
         return '/session/sessions/'
@@ -53,7 +61,10 @@ class SessionCreate(CreateView):
         form.instance.started = timezone.now()
         form.instance.status = 'started'
         form.instance.api_endpoint = 'http://www.google.com'
+        form.instance.name = str(self.request.user.id)+str(time.time()).replace('.','-')
+        self.start_app(form.instance)
         return super().form_valid(form)
+
 
 class SessionViewSet(viewsets.ModelViewSet):
     serializer_class = SessionSerializer

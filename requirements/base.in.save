@@ -1,4 +1,3 @@
-
 psycopg2
 Pillow
 pytz
@@ -23,6 +22,4 @@ django-dynamic-raw-id
 djangocms-picture
 django-filer
 djangorestframework
-djangocms-text-ckeditor
-google-api-python-client
-oauth2client
+djangocms-picture

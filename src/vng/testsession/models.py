@@ -20,6 +20,7 @@ class Session(models.Model):
         running = ChoiceItem("running")
         stopped = ChoiceItem("stopped")
 
+    name = models.CharField(max_length=20)
     session_type = models.ForeignKey(SessionType, on_delete=models.SET_NULL,null=True)
     started = models.DateTimeField()
     stopped = models.DateTimeField(null=True,blank=True)

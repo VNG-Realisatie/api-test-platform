@@ -68,7 +68,7 @@ INSTALLED_APPS = [
     'djangocms_text_ckeditor',
     'djangocms_picture',
 
-
+    #Rest Framework
     'rest_framework',  
     'rest_auth', 
     'rest_framework.authtoken',

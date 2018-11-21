@@ -46,7 +46,7 @@
                         <td>{{ session.api_endpoint }}</td>
                         <td>
                             {% ifnotequal session.status stop %}
-                            <form method="POST" action='/session/stop-session/{{ session.id }}/'>
+                            <form method="POST" action="{% url 'stop_session' session.id %}">
                                 {% csrf_token %}
                                 <input type="submit" type="button" class="btn btn-primary" value="Stop">
                             </form>

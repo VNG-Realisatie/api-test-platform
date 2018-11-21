@@ -9,7 +9,7 @@ from django.views.generic.edit import CreateView
 from django.http import HttpResponse
 from rest_framework import routers, serializers, viewsets
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication,TokenAuthentication
-from rest_framework import permissions,generics
+from rest_framework import permissions, generics
 from vng.testsession.models import Session, SessionType
 from .serializers import SessionSerializer,SessionTypesSerializer
 from .container_manager import ContainerManagerHelper, K8S
@@ -32,13 +32,13 @@ class SessionListView(LoginRequiredMixin,ListView):
 
 @login_required
 def stop_session(request,session_id):
+    print(K8S().status('115427984056551142'))
     session = get_object_or_404(Session,pk=session_id)
     if request.user != session.user:
         return HttpResponse('Unauthorized', status=401)
     session.status = Session.StatusChoices.stopped
     session.save()
     delete = K8S().delete(session.name)
-    print(delete)
     return redirect('/session/sessions')
 
 
@@ -69,11 +69,14 @@ class SessionCreate(CreateView):
 
 class SessionViewSet(viewsets.ModelViewSet):
     serializer_class = SessionSerializer
-    authentication_classes = (SessionAuthentication, TokenAuthentication,)
+    authentication_classes = ( TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,) 
 
     def get_queryset(self):
         return Session.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 class SessionTypesViewSet(generics.ListAPIView):
@@ -81,3 +84,9 @@ class SessionTypesViewSet(generics.ListAPIView):
     permission_classes = (permissions.IsAuthenticated,) 
     serializer_class = SessionTypesSerializer
     queryset = SessionType.objects.all()
+
+
+def update_status_session(session):
+    session.status = K8S().status(session.name)
+    session.save()
+    

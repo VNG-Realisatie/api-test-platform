@@ -1,9 +1,17 @@
 import subprocess
+import logging
+import re
 
-def runCommand(command):
-    print('running the command: {}'.format(command))
-    subp = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    return (subp.stdout.read(), subp.stderr.read()) 
+logger = logging.getLogger(__name__)
+
+
+def runcommand(COMMAND):
+    print('running the COMMAND: {}'.format(COMMAND))
+    subp = subprocess.Popen(COMMAND, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    err =subp.stderr.read()
+    if len(err) > 1:
+        logger.error(err)
+    return (subp.stdout.read(), err) 
 
 class ContainerManagerHelper():
 
@@ -12,18 +20,18 @@ class ContainerManagerHelper():
         self.zone = zone
     
     def poolList(self):
-        command = "gcloud container node-pools list --cluster={} --zone={}".format(self.cluster,self.zone)
-        res = runCommand(command)
+        COMMAND = "gcloud container node-pools list --cluster={} --zone={}".format(self.cluster,self.zone)
+        res = runcommand(COMMAND)
         return res
     
     def createPool(self,pool_name):
-        command = "gcloud container node-pools create {} --cluster={} --zone={}".format(pool_name, self.cluster, self.zone)
-        res = runCommand(command)
+        COMMAND = "gcloud container node-pools create {} --cluster={} --zone={}".format(pool_name, self.cluster, self.zone)
+        res = runcommand(COMMAND)
         return res
 
     def deletePool(self,pool_name):
-        command = "gcloud container node-pools delete {} --cluster={} --zone={} -q".format(pool_name, self.cluster, self.zone)
-        res = runCommand(command)
+        COMMAND = "gcloud container node-pools delete {} --cluster={} --zone={} -q".format(pool_name, self.cluster, self.zone)
+        res = runcommand(COMMAND)
         return res
 
 
@@ -31,15 +39,26 @@ class K8S():
 
     def deploy(self, app_name, image, port=None):
         if port is None:
-            command = 'kubectl run {} --image={} --env="DOMAIN=cluster"'.format(app_name, image)
+            COMMAND = 'kubectl run {} --image={} --env="DOMAIN=cluster"'.format(app_name, image)
         else:
-            command = 'kubectl run {} --image={} --port={} --env="DOMAIN=cluster"'.format(app_name, image, port)
-        res = runCommand(command)
+            COMMAND = 'kubectl run {} --image={} --port={} --env="DOMAIN=cluster"'.format(app_name, image, port)
+        res = runcommand(COMMAND)
         return res
     
     def delete(self, app_name):
-        command = 'kubectl delete -n default deployment {}'.format(app_name)
-        res1 = runCommand(command)
-        #load_balance = 'gcloud compute forwardin-rules list'
-        #res2 = runCommand(load_balance)
-        return res1 #res2)
+        COMMAND = 'kubectl delete -n default deployment {}'.format(app_name)
+        res1 = runcommand(COMMAND)
+        return res1 
+
+    def status(self, app_name):
+        NAMES = ['namespace','desired','current','up-to-date','available','age']
+        COMMAND = 'kubectl get deployments --all-namespaces'
+        res1 = runcommand(COMMAND)[0].decode('utf-8')
+        reg = re.search(r'(\S*) *{} *(\S*) *(\S*) *(\S*) *(\S*) *(\S*) *\n'.format(app_name), res1, re.M)
+        if reg:
+            status = {'app_name': app_name}
+            for i,name in zip(range(1,7),NAMES):
+                status[name]=reg.group(i)
+            return status
+        else:
+            return None

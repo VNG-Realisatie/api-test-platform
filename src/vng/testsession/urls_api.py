@@ -6,12 +6,12 @@ from . import views
 session_detail = views.SessionViewSet.as_view({
     'get': 'retrieve',
     'put': 'update',
-    'patch': 'partial_update',
     'delete': 'destroy'
 })
 
 session_list = views.SessionViewSet.as_view({
-    'get': 'list'
+    'get': 'list',
+    'post': 'create'
 })
 
 urlpatterns = [

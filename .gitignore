@@ -24,3 +24,5 @@ local.py
 /mail/
 /log/*.log*
 /log/nginx/*.log*
+
+/src/vng/static/css/admin/admin_overrides.css

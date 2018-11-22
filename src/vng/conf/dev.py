@@ -24,6 +24,11 @@ DATABASES = {
     }
 }
 
+CMS_TEMPLATES = (
+    ('template_1.html', 'Template One'),
+    ('template_2.html', 'Template Two'),
+)
+
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
@@ -65,14 +70,31 @@ CSRF_COOKIE_SECURE = False
 #
 ENVIRONMENT = 'development'
 
-#
-# Library settings
-#
+# 
+# Library settings 
+# 
 
 # Django debug toolbar
 INSTALLED_APPS += [
     'debug_toolbar',
 ]
+
+
+LANGUAGES = [
+    ('en', 'English'),
+]
+
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissions',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+            'rest_framework.authentication.BasicAuthentication',
+    )
+}
+
 MIDDLEWARE += [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
@@ -94,8 +116,9 @@ CACHES = {
     }
 }
 
-AXES_CACHE = 'axes_cache'
+APPEND_SLASH = True
 
+AXES_CACHE = 'axes_cache'
 
 # THOU SHALT NOT USE NAIVE DATETIMES
 warnings.filterwarnings(

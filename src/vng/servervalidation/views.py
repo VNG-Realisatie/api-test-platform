@@ -50,8 +50,11 @@ class ServerRunCreate(CreateView):
 
 class ServerRunViewSet(viewsets.ModelViewSet):
     authentication_classes = (SessionAuthentication, TokenAuthentication)
-    permission_classes = (permissions.IsAuthenticated,) 
+    permission_classes = (permissions.IsAuthenticated,)
     serializer_class = ServerRunSerializer
 
     def get_queryset(self):
         return ServerRun.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)

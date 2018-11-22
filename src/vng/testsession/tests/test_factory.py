@@ -13,18 +13,6 @@ class SessionTypeFactory(Dmf):
     name = factory.sequence(lambda n:'testype %d' % n)
     docker_image = 'di'
 
-
-class SessionFactory(Dmf):
-
-    class Meta:
-        model = Session
-
-    session_type = 1
-    started = timezone.now()
-    status = Session.StatusChoices.starting
-    user = 1
-    api_endpoint = 'http://google.com'
-
 class UserFactory(Dmf):
 
     class Meta:
@@ -32,3 +20,16 @@ class UserFactory(Dmf):
 
     username = 'test'
     password = factory.PostGenerationMethodCall('set_password', 'pippopippo')
+
+
+class SessionFactory(Dmf):
+
+    class Meta:
+        model = Session
+
+    session_type = factory.SubFactory(SessionTypeFactory)
+    started = timezone.now()
+    status = Session.StatusChoices.starting
+    user = factory.SubFactory(UserFactory)
+    api_endpoint = 'http://google.com'
+

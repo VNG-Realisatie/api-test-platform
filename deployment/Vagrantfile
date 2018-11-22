@@ -1,0 +1,77 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Use rbconfig to determine if we're on a Windows host or not.
+require 'rbconfig'
+is_windows = (RbConfig::CONFIG['host_os'] =~ /mswin|mingw|cygwin/)
+
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
+
+# TODO: instead of using the ubuntu basebox we could use veewee to create our own.
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+    config.vm.hostname = "debian"
+
+    # Every Vagrant virtual environment requires a box to build off of.
+    config.vm.box = "debian/jessie64"
+    config.vm.box_version = "8.6.1"
+
+    # Customize RAM amount in VirtualBox machines.
+    config.vm.provider :virtualbox do |vbox|
+        vbox.customize ["modifyvm", :id, "--memory", "1024"]
+    end
+
+    # Create a forwarded port mapping which allows access to a specific port
+    # within the machine from a port on the host machine. In the example below,
+    # accessing "localhost:8888" will access port 8888 on the guest machine.
+    config.vm.network :forwarded_port, guest: 80, host: 8888
+    # config.vm.network :forwarded_port, guest: 9200, host: 9200  # ElasticSearch port forwarding.
+    # config.vm.network :forwarded_port, guest: 6379, host: 6379  # Redis port forwarding.
+
+    # Create a private network, which allows host-only access to the machine
+    # using a specific IP. Useful to work in several projects with different
+    # virtual machines.
+    config.vm.network :private_network, ip: "192.168.100.12"
+
+    # Create a public network, which generally matched to bridged network.
+    # Bridged networks make the machine appear as another physical device on
+    # your network.
+    # config.vm.network :public_network
+
+    # If true, then any SSH connections made will enable agent forwarding.
+    # Default value: false
+    # config.ssh.forward_agent = true
+
+    # Share an additional folder to the guest VM. The first argument is
+    # the path on the host to the actual folder. The second argument is
+    # the path on the guest to mount the folder. And the optional third
+    # argument is a set of non-required options.
+    # config.vm.synced_folder "apps/", "/apps/"
+
+    # Disable the default vagrant synced_folder.
+    config.vm.synced_folder ".", "/vagrant", disabled: true
+
+    if is_windows
+        # Provisioning configuration for shell script.
+        config.vm.provision "shell" do |sh|
+            sh.path = "maykin-deployment/ansible-windows/windows.sh"
+            sh.args = "vagrant.yml maykin-deployment/hosts"
+        end
+    else
+        # Provisioning configuration for Ansible (for Mac/Linux hosts).
+        config.vm.provision "ansible" do |ansible|
+            ansible.playbook = "vagrant.yml"
+            ansible.inventory_path = "hosts"
+            ansible.verbose = "v"
+            ansible.limit = 'all'
+        end
+    end
+
+    config.vm.define "maykin-debian"
+
+    config.vm.post_up_message = "Your VM is ready! Connect to it with `vagrant ssh` or by SSH: `ssh vagrant@127.0.0.1 -p 2222`
+You can log in with user/pass: vagrant/vagrant
+Your current directory is accessible from within the VM in the /vagrant directory: `ls /vagrant/`
+Port 8888 is automatically forwarded to your host machine, so execute `manage.py runserver 127.0.0.1:8888` and you can access your project via http://127.0.0.1:8888 in your browser."
+end

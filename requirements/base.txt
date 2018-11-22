@@ -29,6 +29,7 @@ django-mptt==0.9.1        # via django-filer
 django-ordered-model==3.1.1  # via django-admin-index
 django-polymorphic==2.0.3  # via django-filer
 django-redis==4.9.0
+django-rest-auth==0.9.3
 django-rosetta==0.9.0
 django-sekizai==0.10.0    # via django-cms
 django-sniplates==0.6.0
@@ -64,7 +65,7 @@ raven==6.9.0
 redis==3.0.1              # via django-redis
 requests==2.20.1          # via django-rosetta
 rsa==4.0                  # via google-auth, oauth2client
-six==1.11.0               # via django-compat, django-dynamic-raw-id, django-rosetta, google-api-python-client, google-auth, html5lib, oauth2client
+six==1.11.0               # via django-compat, django-dynamic-raw-id, django-rest-auth, django-rosetta, google-api-python-client, google-auth, html5lib, oauth2client
 tablib==0.12.1            # via django-import-export
 unicodecsv==0.14.1        # via tablib
 unidecode==1.0.23         # via django-filer

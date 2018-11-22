@@ -36,4 +36,4 @@ class Session(models.Model):
             return "{}".format(self.session_type)
 
     def is_stopped(self):
-        return self.status is StatusChoices.stopped
+        return self.status is self.StatusChoices.stopped

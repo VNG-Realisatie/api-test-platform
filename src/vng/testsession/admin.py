@@ -21,3 +21,5 @@ class SessionAdmin(admin.ModelAdmin):
     list_filter = ['user']
     search_fields = ['user','api_endpoint']
     
+
+

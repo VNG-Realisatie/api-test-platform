@@ -29,6 +29,7 @@ urlpatterns = [
     url(r'^api/auth/', include('vng.apiAuthentication.urls')),
     url(r'^api/v1/', include('vng.testsession.urls_api')),
     url(r'^session/', include('vng.testsession.urls')), 
+    url(r'^server/', include('vng.servervalidation.urls')), 
     
     #url for the CMS
     url(r'^', include('cms.urls')),

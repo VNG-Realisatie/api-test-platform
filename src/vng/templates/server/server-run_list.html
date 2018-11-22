@@ -6,13 +6,8 @@
 <hr>
 
 <div class="row">
-
-    <div class="col-sm-2">
-        <button class="btn btn-primary">View Sessions</button>
-    </div>
-
     <div class="col-sm-3">
-        <input type="button" class="btn btn-primary" value="Start Session" onclick="location.href = '/session/start-session/';">
+        <input type="button" class="btn btn-primary" value="Start server-run" onclick="location.href = '{% url 'start_server-run' %}';">
     </div>
 </div>
 <div class="row">
@@ -44,7 +39,7 @@
                         <td>{{ server.api_endpoint }}</td> 
                         <td>
                             {% if server.stopped is None %}
-                            <form method="POST" action="{% url 'stop_server' server.id %}">
+                            <form method="POST" action="{% url 'stop_server-run' server.id %}">
                                 {% csrf_token %}
                                 <input type="submit" type="button" class="btn btn-primary" value="Stop">
                             </form>

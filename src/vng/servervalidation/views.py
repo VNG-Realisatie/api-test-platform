@@ -4,10 +4,12 @@ from django.views.generic.list import ListView
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.utils import timezone
+from django.urls import reverse
+from django.views.generic.edit import CreateView
 from .models import TestScenario, ServerRun
 
 class ServerRunView(LoginRequiredMixin,ListView):
-    template_name = 'server/server-run-list.html'
+    template_name = 'server/server-run_list.html'
     context_object_name = 'server_run_list'
     paginate_by = 10
 
@@ -22,4 +24,21 @@ def stop_session(request,session_id):
         return HttpResponse('Unauthorized', status=401)
     server.stopped = timezone.now()
     server.save()
-    return redirect('/server/server-run')
+    return redirect(reverse('server-run_list'))
+
+
+
+class ServerRunCreate(CreateView):
+    template_name = 'server/start_server-run.html'
+    model = ServerRun
+    fields = ['test_scenario']
+
+    def get_success_url(self):
+        return reverse('server-run_list')#'/server/server-run'
+
+    def form_valid(self, form):
+        if self.request.user.is_anonymous:
+            return HttpResponse('Unauthorized', status=401)
+        form.instance.user = self.request.user
+        form.instance.started = timezone.now()
+        return super().form_valid(form)

@@ -1,0 +1,24 @@
+---
+
+user_name: vagrant
+group_name: staff
+project_name: myproject
+target: development
+project_root: "/srv/sites/{{ project_name }}-{{ target }}"
+project_src_dir: "myproject"
+django_settings_module: "{{ project_src_dir }}.conf.{{ target }}"
+
+project_repo: git@bitbucket.org:maykinmedia/myproject.git
+branch: master
+
+nginx_server_name: myproject.localhost
+nginx_access_log_file: "{{ project_root }}/log/access.log"
+nginx_error_log_file: "{{ project_root }}/log/error.log"
+nginx_static_dir: "{{ project_root }}/static/"
+nginx_media_dir: "{{ project_root }}/media/"
+
+dbname: "{{ project_name }}-{{ target }}"
+dbuser: "{{ project_name }}-{{ target }}"
+dbpassword: myprojectpass
+
+uwsgi_port: 8888

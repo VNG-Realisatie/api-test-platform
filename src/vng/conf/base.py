@@ -31,7 +31,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
 
     # Note: If enabled, at least one Site object is required
-    # 'django.contrib.sites',
+    'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
@@ -41,13 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     # 'django.contrib.admindocs',
     # 'django.contrib.humanize',
-    # 'django.contrib.sitemaps',
-
-    # django-admin-tools
-    # 'admin_tools',
-    # 'admin_tools.theming',
-    # 'admin_tools.menu',
-    # 'admin_tools.dashboard',
+    # 'django.contrib.sitemaps',    
 
     # External applications.
     'axes',
@@ -55,12 +49,33 @@ INSTALLED_APPS = [
     'hijack',
     'compat',  # Part of hijack
     'hijack_admin',
+    'easy_thumbnails',
+    'filer',
+    'mptt',
 
     # Project applications.
     'vng.accounts',
     'vng.utils',
     'vng.testsession',
+    'vng.apiAuthentication',
+
+    'cms',  # django CMS itself
+    'treebeard',  # utilities for implementing a tree
+    'menus',  # helper for model independent hierarchical website navigation
+    'sekizai',  # for JavaScript and CSS management
+
+    # Django CMS plugins
+    'djangocms_text_ckeditor',
+    'djangocms_picture',
+
+    #Rest Framework
+    'rest_framework',  
+    'rest_auth', 
+    'rest_framework.authtoken',
+
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -71,6 +86,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'cms.middleware.utils.ApphookReloadMiddleware',  # at the start of the list
+    'cms.middleware.user.CurrentUserMiddleware',
+    'cms.middleware.page.CurrentPageMiddleware',
+    'cms.middleware.toolbar.ToolbarMiddleware',
+    'cms.middleware.language.LanguageCookieMiddleware',
 ]
 
 ROOT_URLCONF = 'vng.urls'
@@ -98,6 +119,8 @@ TEMPLATES = [
                 'vng.utils.context_processors.settings',
                 # REQUIRED FOR ADMIN INDEX
                 'django_admin_index.context_processors.dashboard',
+                'sekizai.context_processors.sekizai',
+                'cms.context_processors.cms_settings',
             ],
             'loaders': RAW_TEMPLATE_LOADERS
         },
@@ -131,7 +154,13 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-US'
+LANGUAGES = (('en','English'),)
+
+DJANGOCMS_PICTURE_TEMPLATES = [
+    ('background', ('Background image')),
+]
+
+LANGUAGE_CODE = 'en'
 
 TIME_ZONE = 'Europe/Amsterdam'
 

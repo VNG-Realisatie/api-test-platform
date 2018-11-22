@@ -1,0 +1,32 @@
+---
+
+system_packages:
+  - build-essential
+  - fail2ban
+  - emacs
+  - lynx
+  - ntp
+  - git
+  - ncdu
+  - mercurial
+  - nginx
+  - supervisor
+  - python-dev
+  - python-setuptools
+  - redis-server
+  - libpq-dev
+  - python-psycopg2
+  - python-virtualenv
+  - python-pip
+  - python-dev # Required for Pillow and lxml
+  - python3-dev
+  - libxml2 # Following are required for lxml
+  - libxml2-dev
+  - libxslt1.1
+  - libxslt1-dev
+  - swig
+  - libjpeg-dev
+  - python-certbot # for letsencrypt
+  - libffi-dev # for pyopenssl / Scrapy
+  - libc-bin # ldconfig / npm
+

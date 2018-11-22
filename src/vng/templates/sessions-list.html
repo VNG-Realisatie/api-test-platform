@@ -45,13 +45,12 @@
                         <td>{{ session.user.username }}</td>
                         <td>{{ session.api_endpoint }}</td>
                         <td>
-                            {% ifnotequal session.status stop %}
+                            {% if not session.is_stopped %}
                             <form method="POST" action="{% url 'stop_session' session.id %}">
                                 {% csrf_token %}
                                 <input type="submit" type="button" class="btn btn-primary" value="Stop">
                             </form>
-
-                            {% endifnotequal %}
+                            {% endif %}
                         </td>
                     </tr>
                     {% endfor %}

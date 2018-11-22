@@ -31,6 +31,9 @@ class Session(models.Model):
 
     def __str__(self):
         if self.user:
-            return "{} - {}".format(self.session_type,self.user.username)
+            return "{} - {}".format(self.session_type, self.user.username)
         else:
             return "{}".format(self.session_type)
+
+    def is_stopped(self):
+        return self.status is StatusChoices.stopped

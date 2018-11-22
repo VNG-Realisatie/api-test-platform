@@ -19,6 +19,7 @@ class TestAuth(WebTest):
         call = self.app.get('/session/sessions/',user='test')
         self.assertEqual(call.status,'200 OK')
         
+        
 class SessionTypeFactory(Dmf):
 
     class Meta:

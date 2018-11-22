@@ -32,7 +32,6 @@ class SessionListView(LoginRequiredMixin,ListView):
 
 @login_required
 def stop_session(request,session_id):
-    print(K8S().status('115427984056551142'))
     session = get_object_or_404(Session,pk=session_id)
     if request.user != session.user:
         return HttpResponse('Unauthorized', status=401)

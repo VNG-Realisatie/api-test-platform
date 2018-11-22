@@ -75,7 +75,7 @@ class CreationAndDeletion(WebTest):
             'started': str(timezone.now()),
             'status': Session.StatusChoices.running,
             'api_endpoint': 'http://google.com',
-            'user': 1
+            'user': 4
         }
 
         call = self.app.post('/api/auth/login/',params=collections.OrderedDict([
@@ -87,12 +87,7 @@ class CreationAndDeletion(WebTest):
         response_parsed = get_object(call.body)
         session = Session.objects.filter(pk=response_parsed['pk'])[0]
         user = User.objects.all()[0]
-        print('#######')
-        print(session.user)
-
-        print('#######')
-
-        self.assertEqual(session.user.username,user.username)
+        self.assertEqual(session.user.pk,user.pk)
 
 
 

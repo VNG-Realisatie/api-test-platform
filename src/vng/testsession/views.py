@@ -68,8 +68,8 @@ class SessionCreate(CreateView):
 
 class SessionViewSet(viewsets.ModelViewSet):
     serializer_class = SessionSerializer
-    authentication_classes = ( TokenAuthentication,)
-    permission_classes = (permissions.IsAuthenticated,) 
+    authentication_classes = ( SessionAuthentication, TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
         return Session.objects.filter(user=self.request.user)
@@ -80,7 +80,7 @@ class SessionViewSet(viewsets.ModelViewSet):
 
 class SessionTypesViewSet(generics.ListAPIView):
     authentication_classes = ( SessionAuthentication, TokenAuthentication)
-    permission_classes = (permissions.IsAuthenticated,) 
+    permission_classes = (permissions.IsAuthenticated,)
     serializer_class = SessionTypesSerializer
     queryset = SessionType.objects.all()
 
@@ -88,4 +88,4 @@ class SessionTypesViewSet(generics.ListAPIView):
 def update_status_session(session):
     session.status = K8S().status(session.name)
     session.save()
-    
+

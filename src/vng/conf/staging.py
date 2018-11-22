@@ -96,10 +96,11 @@ INSTALLED_APPS = INSTALLED_APPS + [
     'raven.contrib.django.raven_compat',
 ]
 RAVEN_CONFIG = {
-    'dsn': 'https://', # https://username:password@sentry-domain/project-nr
-    'public_dsn': '', # https://username@sentry-domain/project-nr
+    'dsn': 'https://e95a42127e6042c59d19376e566f027a:216cdab1ea4f40d0bd0dd8a74e2eef57@sentry.maykinmedia.nl/104',
+    'public_dsn': 'https://e95a42127e6042c59d19376e566f027a@sentry.maykinmedia.nl/104',
     'release': raven.fetch_git_sha(BASE_DIR),
 }
+
 LOGGING['handlers'].update({
     'sentry': {
         'level': 'WARNING',

@@ -28,3 +28,4 @@ google-api-python-client
 oauth2client
 easy-thumbnails
 django-rest-auth
+django-ordered-model<3.0

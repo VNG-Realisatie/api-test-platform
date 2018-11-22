@@ -1,6 +1,6 @@
 ---
 
-- hosts: localhost.localdomain
+- hosts: rachel
   vars_files:
     - vars/staging.yml
     - vars/packages.yml

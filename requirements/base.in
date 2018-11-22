@@ -26,3 +26,4 @@ djangorestframework
 djangocms-text-ckeditor
 google-api-python-client
 oauth2client
+easy-thumbnails

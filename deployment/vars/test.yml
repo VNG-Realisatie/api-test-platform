@@ -1,0 +1,34 @@
+---
+
+user_name: maykin
+group_name: staff
+project_name: myproject
+target: test
+project_root: "/srv/sites/{{ project_name }}-{{ target }}"
+project_src_dir: "myproject"
+celery_worker_path: "myproject"
+django_settings_module: "{{ project_src_dir }}.conf.{{ target }}"
+
+pub_key_users:
+  - alex
+  - joeri
+
+project_repo: git@bitbucket.org:maykinmedia/myproject.git
+branch: master
+
+nginx_server_name: "{{ project_name }}-{{ target }}.maykin.nl"
+nginx_access_log_file: "{{ project_root }}/log/nginx/access.log"
+nginx_error_log_file: "{{ project_root }}/log/nginx/error.log"
+nginx_static_dir: "{{ project_root }}/static/"
+nginx_media_dir: "{{ project_root }}/media/"
+
+nginx_basicauth_user: maykin
+nginx_basicauth_password: nogniet
+
+dbname: myproject-test
+dbuser: myproject-test
+dbpassword: myprojectpass
+
+uwsgi_port: 8082
+
+new_relic_license_key: df267b81c76433faafdbc414918535ea9b22b425

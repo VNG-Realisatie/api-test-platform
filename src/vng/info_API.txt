@@ -1,0 +1,4 @@
+parent: projects/VNG-Realisatie/locations/maykinmedia.nl/clusters/testsession
+clusterID: testsession
+projectID: vng-realisatie
+zone: europe-west4-a

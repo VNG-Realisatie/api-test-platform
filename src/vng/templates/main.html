@@ -1,4 +1,5 @@
 {% load static %}
+{% load cms_tags sekizai_tags  %}
 <!doctype html>
 
 <html lang="en">
@@ -23,10 +24,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.js"></script>
     <!-- Custom styles for this template -->
     <link href="grid.css" rel="stylesheet">
+    {% render_block "css" %}
 </head>
 
 <body>
-
+    {% cms_toolbar %}
     <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
         <a class="navbar-brand" href="#">Navbar</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
@@ -55,6 +57,7 @@
             {% block content %}{% endblock %}        
         </div>
         </main> <!-- /container -->
-</body>
 
+    {% render_block "js" %}
+</body>
 </html>

@@ -2,4 +2,4 @@
 -r testing.txt
 django-jenkins
 pep8
-pylint
+pylint<2

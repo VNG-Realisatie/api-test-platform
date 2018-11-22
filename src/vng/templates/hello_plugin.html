@@ -1,0 +1,1 @@
+<h1>Hello {% if request.user.is_authenticated %}{{ request.user.username }} {{ request.user.last_name}}{% else %}Guest{% endif %}</h1>

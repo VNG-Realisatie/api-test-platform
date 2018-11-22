@@ -1,3 +1,4 @@
+
 psycopg2
 Pillow
 pytz
@@ -13,5 +14,18 @@ django-rosetta
 django-sniplates
 django-redis
 django_admin_index
-
-# djangorestframework
+django-cms
+django-import-export
+django-countries
+djangorestframework-filters
+django-solo
+django-dynamic-raw-id
+djangocms-picture
+django-filer
+djangorestframework
+djangocms-text-ckeditor
+google-api-python-client
+oauth2client
+easy-thumbnails
+django-rest-auth
+django-ordered-model<3.0

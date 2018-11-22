@@ -6,6 +6,7 @@ project_name: vng
 target: staging
 project_root: "/srv/sites/{{ project_name }}-{{ target }}"
 project_src_dir: "vng"
+celery_worker_path: "vng"
 django_settings_module: "{{ project_src_dir }}.conf.{{ target }}"
 
 pub_key_users:

@@ -27,7 +27,7 @@ class Session(models.Model):
     stopped = models.DateTimeField(null=True,blank=True)
     status = models.CharField(max_length=10,choices=StatusChoices.choices,default=StatusChoices.starting)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    api_endpoint = models.URLField(max_length=200)
+    api_endpoint = models.URLField(max_length=200, blank=True, null=True, default=None)
 
     def __str__(self):
         if self.user:

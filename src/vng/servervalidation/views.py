@@ -6,7 +6,12 @@ from django.http import HttpResponse
 from django.utils import timezone
 from django.urls import reverse
 from django.views.generic.edit import CreateView
+from rest_framework import routers, serializers, viewsets
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication,TokenAuthentication
+from rest_framework import permissions, generics
+from .serializers import TestScenarioSerializer, ServerRunSerializer
 from .models import TestScenario, ServerRun
+
 
 class ServerRunView(LoginRequiredMixin,ListView):
     template_name = 'server/server-run_list.html'
@@ -27,7 +32,6 @@ def stop_session(request,session_id):
     return redirect(reverse('server-run_list'))
 
 
-
 class ServerRunCreate(CreateView):
     template_name = 'server/start_server-run.html'
     model = ServerRun
@@ -42,3 +46,12 @@ class ServerRunCreate(CreateView):
         form.instance.user = self.request.user
         form.instance.started = timezone.now()
         return super().form_valid(form)
+
+
+class ServerRunViewSet(viewsets.ModelViewSet):
+    authentication_classes = (SessionAuthentication, TokenAuthentication)
+    permission_classes = (permissions.IsAuthenticated,) 
+    serializer_class = ServerRunSerializer
+
+    def get_queryset(self):
+        return ServerRun.objects.filter(user=self.request.user)

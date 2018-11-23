@@ -38,7 +38,7 @@ class ServerRunCreate(CreateView):
     fields = ['test_scenario']
 
     def get_success_url(self):
-        return reverse('server-run_list')#'/server/server-run'
+        return reverse('server-run_list')
 
     def form_valid(self, form):
         if self.request.user.is_anonymous:

@@ -1,0 +1,31 @@
+{% extends 'main.html' %}
+{% block title %}Start seruner-run{% endblock%}
+{% block content %}
+
+<h1>View the log of a test session</h1>
+<hr>
+{{ object.user.username }}
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">First</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for name, value in object.get_fields_no_file %}
+    <tr>
+      <th scope="row">{{ name }}</th>
+      <td>{{ value }}</td>
+    </tr>
+    {% endfor %}
+    <tr>
+      <th scope="row">Log</th>
+      <td>{{ object.display_log }}</td>
+    </tr>
+  </tbody>
+</table>
+
+
+
+{% endblock %}

@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.utils import timezone
 from django.urls import reverse
+from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView
 from rest_framework import routers, serializers, viewsets
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication,TokenAuthentication
@@ -20,6 +21,12 @@ class ServerRunView(LoginRequiredMixin,ListView):
 
     def get_queryset(self):
         return ServerRun.objects.filter(user=self.request.user).order_by('-started')
+
+
+class ServerRunOutput(DetailView):
+    model = ServerRun
+    template_name = 'server/server-run_detail.html'
+
 
 
 @login_required

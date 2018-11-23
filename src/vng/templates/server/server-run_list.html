@@ -28,7 +28,13 @@
                 <ul>
                     {% for server in object_list %}
                     <tr>
+                        {% if server.stopped %}
+                        <td> <a href="{% url 'server-run_detail' server.pk %}">{{ server.started }}</a></td>
+                        {% else %}
                         <td>{{ server.started }}</td>
+                        {% endif %}
+
+
                         {% if server.stopped %}
                         <td>{{ server.stopped }}</td>
                         {% else %}
@@ -36,7 +42,7 @@
                         {% endif %}
                         <td>{{ server.test_scenario.name }}</td>
                         <td>{{ server.user.username }}</td>
-                        <td>{{ server.api_endpoint }}</td> 
+                        <td>{{ server.api_endpoint }}</td>
                         <td>
                             {% if server.stopped is None %}
                             <form method="POST" action="{% url 'stop_server-run' server.id %}">
@@ -80,7 +86,7 @@
                 {% else %}
 
                 <li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
-                {% endif %} 
+                {% endif %}
             </ul>
         </nav>
 

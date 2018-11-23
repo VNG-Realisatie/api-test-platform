@@ -1,3 +1,4 @@
+import uuid
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.list import ListView
@@ -5,13 +6,17 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.utils import timezone
 from django.urls import reverse
+from django.conf import settings
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView
+from django.core.files.storage import FileSystemStorage, default_storage
+from django.core.files.base import ContentFile
 from rest_framework import routers, serializers, viewsets
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication,TokenAuthentication
 from rest_framework import permissions, generics
 from .serializers import TestScenarioSerializer, ServerRunSerializer
 from .models import TestScenario, ServerRun
+from .newman import NewmanManager
 
 
 class ServerRunView(LoginRequiredMixin,ListView):
@@ -52,7 +57,19 @@ class ServerRunCreate(CreateView):
             return HttpResponse('Unauthorized', status=401)
         form.instance.user = self.request.user
         form.instance.started = timezone.now()
-        return super().form_valid(form)
+        if form.is_valid():
+            fs = FileSystemStorage(base_url=settings.MEDIA_URL)
+            file_name = str(uuid.uuid4())
+            file_content = NewmanManager(form.instance.test_scenario.validation_file).execute_test()
+            form.instance.log.save(file_name, ContentFile(file_content))
+            form.instance.status =  ServerRun.StatusChoices.stopped
+            form.instance.stopped = timezone.now()
+            #file_path = default_storage.save(fs.location + '/{}'.format(file_name), ContentFile(file_content))
+            #form.instance.log.path = file_path
+
+        redirect = super().form_valid(form)
+        return redirect
+
 
 
 class ServerRunViewSet(viewsets.ModelViewSet):

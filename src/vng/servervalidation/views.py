@@ -49,7 +49,7 @@ class ServerRunCreate(CreateView):
 
 
 class ServerRunViewSet(viewsets.ModelViewSet):
-    authentication_classes = (SessionAuthentication, TokenAuthentication)
+    authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = ServerRunSerializer
 
@@ -57,4 +57,4 @@ class ServerRunViewSet(viewsets.ModelViewSet):
         return ServerRun.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        serializer.save(user=self.request.user,pk=None)

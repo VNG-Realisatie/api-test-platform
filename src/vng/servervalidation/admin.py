@@ -1,10 +1,12 @@
 from django.contrib import admin
 import vng.servervalidation.models as model
 
+
 def get_all_fields(mo):
     l = [field.name for field in mo._meta.fields]
     l.remove('id')
     return l
+
 
 @admin.register(model.ServerRun)
 class ServerRunAdmin(admin.ModelAdmin):

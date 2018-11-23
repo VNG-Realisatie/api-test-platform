@@ -4,7 +4,6 @@ from django.conf.urls import url
 from . import views
 
 
-
 server_run_list = views.ServerRunViewSet.as_view({
     'get': 'list',
     'post': 'create',

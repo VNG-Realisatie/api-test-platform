@@ -9,4 +9,4 @@ class TestScenarioSerializer(serializers.ModelSerializer):
 class ServerRunSerializer(serializers.ModelSerializer):
     class Meta:
         model = ServerRun
-        fields = ['test_scenario', 'api_endpoint', 'started', 'stopped']
+        fields = ['pk','test_scenario', 'api_endpoint', 'started', 'stopped']

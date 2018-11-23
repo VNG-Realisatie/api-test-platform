@@ -68,18 +68,18 @@ class SessionCreate(CreateView):
 
 class SessionViewSet(viewsets.ModelViewSet):
     serializer_class = SessionSerializer
-    authentication_classes = ( SessionAuthentication, TokenAuthentication,)
+    authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
         return Session.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        serializer.save(user=self.request.user, pk=None)
 
 
 class SessionTypesViewSet(generics.ListAPIView):
-    authentication_classes = ( SessionAuthentication, TokenAuthentication)
+    authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = SessionTypesSerializer
     queryset = SessionType.objects.all()

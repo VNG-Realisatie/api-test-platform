@@ -34,6 +34,9 @@ class NewmanManager:
 
 
     def prepare_file(self):
+        '''
+        Substite the url of the file with the api_endpoint provided
+        '''
         filename = str(uuid.uuid4())
         logger.debug('Preparing untokenizeing the file {} with the base {}, output file: {}'.format(self.file.path, self.api_endpoint, filename))
         with open(self.file.path) as f:
@@ -46,9 +49,7 @@ class NewmanManager:
         for item in input['item']:
             item['request']['url']['host'] = urlparse(self.api_endpoint).hostname.split('.')
 
-
         output = open(output_path, 'w')
-        print(input)
         json.dump(input, output)
         output.close()
         self.file_path = output_path

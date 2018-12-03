@@ -13,13 +13,7 @@ class TestScenarioFactory(Dmf):
         model = TestScenario
 
     name = factory.sequence(lambda n:'testype %d' % n)
-    validation_file = factory.LazyAttribute(
-            lambda _: ContentFile(
-                factory.django.ImageField()._make_data(
-                    {'width': 1024, 'height': 768}
-                ), 'example.jpg'
-            )
-        )
+    validation_file = factory.django.FileField(from_path='/home/elvis/Desktop/VNG.postman_collection.json')
 
 
 class ServerRunFactory(Dmf):

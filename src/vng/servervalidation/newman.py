@@ -1,6 +1,7 @@
 import uuid
 import subprocess
 import logging
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -10,6 +11,13 @@ class NewmanManager:
 
     def __init__(self, file):
         self.file = file
+        self.file_to_be_discarted = []
+
+    def __del__(self):
+        for file in self.file_to_be_discarted:
+            full_path = os.path.realpath(file.name)
+            os.remove(full_path)
+
 
     def run_command(self, command, *args):
         command = command.format(*args)
@@ -23,6 +31,7 @@ class NewmanManager:
         filename = str(uuid.uuid4())
         output, error = self.run_command(self.RUN_COMMAND, self.file.path, filename)
         f = open('{}/{}.html'.format(self.REPORT_FOLDER, filename))
+        self.file_to_be_discarted.append(f)
 
         if error is not None:
             return f

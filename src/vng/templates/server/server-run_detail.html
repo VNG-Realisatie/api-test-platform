@@ -4,7 +4,12 @@
 
 <h1>View the log of a test session</h1>
 <hr>
-{{ object.user.username }}
+<div class="row">
+    <div class="col-sm-3">
+        <input type="button" class="btn btn-primary" value="Server-run list" onclick="location.href = '{% url 'server-run_list' %}';">
+    </div>
+</div>
+<br>
 <table class="table">
   <thead>
     <tr>
@@ -21,7 +26,7 @@
     {% endfor %}
     <tr>
       <th scope="row">Log</th>
-      <td>{{ object.display_log }}</td>
+      <td><a href="{% url 'server-run_detail_log' object.pk %}">Visualize the log</a></td>
     </tr>
   </tbody>
 </table>

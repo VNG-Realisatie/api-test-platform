@@ -40,9 +40,9 @@
                         {% else %}
                         <td></td>
                         {% endif %}
-                        <td>{{ server.test_scenario.name }}</td>
                         <td>{{ server.user.username }}</td>
                         <td>{{ server.api_endpoint }}</td>
+                        <td>{{ server.test_scenario.name }}</td>
                         <td>
                             {% if server.stopped is None %}
                             <form method="POST" action="{% url 'stop_server-run' server.id %}">

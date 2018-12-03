@@ -4,6 +4,7 @@ from django.core.files.base import ContentFile
 from factory.django import DjangoModelFactory as Dmf
 from vng.accounts.models import User
 from vng.testsession.tests.test_factory import UserFactory
+from django.conf import settings
 from ..models import ServerRun, TestScenario
 
 
@@ -13,7 +14,7 @@ class TestScenarioFactory(Dmf):
         model = TestScenario
 
     name = factory.sequence(lambda n:'testype %d' % n)
-    validation_file = factory.django.FileField(from_path='/home/elvis/Desktop/VNG.postman_collection.json')
+    validation_file = factory.django.FileField(from_path=settings.MEDIA_ROOT+'/VNG.postman_collection.json')
 
 
 class ServerRunFactory(Dmf):

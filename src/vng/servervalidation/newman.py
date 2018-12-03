@@ -18,15 +18,17 @@ class NewmanManager:
         self.file_to_be_discarted = []
         self.api_endpoint = api_endpoint
 
+
     def __del__(self):
         for file in self.file_to_be_discarted:
             full_path = os.path.realpath(file.name)
+            logger.debug('Deleteing file {}'.format(full_path))
             os.remove(full_path)
 
 
     def run_command(self, command, *args):
         command = command.format(*args)
-        logger.debug('running the COMMAND: {}'.format(command))
+        logger.debug('Running the COMMAND: {}'.format(command))
         subp = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         err = subp.stderr.read()
         logger.debug(str(err))
@@ -56,10 +58,11 @@ class NewmanManager:
         self.file_to_be_discarted.append(output)
 
 
-
     def execute_test(self):
         if self.api_endpoint is not None:
             self.prepare_file()
+        else:
+            self.file_path = self.file.path
         filename = str(uuid.uuid4())
         output, error = self.run_command(self.RUN_COMMAND, self.file_path, filename)
         f = open('{}/{}.html'.format(self.REPORT_FOLDER, filename))

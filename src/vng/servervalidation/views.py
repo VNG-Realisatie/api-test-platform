@@ -50,7 +50,7 @@ def stop_session(request,session_id):
 class ServerRunCreate(CreateView):
     template_name = 'server/start_server-run.html'
     model = ServerRun
-    fields = ['test_scenario']
+    fields = ['test_scenario','api_endpoint']
 
     def get_success_url(self):
         return reverse('server-run_list')
@@ -62,7 +62,7 @@ class ServerRunCreate(CreateView):
         form.instance.started = timezone.now()
         if form.is_valid():
             file_name = str(uuid.uuid4())
-            file = NewmanManager(form.instance.test_scenario.validation_file).execute_test()
+            file = NewmanManager(form.instance.test_scenario.validation_file, form.instance.api_endpoint).execute_test()
             form.instance.log.save(file_name, File(file))
             form.instance.status =  ServerRun.StatusChoices.stopped
             form.instance.stopped = timezone.now()

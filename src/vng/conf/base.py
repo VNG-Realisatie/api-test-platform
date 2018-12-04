@@ -18,7 +18,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = []
 
-LOGIN_REDIRECT_URL = "/session/sessions/" 
+LOGIN_REDIRECT_URL = "/session/sessions/"
 LOGOUT_REDIRECT_URL = "/login"
 
 # Application definition
@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     # 'django.contrib.admindocs',
     # 'django.contrib.humanize',
-    # 'django.contrib.sitemaps',    
+    # 'django.contrib.sitemaps',
 
     # External applications.
     'axes',
@@ -69,9 +69,9 @@ INSTALLED_APPS = [
     'djangocms_text_ckeditor',
     'djangocms_picture',
 
-    #Rest Framework
-    'rest_framework',  
-    'rest_auth', 
+    # Rest Framework
+    'rest_framework',
+    'rest_auth',
     'rest_framework.authtoken',
 
 ]
@@ -155,7 +155,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
 
-LANGUAGES = (('en','English'),)
+LANGUAGES = (('en', 'English'),)
 
 DJANGOCMS_PICTURE_TEMPLATES = [
     ('background', ('Background image')),

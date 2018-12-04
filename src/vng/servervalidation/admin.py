@@ -10,13 +10,13 @@ def get_all_fields(mo):
 
 @admin.register(model.ServerRun)
 class ServerRunAdmin(admin.ModelAdmin):
-    list_display = get_all_fields(model.ServerRun)
+    list_display = ['test_scenario', 'api_endpoint', 'started', 'stopped', 'user', 'status', 'log']
     list_filter = ['user']
     search_fields = ['user','api_endpoint']
 
 
 @admin.register(model.TestScenario)
 class TestScenarioAdmin(admin.ModelAdmin):
-    list_display = get_all_fields(model.TestScenario)
+    list_display = ['name', 'validation_file']
     list_filter = ['name']
     search_fields = ['name']

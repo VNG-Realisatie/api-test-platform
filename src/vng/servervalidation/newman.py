@@ -8,9 +8,10 @@ from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
+
 class NewmanManager:
-    REPORT_FOLDER = settings.MEDIA_ROOT+'/newman'
-    RUN_COMMAND = 'newman run --reporters html {} --reporter-html-export '+REPORT_FOLDER+'/{}.html'    #'newman run --reporters html {}'
+    REPORT_FOLDER = settings.MEDIA_ROOT + '/newman'
+    RUN_COMMAND = 'newman run --reporters html {} --reporter-html-export ' + REPORT_FOLDER + '/{}.html'
     TOKEN = 'TOKEN'
 
     def __init__(self, file, api_endpoint):
@@ -18,13 +19,11 @@ class NewmanManager:
         self.file_to_be_discarted = []
         self.api_endpoint = api_endpoint
 
-
     def __del__(self):
         for file in self.file_to_be_discarted:
             full_path = os.path.realpath(file.name)
             logger.debug('Deleteing file {}'.format(full_path))
             os.remove(full_path)
-
 
     def run_command(self, command, *args):
         command = command.format(*args)
@@ -34,10 +33,9 @@ class NewmanManager:
         logger.debug(str(err))
         return (subp.stdout, err)
 
-
     def prepare_file(self):
         '''
-        Substite the url of the file with the api_endpoint provided
+        Substitute the url of the file with the api_endpoint provided
         '''
         filename = str(uuid.uuid4())
         logger.debug('Preparing untokenizeing the file {} with the base {}, output file: {}'.format(self.file.path, self.api_endpoint, filename))
@@ -57,7 +55,6 @@ class NewmanManager:
         self.file_path = output_path
         self.file_to_be_discarted.append(output)
 
-
     def execute_test(self):
         if self.api_endpoint is not None:
             self.prepare_file()
@@ -70,5 +67,3 @@ class NewmanManager:
 
         if error is not None:
             return f
-
-

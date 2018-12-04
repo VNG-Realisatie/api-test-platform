@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('servervalidation', '0003_auto_20181122_1531'),
+        ('servervalidation', '0002_serversun_started'),
     ]
 
     operations = [

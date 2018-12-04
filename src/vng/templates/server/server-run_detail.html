@@ -1,0 +1,59 @@
+{% extends 'main.html' %}
+{% block title %}Start seruner-run{% endblock%}
+{% block content %}
+
+<h1>View the log of a test session</h1>
+<hr>
+<div class="row">
+    <div class="col-sm-3">
+        <input type="button" class="btn btn-primary" value="Server-run list"
+            onclick="location.href= '{% url 'server-run_list' %}';">
+    </div>
+</div>
+<br>
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Property</th>
+            <th scope="col">Value</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Id</td>
+            <td>{{ object.pk }}</td>
+        </tr>
+
+        <tr>
+            <td>Test Scenario</td>
+            <td>{{ object.test_scenario }}</td>
+        </tr>
+        <tr>
+            <td>Api endpoint</td>
+            <td>{{ object.api_endpoint }}</td>
+        </tr>
+        <tr>
+            <td>Started</td>
+            <td>{{ object.started }}</td>
+        </tr>
+        <tr>
+            <td>Stopped</td>
+            <td>{{ object.stopped }}</td>
+        </tr>
+
+        <tr>
+            <td>Status</td>
+            <td>{{ object.status }}</td>
+        </tr>
+
+        <tr>
+            <td scope="row">Log</td>
+            <td><a href="{% url 'server-run_detail_log' object.pk %}">Visualize
+                    tde log</a></td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+{% endblock %}

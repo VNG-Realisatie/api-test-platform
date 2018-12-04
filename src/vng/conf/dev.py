@@ -70,9 +70,9 @@ CSRF_COOKIE_SECURE = False
 #
 ENVIRONMENT = 'development'
 
-# 
-# Library settings 
-# 
+#
+# Library settings
+#
 
 # Django debug toolbar
 INSTALLED_APPS += [
@@ -80,24 +80,6 @@ INSTALLED_APPS += [
 ]
 
 
-LANGUAGES = [
-    ('en', 'English'),
-]
-
-REST_FRAMEWORK = {
-    # Use Django's standard `django.contrib.auth` permissions,
-    # or allow read-only access for unauthenticated users.
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissions',
-    ],
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-            'rest_framework.authentication.BasicAuthentication',
-    )
-}
-
-MIDDLEWARE += [
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
-]
 INTERNAL_IPS = ('127.0.0.1',)
 DEBUG_TOOLBAR_CONFIG = {
     'INTERCEPT_REDIRECTS': False
@@ -116,7 +98,6 @@ CACHES = {
     }
 }
 
-APPEND_SLASH = True
 
 AXES_CACHE = 'axes_cache'
 

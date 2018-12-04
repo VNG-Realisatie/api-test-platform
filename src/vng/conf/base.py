@@ -18,7 +18,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = []
 
-LOGIN_REDIRECT_URL = "/session/sessions/" 
+LOGIN_REDIRECT_URL = "/session/sessions/"
 LOGOUT_REDIRECT_URL = "/login"
 
 # Application definition
@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     # 'django.contrib.admindocs',
     # 'django.contrib.humanize',
-    # 'django.contrib.sitemaps',    
+    # 'django.contrib.sitemaps',
 
     # External applications.
     'axes',
@@ -68,14 +68,27 @@ INSTALLED_APPS = [
     'djangocms_text_ckeditor',
     'djangocms_picture',
 
-    #Rest Framework
-    'rest_framework',  
-    'rest_auth', 
+    # Rest Framework
+    'rest_framework',
+    'rest_auth',
     'rest_framework.authtoken',
 
 ]
 
 SITE_ID = 1
+
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissions',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+    )
+}
+
+APPEND_SLASH = True
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -92,6 +105,7 @@ MIDDLEWARE = [
     'cms.middleware.page.CurrentPageMiddleware',
     'cms.middleware.toolbar.ToolbarMiddleware',
     'cms.middleware.language.LanguageCookieMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'vng.urls'
@@ -154,7 +168,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
 
-LANGUAGES = (('en','English'),)
+LANGUAGES = (('en', 'English'),)
 
 DJANGOCMS_PICTURE_TEMPLATES = [
     ('background', ('Background image')),

@@ -5,25 +5,27 @@ import re
 logger = logging.getLogger(__name__)
 
 
-def runcommand(COMMAND):
-    print('running the COMMAND: {}'.format(COMMAND))
-    subp = subprocess.Popen(COMMAND, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+def runcommand(command):
+    logger.debug('running the COMMAND: {}'.format(command))
+    subp = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     err =subp.stderr.read()
     if len(err) > 1:
         logger.error(err)
-    return (subp.stdout.read(), err) 
+    else:
+        err = None
+    return (subp.stdout.read(), err)
 
 class ContainerManagerHelper():
 
     def __init__(self, cluster, zone="europe-west4-a"):
         self.cluster = cluster
         self.zone = zone
-    
+
     def poolList(self):
         COMMAND = "gcloud container node-pools list --cluster={} --zone={}".format(self.cluster,self.zone)
         res = runcommand(COMMAND)
         return res
-    
+
     def createPool(self,pool_name):
         COMMAND = "gcloud container node-pools create {} --cluster={} --zone={}".format(pool_name, self.cluster, self.zone)
         res = runcommand(COMMAND)
@@ -44,11 +46,11 @@ class K8S():
             COMMAND = 'kubectl run {} --image={} --port={} --env="DOMAIN=cluster"'.format(app_name, image, port)
         res = runcommand(COMMAND)
         return res
-    
+
     def delete(self, app_name):
         COMMAND = 'kubectl delete -n default deployment {}'.format(app_name)
         res1 = runcommand(COMMAND)
-        return res1 
+        return res1
 
     def status(self, app_name):
         NAMES = ['namespace','desired','current','up-to-date','available','age']

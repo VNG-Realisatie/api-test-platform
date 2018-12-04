@@ -1,0 +1,36 @@
+{% extends 'main.html' %}
+{% block title %}Start seruner-run{% endblock%}
+{% block content %}
+
+<h1>View the log of a test session</h1>
+<hr>
+<div class="row">
+    <div class="col-sm-3">
+        <input type="button" class="btn btn-primary" value="Server-run list" onclick="location.href = '{% url 'server-run_list' %}';">
+    </div>
+</div>
+<br>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">First</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for name, value in object.get_fields_no_file %}
+    <tr>
+      <th scope="row">{{ name }}</th>
+      <td>{{ value }}</td>
+    </tr>
+    {% endfor %}
+    <tr>
+      <th scope="row">Log</th>
+      <td><a href="{% url 'server-run_detail_log' object.pk %}">Visualize the log</a></td>
+    </tr>
+  </tbody>
+</table>
+
+
+
+{% endblock %}

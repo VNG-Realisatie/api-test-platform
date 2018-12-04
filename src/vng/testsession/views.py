@@ -13,6 +13,7 @@ from rest_framework import permissions, generics
 from vng.testsession.models import Session, SessionType
 from .serializers import SessionSerializer,SessionTypesSerializer
 from .container_manager import ContainerManagerHelper, K8S
+from django.urls import reverse
 
 
 class SessionListView(LoginRequiredMixin,ListView):
@@ -38,7 +39,7 @@ def stop_session(request,session_id):
     session.status = Session.StatusChoices.stopped
     session.save()
     delete = K8S().delete(session.name)
-    return redirect('/session/sessions')
+    return redirect(reverse('sessions'))
 
 
 class SessionCreate(CreateView):
@@ -52,7 +53,7 @@ class SessionCreate(CreateView):
         print(r)
 
     def get_success_url(self):
-        return '/session/sessions/'
+        return reverse('sessions')
 
     def form_valid(self, form):
         if self.request.user.is_anonymous:
@@ -60,7 +61,6 @@ class SessionCreate(CreateView):
         form.instance.user = self.request.user
         form.instance.started = timezone.now()
         form.instance.status = 'started'
-        form.instance.api_endpoint = 'http://www.google.com'
         form.instance.name = str(self.request.user.id)+str(time.time()).replace('.','-')
         self.start_app(form.instance)
         return super().form_valid(form)
@@ -68,19 +68,19 @@ class SessionCreate(CreateView):
 
 class SessionViewSet(viewsets.ModelViewSet):
     serializer_class = SessionSerializer
-    authentication_classes = ( TokenAuthentication,)
-    permission_classes = (permissions.IsAuthenticated,) 
+    authentication_classes = (TokenAuthentication, SessionAuthentication)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
         return Session.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        serializer.save(user=self.request.user, pk=None)
 
 
 class SessionTypesViewSet(generics.ListAPIView):
-    authentication_classes = ( SessionAuthentication, TokenAuthentication)
-    permission_classes = (permissions.IsAuthenticated,) 
+    authentication_classes = (TokenAuthentication, SessionAuthentication)
+    permission_classes = (permissions.IsAuthenticated,)
     serializer_class = SessionTypesSerializer
     queryset = SessionType.objects.all()
 
@@ -88,4 +88,4 @@ class SessionTypesViewSet(generics.ListAPIView):
 def update_status_session(session):
     session.status = K8S().status(session.name)
     session.save()
-    
+

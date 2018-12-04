@@ -13,9 +13,9 @@ from django.views.generic.edit import CreateView
 from django.core.files import File
 from django.core.files.storage import FileSystemStorage, default_storage
 from django.core.files.base import ContentFile
-from django.http import HttpResponse,HttpResponseForbidden,HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from rest_framework import routers, serializers, viewsets
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication,TokenAuthentication
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
 from rest_framework import permissions, generics
 from ..permissions.UserPermissions import *
 from .serializers import TestScenarioSerializer, ServerRunSerializer
@@ -23,7 +23,7 @@ from .models import TestScenario, ServerRun
 from .newman import NewmanManager
 
 
-class ServerRunView(LoginRequiredMixin,ListView):
+class ServerRunView(LoginRequiredMixin, ListView):
     template_name = 'server/server-run_list.html'
     context_object_name = 'server_run_list'
     paginate_by = 10
@@ -37,9 +37,8 @@ class ServerRunOutput(DetailView):
     template_name = 'server/server-run_detail.html'
 
 
-@login_required
-def stop_session(request,session_id):
-    server = get_object_or_404(ServerRun,pk=session_id)
+def stop_session(request, session_id):
+    server = get_object_or_404(ServerRun, pk=session_id)
     if request.user != server.user:
         return HttpResponse('Unauthorized', status=401)
     server.stopped = timezone.now()
@@ -50,21 +49,19 @@ def stop_session(request,session_id):
 class ServerRunCreate(CreateView):
     template_name = 'server/start_server-run.html'
     model = ServerRun
-    fields = ['test_scenario','api_endpoint']
+    fields = ['test_scenario', 'api_endpoint']
 
     def get_success_url(self):
         return reverse('server-run_list')
 
     def form_valid(self, form):
-        if self.request.user.is_anonymous:
-            return HttpResponse('Unauthorized', status=401)
         form.instance.user = self.request.user
         form.instance.started = timezone.now()
         if form.is_valid():
             file_name = str(uuid.uuid4())
             file = NewmanManager(form.instance.test_scenario.validation_file, form.instance.api_endpoint).execute_test()
             form.instance.log.save(file_name, File(file))
-            form.instance.status =  ServerRun.StatusChoices.stopped
+            form.instance.status = ServerRun.StatusChoices.stopped
             form.instance.stopped = timezone.now()
 
         redirect = super().form_valid(form)
@@ -80,7 +77,11 @@ class ServerRunViewSet(viewsets.ModelViewSet):
         return ServerRun.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user,pk=None)
+        serializer.save(user=self.request.user, pk=None)
+
+
+def isOwner(obj, user):
+    return obj.user == user
 
 
 class ServerRunLogView(View):
@@ -91,4 +92,3 @@ class ServerRunLogView(View):
             return HttpResponseForbidden()
         else:
             return render(request, 'server/server-run_log.html', {'server': server_run})
-

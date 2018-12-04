@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AddField(
-            model_name='serversun',
+            model_name='ServerRun',
             name='started',
             field=models.DateTimeField(default=django.utils.timezone.now),
         ),

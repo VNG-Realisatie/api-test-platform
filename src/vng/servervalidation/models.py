@@ -3,12 +3,14 @@ from vng.accounts.models import User
 from django.utils import timezone
 from djchoices import DjangoChoices, ChoiceItem
 
+
 class TestScenario(models.Model):
     name = name = models.CharField(max_length=200, unique=True)
     validation_file = models.FileField('/files/uploaded_files')
 
     def __str__(self):
         return self.name
+
 
 class ServerRun(models.Model):
     class StatusChoices(DjangoChoices):
@@ -21,7 +23,7 @@ class ServerRun(models.Model):
     started = models.DateTimeField(default=timezone.now)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     stopped = models.DateTimeField(null=True, default=None, blank=True)
-    status = models.CharField(max_length=10,choices=StatusChoices.choices,default=StatusChoices.starting)
+    status = models.CharField(max_length=10, choices=StatusChoices.choices, default=StatusChoices.starting)
     log = models.FileField('/files/log', blank=True, null=True, default=None)
 
     def __str__(self):
@@ -34,6 +36,9 @@ class ServerRun(models.Model):
         return self.status is self.StatusChoices.stopped
 
     def get_fields_no_file(self):
+        '''
+        Used in server-run_detail
+        '''
         res = []
         for field in self._meta.fields:
             if field.get_internal_type() not in ('FileField',):

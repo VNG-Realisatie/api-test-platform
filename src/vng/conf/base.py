@@ -119,6 +119,11 @@ RAW_TEMPLATE_LOADERS = (
     # 'admin_tools.template_loaders.Loader',
 )
 
+CMS_TEMPLATES = (
+    ('template_1.html', 'Template One'),
+    ('template_2.html', 'Template Two'),
+)
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

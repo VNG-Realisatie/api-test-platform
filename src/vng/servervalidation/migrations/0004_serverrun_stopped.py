@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AddField(
-            model_name='serverrun',
+            model_name='ServerRun',
             name='stopped',
             field=models.DateTimeField(default=None, null=True),
         ),

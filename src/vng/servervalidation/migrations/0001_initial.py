@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='ServerSun',
+            name='serverrun',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('api_endpoint', models.URLField()),
@@ -32,12 +32,12 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.AddField(
-            model_name='serversun',
+            model_name='serverrun',
             name='test_scenario',
             field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='servervalidation.TestScenario'),
         ),
         migrations.AddField(
-            model_name='serversun',
+            model_name='serverrun',
             name='user',
             field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL),
         ),

@@ -121,8 +121,12 @@ RAW_TEMPLATE_LOADERS = (
 
 CMS_TEMPLATES = (
     ('template_1.html', 'Template One'),
-    ('template_2.html', 'Template Two'),
 )
+
+DEBUG_TOOLBAR_CONFIG = {
+    'INTERCEPT_REDIRECTS': False
+}
+
 
 TEMPLATES = [
     {

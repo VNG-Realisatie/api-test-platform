@@ -17,7 +17,7 @@ django-classy-tags==0.8.0  # via django-cms, django-sekizai
 django-cms==3.5.2
 django-compat==1.0.15     # via django-background-tasks, django-hijack, django-hijack-admin
 django-countries==5.3.2
-django-debug-toolbar==1.11
+django-debug-toolbar==1.10.1
 django-dynamic-raw-id==2.4
 django-filer==1.4.0
 django-filter==1.1.0      # via djangorestframework-filters

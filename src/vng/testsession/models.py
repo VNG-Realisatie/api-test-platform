@@ -1,5 +1,7 @@
+import uuid
 from django.db import models
 from django.utils import timezone
+from django.core.files import File
 from cms.models.pluginmodel import CMSPlugin
 from djchoices import DjangoChoices, ChoiceItem
 from vng.accounts.models import User
@@ -30,7 +32,13 @@ class Session(models.Model):
     status = models.CharField(max_length=10, choices=StatusChoices.choices, default=StatusChoices.starting)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     api_endpoint = models.URLField(max_length=200, blank=True, null=True, default=None)
-   # kubernet_endpoint = models.URLField(max_length=200, blank=True, null=True, default=None)
+    kubernet_endpoint = models.URLField(max_length=200, blank=True, null=True, default=None)
+    log = models.FileField('/files/log', blank=True, null=True, default=None)
+
+    def create_empty_log(self):
+        filename = str(uuid.uuid4())
+        file = open("/files/log/{}".format(filename))
+        self.log.save(filename, File(file))
 
     def __str__(self):
         if self.user:

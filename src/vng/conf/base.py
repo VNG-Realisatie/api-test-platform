@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'vng.utils',
     'vng.testsession',
     'vng.apiAuthentication',
+    'vng.servervalidation',
 
     'cms',  # django CMS itself
     'treebeard',  # utilities for implementing a tree

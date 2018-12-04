@@ -21,6 +21,7 @@
     "font-awesome": "^4.6.3",
     "jshint-stylish": "^2.2.1",
     "material-design-icons": "2.2.3",
+    "newman": "^4.2.2",
     "normalize.css": "^4.0.0"
   },
   "devDependencies": {

@@ -2,6 +2,7 @@ from django_webtest import WebTest
 from django.urls import reverse
 from factory.django import DjangoModelFactory as Dmf
 import factory
+from .test_factory import SessionTypeFactory
 from ..models import SessionType, Session
 
 class TestCaseBase(WebTest):
@@ -18,19 +19,10 @@ class TestAuth(WebTest):
         self.assertNotEqual(call.status,'200 OK')
         call = self.app.get('/session/sessions/',user='test')
         self.assertEqual(call.status,'200 OK')
-        
-        
-class SessionTypeFactory(Dmf):
-
-    class Meta:
-        model = SessionType
-
-    name = factory.sequence(lambda n:'testype %d' % n)
-    docker_image = 'di'
 
 
 class SessionCreation(WebTest):
-    
+
     def setUp(self):
         SessionTypeFactory()
 
@@ -60,7 +52,7 @@ class SessionCreation(WebTest):
         form = call.forms[1]
         form['session_type'].force_value('2')
         form.submit(expect_errors=True)
-        
+
 
 class MultipleSessionCreation(WebTest):
 

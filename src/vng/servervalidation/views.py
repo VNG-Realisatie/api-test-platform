@@ -27,13 +27,13 @@ class ServerRunView(LoginRequiredMixin, CreateView, ListView):
     template_name = 'servervalidation/server-run_list.html'
     context_object_name = 'server_run_list'
     paginate_by = 10
+    model = ServerRun
+    fields = ['test_scenario', 'api_endpoint']
 
     def get_queryset(self):
         return ServerRun.objects.filter(user=self.request.user).order_by('-started')
 
     #template_name = 'servervalidation/start_server-run.html'
-    model = ServerRun
-    fields = ['test_scenario', 'api_endpoint']
 
     def get_success_url(self):
         return reverse('server_run:server-run_list')

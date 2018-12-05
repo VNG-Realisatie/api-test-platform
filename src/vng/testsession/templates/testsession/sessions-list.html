@@ -1,4 +1,6 @@
 {% extends 'master.html' %}
+{% load sniplates %}
+
 
 {% block title %}Session List{% endblock%}
 
@@ -10,8 +12,19 @@
 
 <article class="article">
     <div class="article__section">
+        <h1>Start a new session</h1>
+        <form method="post">{% csrf_token %}
+            {% load_widgets form='forms.html' %}
+            {% for field in form %}
+                {% form_field field %}
+            {% endfor %}
+            <input type="submit" class="button button--primary" value="Create Session">
+            <input type="button" class="button " value="Cancel" onclick="location.href = '{% url 'testsession:sessions'  %}';">
+        </form>
+    </div>
+
+    <div class="article__section">
         <h1>VNG Testplatform</h1>
-        <input type="button" class="button button--primary" value="Start Session" onclick="location.href = '{% url 'testsession:start_session'  %}';">
 
         {% if object_list %}
         <table class="table">

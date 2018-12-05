@@ -21,10 +21,12 @@ from .serializers import SessionSerializer, SessionTypesSerializer
 from .container_manager import ContainerManagerHelper, K8S
 
 
-class SessionListView(LoginRequiredMixin, ListView):
+class SessionListView(LoginRequiredMixin, CreateView, ListView):
     template_name = 'testsession/sessions-list.html'
     context_object_name = 'sessions_list'
     paginate_by = 10
+    model = Session
+    fields = ['session_type']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -35,6 +37,24 @@ class SessionListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return Session.objects.filter(user=self.request.user).order_by('-started')
+
+    def start_app(self, form):
+        kuber = K8S()
+        r = kuber.deploy(form.name, form.session_type.docker_image)
+        print(r)
+
+    def get_success_url(self):
+        return reverse('sessions')
+
+    def form_valid(self, form):
+        if self.request.user.is_anonymous:
+            return HttpResponse('Unauthorized', status=401)
+        form.instance.user = self.request.user
+        form.instance.started = timezone.now()
+        form.instance.status = 'started'
+        form.instance.name = str(self.request.user.id) + str(time.time()).replace('.', '-')
+        self.start_app(form.instance)
+        return super().form_valid(form)
 
 
 class SessionLogView(LoginRequiredMixin, ListView):

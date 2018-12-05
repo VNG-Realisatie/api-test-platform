@@ -27,7 +27,7 @@
         <table class="table">
             {% include 'components/table/header-server-run.html' only %}
             {% for server_run in object_list %}
-            {% include 'components/table/row-server-run.html' with server_run=server_run only %}
+            {% include 'components/table/row-server-run.html' with server_run=server_run %}
             {% endfor %}
         </table>
         {% else %}

@@ -19,7 +19,11 @@ class SessionTypeAdmin(admin.ModelAdmin):
 class SessionAdmin(admin.ModelAdmin):
     list_display = get_all_fields(model.Session)
     list_filter = ['user']
-    search_fields = ['user','api_endpoint']
+    search_fields = ['user', 'api_endpoint']
 
 
-
+@admin.register(model.SessionLog)
+class SessionLogAdmin(admin.ModelAdmin):
+    list_display = get_all_fields(model.SessionLog)
+    list_filter = ['session', 'date']
+    search_fields = ['session', 'date']

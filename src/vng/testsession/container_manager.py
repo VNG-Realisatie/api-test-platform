@@ -8,12 +8,13 @@ logger = logging.getLogger(__name__)
 def runcommand(command):
     logger.debug('running the COMMAND: {}'.format(command))
     subp = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    err =subp.stderr.read()
+    err = subp.stderr.read()
     if len(err) > 1:
         logger.error(err)
     else:
         err = None
     return (subp.stdout.read(), err)
+
 
 class ContainerManagerHelper():
 
@@ -22,16 +23,16 @@ class ContainerManagerHelper():
         self.zone = zone
 
     def poolList(self):
-        COMMAND = "gcloud container node-pools list --cluster={} --zone={}".format(self.cluster,self.zone)
+        COMMAND = "gcloud container node-pools list --cluster={} --zone={}".format(self.cluster, self.zone)
         res = runcommand(COMMAND)
         return res
 
-    def createPool(self,pool_name):
+    def createPool(self, pool_name):
         COMMAND = "gcloud container node-pools create {} --cluster={} --zone={}".format(pool_name, self.cluster, self.zone)
         res = runcommand(COMMAND)
         return res
 
-    def deletePool(self,pool_name):
+    def deletePool(self, pool_name):
         COMMAND = "gcloud container node-pools delete {} --cluster={} --zone={} -q".format(pool_name, self.cluster, self.zone)
         res = runcommand(COMMAND)
         return res
@@ -53,14 +54,14 @@ class K8S():
         return res1
 
     def status(self, app_name):
-        NAMES = ['namespace','desired','current','up-to-date','available','age']
+        NAMES = ['namespace', 'desired', 'current', 'up-to-date', 'available', 'age']
         COMMAND = 'kubectl get deployments --all-namespaces'
         res1 = runcommand(COMMAND)[0].decode('utf-8')
         reg = re.search(r'(\S*) *{} *(\S*) *(\S*) *(\S*) *(\S*) *(\S*) *\n'.format(app_name), res1, re.M)
         if reg:
             status = {'app_name': app_name}
-            for i,name in zip(range(1,7),NAMES):
-                status[name]=reg.group(i)
+            for i, name in zip(range(1, 7), NAMES):
+                status[name] = reg.group(i)
             return status
         else:
             return None

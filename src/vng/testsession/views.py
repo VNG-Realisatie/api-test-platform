@@ -77,30 +77,6 @@ def stop_session(request, session_id):
     return redirect(reverse('sessions'))
 
 
-class SessionCreate(CreateView):
-    template_name = 'testsession/start-session.html'
-    model = Session
-    fields = ['session_type']
-
-    def start_app(self, form):
-        kuber = K8S()
-        r = kuber.deploy(form.name, form.session_type.docker_image)
-        print(r)
-
-    def get_success_url(self):
-        return reverse('sessions')
-
-    def form_valid(self, form):
-        if self.request.user.is_anonymous:
-            return HttpResponse('Unauthorized', status=401)
-        form.instance.user = self.request.user
-        form.instance.started = timezone.now()
-        form.instance.status = 'started'
-        form.instance.name = str(self.request.user.id) + str(time.time()).replace('.', '-')
-        self.start_app(form.instance)
-        return super().form_valid(form)
-
-
 class SessionViewSet(viewsets.ModelViewSet):
     serializer_class = SessionSerializer
     authentication_classes = (TokenAuthentication, SessionAuthentication)

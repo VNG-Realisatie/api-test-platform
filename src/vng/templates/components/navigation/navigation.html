@@ -3,7 +3,6 @@
     <nav class="navigation" role="navigation">
         <ul class="navigation__list">
             {% include './navigation-list-item.html' with view_name='testsession:sessions' label=_('Home') request=request only %}
-            {% include './navigation-list-item.html' with view_name='testsession:start_session' label=_('Start session') request=request only %}
             {% include './navigation-list-item.html' with view_name='server_run:server-run_list' label=_('Server-run list') request=request only %}
         </ul>
     </nav>

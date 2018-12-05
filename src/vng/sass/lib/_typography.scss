@@ -1,64 +1,196 @@
 @import 'color';
+@import 'grid';
 
+$typography-color-link: $color-blue;
+$typography-color-border: $color-gray;
+$typography-margin-1: $grid-margin-1;
+$typography-margin-2: $grid-margin-2;
 
-$typography-color-link: $color-light-blue;
-$typography-font-family-heading: "Helvetica Neue", Helvetica, Arial, sans-serif;
-$typography-font-family-body: Georgia, "Times New Roman", Times, serif;
-$typography-font-family-monospace: Menlo, Monaco, Consolas, "Courier New", monospace;
-
-
-@mixin heading {
-  font-family: $typography-font-family-heading;
+@mixin ellipsis {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
-@mixin h1 {
-  @include heading();
-  font-size: 2em;
+@mixin wysiwyg {
+  h1 {
+    @include h1(true);
+  }
+  h2 {
+    @include h2(true);
+  }
+  h3 {
+    @include h3(true);
+  }
+  h3 {
+    @include h4(true);
+  }
+  p {
+    @include body(true);
+  }
+  a {
+    @include anchor;
+  }
+  hr {
+    @include hr(true);
+  }
 }
 
-@mixin h2 {
-  @include heading();
-  font-size: 1.5em;
+@mixin mono {
+  font-family: monospace;
 }
 
-@mixin h3 {
-  @include heading();
-  font-size: 1.17em;
+@mixin h1($margin: false, $margin-property: margin-bottom) {
+  @include _h;
+  @include _margin($margin, $margin-property, $typography-margin-2);
+  @include responsive(font-size, 22px, 24px, 46px, 46px);
+  @include responsive(line-height, 24px, 26px, 51px, 51px);
+
+  &:after {
+    background-color: $typography-color-border;
+    content: '';
+    display: block;
+    width: 97px;
+    height: 2px;
+    margin-top: $typography-margin-2;
+  }
 }
 
-@mixin h4 {
-  @include heading();
-  font-size: 1em;
+@mixin h2($margin: false, $margin-property: margin-bottom) {
+  @include _h;
+  @include _margin($margin, $margin-property, $typography-margin-2);
+  @include responsive(font-size, 18px, 20px, 20px, 20px);
+  @include responsive(font-size, 22px, 25px, 25px, 25px);
 }
 
-@mixin h5 {
-  @include heading();
-  font-size: 0.83em;
+@mixin h3($margin: false, $margin-property: margin-bottom) {
+  @include _h;
+  @include _margin($margin, $margin-property, $typography-margin-1);
+  font-size: 18px;
+  line-height: 22px;
 }
 
-@mixin h6 {
-  @include heading();
-  font-size: 0.75em;
+@mixin h4($margin: false, $margin-property: margin-bottom) {
+  @include body;
+  @include _h;
+  @include _margin($margin, $margin-property, 1rem);
 }
 
-
-@mixin body {
-  font-family: $typography-font-family-body;
-  line-height: 1.5;
-  margin: 0 0 1em;
+@mixin body($margin: false, $margin-property: margin-bottom) {
+  @include _text;
+  @include _margin($margin, $margin-property, 1rem);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 28px;
 }
 
-@mixin monospace {
-  font-family: $typography-font-family-monospace;
+@mixin body--big {
+  font-size: 20px;
+  line-height: 24px;
 }
 
-
-@mixin link {
+@mixin anchor($hover: true) {
   color: $typography-color-link;
   text-decoration: none;
 
-  &:focus,
-  &:hover {
-    text-decoration: underline;
+  @if $hover == true {
+    &:hover {
+      text-decoration: underline;
+    }
+  } @else if $hover == false {
+    &:hover {
+      text-decoration: none!important;
+    }
   }
+}
+
+@mixin hr($margin: false, $margin-property: margin) {
+  height: 2px;
+  background-color: $typography-color-border;
+  border: none;
+  margin: 0;
+
+  @include _margin($margin, $margin-property, $typography-margin-2 0);
+
+}
+
+
+@mixin _h {
+  @include _text;
+  font-family: 'RO Sans', Calibri, Verdana, sans-serif;
+  font-weight: 700;
+}
+
+@mixin _text {
+  font-family: 'RO Sans', Calibri, Verdana, sans-serif;
+  margin: 0;
+}
+
+@mixin _margin($margin, $property, $value) {
+  @if $margin == true {
+
+    &:not(:last-child) {
+      #{$property}: $value;
+    }
+
+  } @else if $margin != false  {
+    #{$property}: $margin;
+  }
+}
+
+
+@font-face {
+  font-family: 'RO Sans';
+  src: url('../fonts/RO-SansWebText-Regular.eot');
+  src: url('../fonts/RO-SansWebText-Regular.eot?#iefix') format('eot'), url('../fonts/RO-SansWebText-Regular.ttf') format('truetype'), url('../fonts/RO-SansWebText-Regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'RO Sans';
+  src: url('../fonts/RO-SansWebText-Bold.eot');
+  src: url('../fonts/RO-SansWebText-Bold.eot?#iefix') format('eot'), url('../fonts/RO-SansWebText-Bold.ttf') format('truetype'), url('../fonts/RO-SansWebText-Bold.woff') format('woff');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'RO Sans';
+  src: url('../fonts/RO-SansWebText-Italic.eot');
+  src: url('../fonts/RO-SansWebText-Italic.eot?#iefix') format('eot'), url('../fonts/RO-SansWebText-Italic.ttf') format('truetype'), url('../fonts/RO-SansWebText-Italic.woff') format('woff');
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'RO Serif';
+  src: url('../fonts/RO-SerifWeb-Regular.eot');
+  src: url('../fonts/RO-SerifWeb-Regular.eot?#iefix') format('eot'), url('../fonts/RO-SerifWeb-Regular.ttf') format('truetype'), url('../fonts/RO-SerifWeb-Regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'RO Serif';
+  src: url('../fonts/RO-SerifWeb-Bold.eot');
+  src: url('../fonts/RO-SerifWeb-Bold.eot?#iefix') format('eot'), url('../fonts/RO-SerifWeb-Bold.ttf') format('truetype'), url('../fonts/RO-SerifWeb-Bold.woff') format('woff');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'RO Serif';
+  src: url('../fonts/RO-SerifWeb-Italic.eot');
+  src: url('../fonts/RO-SerifWeb-Italic.eot?#iefix') format('eot'), url('../fonts/RO-SerifWeb-Italic.ttf') format('truetype'), url('../fonts/RO-SerifWeb-Italic.woff') format('woff');
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Ico';
+  src: url('../fonts/RO-SerifWeb-Italic.eot');
+  src: url('../fonts/RO-SerifWeb-Italic.eot?#iefix') format('eot'), url('../fonts/RO-SerifWeb-Italic.ttf') format('truetype'), url('../fonts/RO-SerifWeb-Italic.woff') format('woff');
+  font-weight: normal;
+  font-style: italic;
 }

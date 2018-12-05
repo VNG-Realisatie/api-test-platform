@@ -1,10 +1,15 @@
-{% extends 'main.html' %}
+{% extends 'master.html' %}
+
 {% block title %}Log view{% endblock%}
+
+
 {% block content %}
-<div class="row">
-    <div class="col-md-3">
-        <input type="button" class="btn btn-primary" value="Back to the details" onclick="location.href = '{% url 'server-run_detail' server.pk %}';">
+
+<article class="article">
+    <div class="article__section">
+        <h1>Log view</h1>
+        <input type="button" class="button button--primary" value="Back to the details" onclick="location.href = '{% url 'server_run:server-run_detail' server.pk %}';">
+        {{ server.display_log|safe }}
     </div>
-</div>
-{{ server.display_log|safe }}
+</article>
 {% endblock %}

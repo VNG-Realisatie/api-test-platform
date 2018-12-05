@@ -1,0 +1,32 @@
+@import '../../lib/animation';
+@import '../../lib/typography';
+@import 'constants';
+
+.button {
+  @include _text;
+  @include anchor(false);
+  @include animate;
+  background-color: $form-color-input-background;
+  cursor: pointer;
+  font-size: 18px;
+  width: auto;
+  padding: 10px 1rem;
+
+  &:hover {
+    background-color: darken($form-color-input-background, 5%);
+  }
+}
+
+.button--primary {
+  background-color: $form-color-primary;
+  color: $form-color-primary-text;
+
+  &:focus,
+  &:hover {
+    background-color: darken($form-color-primary, 5%);
+  }
+
+  + .button {
+    margin-left: 1rem;
+  }
+}

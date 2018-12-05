@@ -1,0 +1,34 @@
+@import '../../lib/animation';
+
+$copy-offset-x: 4px;
+$copy-offset-y: 4px;
+
+@mixin soft-hide($hide: true) {
+  position: absolute;
+
+  @if $hide == true {
+    opacity: 0;
+    z-index: -999;
+  } @else {
+    opacity: 1;
+    z-index: 1;
+  }
+}
+
+.copy {
+  @include animate;
+  @include soft-hide;
+  top: $copy-offset-y;
+  right: $copy-offset-x;
+  overflow: hidden;
+
+  @at-root {
+    *:hover > & {
+      @include soft-hide(false);
+    }
+  }
+}
+
+.copy-target {
+  @include soft-hide;
+}

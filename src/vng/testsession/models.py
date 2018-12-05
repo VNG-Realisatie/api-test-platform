@@ -32,8 +32,8 @@ class Session(models.Model):
     status = models.CharField(max_length=10, choices=StatusChoices.choices, default=StatusChoices.starting)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     api_endpoint = models.URLField(max_length=200, blank=True, null=True, default=None)
-    kubernet_endpoint = models.URLField(max_length=200, blank=True, null=True, default=None)
-    log = models.FileField('/files/log', blank=True, null=True, default=None)
+    exposed_api = models.CharField(max_length=200, unique=True, null=True)
+    #log = models.FileField('/files/log', blank=True, null=True, default=None)
 
     def create_empty_log(self):
         filename = str(uuid.uuid4())
@@ -48,3 +48,12 @@ class Session(models.Model):
 
     def is_stopped(self):
         return self.status is self.StatusChoices.stopped
+
+# class HttpCall(models.Model):
+
+
+class SessionLog(models.Model):
+    date = models.DateTimeField(default=timezone.now)
+    request = models.CharField(max_length=20000, null=True)
+    response = models.CharField(max_length=20000, null=True)
+    session = models.ForeignKey(Session, on_delete=models.SET_NULL, null=True)

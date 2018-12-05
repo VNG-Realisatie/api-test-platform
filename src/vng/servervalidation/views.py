@@ -24,7 +24,7 @@ from .newman import NewmanManager
 
 
 class ServerRunView(LoginRequiredMixin, ListView):
-    template_name = 'server/server-run_list.html'
+    template_name = 'servervalidation/server-run_list.html'
     context_object_name = 'server_run_list'
     paginate_by = 10
 
@@ -34,7 +34,7 @@ class ServerRunView(LoginRequiredMixin, ListView):
 
 class ServerRunOutput(DetailView):
     model = ServerRun
-    template_name = 'server/server-run_detail.html'
+    template_name = 'servervalidation/server-run_detail.html'
 
 
 def stop_session(request, session_id):
@@ -47,7 +47,7 @@ def stop_session(request, session_id):
 
 
 class ServerRunCreate(CreateView):
-    template_name = 'server/start_server-run.html'
+    template_name = 'servervalidation/start_server-run.html'
     model = ServerRun
     fields = ['test_scenario', 'api_endpoint']
 
@@ -91,4 +91,4 @@ class ServerRunLogView(View):
         if not isOwner(server_run, request.user):
             return HttpResponseForbidden()
         else:
-            return render(request, 'server/server-run_log.html', {'server': server_run})
+            return render(request, 'servervalidation/server-run_log.html', {'server': server_run})

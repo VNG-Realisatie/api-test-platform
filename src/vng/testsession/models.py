@@ -2,13 +2,8 @@ import uuid
 from django.db import models
 from django.utils import timezone
 from django.core.files import File
-from cms.models.pluginmodel import CMSPlugin
 from djchoices import DjangoChoices, ChoiceItem
 from vng.accounts.models import User
-
-
-class TextPluginModel(CMSPlugin):
-    text = models.CharField(max_length=20000, unique=True)
 
 
 class SessionType(models.Model):
@@ -33,7 +28,6 @@ class Session(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     api_endpoint = models.URLField(max_length=200, blank=True, null=True, default=None)
     exposed_api = models.CharField(max_length=200, unique=True, null=True)
-    #log = models.FileField('/files/log', blank=True, null=True, default=None)
 
     def create_empty_log(self):
         filename = str(uuid.uuid4())
@@ -54,8 +48,6 @@ class Session(models.Model):
 
     def is_starting(self):
         return self.status == self.StatusChoices.starting
-
-# class HttpCall(models.Model):
 
 
 class SessionLog(models.Model):

@@ -11,7 +11,7 @@
 <article class="article">
     <div class="article__section">
         <h1>VNG Testplatform log</h1>
-        <input type="button" class="button button--primary" value="Start Session" onclick="location.href = '{% url 'testsession:start_session'  %}';">
+        <input type="button" class="button button--primary" value="Session list" onclick="location.href = '{% url 'testsession:sessions'  %}';">
 
         {% if log_list %}
         <table class="table">

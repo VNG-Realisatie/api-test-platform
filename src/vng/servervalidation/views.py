@@ -23,7 +23,7 @@ from .models import TestScenario, ServerRun
 from .newman import NewmanManager
 
 
-class ServerRunView(LoginRequiredMixin, ListView):
+class ServerRunView(LoginRequiredMixin, CreateView, ListView):
     template_name = 'servervalidation/server-run_list.html'
     context_object_name = 'server_run_list'
     paginate_by = 10
@@ -31,23 +31,7 @@ class ServerRunView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         return ServerRun.objects.filter(user=self.request.user).order_by('-started')
 
-
-class ServerRunOutput(DetailView):
-    model = ServerRun
-    template_name = 'servervalidation/server-run_detail.html'
-
-
-def stop_session(request, session_id):
-    server = get_object_or_404(ServerRun, pk=session_id)
-    if request.user != server.user:
-        return HttpResponse('Unauthorized', status=401)
-    server.stopped = timezone.now()
-    server.save()
-    return redirect(reverse('server-run_list'))
-
-
-class ServerRunCreate(CreateView):
-    template_name = 'servervalidation/start_server-run.html'
+    #template_name = 'servervalidation/start_server-run.html'
     model = ServerRun
     fields = ['test_scenario', 'api_endpoint']
 
@@ -66,6 +50,20 @@ class ServerRunCreate(CreateView):
 
         redirect = super().form_valid(form)
         return redirect
+
+
+class ServerRunOutput(DetailView):
+    model = ServerRun
+    template_name = 'servervalidation/server-run_detail.html'
+
+
+def stop_session(request, session_id):
+    server = get_object_or_404(ServerRun, pk=session_id)
+    if request.user != server.user:
+        return HttpResponse('Unauthorized', status=401)
+    server.stopped = timezone.now()
+    server.save()
+    return redirect(reverse('server-run_list'))
 
 
 class ServerRunViewSet(viewsets.ModelViewSet):

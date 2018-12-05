@@ -44,7 +44,7 @@ class SessionListView(LoginRequiredMixin, CreateView, ListView):
         print(r)
 
     def get_success_url(self):
-        return reverse('sessions')
+        return reverse('testsession:sessions')
 
     def form_valid(self, form):
         if self.request.user.is_anonymous:

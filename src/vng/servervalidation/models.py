@@ -46,5 +46,6 @@ class ServerRun(models.Model):
         return res
 
     def display_log(self):
-        with open(self.log.path) as fp:
-            return fp.read().replace('\n', '<br>')
+        if self.log:
+            with open(self.log.path) as fp:
+                return fp.read().replace('\n', '<br>')

@@ -2,64 +2,65 @@
 {% load sniplates %}
 
 
-{% block title %}Session List{% endblock%}
+{% block title %}Session List{% endblock %}
 
 
 {% block content %}
-<article class="article">
-    <div class="article__section">
+    <article class="article">
+        <div class="article__section">
+            <h1>Sessions</h1>
+            <h2>Start a new session</h2>
+            <form class="form" method="post">{% csrf_token %}
+                {% load_widgets form='forms.html' %}
 
-        <h2>Start a new session</h2>
-        <form class="form" method="post">{% csrf_token %}
-            {% load_widgets form='forms.html' %}
+                {% for field in form %}
+                    {% form_field field %}
+                {% endfor %}
 
-            {% for field in form %}
-                {% form_field field %}
-            {% endfor %}
+                <input type="submit" class="button button--primary" value="Create Session">
+                <input type="button" class="button " value="Cancel"
+                       onclick="location.href = '{% url 'testsession:sessions' %}';">
+            </form>
 
-            <input type="submit" class="button button--primary" value="Create Session">
-            <input type="button" class="button " value="Cancel" onclick="location.href = '{% url 'testsession:sessions'  %}';">
-        </form>
+            {% if object_list %}
+                <h2>Session list</h2>
+                <table class="table">
+                    {% include 'components/table/header-session.html' only %}
+                    {% for session in object_list %}
+                        {% include 'components/table/row-session.html' with session=session %}
+                    {% endfor %}
+                </table>
+            {% endif %}
+        </div>
 
-        {% if object_list %}
-        <h2>Session list</h2>
-        <table class="table">
-            {% include 'components/table/header-session.html' only %}
-            {% for session in object_list %}
-            {% include 'components/table/row-session.html' with session=session %}
-            {% endfor %}
-        </table>
-        {% else %}
-        <p>There are no session in the library.</p>
+        {% if is_paginated %}
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+
+                    {% if page_obj.has_previous %}
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+                    {% endif %}
+
+                    {% for i in paginator.page_range %}
+                        {% if page_obj.number == i %}
+                            <li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
+                        {% else %}
+                            <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                        </li>
+                    {% else %}
+
+                        <li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
         {% endif %}
-    </div>
-
-    {% if is_paginated %}
-    <nav aria-label="Page navigation example">
-        <ul class="pagination">
-
-            {% if page_obj.has_previous %}
-            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
-            {% else %}
-            <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
-            {% endif %}
-
-            {% for i in paginator.page_range %}
-            {% if page_obj.number == i %}
-            <li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
-            {% else %}
-            <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
-            {% endif %}
-            {% endfor %}
-
-            {% if page_obj.has_next %}
-            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
-            {% else %}
-
-            <li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
-            {% endif %}
-        </ul>
-    </nav>
-    {% endif %}
-</article>
+    </article>
 {% endblock %}

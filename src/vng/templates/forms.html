@@ -41,6 +41,9 @@
 {% endblock TextInput %}
 
 
+{% block URLInput %}{% reuse "TextInput" input_type="url" %}{% endblock %}
+
+
 {% block submit-btn %}
     <button class="button button--primary" type="submit">{% trans 'Submit' %}</button>
 {% endblock submit-btn %}

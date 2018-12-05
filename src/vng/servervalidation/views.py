@@ -23,36 +23,20 @@ from .models import TestScenario, ServerRun
 from .newman import NewmanManager
 
 
-class ServerRunView(LoginRequiredMixin, ListView):
-    template_name = 'server/server-run_list.html'
+class ServerRunView(LoginRequiredMixin, CreateView, ListView):
+    template_name = 'servervalidation/server-run_list.html'
     context_object_name = 'server_run_list'
     paginate_by = 10
+    model = ServerRun
+    fields = ['test_scenario', 'api_endpoint']
 
     def get_queryset(self):
         return ServerRun.objects.filter(user=self.request.user).order_by('-started')
 
-
-class ServerRunOutput(DetailView):
-    model = ServerRun
-    template_name = 'server/server-run_detail.html'
-
-
-def stop_session(request, session_id):
-    server = get_object_or_404(ServerRun, pk=session_id)
-    if request.user != server.user:
-        return HttpResponse('Unauthorized', status=401)
-    server.stopped = timezone.now()
-    server.save()
-    return redirect(reverse('server-run_list'))
-
-
-class ServerRunCreate(CreateView):
-    template_name = 'server/start_server-run.html'
-    model = ServerRun
-    fields = ['test_scenario', 'api_endpoint']
+    #template_name = 'servervalidation/start_server-run.html'
 
     def get_success_url(self):
-        return reverse('server-run_list')
+        return reverse('server_run:server-run_list')
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -66,6 +50,20 @@ class ServerRunCreate(CreateView):
 
         redirect = super().form_valid(form)
         return redirect
+
+
+class ServerRunOutput(DetailView):
+    model = ServerRun
+    template_name = 'servervalidation/server-run_detail.html'
+
+
+def stop_session(request, session_id):
+    server = get_object_or_404(ServerRun, pk=session_id)
+    if request.user != server.user:
+        return HttpResponse('Unauthorized', status=401)
+    server.stopped = timezone.now()
+    server.save()
+    return redirect(reverse('server-run_list'))
 
 
 class ServerRunViewSet(viewsets.ModelViewSet):
@@ -91,4 +89,4 @@ class ServerRunLogView(View):
         if not isOwner(server_run, request.user):
             return HttpResponseForbidden()
         else:
-            return render(request, 'server/server-run_log.html', {'server': server_run})
+            return render(request, 'servervalidation/server-run_log.html', {'server': server_run})

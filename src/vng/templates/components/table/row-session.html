@@ -1,0 +1,24 @@
+{% spaceless %}
+<tr>
+    {% if not session.is_starting %}
+        <td class="table__cell">
+            <a href="{% url 'testsession:session_log' session.pk %}">{{ session.started }}</a>
+        </td>
+    {% else %}
+        <td class="table__cell">{{ session.started }}</td>
+    {% endif %}
+    <td class="table__cell">{{ session.stopped }}</td>
+    <td class="table__cell">{{ session.status }}</td>
+    <td class="table__cell">{{ session.type_session.name }}{{session.is_stopped}}</td>
+    <td class="table__cell">{{ session.user.username }}</td>
+    <td class="table__cell">{{ session.api_endpoint }}</td>
+    <td class="table__cell">
+        {% if not session.is_stopped %}
+        <form method="POST" action="{% url 'testsession:stop_session' session.id %}">
+            {% csrf_token %}
+            <input type="submit" type="button" class="button button--primary" value="Stop">
+        </form>
+        {% endif %}
+    </td>
+</tr>
+{% endspaceless %}

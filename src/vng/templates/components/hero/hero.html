@@ -1,0 +1,7 @@
+{% load i18n static %}
+{% spaceless %}
+    <div class="hero" role="presentation">
+        {% static 'img/components/banner/smart_cities.jpg' as src %}
+        {% include 'components/image/image.html' with alt=_('Smart cities banner image') src=src only %}
+    </div>
+{% endspaceless %}

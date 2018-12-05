@@ -1,0 +1,22 @@
+@import 'grid';
+
+$icon-margin-3: $grid-margin-3;
+
+@mixin icon($icon) {
+  padding-left: $icon-margin-3;
+  position: relative;
+
+  &:before {
+    @include animate;
+    @include body;
+    @extend .icon;
+    @extend .icon-#{$icon};
+    font-size: 11px;
+    position: absolute;
+    left: 0;
+  }
+
+  &:hover:before {
+    transform: translateX(5px);
+  }
+}

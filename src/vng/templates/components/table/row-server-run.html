@@ -1,0 +1,23 @@
+{% spaceless %}
+<tr>
+    {% if server_run.stopped %}
+        <td class="table__cell">
+            <a href="{% url 'server_run:server-run_detail' server_run.pk %}">{{ server_run.started }}</a>
+        </td>
+    {% else %}
+        <td class="table__cell">{{ server_run.started }}</td>
+    {% endif %}
+    <td class="table__cell">{{ server_run.stopped }}</td>
+    <td class="table__cell">{{ server_run.user.username }}</td>
+    <td class="table__cell">{{ server_run.api_endpoint }}</td>
+    <td class="table__cell">{{ server_run.test_scenario.name }}</td>
+    <td class="table__cell">
+        {% if not server_run.is_stopped %}
+        <form method="POST" action="{% url 'server_run:server-run_stop' server_run.id %}">
+            {% csrf_token %}
+            <input type="submit" type="button" class="button button--primary" value="Stop">
+        </form>
+        {% endif %}
+    </td>
+</tr>
+{% endspaceless %}

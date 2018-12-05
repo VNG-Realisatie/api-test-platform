@@ -1,0 +1,24 @@
+@import '../../lib/icon';
+@import '../../lib/grid';
+@import '../../lib/typography';
+
+$list-margin-3: $grid-margin-3;
+
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  &__item {
+    @include body;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  &__link {
+    @include anchor;
+    @include icon(arrow-right2);
+  }
+}

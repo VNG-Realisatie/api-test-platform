@@ -1,0 +1,16 @@
+@import '../../lib/typography';
+
+.navigation {
+  &__list,
+  &__list_item {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  &__link {
+    @include anchor;
+    @include body;
+    @include body--big;
+  }
+}

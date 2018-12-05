@@ -52,7 +52,7 @@ class ServerRunCreate(CreateView):
     fields = ['test_scenario', 'api_endpoint']
 
     def get_success_url(self):
-        return reverse('server-run_list')
+        return reverse('server_run:server-run_list')
 
     def form_valid(self, form):
         form.instance.user = self.request.user

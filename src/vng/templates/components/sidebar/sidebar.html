@@ -1,0 +1,21 @@
+{% load i18n %}
+{% spaceless %}
+    <aside class="sidebar" role="complementary">
+        <h2 class="sidebar__title">{% trans "Services" %}</h2>
+
+        {% comment %}This text might need alittle attention.{% endcomment %}
+        <p class="sidebar__description">{% blocktrans trimmed %}
+            Your credentials will be registered with the following services.
+        {% endblocktrans %}</p>
+
+        <ul class="list">
+            {% for service in services %}
+                <li class="list__item">
+                    <a class="list__link" href="{{ service.api_root }}" target="_blank" rel="noopener">
+                        {{ service.label }} ({{ service.api_root }})
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </aside>
+{% endspaceless %}

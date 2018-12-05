@@ -1,0 +1,68 @@
+@import '../../lib/responsive';
+@import '../../lib/typography';
+@import 'constants';
+
+.form {
+  & &__control {
+    @include gutter(margin-bottom);
+    @include responsive(justify-content, stretch, flex-end, flex-end, flex-end);
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  & &__control .list {
+    @include responsive(width, 100%, 50%, 50%, 50%);
+  }
+
+  & &__help,
+  & &__label,
+  & &__input {
+    @include body;
+    @include responsive(width, 100%, 50%, 50%, 50%);
+    height: $form-margin-4;
+    line-height: $form-margin-4;
+  }
+
+  & &__help,
+  & &__label {
+    color: $form-color-label
+  }
+
+  & &__input,
+  .button {
+    appearance: none;
+    border: none;
+  }
+
+  & &__input {
+    @include animate;
+    appearance: none;
+    box-sizing: border-box;
+    background-color: $form-color-input-background;
+    outline: none;
+    padding: 0.2rem 0.5rem;
+
+    &:not([disabled]) {
+      border-bottom: 2px solid $form-color-enabled;
+    }
+
+    &:not([disabled]):focus,
+    &:not([disabled]):hover {
+      border-bottom: 2px solid $form-color-focussed;
+    }
+  }
+
+  & &__help {
+    color: $form-color-info;
+    font-style: italic;
+  }
+
+  & &__title {
+    @include h3;
+  }
+
+  & &__subtitle {
+    @include h4;
+  }
+
+}

@@ -1,11 +1,24 @@
-{% extends 'main.html' %}
+{% extends 'master.html' %}
+{% load sniplates %}
+
 {% block title %}Start Session{% endblock%}
+
 {% block content %}
-<h1>Start a new session</h1>
-<hr>
-<form method="post">{% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" class="btn btn-primary" value="Create Session">
-    <input type="button" class="btn btn-secondary" value="Cancel" onclick="location.href = '/session/sessions/';">
-</form>
+
+
+<article class="article">
+    <div class="article__section">
+        <h1>Start a new session</h1>
+        <form method="post">{% csrf_token %}
+            {% load_widgets form='forms.html' %}
+            {% for field in form %}
+                {% form_field field %}
+            {% endfor %}
+            <input type="submit" class="button button--primary" value="Create Session">
+            <input type="button" class="button " value="Cancel" onclick="location.href = '{% url 'testsession:sessions'  %}';">
+        </form>
+    </div>
+</article>
+
+
 {% endblock %}

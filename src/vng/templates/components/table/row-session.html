@@ -1,0 +1,20 @@
+{% spaceless %}
+<tr>
+    <td class="table__cell">{{ session.started }}</td>
+    <td class="table__cell">{{ session.stopped }}</td>
+    <td class="table__cell">{{ session.status }}</td>
+    <td class="table__cell">{{ session.type_session.name }}{{session.is_stopped}}</td>
+    <td class="table__cell">{{ session.user.username }}</td>
+    <td class="table__cell">{{ session.api_endpoint }}</td>
+    <td class="table__cell">
+        {% if not session.is_stopped %}
+        <form method="POST" action="{% url 'testsession:stop_session' session.id %}">
+            {% csrf_token %}
+            <input type="submit" type="button" class="button button--primary" value="Stop">
+        </form>
+        {% else %}
+        <input type="submit" type="button" class="button" disabled value="Stop">
+        {% endif %}
+    </td>
+</tr>
+{% endspaceless %}

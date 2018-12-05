@@ -1,0 +1,63 @@
+@import '../../lib/color';
+@import '../../lib/grid';
+@import '../../lib/responsive';
+
+$header-color-active: $color-orange;
+$header-color-background: $color-white;
+$header-height: $grid-margin-10;
+$header-padding-h-link: $grid-margin-0;
+$header-padding-v-link: $grid-margin-7 / 2;
+$header-margin-logo: $grid-margin-6;
+$header-margin-logo: $grid-margin-6;
+
+.header {
+  background-color: $header-color-background;
+
+  &__body {
+    @include container;
+    box-sizing: border-box;
+
+    @include tablet {
+      display: flex;
+      align-items: center;
+      height: $header-height;
+
+    }
+  }
+
+  .logo {
+    margin-right: $header-margin-logo;
+  }
+
+  .navigation__list {
+    display: flex;
+
+    @include mobile-only {
+      justify-content: center;
+    }
+  }
+
+  .navigation__list-item:first-child .navigation__link {
+    margin-left: 0;
+  }
+
+  .navigation__link {
+    margin-left: 11px;
+    @include tablet {
+      padding: $header-padding-v-link $header-padding-h-link;
+    }
+  }
+
+  .navigation__link--active,
+  .navigation__link:hover {
+    border-bottom: 3px solid $header-color-active;
+  }
+
+  .navigation__link--active {
+    font-weight: 700;
+  }
+
+  .navigation__link:hover {
+    text-decoration: none;
+  }
+}

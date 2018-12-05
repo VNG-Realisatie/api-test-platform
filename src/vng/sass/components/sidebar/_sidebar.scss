@@ -1,0 +1,20 @@
+@import '../../lib/color';
+@import '../../lib/grid';
+@import '../../lib/typography';
+
+$sidebar-color-text: $color-gray-darker;
+$sidebar-margin-1: $grid-margin-1;
+
+.sidebar {
+  @include columns-responsive(12, 4, 4, 4);
+  @include gutter(padding);
+
+  &__description {
+    @include body(1rem 0, margin);
+    color: $sidebar-color-text;
+  }
+
+  &__title {
+    @include h2(true);
+  }
+}

@@ -21,6 +21,7 @@ local.py
 /env/
 /media/
 /static/
+/src/vng/static/css
 /mail/
 /log/*.log*
 /log/nginx/*.log*

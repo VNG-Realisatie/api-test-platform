@@ -1,0 +1,8 @@
+{% spaceless %}
+<tr>
+    <td class="table__cell">{{ log.date }}</td>
+    <td class="table__cell">{{ log.request }}</td>
+    <td class="table__cell">{{ log.response }}</td>
+    <td class="table__cell">{{ log.session.id }}</td>
+</tr>
+{% endspaceless %}

@@ -1,0 +1,67 @@
+{% extends 'master.html' %}
+{% load sniplates %}
+
+{% block title %}Session List{% endblock%}
+
+
+{% block content %}
+
+
+<article class="article">
+        <div class="article__section">
+                <h1>Start a new server</h1>
+                <form method="post">{% csrf_token %}
+                    {% load_widgets form='forms.html' %}
+                    {% for field in form %}
+                        {% form_field field %}
+                    {% endfor %}
+                    <input type="submit" class="button button--primary" value="Create Server-run">
+                    <input type="button" class="button" value="Cancel" onclick="location.href = '{% url 'server_run:server-run_list'  %}';">
+
+            </form>
+            </div>
+    <div class="article__section">
+        <h1>VNG Testplatform Server</h1>
+
+        {% if object_list %}
+        <table class="table">
+            {% include 'components/table/header-server-run.html' only %}
+            {% for server_run in object_list %}
+            {% include 'components/table/row-server-run.html' with server_run=server_run %}
+            {% endfor %}
+        </table>
+        {% else %}
+        <p>There are no server-run in the library.</p>
+        {% endif %}
+    </div>
+
+    {% if is_paginated %}
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+
+            {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+            {% else %}
+            <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+            {% endif %}
+
+            {% for i in paginator.page_range %}
+            {% if page_obj.number == i %}
+            <li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
+            {% else %}
+            <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+            {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+            {% else %}
+
+            <li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+
+{% endblock %}

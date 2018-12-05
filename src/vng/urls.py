@@ -22,17 +22,16 @@ urlpatterns = [
     url(r'^reset/done/$', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
 
     # Simply show the master template.
-    url(r'^login/',auth_views.LoginView.as_view(template_name="login.html"), name='login'),
-    url(r'^logout/',auth_views.LogoutView.as_view(), {'next_page': '/login'}, name='logout'),
+    url(r'^login/', auth_views.LoginView.as_view(template_name="login.html"), name='login'),
+    url(r'^logout/', auth_views.LogoutView.as_view(), {'next_page': '/login'}, name='logout'),
 
     # redirect the request to the testession
     url(r'^api/auth/', include('vng.apiAuthentication.urls')),
     url(r'^api/v1/', include('vng.testsession.urls_api')),
     url(r'^api/v1/', include('vng.servervalidation.urls_api')),
-    url(r'^session/', include('vng.testsession.urls')), 
-    url(r'^server/', include('vng.servervalidation.urls')), 
-    
-    #url for the CMS
+    url(r'^session/', include('vng.testsession.urls', namespace='testsession')),
+    url(r'^server/', include('vng.servervalidation.urls', namespace='server_run')),
+    # url for the CMS
     url(r'^', include('cms.urls')),
 
 ]

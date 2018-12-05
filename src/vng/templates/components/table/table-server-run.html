@@ -27,9 +27,10 @@
 </tr>
 
 <tr>
-    <td class="table__cell">Log</td>
-    <td class="table__cell"><a href="{% url 'server_run:server-run_detail_log' server_run.pk %}">Visualize the log</az>
-    </td>
+    {% if server_run.log %}
+        <td class="table__cell">Log</td>
+        <td class="table__cell"><a href="{% url 'server_run:server-run_detail_log' server_run.pk %}">Visualize the log</az> </td>
+    {% endif %}
 </tr>
 
 {% endspaceless %}

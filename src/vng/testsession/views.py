@@ -92,20 +92,58 @@ class SessionTypesViewSet(generics.ListAPIView):
 
 
 class RunTest(View):
-    def get(self, request, url):
+    def get(self, request, url, relative_url):
         session = get_object_or_404(Session, exposed_api=url)
         session_log = SessionLog()
         session_log.session = session
 
-        req_json = '{"request":"{} {}"}'.format(request.method, request.build_absolute_uri())
+        req_json = {
+            "request": {
+                "path": "{} {}".format(json.dumps(request.GET), request.build_absolute_uri()),
+            }
+        }
+        req_json = json.dumps(req_json)
         session_log.request = req_json
 
-        r = requests.get(session.api_endpoint)
-        res_json = r.json()
-
+        r = requests.get(session.api_endpoint + relative_url)
+        res_json = {
+            "response": {
+                "status_code": r.status_code,
+                "body": r.text,
+                "path": "{} {}".format(json.dumps(request.GET), request.build_absolute_uri()),
+            }
+        }
+        res_json = json.dumps(res_json)
         session_log.response = res_json
         session_log.save()
-        return HttpResponse(request.body)
+        return HttpResponse(r.text)
+
+    def post(self, request, url, relative_url):
+        session = get_object_or_404(Session, exposed_api=url)
+        session_log = SessionLog()
+        session_log.session = session
+
+        req_json = {
+            "request": {
+                "path": "{} {}".format(json.dumps(request.GET), request.build_absolute_uri()),
+                "body": request.body
+            }
+        }
+        req_json = json.dumps(req_json)
+        session_log.request = req_json
+
+        r = requests.post(session.api_endpoint + relative_url, data=request.body)
+        res_json = res_json = {
+            "response": {
+                "status_code": r.status_code,
+                "body": r.text,
+                "path": "{} {}".format(json.dumps(request.GET), request.build_absolute_uri()),
+            }
+        }
+        res_json = json.dumps(res_json)
+        session_log.response = res_json
+        session_log.save()
+        return HttpResponse(r.text)
 
 
 def update_status_session(session):

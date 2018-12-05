@@ -1,6 +1,12 @@
 {% spaceless %}
 <tr>
-    <td class="table__cell">{{ session.started }}</td>
+    {% if not session.is_starting %}
+        <td class="table__cell">
+            <a href="{% url 'testsession:session_log' session.pk %}">{{ session.started }}</a>
+        </td>
+    {% else %}
+        <td class="table__cell">{{ session.started }}</td>
+    {% endif %}
     <td class="table__cell">{{ session.stopped }}</td>
     <td class="table__cell">{{ session.status }}</td>
     <td class="table__cell">{{ session.type_session.name }}{{session.is_stopped}}</td>

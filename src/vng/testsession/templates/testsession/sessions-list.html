@@ -4,29 +4,25 @@
 
 {% block title %}Session List{% endblock%}
 
+
 {% block content %}
-
-
-
-
-
 <article class="article">
     <div class="article__section">
-        <h1>Start a new session</h1>
-        <form method="post">{% csrf_token %}
+
+        <h2>Start a new session</h2>
+        <form class="form" method="post">{% csrf_token %}
             {% load_widgets form='forms.html' %}
+
             {% for field in form %}
                 {% form_field field %}
             {% endfor %}
+
             <input type="submit" class="button button--primary" value="Create Session">
             <input type="button" class="button " value="Cancel" onclick="location.href = '{% url 'testsession:sessions'  %}';">
         </form>
-    </div>
-
-    <div class="article__section">
-        <h1>VNG Testplatform</h1>
 
         {% if object_list %}
+        <h2>Session list</h2>
         <table class="table">
             {% include 'components/table/header-session.html' only %}
             {% for session in object_list %}

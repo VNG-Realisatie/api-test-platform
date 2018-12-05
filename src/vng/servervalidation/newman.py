@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 class NewmanManager:
-    REPORT_FOLDER = settings.MEDIA_ROOT + '/newman'
+    REPORT_FOLDER = settings.MEDIA_ROOT  # + '/newman'
     RUN_COMMAND = 'newman run --reporters html {} --reporter-html-export ' + REPORT_FOLDER + '/{}.html'
     TOKEN = 'TOKEN'
 

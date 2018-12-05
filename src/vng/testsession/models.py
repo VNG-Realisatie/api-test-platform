@@ -49,6 +49,12 @@ class Session(models.Model):
     def is_stopped(self):
         return self.status == self.StatusChoices.stopped
 
+    def is_running(self):
+        return self.status == self.StatusChoices.running
+
+    def is_starting(self):
+        return self.status == self.StatusChoices.starting
+
 # class HttpCall(models.Model):
 
 

@@ -37,6 +37,15 @@ class SessionListView(LoginRequiredMixin, ListView):
         return Session.objects.filter(user=self.request.user).order_by('-started')
 
 
+class SessionLogView(LoginRequiredMixin, ListView):
+    template_name = 'testsession/session-log.html'
+    context_object_name = 'log_list'
+    paginate_by = 20
+
+    def get_queryset(self):
+        return SessionLog.objects.filter(session__pk=self.kwargs['session_id']).order_by('-date')
+
+
 @login_required
 def stop_session(request, session_id):
     session = get_object_or_404(Session, pk=session_id)
@@ -99,7 +108,7 @@ class RunTest(View):
 
         req_json = {
             "request": {
-                "path": "{} {}".format(json.dumps(request.GET), request.build_absolute_uri()),
+                "path": "GET {}".format(request.build_absolute_uri()),
             }
         }
         req_json = json.dumps(req_json)
@@ -125,7 +134,7 @@ class RunTest(View):
 
         req_json = {
             "request": {
-                "path": "{} {}".format(json.dumps(request.GET), request.build_absolute_uri()),
+                "path": "POST {}".format(request.build_absolute_uri()),
                 "body": request.body
             }
         }

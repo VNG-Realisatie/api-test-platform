@@ -8,7 +8,7 @@ from django.views.generic.list import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.views.generic.edit import CreateView
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.views import View
 from django.core import serializers
 from django.shortcuts import get_object_or_404
@@ -73,8 +73,31 @@ def stop_session(request, session_id):
         return HttpResponse('Unauthorized', status=401)
     session.status = Session.StatusChoices.stopped
     session.save()
-    delete = K8S().delete(session.name)
-    return redirect(reverse('sessions'))
+    return HttpResponseRedirect(reverse('testsession:sessions'))
+
+
+class SessionCreate(CreateView):
+    template_name = 'testsession/start-session.html'
+    model = Session
+    fields = ['session_type']
+
+    def start_app(self, form):
+        kuber = K8S()
+        r = kuber.deploy(form.name, form.session_type.docker_image)
+        print(r)
+
+    def get_success_url(self):
+        return reverse('testsession:sessions')
+
+    def form_valid(self, form):
+        if self.request.user.is_anonymous:
+            return HttpResponse('Unauthorized', status=401)
+        form.instance.user = self.request.user
+        form.instance.started = timezone.now()
+        form.instance.status = 'started'
+        form.instance.name = str(self.request.user.id) + str(time.time()).replace('.', '-')
+        self.start_app(form.instance)
+        return super().form_valid(form)
 
 
 class SessionViewSet(viewsets.ModelViewSet):

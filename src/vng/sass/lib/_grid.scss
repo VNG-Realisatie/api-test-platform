@@ -1,0 +1,90 @@
+@import 'responsive';
+
+$grid-columns-mobile: 12;
+$grid-columns-tablet: 12;
+$grid-columns-laptop: 12;
+$grid-columns-desktop: 12;
+
+$grid-gutter-mobile: 30px;
+$grid-gutter-tablet: 30px;
+$grid-gutter-laptop: 30px;
+$grid-gutter-desktop: 30px;
+
+$grid-container-padding: $grid-gutter-mobile / 2;
+$grid-container-size: $breakpoint-desktop - 2 * $grid-container-padding;
+$grid-container-size-big: 1400px;
+
+$grid-margin-0: 5px;
+$grid-margin-1: 10px;
+$grid-margin-2: 20px;
+$grid-margin-3: 30px;
+$grid-margin-4: 40px;
+$grid-margin-5: 50px;
+$grid-margin-6: 60px;
+$grid-margin-7: 70px;
+$grid-margin-8: 80px;
+$grid-margin-9: 90px;
+$grid-margin-10: 100px;
+
+@mixin container() {
+  $max-width-mobile: calc(100% - #{2 * $grid-container-padding});
+
+  @include responsive(max-width, $max-width-mobile, $max-width-mobile, $max-width-mobile, $grid-container-size);
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@mixin container--big() {
+  @include desktop {
+    max-width: $grid-container-size-big;
+  }
+}
+
+@mixin columns-responsive($columns-mobile, $columns-tablet, $columns-laptop, $columns-desktop) {
+  @include mobile-only {
+    @include columns($columns-mobile, $grid-columns-mobile, $grid-gutter-mobile);
+  }
+  @include tablet(true) {
+    @include columns($columns-tablet, $grid-columns-tablet, $grid-gutter-tablet);
+  }
+  @include laptop(true) {
+    @include columns($columns-laptop, $grid-columns-laptop, $grid-gutter-laptop);
+  }
+  @include desktop() {
+    @include columns($columns-desktop, $grid-columns-desktop, $grid-gutter-desktop);
+  }
+}
+
+@mixin columns($span, $total, $gutter, $omega: auto, $property: width) {
+  $gutters: $span - 1;
+  $total_gutters: $total - 1;
+  $total_gutter_width: $total_gutters * $gutter;
+  #{$property}: calc((100% - #{$total_gutter_width}) / #{$total / $span} + #{$gutters * $gutter});
+  box-sizing: border-box;
+  float: left;
+
+  @if $omega == true {
+    @include omega;
+  } @else if $omega == false {
+    margin-right: $gutter;
+  } @else if $omega == auto {
+    margin-right: $gutter;
+
+    &:last-child {
+      @include omega;
+    }
+  }
+}
+
+@mixin omega($force: false, $property: margin-right) {
+  @if $force == true {
+    #{$property}: 0 !important;
+  } @else {
+    #{$property}: 0;
+  }
+}
+
+@mixin gutter($property, $multiplier: 1) {
+  @include responsive($property, $grid-gutter-mobile * $multiplier, $grid-gutter-tablet * $multiplier, $grid-gutter-laptop * $multiplier, $grid-gutter-desktop * $multiplier);
+}

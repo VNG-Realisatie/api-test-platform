@@ -1,0 +1,35 @@
+@import '../../lib/color';
+@import '../../lib/typography';
+
+$table-color-term: $color-gray-darker;
+$table-color-border: $color-gray;
+
+.table {
+  border: none;
+  border-collapse: collapse;
+  font-size: 0;
+  table-layout: fixed;
+  width: 100%;
+
+  &__heading,
+  &__cell {
+    @include body;
+    @include mono;
+    @include responsive(display, block, table-cell, table-cell, table-cell);
+    border-top: 2px solid $table-color-border;
+    padding: 10px 0;
+    position: relative;
+    text-align: left;
+    vertical-align: top;
+    width: 100%;
+    word-break: break-all;
+
+    &:last-of-type {
+      border-bottom: 2px solid $table-color-border;
+    }
+  }
+
+  &__cell {
+    color: $table-color-term;
+  }
+}

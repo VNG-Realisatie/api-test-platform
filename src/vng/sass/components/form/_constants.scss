@@ -1,0 +1,13 @@
+@import '../../lib/color';
+@import '../../lib/grid';
+
+$form-color-border: $color-gray;
+$form-color-enabled: $color-blue;
+$form-color-focussed: $color-orange;
+$form-color-info: $color-blue;
+$form-color-input-background: $color-gray;
+$form-color-label: $color-gray-darker;
+$form-color-primary: $color-orange;
+$form-color-primary-text: $color-white;
+$form-margin-2: $grid-margin-2;
+$form-margin-4: $grid-margin-4;

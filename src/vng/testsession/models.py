@@ -47,7 +47,7 @@ class Session(models.Model):
             return "{}".format(self.session_type)
 
     def is_stopped(self):
-        return self.status is self.StatusChoices.stopped
+        return self.status == self.StatusChoices.stopped
 
 # class HttpCall(models.Model):
 

@@ -1,0 +1,7 @@
+{% spaceless %}
+    <li class="navigation__list-item">
+        {% url view_name as view_url %}
+        <a class="navigation__link{% if request.path == view_url %} navigation__link--active{% endif %}"
+           href="{{ view_url }}">{{ label }}</a>
+    </li>
+{% endspaceless %}

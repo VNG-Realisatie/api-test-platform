@@ -1,0 +1,10 @@
+@import '../../lib/color';
+
+$view-color-background: $color-gray;
+
+.view {
+  background-color: $view-color-background;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}

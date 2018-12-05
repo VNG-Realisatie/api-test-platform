@@ -33,7 +33,7 @@ class ServerRun(models.Model):
             return "{} - {}".format(self.started, self.status)
 
     def is_stopped(self):
-        return self.status is self.StatusChoices.stopped
+        return self.status == self.StatusChoices.stopped
 
     def get_fields_no_file(self):
         '''

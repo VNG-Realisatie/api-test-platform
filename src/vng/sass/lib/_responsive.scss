@@ -4,5 +4,55 @@ $breakpoint-mobile-l: 425px;
 
 $breakpoint-tablet: 768px;
 
-$breakpoint-laptop: 1024px;
-$breakpoint-laptop-l: 1440px;
+$breakpoint-laptop: 992px;
+$breakpoint-desktop: 1200px;
+
+@mixin responsive($property, $value-mobile, $value-tablet, $value-laptop, $value-desktop) {
+  #{$property}: $value-mobile;
+
+  @include tablet(true) {
+    #{$property}: $value-tablet;
+  }
+  @include laptop(true) {
+    #{$property}: $value-laptop;
+  }
+  @include desktop() {
+    #{$property}: $value-desktop;
+  }
+}
+
+@mixin mobile-only {
+  @media (max-width: $breakpoint-tablet - 1px) {
+    @content;
+  }
+}
+
+@mixin tablet($only: false) {
+  @if $only == false {
+    @media (min-width: $breakpoint-tablet) {
+      @content;
+    }
+  } @else {
+    @media (min-width: $breakpoint-tablet) and (max-width: $breakpoint-laptop - 1px) {
+      @content;
+    }
+  }
+}
+
+@mixin laptop($only: false) {
+  @if $only == false {
+    @media (min-width: $breakpoint-laptop) {
+      @content;
+    }
+  } @else {
+    @media (min-width: $breakpoint-laptop) and (max-width: $breakpoint-desktop - 1px) {
+      @content;
+    }
+  }
+}
+
+@mixin desktop() {
+  @media (min-width: $breakpoint-desktop) {
+    @content;
+  }
+}

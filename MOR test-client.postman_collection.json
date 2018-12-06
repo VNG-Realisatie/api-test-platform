@@ -1,0 +1,184 @@
+{
+	"info": {
+		"_postman_id": "e1f9fba6-dba3-463c-a7ef-65399bf121cc",
+		"name": "MOR test-client",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "https://ref.tst.vng.cloud/zrc/api/v1/zaken",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept-Crs",
+						"value": "EPSG:4326",
+						"description": "Accept",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https://ref.tst.vng.cloud/zrc/api/v1/zaken",
+					"protocol": "https",
+					"host": [
+						"ref",
+						"tst",
+						"vng",
+						"cloud"
+					],
+					"path": [
+						"zrc",
+						"api",
+						"v1",
+						"zaken"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Aanmaken zaak",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "1f53055a-7f33-4717-a42b-fdc3ace4052d",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "261972a8-263c-43c9-ac38-9c4ae799bae7",
+						"exec": [
+							"",
+							"var jsonData = pm.response.json();",
+							"console.log(jsonData);",
+							"pm.globals.set(\"zaak\", jsonData.url);",
+							"zaak = pm.variables.get(\"zaak\");",
+							"console.log(zaak);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept-Crs",
+						"value": "EPSG:4326",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"bronorganisatie\": \"509381406\",\n \"registratiedatum\": \"2018-12-06\",\n \"startdatum\": \"2018-12-06\",\n \"toelichting\": \"Hier ben ik\",\n \"verantwoordelijkeOrganisatie\": \"245122461\",\n \"zaakgeometrie\": {\"coordinates\": [4.891362190246582, 52.3731887966551],\n                   \"type\": \"Point\"},\n \"zaaktype\": \"https://ref.tst.vng.cloud/ztc/api/v1/catalogussen/f7afd156-c8f5-4666-b8b5-28a4a9b5dfc7/zaaktypen/0119dd4e-7be9-477e-bccf-75023b1453c1\"}"
+				},
+				"url": {
+					"raw": "https://ref.tst.vng.cloud/zrc/api/v1/zaken",
+					"protocol": "https",
+					"host": [
+						"ref",
+						"tst",
+						"vng",
+						"cloud"
+					],
+					"path": [
+						"zrc",
+						"api",
+						"v1",
+						"zaken"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Status op aanmaken zetten",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept-Crs",
+						"type": "text",
+						"value": "EPSG:4326"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"datumStatusGezet\": \"2018-12-06T12:59:03.950556\",\n \"statusType\": \"https://ref.tst.vng.cloud/ztc/api/v1/catalogussen/f7afd156-c8f5-4666-b8b5-28a4a9b5dfc7/zaaktypen/0119dd4e-7be9-477e-bccf-75023b1453c1/statustypen/e53becac-cb4f-4dc7-911b-7d2ca066c041\",\n \"statustoelichting\": \"Melding ontvangen\",\n \"zaak\": \"{{zaak}}\"\n}"
+				},
+				"url": {
+					"raw": "https://ref.tst.vng.cloud/zrc/api/v1/statussen",
+					"protocol": "https",
+					"host": [
+						"ref",
+						"tst",
+						"vng",
+						"cloud"
+					],
+					"path": [
+						"zrc",
+						"api",
+						"v1",
+						"statussen"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImNsaWVudF9pZGVudGlmaWVyIjoiQVRWIHRlc3RwbGF0Zm9ybS1JNGZHeVFGcmhDdFUifQ.eyJpc3MiOiJBVFYgdGVzdHBsYXRmb3JtLUk0Zkd5UUZyaEN0VSIsImlhdCI6MTU0NDA5OTQxNywiemRzIjp7InNjb3BlcyI6WyJ6ZHMuc2NvcGVzLnN0YXR1c3Nlbi50b2V2b2VnZW4iLCJ6ZHMuc2NvcGVzLnphYWt0eXBlcy5sZXplbiIsInpkcy5zY29wZXMuemFrZW4uYWFubWFrZW4iLCJ6ZHMuc2NvcGVzLnpha2VuLmxlemVuIl0sInphYWt0eXBlcyI6WyJodHRwczovL3JlZi50c3Qudm5nLmNsb3VkL3p0Yy9hcGkvdjEvY2F0YWxvZ3Vzc2VuLzhmZmIxMWYwLWM3Y2MtNGUzNS04YTY0LWEwNjM5YWViOGYxOC96YWFrdHlwZW4vYzJmOTUyY2EtMjk4ZS00ODhjLWIxYmUtYTg3ZjExYmQ1ZmEyIiwiaHR0cHM6Ly9yZWYudHN0LnZuZy5jbG91ZC96dGMvYXBpL3YxL2NhdGFsb2d1c3Nlbi84ZmZiMTFmMC1jN2NjLTRlMzUtOGE2NC1hMDYzOWFlYjhmMTgvemFha3R5cGVuLzBjMDFkNzNmLWRlNjUtNDE1OC1iYzBlLTNmMTc4ZjZmMWNiZSIsImh0dHBzOi8vcmVmLnRzdC52bmcuY2xvdWQvenRjL2FwaS92MS9jYXRhbG9ndXNzZW4vNjlhNzRlMDgtNzkxMS00ZGYxLTk0ZDAtZWU5YTNjZDA1NGFhL3phYWt0eXBlbi8wNTI2MTFhMy04MzIyLTRiZjktYWYzMi1mYjY5YWI4MzQwZWYiLCJodHRwczovL3JlZi50c3Qudm5nLmNsb3VkL3p0Yy9hcGkvdjEvY2F0YWxvZ3Vzc2VuLzY5YTc0ZTA4LTc5MTEtNGRmMS05NGQwLWVlOWEzY2QwNTRhYS96YWFrdHlwZW4vY2NiNmY1ODktMzU4NC00OTJhLWEzNjEtMTI4NDlhMjRiN2MxIiwiaHR0cHM6Ly9yZWYudHN0LnZuZy5jbG91ZC96dGMvYXBpL3YxL2NhdGFsb2d1c3Nlbi82OWE3NGUwOC03OTExLTRkZjEtOTRkMC1lZTlhM2NkMDU0YWEvemFha3R5cGVuLzQwMjg4YzI5LTNiMDItNDdlOC1iMmFiLTVlN2EwY2FhNDJiMCIsImh0dHBzOi8vcmVmLnRzdC52bmcuY2xvdWQvenRjL2FwaS92MS9jYXRhbG9ndXNzZW4vZjdhZmQxNTYtYzhmNS00NjY2LWI4YjUtMjhhNGE5YjVkZmM3L3phYWt0eXBlbi8wMTE5ZGQ0ZS03YmU5LTQ3N2UtYmNjZi03NTAyM2IxNDUzYzEiXX19.to5J9JTTzckAPC5HBTyKIB8LmQmXtM0L0RiMVfepJX8",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "fab5694c-c343-49ca-94c1-36565d7cafac",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "ed70ea49-3d69-4bef-a4ba-20a03a656e26",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

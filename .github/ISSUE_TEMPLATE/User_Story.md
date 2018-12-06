@@ -1,5 +1,5 @@
 ---
-name: Als ... wil ik ...
+name: User Story
 about: Beschrijving van een feature/user story
 
 ---

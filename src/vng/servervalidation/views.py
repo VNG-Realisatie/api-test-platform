@@ -1,39 +1,34 @@
 import uuid
-from django.shortcuts import render, get_object_or_404, redirect
+
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic.list import ListView
-from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
-from django.utils import timezone
-from django.urls import reverse
-from django.conf import settings
-from django.views import View
-from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView
 from django.core.files import File
-from django.core.files.storage import FileSystemStorage, default_storage
-from django.core.files.base import ContentFile
-from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
-from rest_framework import routers, serializers, viewsets
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
-from rest_framework import permissions, generics
-from ..permissions.UserPermissions import *
-from .serializers import TestScenarioSerializer, ServerRunSerializer
-from .models import TestScenario, ServerRun
+from django.http import HttpResponse, HttpResponseForbidden
+from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
+from django.utils import timezone
+from django.views import View
+from django.views.generic import DetailView
+from rest_framework import permissions
+from rest_framework import viewsets
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication
+
+from ..utils.views import ListAppendView
+from .forms import CreateServerRunForm
+from .models import ServerRun
 from .newman import NewmanManager
+from .serializers import ServerRunSerializer
+from ..permissions.UserPermissions import *
 
 
-class ServerRunView(LoginRequiredMixin, CreateView, ListView):
+class ServerRunView(LoginRequiredMixin, ListAppendView):
     template_name = 'servervalidation/server-run_list.html'
     context_object_name = 'server_run_list'
     paginate_by = 10
     model = ServerRun
-    fields = ['test_scenario', 'api_endpoint']
+    form_class = CreateServerRunForm
 
     def get_queryset(self):
-        return ServerRun.objects.filter(user=self.request.user).order_by('-started')
-
-    #template_name = 'servervalidation/start_server-run.html'
+        return self.model.objects.filter(user=self.request.user).order_by('-started')
 
     def get_success_url(self):
         return reverse('server_run:server-run_list')
@@ -43,7 +38,8 @@ class ServerRunView(LoginRequiredMixin, CreateView, ListView):
         form.instance.started = timezone.now()
         if form.is_valid():
             file_name = str(uuid.uuid4())
-            file = NewmanManager(form.instance.test_scenario.validation_file, form.instance.api_endpoint).execute_test()
+            file = NewmanManager(form.instance.test_scenario.validation_file, form.instance.api_endpoint) \
+                .execute_test()
             form.instance.log.save(file_name, File(file))
             form.instance.status = ServerRun.StatusChoices.stopped
             form.instance.stopped = timezone.now()
@@ -83,7 +79,6 @@ def isOwner(obj, user):
 
 
 class ServerRunLogView(View):
-
     def get(self, request, pk):
         server_run = get_object_or_404(ServerRun, pk=pk)
         if not isOwner(server_run, request.user):

@@ -59,5 +59,5 @@ module.exports = {
     htmlTemplatesDir: sourcesRoot + 'templates/',
 
     // Path to HTML includes directory
-    htmlIncludesDir: sourcesRoot + 'templates/includes/'
+    htmlIncludesDir: sourcesRoot + 'templates/components/'
 };

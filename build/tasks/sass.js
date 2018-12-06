@@ -16,7 +16,7 @@ var paths = require('../paths');
  * Auto prefixes css
  * Writes css to paths.cssDir
  */
-gulp.task('sass', ['font-awesome'], function() {
+gulp.task('sass', function() {
     // Searches for sass files in paths.sassSrc
     return gulp.src(paths.sassSrc)
         // Compiles sass to css

@@ -80,7 +80,7 @@ gulp.task('create-component', function() {
     // Creates an HTML file in includes if --html-include is passed
     if (argv.htmlInclude) {
         new file(argv.name + '.html', '')
-            .pipe(gulp.dest(paths.htmlIncludesDir))
+            .pipe(gulp.dest(paths.htmlIncludesDir + argv.name))
     }
 });
 

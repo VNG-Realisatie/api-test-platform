@@ -26,13 +26,17 @@ $grid-margin-8: 80px;
 $grid-margin-9: 90px;
 $grid-margin-10: 100px;
 
-@mixin container() {
+@mixin container($layout: flex) {
   $max-width-mobile: calc(100% - #{2 * $grid-container-padding});
 
   @include responsive(max-width, $max-width-mobile, $max-width-mobile, $max-width-mobile, $grid-container-size);
   width: 100%;
   margin-left: auto;
   margin-right: auto;
+
+  @if $layout == flex {
+    display: flex;
+  }
 }
 
 @mixin container--big() {

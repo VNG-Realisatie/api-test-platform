@@ -1,6 +1,7 @@
 @import 'color';
 @import 'grid';
 
+$typography-body-line-height: 28px;
 $typography-color-link: $color-blue;
 $typography-color-border: $color-gray;
 $typography-margin-1: $grid-margin-1;
@@ -86,7 +87,7 @@ $typography-margin-2: $grid-margin-2;
 
 @mixin body--big {
   font-size: 20px;
-  line-height: 24px;
+  line-height: $typography-body-line-height;
 }
 
 @mixin anchor($hover: true) {
@@ -104,6 +105,10 @@ $typography-margin-2: $grid-margin-2;
   }
 }
 
+@mixin bold {
+  font-weight: 700;
+}
+
 @mixin hr($margin: false, $margin-property: margin) {
   height: 2px;
   background-color: $typography-color-border;
@@ -111,14 +116,13 @@ $typography-margin-2: $grid-margin-2;
   margin: 0;
 
   @include _margin($margin, $margin-property, $typography-margin-2 0);
-
 }
 
 
 @mixin _h {
   @include _text;
   font-family: 'RO Sans', Calibri, Verdana, sans-serif;
-  font-weight: 700;
+  @include bold;
 }
 
 @mixin _text {

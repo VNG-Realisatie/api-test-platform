@@ -1,6 +1,32 @@
 {% extends "sniplates/django.html" %}
 {% load i18n sniplates %}
 
+{% block _errors %}
+    {% if errors %}
+        <ul class="form__error-list">
+            {% for error in errors %}
+                <li class="form__error">{{ error }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}
+
+
+{% block input %}
+    {% with input_type=input_type|default:"text" %}
+        <input type="{{ input_type }}"
+               name="{{ html_name }}"
+               id="{{ id }}"
+               value="{{ raw_value|default:"" }}"
+               class="{{ css_classes }}{{ errors|yesno:" form__input--error," }}"
+            {{ widget.attrs|flatattrs }}
+            {{ required|yesno:"required," }}
+               {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
+        >
+    {% endwith %}
+{% endblock %}
+
+
 {% block _label %}
     {% if label %}<label class="form__label" for="{{ id_for_label }}">{{ label }}</label>{% endif %}
 {% endblock %}
@@ -10,12 +36,12 @@
 {% endblock _help %}
 
 
-
 {% block Select %}
     <div class="form__control" role="group">
         {% reuse '_label' %}
 
-        <select name="{{ html_name }}" id="{{ id }}" class='form__input' {{ widget.attrs|flatattrs }}>
+        <select name="{{ html_name }}" id="{{ id }}"
+                class="form__select{{ errors|yesno:" form__select--error," }}" {{ widget.attrs|flatattrs }}>
             {% for choice in choices %}
                 {% if choice.is_group %}
                     <optgroup label="{{ choice.value }}">
@@ -28,6 +54,8 @@
                 {% endif %}
             {% endfor %}
         </select>
+
+        {% reuse '_errors' %}
     </div>
 {% endblock %}
 
@@ -37,6 +65,7 @@
         {% reuse '_label' %}
         {% reuse 'input' css_classes='form__input' placeholder=placeholder|default:label %}
         {% reuse '_help' %}
+        {% reuse '_errors' %}
     </div>
 {% endblock TextInput %}
 
@@ -47,7 +76,6 @@
 {% block submit-btn %}
     <button class="button button--primary" type="submit">{% trans 'Submit' %}</button>
 {% endblock submit-btn %}
-
 
 
 {% block CheckboxSelectMultiple %}
@@ -67,6 +95,8 @@
                 {% endif %}
             {% endfor %}
         </ul>
+
+        {% reuse '_errors' %}
     </div>
 {% endblock %}
 

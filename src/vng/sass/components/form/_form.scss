@@ -14,13 +14,38 @@
     @include responsive(width, 100%, 50%, 50%, 50%);
   }
 
+  & &__error-list,
   & &__help,
   & &__label,
-  & &__input {
+  & &__input,
+  & &__select {
     @include body;
     @include responsive(width, 100%, 50%, 50%, 50%);
     height: $form-margin-4;
     line-height: $form-margin-4;
+  }
+
+  & &__error-list,
+  & &__error {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  & &__error {
+    @include body;
+
+    &:before {
+      background-color: $form-color-error;
+      color: $form-color-error-icon;
+      content: '!';
+      float: left;
+      font-weight: bold;
+      width: $form-size-error-block;
+      height: $form-size-error-block;
+      margin-right: $form-margin-1;
+      text-align: center;
+    }
   }
 
   & &__help,
@@ -29,16 +54,19 @@
   }
 
   & &__input,
+  & &__select,
   .button {
     appearance: none;
     border: none;
   }
 
-  & &__input {
+  & &__input,
+  & &__select {
     @include animate;
     appearance: none;
     box-sizing: border-box;
     background-color: $form-color-input-background;
+    border-radius: 0;
     outline: none;
     padding: 0.2rem 0.5rem;
 
@@ -50,6 +78,17 @@
     &:not([disabled]):hover {
       border-bottom: 2px solid $form-color-focussed;
     }
+  }
+
+  & &__input#{&}__input--error,
+  & &__select#{&}__select--error {
+    border-bottom-color: $form-color-error;
+  }
+
+  & &__select {
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgeD0iMTJweCIgeT0iMHB4IiB3aWR0aD0iMjRweCIgaGVpZ2h0PSIzcHgiIHZpZXdCb3g9IjAgMCA2IDMiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDYgMyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBvbHlnb24gcG9pbnRzPSI1Ljk5MiwwIDIuOTkyLDMgLTAuMDA4LDAgIi8+PC9zdmc+");
+    background-repeat: no-repeat;
+    background-position: right;
   }
 
   & &__help {

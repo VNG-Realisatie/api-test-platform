@@ -3,4 +3,5 @@
 .content {
   @include container;
   @include gutter(padding-top);
+  @include gutter(padding-bottom);
 }

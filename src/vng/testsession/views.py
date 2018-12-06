@@ -1,27 +1,28 @@
-from datetime import datetime
 import time
 import json
+import time
+
 import requests
-from django.utils import timezone
-from django.shortcuts import render, get_object_or_404, redirect
-from django.views.generic.list import ListView
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-from django.views.generic.edit import CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, HttpResponseRedirect
-from django.views import View
-from django.core import serializers
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
-from rest_framework import routers, serializers, viewsets
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
+from django.utils import timezone
+from django.views import View
+from django.views.generic.edit import CreateView
+from django.views.generic.list import ListView
 from rest_framework import permissions, generics
+from rest_framework import viewsets
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication
+
 from vng.testsession.models import Session, SessionType, SessionLog
+from .container_manager import K8S
 from .serializers import SessionSerializer, SessionTypesSerializer
-from .container_manager import ContainerManagerHelper, K8S
+from ..utils.views import ListAppendView
 
 
-class SessionListView(LoginRequiredMixin, CreateView, ListView):
+class SessionListView(LoginRequiredMixin, ListAppendView):
     template_name = 'testsession/sessions-list.html'
     context_object_name = 'sessions_list'
     paginate_by = 10

@@ -28,6 +28,8 @@
                 {% endif %}
             {% endfor %}
         </select>
+
+        {% reuse '_errors' %}
     </div>
 {% endblock %}
 
@@ -37,6 +39,7 @@
         {% reuse '_label' %}
         {% reuse 'input' css_classes='form__input' placeholder=placeholder|default:label %}
         {% reuse '_help' %}
+        {% reuse '_errors' %}
     </div>
 {% endblock TextInput %}
 
@@ -67,6 +70,8 @@
                 {% endif %}
             {% endfor %}
         </ul>
+
+        {% reuse '_errors' %}
     </div>
 {% endblock %}
 

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head lang="nl">
+    <meta charset="UTF-8">
+    <title>Rapport testuitvoering Zaakafhandelcomponent</title>
+
+    <style>
+      td: {border:solid 1px silver;}
+      .status_ok {background-color:green; color: white}
+      .status_fail {background-color:red; color: white}
+      .status_na {color:silver;}
+    </style>
+
+</head>
+<body>
+
+<h1>Rapport</h1>
+<table>
+  <tr><td>Geteste standaard</td><td>Zaak- documentservices</td></tr>
+  <tr><td>Rol</td><td>Zaakafhandelcomponent</td></tr>
+  <tr><td>Applicatie</td><td>MOR testapplicatie</td></tr>
+  <tr><td>Versie</td><td>1.x.x</td></tr>
+  <tr><td>Datum en tijd rapportage</td><td>6 december 2018 13:39</td></tr>
+  <tr><td>Datum en tijd uitgevoerd</td><td>6 december 2018 13:11</td></tr>
+  <tr><td></td><td></td></tr>
+  <tr><td></td><td></td></tr>
+</table>
+
+<h2>Resultaten</h2>
+<!-- Totaalresultaat van de test.
+* Ja: product is geslaagd voor alle scenario's in de test / operaties in de standaard
+* Gedeeltelijk: product heeft deel van alle scenario's in de test / operaties in de standaard succesvol uitgevoerd
+* Nee: product heeft op ten minste één scenario / operatie een gefaalde test -->
+<p>Product is compliant met de standaard: Nee</p>
+
+<table>
+  <tr><th>Scenario</th><th>Resultaat</th></tr>
+  <tr><td>GET /klantcontacten</td><td class="status_na">Niet uitgevoerd</td></tr>
+  <tr><td>POST /klantcontacten</td><td class="status_na">Niet uitgevoerd</td></tr>
+  <tr><td>GET /klantcontacten/{uuid}</td><td class="status_na">Niet uitgevoerd</td></tr>
+  <tr><td>GET /rollen</td><td class="status_na">Niet uitgevoerd</td></tr>
+  <tr><td>POST /rollen</td><td class="status_na">Niet uitgevoerd</td></tr>
+  <tr><td>GET /statussen</td><td class="status_na">Niet uitgevoerd</td></tr>
+  <tr><td>POST /statussen</td><td class="status_fail">Niet succesvol</td></tr>
+  <tr><td>GET /zaken</td><td class="status_ok">Succesvol</td></tr>
+  <tr><td>POST /zaken</td><td class="status_ok">Succesvol</td></tr>
+  <tr><td>GET /zaken/{uuid}</td><td class="status_na">Niet uitgevoerd</td></tr>
+  <tr><td>PUT /zaken/{uuid}</td><td class="status_ok">Succesvol</td></tr>
+  <tr><td>GET /catalogussen/{catalogus_uuid}/zaaktypen</td><td class="status_ok">Succesvol</td></tr>
+</table>
+
+</body>
+</html>

@@ -22,7 +22,7 @@ urlpatterns = [
     url(r'^reset/done/$', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
 
     # Simply show the master template.
-    url(r'^login/$', auth_views.LoginView.as_view(template_name="login.html"), name='login'),
+    url(r'^login/', auth_views.LoginView.as_view(template_name="login.html"), name='login'),
     url(r'^logout/$', auth_views.LogoutView.as_view(), {'next_page': '/login'}, name='logout'),
 
     # redirect the request to the testession

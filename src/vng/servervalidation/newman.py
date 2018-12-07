@@ -5,6 +5,7 @@ import os
 import json
 from urllib.parse import urlparse
 from django.conf import settings
+from django.http import HttpResponse
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +31,8 @@ class NewmanManager:
         logger.debug('Running the COMMAND: {}'.format(command))
         subp = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         err = subp.stderr.read()
+        if err:
+            logger.info("The following command - {} - generated an error: {}".format(command, str(err)))
         logger.debug(str(err))
         return (subp.stdout, err)
 
@@ -62,6 +65,8 @@ class NewmanManager:
             self.file_path = self.file.path
         filename = str(uuid.uuid4())
         output, error = self.run_command(self.RUN_COMMAND, self.file_path, filename)
+        if error:
+            return HttpResponse(status=500)
         f = open('{}/{}.html'.format(self.REPORT_FOLDER, filename))
         self.file_to_be_discarted.append(f)
 

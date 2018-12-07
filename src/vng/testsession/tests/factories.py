@@ -3,6 +3,7 @@ import factory
 from factory.django import DjangoModelFactory as Dmf
 from vng.accounts.models import User
 from ..models import SessionType, Session
+from ...utils import choices
 
 
 class SessionTypeFactory(Dmf):
@@ -10,8 +11,9 @@ class SessionTypeFactory(Dmf):
     class Meta:
         model = SessionType
 
-    name = factory.sequence(lambda n:'testype %d' % n)
+    name = factory.sequence(lambda n: 'testype %d' % n)
     docker_image = 'di'
+
 
 class UserFactory(Dmf):
 
@@ -29,7 +31,6 @@ class SessionFactory(Dmf):
 
     session_type = factory.SubFactory(SessionTypeFactory)
     started = timezone.now()
-    status = Session.StatusChoices.starting
+    status = choices.StatusChoices.starting
     user = factory.SubFactory(UserFactory)
     api_endpoint = 'http://google.com'
-

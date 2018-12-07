@@ -21,6 +21,7 @@ from vng.testsession.models import Session, SessionType, SessionLog
 from .container_manager import K8S
 from .serializers import SessionSerializer, SessionTypesSerializer
 from ..utils.views import ListAppendView, OwnerObjectMixin
+from ..utils import choices
 from ..permissions import UserPermissions
 
 
@@ -34,7 +35,7 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update({
-            'stop': Session.StatusChoices.stopped
+            'stop': choices.StatusChoices.stopped
         })
         return context
 
@@ -75,7 +76,7 @@ class StopSession(LoginRequiredMixin, OwnerObjectMixin, View):
 
     def post(self, request, *args, **kwargs):
         session = self.get_object()
-        session.status = Session.StatusChoices.stopped
+        session.status = choices.StatusChoices.stopped
         session.save()
         return HttpResponseRedirect(reverse('testsession:sessions'))
 

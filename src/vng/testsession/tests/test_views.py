@@ -11,6 +11,7 @@ from vng.accounts.models import User
 
 from ..models import Session, SessionType
 from .factories import SessionFactory, SessionTypeFactory, UserFactory
+from ...utils import choices
 
 
 def get_object(r):
@@ -61,7 +62,7 @@ class AuthorizationTests(WebTest):
         session = {
             'session_type': 1,
             'started': str(timezone.now()),
-            'status': Session.StatusChoices.running,
+            'status': choices.StatusChoices.running,
             'api_endpoint': 'http://google.com',
         }
         call = self.app.post('/api/v1/testsessions/', session, status=401)
@@ -77,7 +78,7 @@ class CreationAndDeletion(WebTest):
         session = {
             'session_type': 1,
             'started': str(timezone.now()),
-            'status': Session.StatusChoices.running,
+            'status': choices.StatusChoices.running,
             'api_endpoint': 'http://google.com'
         }
         call = self.app.post('/api/auth/login/', params=collections.OrderedDict([
@@ -92,7 +93,7 @@ class CreationAndDeletion(WebTest):
         session = {
             'session_type': 1,
             'started': str(timezone.now()),
-            'status': Session.StatusChoices.running,
+            'status': choices.StatusChoices.running,
             'api_endpoint': 'http://google.com',
             'user': 4
         }

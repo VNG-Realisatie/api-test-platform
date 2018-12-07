@@ -97,6 +97,10 @@ warnings.filterwarnings(
     RuntimeWarning, r'django\.db\.models\.fields',
 )
 
+INSTALLED_APPS += [
+    'django_extensions',
+]
+
 # Override settings with local settings.
 try:
     from .local import *  # noqa

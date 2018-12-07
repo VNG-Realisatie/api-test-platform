@@ -117,7 +117,6 @@ TEMPLATES = [
                 'vng.utils.context_processors.settings',
                 # REQUIRED FOR ADMIN INDEX
                 'django_admin_index.context_processors.dashboard',
-                'sekizai.context_processors.sekizai',
             ],
             'loaders': RAW_TEMPLATE_LOADERS
         },

@@ -27,8 +27,8 @@ class Session(models.Model):
 
     def create_empty_log(self):
         filename = str(uuid.uuid4())
-        file = open("/files/log/{}".format(filename))
-        self.log.save(filename, File(file))
+        with open("/files/log/{}".format(filename)) as file:
+            self.log.save(filename, File(file))
 
     def __str__(self):
         if self.user:

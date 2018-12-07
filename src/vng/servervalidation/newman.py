@@ -7,6 +7,8 @@ from urllib.parse import urlparse
 from django.conf import settings
 from django.http import HttpResponse
 
+from ..utils.commands import run_command
+
 logger = logging.getLogger(__name__)
 
 
@@ -18,7 +20,10 @@ class NewmanManager:
     def __init__(self, file, api_endpoint):
         self.file = file
         self.file_to_be_discarted = []
+
         self.api_endpoint = api_endpoint
+        if not os.path.exists(self.REPORT_FOLDER):
+            os.makedirs(self.REPORT_FOLDER)
 
     def __del__(self):
         for file in self.file_to_be_discarted:
@@ -28,13 +33,7 @@ class NewmanManager:
 
     def run_command(self, command, *args):
         command = command.format(*args)
-        logger.debug('Running the COMMAND: {}'.format(command))
-        subp = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        err = subp.stderr.read()
-        if err:
-            logger.info("The following command - {} - generated an error: {}".format(command, str(err)))
-        logger.debug(str(err))
-        return (subp.stdout, err)
+        return run_command(command)
 
     def prepare_file(self):
         '''

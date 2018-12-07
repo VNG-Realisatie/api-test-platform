@@ -304,6 +304,8 @@ PROJECT_NAME = 'vng'
 ENVIRONMENT = None
 SHOW_ALERT = True
 
+RUN_KUBERNETES_CMD = False
+
 #
 # Library settings
 #

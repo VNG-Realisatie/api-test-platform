@@ -112,3 +112,5 @@ LOGGING['handlers'].update({
         'dsn': RAVEN_CONFIG['dsn']
     },
 })
+
+RUN_KUBERNETES_CMD = True

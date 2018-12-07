@@ -12,6 +12,11 @@
     <td class="table__cell">{{ session.session_type.name }}</td>
     <td class="table__cell">{{ session.user.username }}</td>
     <td class="table__cell">{{ session.api_endpoint }}</td>
+    {% if session.exposed_api %}
+    <td class="table__cell">/runtest/{{ session.exposed_api }}</td>
+    {% else %}
+    <td class="table__cell">None</td>
+    {% endif %}
     <td class="table__cell">
         {% if not session.is_stopped %}
         <form method="POST" action="{% url 'testsession:stop_session' session.id %}">

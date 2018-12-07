@@ -5,6 +5,7 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.generic.base import TemplateView
+from .decorators import anonymous_required
 
 handler500 = 'vng.utils.views.server_error'
 admin.site.site_header = 'vng admin'
@@ -22,7 +23,7 @@ urlpatterns = [
     url(r'^reset/done/$', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
 
     # Simply show the master template.
-    url(r'^login/', auth_views.LoginView.as_view(template_name="login.html"), name='login'),
+    url(r'^login/', anonymous_required(auth_views.LoginView.as_view(template_name="login.html")), name='login'),
     url(r'^logout/$', auth_views.LogoutView.as_view(), {'next_page': '/login'}, name='logout'),
 
     # redirect the request to the testession

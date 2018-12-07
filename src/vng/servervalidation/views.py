@@ -18,6 +18,8 @@ from .forms import CreateServerRunForm
 from .models import ServerRun
 from .newman import NewmanManager
 from .serializers import ServerRunSerializer
+from ..utils.views import OwnerObjectMixin
+from ..utils import choices
 from ..permissions.UserPermissions import *
 
 
@@ -42,7 +44,7 @@ class ServerRunView(LoginRequiredMixin, ListAppendView):
             file = NewmanManager(form.instance.test_scenario.validation_file, form.instance.api_endpoint) \
                 .execute_test()
             form.instance.log.save(file_name, File(file))
-            form.instance.status = ServerRun.StatusChoices.stopped
+            form.instance.status = choices.StatusChoices.stopped
             form.instance.stopped = timezone.now()
 
         redirect = super().form_valid(form)
@@ -54,13 +56,16 @@ class ServerRunOutput(LoginRequiredMixin, DetailView):
     template_name = 'servervalidation/server-run_detail.html'
 
 
-def stop_session(request, session_id):
-    server = get_object_or_404(ServerRun, pk=session_id)
-    if request.user != server.user:
-        return HttpResponse('Unauthorized', status=401)
-    server.stopped = timezone.now()
-    server.save()
-    return redirect(reverse('server-run_list'))
+class StopServer(LoginRequiredMixin, OwnerObjectMixin, View):
+    model = ServerRun
+    pk_name = 'server_id'
+
+    def post(self, request, *args, **kwargs):
+        server = self.get_object()
+        server.stopped = timezone.now()
+        server.status = choices.StatusChoices.stopped
+        server.save()
+        return redirect(reverse('server_run:server-run_list'))
 
 
 class ServerRunViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
@@ -73,10 +78,6 @@ class ServerRunViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user, pk=None)
-
-
-def isOwner(obj, user):
-    return obj.user == user
 
 
 class ServerRunLogView(LoginRequiredMixin, View):

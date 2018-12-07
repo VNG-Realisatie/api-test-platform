@@ -12,6 +12,7 @@ from django.utils import timezone
 from django.views import View
 from django.views.generic.edit import CreateView
 from django.views.generic.list import ListView
+from django.views.generic.detail import SingleObjectMixin
 from rest_framework import permissions, generics
 from rest_framework import viewsets
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
@@ -19,7 +20,8 @@ from rest_framework.authentication import SessionAuthentication, TokenAuthentica
 from vng.testsession.models import Session, SessionType, SessionLog
 from .container_manager import K8S
 from .serializers import SessionSerializer, SessionTypesSerializer
-from ..utils.views import ListAppendView
+from ..utils.views import ListAppendView, OwnerObjectMixin
+from ..permissions import UserPermissions
 
 
 class SessionListView(LoginRequiredMixin, ListAppendView):
@@ -67,14 +69,15 @@ class SessionLogView(LoginRequiredMixin, ListView):
         return SessionLog.objects.filter(session__pk=self.kwargs['session_id']).order_by('-date')
 
 
-@login_required
-def stop_session(request, session_id):
-    session = get_object_or_404(Session, pk=session_id)
-    if request.user != session.user:
-        return HttpResponse('Unauthorized', status=401)
-    session.status = Session.StatusChoices.stopped
-    session.save()
-    return HttpResponseRedirect(reverse('testsession:sessions'))
+class StopSession(LoginRequiredMixin, OwnerObjectMixin, View):
+    model = Session
+    pk_name = 'session_id'
+
+    def post(self, request, *args, **kwargs):
+        session = self.get_object()
+        session.status = Session.StatusChoices.stopped
+        session.save()
+        return HttpResponseRedirect(reverse('testsession:sessions'))
 
 
 class SessionCreate(CreateView):

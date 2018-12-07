@@ -1,6 +1,7 @@
 from django import http
-from django.http import Http404
+from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.template import loader, TemplateDoesNotExist
+from django.shortcuts import get_object_or_404
 from django.views.defaults import ERROR_500_TEMPLATE_NAME
 from django.views.decorators.csrf import requires_csrf_token
 from django.views.generic.edit import ModelFormMixin, ProcessFormView
@@ -24,7 +25,6 @@ def server_error(request, template_name=ERROR_500_TEMPLATE_NAME):
         return http.HttpResponseServerError('<h1>Server Error (500)</h1>', content_type='text/html')
     context = {'request': request}
     return http.HttpResponseServerError(template.render(context))
-
 
 
 class ListAppendView(MultipleObjectMixin, MultipleObjectTemplateResponseMixin, ModelFormMixin, ProcessFormView):
@@ -54,3 +54,15 @@ class ListAppendView(MultipleObjectMixin, MultipleObjectTemplateResponseMixin, M
     def form_invalid(self, form):
         self.object_list = self.get_queryset()
         return self.render_to_response(self.get_context_data(object_list=self.object_list, form=form))
+
+
+class OwnerObjectMixin(object):
+    def get_object(self):
+        pk = self.kwargs.get(self.pk_name)
+        if pk is None:
+            raise Exception('Primary key param name not defined')
+        obj = get_object_or_404(self.model, pk=pk)
+        if obj.user != self.request.user:
+            return HttpResponse('Unauthorized', status=401)
+        else:
+            return obj

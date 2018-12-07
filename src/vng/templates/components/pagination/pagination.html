@@ -1,0 +1,34 @@
+{% load i18n %}
+{% spaceless %}
+    {% if is_paginated %}
+        <nav class="pagination" role="doc-pagelist">
+            <ol class="pagination__list">
+                {% if page_obj.has_previous %}
+                    <li class="pagination__list-item">
+                        <a class="pagination__link" href="?page={{ page_obj.previous_page_number }}">{{ _('Previous') }}</a>
+                    </li>
+                {% else %}
+                    <li class="pagination__list-item pagination__list-item--disabled">{{ _('Previous') }}</li>
+                {% endif %}
+
+                {% for i in paginator.page_range %}
+                    {% if page_obj.number == i %}
+                        <li class="pagination__list-item pagination__list-item--active">{{ i }}</li>
+                    {% else %}
+                        <li class="pagination__list-item"><a class="pagination__link" href="?page={{ i }}">{{ i }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <li class="pagination__list-item">
+                        <a class="pagination__link" href="?page={{ page_obj.next_page_number }}">{{ _('Next') }}</a>
+                    </li>
+                {% else %}
+
+                    <li class="pagination__list-item pagination__list-item--disabled">{{ _('Next') }}</li>
+                {% endif %}
+            </ol>
+        </nav>
+    {% endif %}
+{% endspaceless %}

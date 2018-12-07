@@ -29,11 +29,8 @@ urlpatterns = [
     url(r'^api/auth/', include('vng.apiAuthentication.urls')),
     url(r'^api/v1/', include('vng.testsession.urls_api')),
     url(r'^api/v1/', include('vng.servervalidation.urls_api')),
-    url(r'^session/', include('vng.testsession.urls', namespace='testsession')),
     url(r'^server/', include('vng.servervalidation.urls', namespace='server_run')),
-    # url for the CMS
-    url(r'^', include('cms.urls')),
-
+    url(r'^', include('vng.testsession.urls', namespace='testsession')),
 ]
 
 # NOTE: The staticfiles_urlpatterns also discovers static files (ie. no need to run collectstatic). Both the static

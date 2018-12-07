@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('testsession', '0008_textpluginmodel'),
+        ('testsession', '0007_auto_20181114_1105'),
     ]
 
     operations = [

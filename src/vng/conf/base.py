@@ -60,15 +60,6 @@ INSTALLED_APPS = [
     'vng.apiAuthentication',
     'vng.servervalidation',
 
-    'cms',  # django CMS itself
-    'treebeard',  # utilities for implementing a tree
-    'menus',  # helper for model independent hierarchical website navigation
-    'sekizai',  # for JavaScript and CSS management
-
-    # Django CMS plugins
-    'djangocms_text_ckeditor',
-    'djangocms_picture',
-
     # Rest Framework
     'rest_framework',
     'rest_auth',
@@ -76,19 +67,6 @@ INSTALLED_APPS = [
     'debug_toolbar',
 
 ]
-
-SITE_ID = 1
-
-REST_FRAMEWORK = {
-    # Use Django's standard `django.contrib.auth` permissions,
-    # or allow read-only access for unauthenticated users.
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissions',
-    ],
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.BasicAuthentication',
-    )
-}
 
 APPEND_SLASH = True
 
@@ -101,12 +79,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
-    'cms.middleware.utils.ApphookReloadMiddleware',  # at the start of the list
-    'cms.middleware.user.CurrentUserMiddleware',
-    'cms.middleware.page.CurrentPageMiddleware',
-    'cms.middleware.toolbar.ToolbarMiddleware',
-    'cms.middleware.language.LanguageCookieMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
@@ -119,9 +91,6 @@ RAW_TEMPLATE_LOADERS = (
     # 'admin_tools.template_loaders.Loader',
 )
 
-CMS_TEMPLATES = (
-    ('template_1.html', 'Template One'),
-)
 
 DEBUG_TOOLBAR_CONFIG = {
     'INTERCEPT_REDIRECTS': False
@@ -145,7 +114,6 @@ TEMPLATES = [
                 # REQUIRED FOR ADMIN INDEX
                 'django_admin_index.context_processors.dashboard',
                 'sekizai.context_processors.sekizai',
-                'cms.context_processors.cms_settings',
             ],
             'loaders': RAW_TEMPLATE_LOADERS
         },
@@ -181,9 +149,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGES = (('en', 'English'),)
 
-DJANGOCMS_PICTURE_TEMPLATES = [
-    ('background', ('Background image')),
-]
 
 LANGUAGE_CODE = 'en'
 

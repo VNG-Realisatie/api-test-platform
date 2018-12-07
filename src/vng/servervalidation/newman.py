@@ -51,12 +51,11 @@ class NewmanManager:
 
         for item in input['item']:
             item['request']['url']['host'] = urlparse(self.api_endpoint).hostname.split('.')
-
-        output = open(output_path, 'w')
-        json.dump(input, output)
-        output.close()
-        self.file_path = output_path
-        self.file_to_be_discarted.append(output)
+        with open(output_path, 'w') as output:
+            json.dump(input, output)
+            output.close()
+            self.file_path = output_path
+            self.file_to_be_discarted.append(output)
 
     def execute_test(self):
         if self.api_endpoint is not None:
@@ -67,8 +66,8 @@ class NewmanManager:
         output, error = self.run_command(self.RUN_COMMAND, self.file_path, filename)
         if error:
             return HttpResponse(status=500)
-        f = open('{}/{}.html'.format(self.REPORT_FOLDER, filename))
-        self.file_to_be_discarted.append(f)
+        with open('{}/{}.html'.format(self.REPORT_FOLDER, filename)) as f:
+            self.file_to_be_discarted.append(f)
 
-        if error is not None:
-            return f
+            if error is not None:
+                return f

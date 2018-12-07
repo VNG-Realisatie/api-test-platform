@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views import View
 from django.views.generic import DetailView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from rest_framework import permissions
 from rest_framework import viewsets
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
@@ -48,7 +49,7 @@ class ServerRunView(LoginRequiredMixin, ListAppendView):
         return redirect
 
 
-class ServerRunOutput(DetailView):
+class ServerRunOutput(LoginRequiredMixin, DetailView):
     model = ServerRun
     template_name = 'servervalidation/server-run_detail.html'
 
@@ -62,7 +63,7 @@ def stop_session(request, session_id):
     return redirect(reverse('server-run_list'))
 
 
-class ServerRunViewSet(viewsets.ModelViewSet):
+class ServerRunViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = ServerRunSerializer
@@ -78,7 +79,7 @@ def isOwner(obj, user):
     return obj.user == user
 
 
-class ServerRunLogView(View):
+class ServerRunLogView(LoginRequiredMixin, View):
     def get(self, request, pk):
         server_run = get_object_or_404(ServerRun, pk=pk)
         if not isOwner(server_run, request.user):

@@ -80,30 +80,6 @@ class StopSession(LoginRequiredMixin, OwnerObjectMixin, View):
         return HttpResponseRedirect(reverse('testsession:sessions'))
 
 
-class SessionCreate(CreateView):
-    template_name = 'testsession/start-session.html'
-    model = Session
-    fields = ['session_type']
-
-    def start_app(self, form):
-        kuber = K8S()
-        r = kuber.deploy(form.name, form.session_type.docker_image)
-        print(r)
-
-    def get_success_url(self):
-        return reverse('testsession:sessions')
-
-    def form_valid(self, form):
-        if self.request.user.is_anonymous:
-            return HttpResponse('Unauthorized', status=401)
-        form.instance.user = self.request.user
-        form.instance.started = timezone.now()
-        form.instance.status = 'started'
-        form.instance.name = str(self.request.user.id) + str(time.time()).replace('.', '-')
-        self.start_app(form.instance)
-        return super().form_valid(form)
-
-
 class SessionViewSet(viewsets.ModelViewSet):
     serializer_class = SessionSerializer
     authentication_classes = (TokenAuthentication, SessionAuthentication)
@@ -123,9 +99,12 @@ class SessionTypesViewSet(generics.ListAPIView):
     queryset = SessionType.objects.all()
 
 
-class RunTest(View):
+class RunTest(LoginRequiredMixin, SingleObjectMixin, View):
+    def get_queryset(self):
+        return get_object_or_404(Session, exposed_api=self.kwargs['url'])
+
     def get(self, request, url, relative_url):
-        session = get_object_or_404(Session, exposed_api=url)
+        session = self.get_queryset()
         session_log = SessionLog()
         session_log.session = session
 
@@ -151,7 +130,7 @@ class RunTest(View):
         return HttpResponse(r.text)
 
     def post(self, request, url, relative_url):
-        session = get_object_or_404(Session, exposed_api=url)
+        session = self.get_queryset()
         session_log = SessionLog()
         session_log.session = session
 

@@ -45,7 +45,6 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
     def start_app(self, form):
         kuber = K8S()
         r = kuber.deploy(form.name, form.session_type.docker_image)
-        print(r)
 
     def get_success_url(self):
         return reverse('testsession:sessions')

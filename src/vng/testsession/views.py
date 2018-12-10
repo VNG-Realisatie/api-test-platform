@@ -17,10 +17,10 @@ from rest_framework import permissions, generics
 from rest_framework import viewsets
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 
-from vng.testsession.models import Session, SessionType, SessionLog
+from vng.testsession.models import Session, SessionType, SessionLog, Scenario, ScenarioCase
 from .container_manager import K8S
 from .serializers import SessionSerializer, SessionTypesSerializer
-from ..utils.views import ListAppendView, OwnerObjectMixin
+from ..utils.views import ListAppendView, OwnerObjectMixin, SingleOwnerObject
 from ..utils import choices
 from ..permissions import UserPermissions
 
@@ -50,8 +50,6 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
         return reverse('testsession:sessions')
 
     def form_valid(self, form):
-        if self.request.user.is_anonymous:
-            return HttpResponse('Unauthorized', status=401)
         form.instance.user = self.request.user
         form.instance.started = timezone.now()
         form.instance.status = 'started'
@@ -97,6 +95,18 @@ class SessionTypesViewSet(generics.ListAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = SessionTypesSerializer
     queryset = SessionType.objects.all()
+
+
+class SessionReport(SingleOwnerObject):
+
+    model = Scenario
+    template_name = 'testsession/session-log.html'
+    field_name = 'session'
+
+    def get_queryset(self):
+        print(self.kwargs['session_id'])
+        return get_object_or_404(self.model, session__pk=self.kwargs['session_id'])
+        # return self.model.objects.filter(session__pk=self.kwargs['session_id'])
 
 
 class RunTest(SingleObjectMixin, View):

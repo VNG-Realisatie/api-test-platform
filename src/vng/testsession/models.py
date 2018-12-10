@@ -7,6 +7,7 @@ from ..utils import choices
 
 
 class SessionType(models.Model):
+
     name = models.CharField(max_length=200, unique=True)
     docker_image = models.CharField(max_length=200)
 
@@ -47,7 +48,25 @@ class Session(models.Model):
 
 
 class SessionLog(models.Model):
+
     date = models.DateTimeField(default=timezone.now)
     request = models.CharField(max_length=20000, null=True)
     response = models.CharField(max_length=20000, null=True)
     session = models.ForeignKey(Session, on_delete=models.SET_NULL, null=True)
+
+
+class ScenarioCase(models.Model):
+
+    url = models.CharField(max_length=200, unique=True, null=True)
+    result = models.CharField(max_length=20, choices=choices.HTTPCallChoiches.choices, default=choices.HTTPCallChoiches.not_called)
+
+
+class Scenario(models.Model):
+
+    session = models.ForeignKey(Session)
+    standard = models.CharField(max_length=200, null=True)
+    role = models.CharField(max_length=200, null=True)
+    application = models.CharField(max_length=200, null=True)
+    version = models.CharField(max_length=200, null=True)
+    created = models.DateTimeField(default=timezone.now)
+    performed = models.DateTimeField(null=True, blank=True)

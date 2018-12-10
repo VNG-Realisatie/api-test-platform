@@ -116,8 +116,28 @@ class SessionReport(OwnerMultipleObjects):
 
 
 class RunTest(SingleObjectMixin, View):
+    error_codes = [(400, 500)]
+
     def get_queryset(self):
         return get_object_or_404(Session, exposed_api=self.kwargs['url'])
+
+    def match_url(self, url, compare):
+        return True
+
+    def save_call(self, request, url, relative_url, session, status_code):
+        scenario_cases = ScenarioCase.objects.filter(scenario__pk=session.scenario.pk)
+        #scenario = scenario_cases[0].scenario
+        for case in scenario_cases:
+            if self.match_url(request.build_absolute_uri(), case.url):
+                is_failed = False
+                for a, b in self.error_codes:
+                    if status_code > a and status_code < b:
+                        case.result = choices.HTTPCallChoiches.failed
+                        is_failed = True
+                        break
+                if not is_failed:
+                    case.result = choices.HTTPCallChoiches.success
+                case.save()
 
     def get(self, request, url, relative_url):
         session = self.get_queryset()
@@ -143,6 +163,7 @@ class RunTest(SingleObjectMixin, View):
         res_json = json.dumps(res_json)
         session_log.response = res_json
         session_log.save()
+        self.save_call(request, url, relative_url, session, r.status_code)
         return HttpResponse(r.text)
 
     def post(self, request, url, relative_url):
@@ -170,4 +191,5 @@ class RunTest(SingleObjectMixin, View):
         res_json = json.dumps(res_json)
         session_log.response = res_json
         session_log.save()
+        self.save_call(request, url, relative_url, session, r.status_code)
         return HttpResponse(r.text)

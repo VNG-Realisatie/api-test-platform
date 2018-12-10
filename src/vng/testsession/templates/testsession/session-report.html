@@ -13,11 +13,11 @@
         <h1>VNG Testplatform session report</h1>
         <input type="button" class="button button--primary" value="Session list" onclick="location.href = '{% url 'testsession:sessions'  %}';">
         <input type="button" class="button button--primary" value="Report" onclick="location.href = '{% url 'testsession:sessions'  %}';">
-        {% if log_list %}
+        {% if object_list %}
         <table class="table">
-            {% include 'components/table/header-session-log.html' only %}
-            {% for log in log_list %}
-            {% include 'components/table/row-session-log.html' with log=log only %}
+            {% include 'components/table/header-session-report.html' only %}
+            {% for scenarioCase in object_list %}
+            {% include 'components/table/row-session-report.html' with scenarioCase=scenarioCase only %}
             {% endfor %}
         </table>
         {% else %}

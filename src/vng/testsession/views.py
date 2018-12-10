@@ -104,9 +104,7 @@ class SessionReport(SingleOwnerObject):
     field_name = 'session'
 
     def get_queryset(self):
-        print(self.kwargs['session_id'])
         return get_object_or_404(self.model, session__pk=self.kwargs['session_id'])
-        # return self.model.objects.filter(session__pk=self.kwargs['session_id'])
 
 
 class RunTest(SingleObjectMixin, View):

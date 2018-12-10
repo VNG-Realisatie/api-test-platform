@@ -40,6 +40,15 @@ class ScenarioCase(models.Model):
         else:
             return '{} - {}'.format(self.url, self.result)
 
+    def is_success(self):
+        return self.result == choices.HTTPCallChoiches.success
+
+    def is_failed(self):
+        return self.result == choices.HTTPCallChoiches.failed
+
+    def is_not_called(self):
+        return self.result == choices.HTTPCallChoiches.not_called
+
 
 class Session(models.Model):
 

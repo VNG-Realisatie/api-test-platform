@@ -73,18 +73,6 @@ class OwnerObjectMixin(LoginRequiredMixin):
             return obj
 
 
-class OwnerFKMixin(LoginRequiredMixin, SingleObjectMixin):
-
-    def get_object(self, queryset):
-        if not self.field_name:
-            raise Exception('Field "field_name" in subclasses has not been defined')
-
-        if queryset[self.field_name].user != self.request.user:
-            return HttpResponse('Unauthorized', status=401)
-        else:
-            return queryset
-
-
 class SingleOwnerObject(DetailView):
 
     def get_object(self, queryset):

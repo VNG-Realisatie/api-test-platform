@@ -15,6 +15,32 @@ class SessionType(models.Model):
         return self.name
 
 
+class Scenario(models.Model):
+
+    standard = models.CharField(max_length=200, null=True)
+    role = models.CharField(max_length=200, null=True)
+    application = models.CharField(max_length=200, null=True)
+    version = models.CharField(max_length=200, null=True)
+    created = models.DateTimeField(default=timezone.now)
+    performed = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return '{}-{}'.format(self.application, self.version)
+
+
+class ScenarioCase(models.Model):
+
+    url = models.CharField(max_length=200, unique=True, null=True)
+    result = models.CharField(max_length=20, choices=choices.HTTPCallChoiches.choices, default=choices.HTTPCallChoiches.not_called)
+    scenario = models.ForeignKey(Scenario, on_delete=models.SET_NULL, null=True, default=None)
+
+    def __str__(self):
+        if self.scenario:
+            return '{} - {} - {}'.format(self.scenario.application, self.url, self.result)
+        else:
+            return '{} - {}'.format(self.url, self.result)
+
+
 class Session(models.Model):
 
     name = models.CharField(max_length=20, unique=True, null=True)
@@ -25,6 +51,7 @@ class Session(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     api_endpoint = models.URLField(max_length=200, blank=True, null=True, default=None)
     exposed_api = models.CharField(max_length=200, unique=True, null=True)
+    scenario = models.ForeignKey(Scenario)
 
     def create_empty_log(self):
         filename = str(uuid.uuid4())
@@ -53,20 +80,3 @@ class SessionLog(models.Model):
     request = models.CharField(max_length=20000, null=True)
     response = models.CharField(max_length=20000, null=True)
     session = models.ForeignKey(Session, on_delete=models.SET_NULL, null=True)
-
-
-class ScenarioCase(models.Model):
-
-    url = models.CharField(max_length=200, unique=True, null=True)
-    result = models.CharField(max_length=20, choices=choices.HTTPCallChoiches.choices, default=choices.HTTPCallChoiches.not_called)
-
-
-class Scenario(models.Model):
-
-    session = models.ForeignKey(Session)
-    standard = models.CharField(max_length=200, null=True)
-    role = models.CharField(max_length=200, null=True)
-    application = models.CharField(max_length=200, null=True)
-    version = models.CharField(max_length=200, null=True)
-    created = models.DateTimeField(default=timezone.now)
-    performed = models.DateTimeField(null=True, blank=True)

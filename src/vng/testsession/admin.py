@@ -27,3 +27,15 @@ class SessionLogAdmin(admin.ModelAdmin):
     list_display = get_all_fields(model.SessionLog)
     list_filter = ['session', 'date']
     search_fields = ['session', 'date']
+
+
+@admin.register(model.Scenario)
+class ScenarioAdmin(admin.ModelAdmin):
+    list_display = get_all_fields(model.Scenario)
+    list_filter = ['version', 'application']
+    search_fields = ['version', 'application']
+
+
+@admin.register(model.ScenarioCase)
+class ScenarioCaseAdmin(admin.ModelAdmin):
+    list_display = get_all_fields(model.ScenarioCase)

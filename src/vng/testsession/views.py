@@ -1,6 +1,7 @@
 import time
 import json
 import time
+import re
 
 import requests
 from django.contrib.auth.decorators import login_required
@@ -122,7 +123,11 @@ class RunTest(SingleObjectMixin, View):
         return get_object_or_404(Session, exposed_api=self.kwargs['url'])
 
     def match_url(self, url, compare):
-        return True
+        # casting of the reference url into a regex
+        param_pattern = '{[^/]+}'
+        any_c = '[^/]+'
+        parsed_url = '( |/)*' + re.sub(param_pattern, any_c, compare)
+        return re.search(parsed_url, url) is not None
 
     def save_call(self, request, url, relative_url, session, status_code):
         scenario_cases = ScenarioCase.objects.filter(scenario__pk=session.scenario.pk)

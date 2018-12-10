@@ -1,6 +1,6 @@
 {% extends 'master.html' %}
 
-{% block title %}Session Log{% endblock%}
+{% block title %}Session Report{% endblock%}
 
 {% block content %}
 
@@ -10,9 +10,9 @@
 
 <article class="article">
     <div class="article__section">
-        <h1>VNG Testplatform log</h1>
+        <h1>VNG Testplatform session report</h1>
         <input type="button" class="button button--primary" value="Session list" onclick="location.href = '{% url 'testsession:sessions'  %}';">
-        <input type="button" class="button button--primary" value="Report" onclick="location.href = '{% url 'testsession:session_report' log_list.0.session.id %}';">
+        <input type="button" class="button button--primary" value="Report" onclick="location.href = '{% url 'testsession:sessions'  %}';">
         {% if log_list %}
         <table class="table">
             {% include 'components/table/header-session-log.html' only %}

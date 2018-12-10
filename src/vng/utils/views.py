@@ -7,6 +7,7 @@ from django.views.decorators.csrf import requires_csrf_token
 from django.views.generic.edit import ModelFormMixin, ProcessFormView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.list import MultipleObjectMixin, MultipleObjectTemplateResponseMixin
+from django.views.generic.detail import SingleObjectMixin, DetailView
 
 
 @requires_csrf_token
@@ -59,6 +60,9 @@ class ListAppendView(MultipleObjectMixin, MultipleObjectTemplateResponseMixin, M
 
 class OwnerObjectMixin(LoginRequiredMixin):
     def get_object(self):
+        if not self.pk_name:
+            raise Exception('Field "pk_name" in subclasses has not been defined')
+
         pk = self.kwargs.get(self.pk_name)
         if pk is None:
             raise Exception('Primary key param name not defined')
@@ -67,3 +71,33 @@ class OwnerObjectMixin(LoginRequiredMixin):
             return HttpResponse('Unauthorized', status=401)
         else:
             return obj
+
+
+class OwnerFKMixin(LoginRequiredMixin, SingleObjectMixin):
+
+    def get_object(self, queryset):
+        if not self.field_name:
+            raise Exception('Field "field_name" in subclasses has not been defined')
+
+        if queryset[self.field_name].user != self.request.user:
+            return HttpResponse('Unauthorized', status=401)
+        else:
+            return queryset
+
+
+class SingleOwnerObject(DetailView):
+
+    def get_object(self, queryset):
+        if not self.field_name:
+            raise Exception('Field "field_name" in subclasses has not been defined')
+
+        if queryset[self.field_name].user != self.request.user:
+            return HttpResponse('Unauthorized', status=401)
+        else:
+            return queryset
+
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        self.object = self.get_object(queryset)
+        context = self.get_context_data(object=self.object)
+        return self.render_to_response(context)

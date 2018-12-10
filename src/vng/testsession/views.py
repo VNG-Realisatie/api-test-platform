@@ -20,7 +20,7 @@ from rest_framework.authentication import SessionAuthentication, TokenAuthentica
 from vng.testsession.models import Session, SessionType, SessionLog, Scenario, ScenarioCase
 from .container_manager import K8S
 from .serializers import SessionSerializer, SessionTypesSerializer
-from ..utils.views import ListAppendView, OwnerObjectMixin, SingleOwnerObject
+from ..utils.views import ListAppendView, OwnerObjectMixin, SingleOwnerObject, OwnerMultipleObjects
 from ..utils import choices
 from ..permissions import UserPermissions
 
@@ -97,14 +97,22 @@ class SessionTypesViewSet(generics.ListAPIView):
     queryset = SessionType.objects.all()
 
 
-class SessionReport(SingleOwnerObject):
+class SessionReport(OwnerMultipleObjects):
 
-    model = Scenario
-    template_name = 'testsession/session-log.html'
-    field_name = 'session'
+    model = ScenarioCase
+    template_name = 'testsession/session-report.html'
+    field_name = 'scenario__session__user'
 
     def get_queryset(self):
-        return get_object_or_404(self.model, session__pk=self.kwargs['session_id'])
+        self.session = get_object_or_404(Session, pk=self.kwargs['session_id'])
+        return self.model.objects.filter(scenario__pk=self.session.scenario.pk)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'session': self.session
+        })
+        return context
 
 
 class RunTest(SingleObjectMixin, View):

@@ -5,10 +5,10 @@ from rest_framework import serializers
 class SessionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Session
-        fields = ['pk', 'session_type', 'started', 'stopped', 'status', 'api_endpoint']
+        fields = ['id', 'session_type', 'started', 'stopped', 'status', 'api_endpoint']
 
 
 class SessionTypesSerializer(serializers.ModelSerializer):
     class Meta:
         model = SessionType
-        fields = ['name', 'docker_image']
+        fields = ['id', 'name', 'docker_image']

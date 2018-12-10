@@ -133,16 +133,17 @@ class RunTest(SingleObjectMixin, View):
         scenario_cases = ScenarioCase.objects.filter(scenario__pk=session.scenario.pk)
         #scenario = scenario_cases[0].scenario
         for case in scenario_cases:
-            if self.match_url(request.build_absolute_uri(), case.url):
-                is_failed = False
-                for a, b in self.error_codes:
-                    if status_code > a and status_code < b:
-                        case.result = choices.HTTPCallChoiches.failed
-                        is_failed = True
-                        break
-                if not is_failed:
-                    case.result = choices.HTTPCallChoiches.success
-                case.save()
+            if case.HTTP_method == request.method:
+                if self.match_url(request.build_absolute_uri(), case.url):
+                    is_failed = False
+                    for a, b in self.error_codes:
+                        if status_code > a and status_code < b:
+                            case.result = choices.HTTPCallChoiches.failed
+                            is_failed = True
+                            break
+                    if not is_failed:
+                        case.result = choices.HTTPCallChoiches.success
+                    case.save()
 
     def get(self, request, url, relative_url):
         session = self.get_queryset()

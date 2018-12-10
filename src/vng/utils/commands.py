@@ -18,4 +18,4 @@ def run_command(command):
             logger.exception(err.decode('utf-8'))
             raise CommandError(err.decode('utf-8'), command)
     else:
-        return 'success'
+        return 'success', 'error'

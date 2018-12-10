@@ -123,6 +123,10 @@ class RunTest(SingleObjectMixin, View):
         return get_object_or_404(Session, exposed_api=self.kwargs['url'])
 
     def match_url(self, url, compare):
+        '''
+        Return True if the url matches the compare url.
+        The compare url contains the parameter matching group {param}
+        '''
         # casting of the reference url into a regex
         param_pattern = '{[^/]+}'
         any_c = '[^/]+'
@@ -130,8 +134,11 @@ class RunTest(SingleObjectMixin, View):
         return re.search(parsed_url, url) is not None
 
     def save_call(self, request, url, relative_url, session, status_code):
+        '''
+        Find the matching scenario case with the same url and method, if one match is found,
+        the result of the call is overrided
+        '''
         scenario_cases = ScenarioCase.objects.filter(scenario__pk=session.scenario.pk)
-        #scenario = scenario_cases[0].scenario
         for case in scenario_cases:
             if case.HTTP_method == request.method:
                 if self.match_url(request.build_absolute_uri(), case.url):

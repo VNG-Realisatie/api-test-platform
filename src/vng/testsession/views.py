@@ -12,7 +12,7 @@ from django.utils import timezone
 from django.views import View
 from django.views.generic.edit import CreateView
 from django.views.generic.list import ListView
-from django.views.generic.detail import SingleObjectMixin
+from django.views.generic.detail import SingleObjectMixin, DetailView
 from rest_framework import permissions, generics
 from rest_framework import viewsets
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
@@ -69,7 +69,7 @@ class SessionLogView(LoginRequiredMixin, ListView):
         return SessionLog.objects.filter(session__pk=self.kwargs['session_id']).order_by('-date')
 
 
-class StopSession(LoginRequiredMixin, OwnerObjectMixin, View):
+class StopSession(OwnerObjectMixin, View):
     model = Session
     pk_name = 'session_id'
 
@@ -99,7 +99,7 @@ class SessionTypesViewSet(generics.ListAPIView):
     queryset = SessionType.objects.all()
 
 
-class RunTest(LoginRequiredMixin, SingleObjectMixin, View):
+class RunTest(SingleObjectMixin, View):
     def get_queryset(self):
         return get_object_or_404(Session, exposed_api=self.kwargs['url'])
 
@@ -155,8 +155,3 @@ class RunTest(LoginRequiredMixin, SingleObjectMixin, View):
         session_log.response = res_json
         session_log.save()
         return HttpResponse(r.text)
-
-
-def update_status_session(session):
-    session.status = K8S().status(session.name)
-    session.save()

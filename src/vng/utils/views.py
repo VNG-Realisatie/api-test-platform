@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404
 from django.views.defaults import ERROR_500_TEMPLATE_NAME
 from django.views.decorators.csrf import requires_csrf_token
 from django.views.generic.edit import ModelFormMixin, ProcessFormView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.list import MultipleObjectMixin, MultipleObjectTemplateResponseMixin
 
 
@@ -56,7 +57,7 @@ class ListAppendView(MultipleObjectMixin, MultipleObjectTemplateResponseMixin, M
         return self.render_to_response(self.get_context_data(object_list=self.object_list, form=form))
 
 
-class OwnerObjectMixin(object):
+class OwnerObjectMixin(LoginRequiredMixin):
     def get_object(self):
         pk = self.kwargs.get(self.pk_name)
         if pk is None:

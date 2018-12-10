@@ -56,7 +56,7 @@ class ServerRunOutput(LoginRequiredMixin, DetailView):
     template_name = 'servervalidation/server-run_detail.html'
 
 
-class StopServer(LoginRequiredMixin, OwnerObjectMixin, View):
+class StopServer(OwnerObjectMixin, View):
     model = ServerRun
     pk_name = 'server_id'
 

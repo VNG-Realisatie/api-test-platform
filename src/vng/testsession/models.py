@@ -61,7 +61,7 @@ class Session(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     api_endpoint = models.URLField(max_length=200, blank=True, null=True, default=None)
     exposed_api = models.CharField(max_length=200, unique=True, null=True)
-    scenario = models.ForeignKey(Scenario)
+    scenario = models.ForeignKey(Scenario, blank=True, null=True, default=None)
 
     def create_empty_log(self):
         filename = str(uuid.uuid4())

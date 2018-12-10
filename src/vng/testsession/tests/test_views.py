@@ -105,6 +105,6 @@ class CreationAndDeletion(WebTest):
         head = {'Authorization': 'Token {}'.format(key)}
         call = self.app.post('/api/v1/testsessions/', session, headers=head)
         response_parsed = get_object(call.body)
-        session = Session.objects.filter(pk=response_parsed['pk'])[0]
+        session = Session.objects.filter(pk=response_parsed['id'])[0]
         user = User.objects.all()[0]
         self.assertEqual(session.user.pk, user.pk)

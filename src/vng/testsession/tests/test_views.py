@@ -26,13 +26,13 @@ class RetrieveSessionType(WebTest):
     def test_retrieve_single_session_types(self):
         call = self.app.get('/api/v1/sessiontypes/', user='admin')
         t = get_object(call.body)
-        self.assertEqual(t[0]['id'], 1)
+        self.assertTrue(t[0]['id'] > 0)
 
     def test_retrieve_multiple_session_types(self):
         SessionTypeFactory.create_batch(size=10)
         call = self.app.get('/api/v1/sessiontypes/', user='admin')
-        t = json.loads(call.body.decode('utf-8'))
-        self.assertEqual(t[9]['id'], 10)
+        t = json.loads(call.text)
+        self.assertTrue(t[9]['id'] > 0)
 
 
 class AuthorizationTests(WebTest):
@@ -71,12 +71,12 @@ class AuthorizationTests(WebTest):
 class CreationAndDeletion(WebTest):
 
     def setUp(self):
-        SessionTypeFactory()
-        UserFactory()
+        self.session_type = SessionTypeFactory()
+        self.user = UserFactory()
 
     def test_session_creation(self):
         session = {
-            'session_type': 1,
+            'session_type': self.session_type.id,
             'started': str(timezone.now()),
             'status': choices.StatusChoices.running,
             'api_endpoint': 'http://google.com'
@@ -91,11 +91,11 @@ class CreationAndDeletion(WebTest):
     def test_session_creation_permission(self):
         Session.objects.all().delete()
         session = {
-            'session_type': 1,
+            'session_type': self.session_type.id,
             'started': str(timezone.now()),
             'status': choices.StatusChoices.running,
             'api_endpoint': 'http://google.com',
-            'user': 4
+            'user': self.user.id,
         }
 
         call = self.app.post('/api/auth/login/', params=collections.OrderedDict([

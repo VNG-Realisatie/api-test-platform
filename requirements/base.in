@@ -29,4 +29,4 @@ django-ordered-model<3.0
 diff-match-patch==20121119
 redis>=2.10.0,<3
 django-background-tasks
-WeasyPrint==43
+WeasyPrint

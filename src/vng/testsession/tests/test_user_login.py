@@ -31,13 +31,13 @@ class SessionCreation(WebTest):
         call = self.app.get('/', user='admin')
         self.app.reset()
         form = call.forms[0]
-        form['session_type'].select(value='1')
+        form['session_type'].force_value(value='1')
         response = form.submit(expect_errors=True)
 
     def test2(self):
         call = self.app.get('/', user='admin')
         form = call.forms[0]
-        form['session_type'].select(value='1')
+        form['session_type'].force_value(value='1')
         form.submit()
         call = self.app.get('/', user='admin')
         assert 'no session' not in str(call.body)

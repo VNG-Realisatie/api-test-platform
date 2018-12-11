@@ -50,7 +50,7 @@ class AuthorizationTests(WebTest):
         self.assertIsNotNone(call.json.get('key'))
 
     def test_wrong_login(self):
-        call = self.app.post(reverse('rest_login'), {
+        call = self.app.post(reverse('apiv1_auth:rest_login'), {
             'username': 'test',
             'password': 'wrong'
         }, status=400)
@@ -86,7 +86,7 @@ class CreationAndDeletion(WebTest):
             ('password', 'pippopippo')]))
         key = get_object(call.body)['key']
         head = {'Authorization': 'Token {}'.format(key)}
-        call = self.app.post('/api/v1/testsessions/', session, headers=head)
+        call = self.app.post(reverse('apiv1:test_session_list'), session, headers=head)
 
     def test_session_creation_permission(self):
         Session.objects.all().delete()
@@ -103,7 +103,7 @@ class CreationAndDeletion(WebTest):
             ('password', 'pippopippo')]))
         key = get_object(call.body)['key']
         head = {'Authorization': 'Token {}'.format(key)}
-        call = self.app.post('/api/v1/testsessions/', session, headers=head)
+        call = self.app.post(reverse('apiv1:test_session_list'), session, headers=head)
         response_parsed = get_object(call.body)
         session = Session.objects.filter(pk=response_parsed['id'])[0]
         user = User.objects.all()[0]

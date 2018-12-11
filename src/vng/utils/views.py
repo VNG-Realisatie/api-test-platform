@@ -94,16 +94,12 @@ class SingleOwnerObject(LoginRequiredMixin, DetailView):
 class OwnerMultipleObjects(LoginRequiredMixin, ListView):
 
     def check_ownership(self, queryset):
-        print(queryset)
         if not self.field_name:
             raise Exception('Field "field_name" in subclasses has not been defined')
         params = {
             self.field_name: self.request.user
         }
         return queryset.filter(**params).distinct()
-        # for obj in queryset:
-        #     if getattr(obj, self.field_name).user != self.request.user:
-        #         return HttpResponse('Unauthorized', status=401)
 
     def get(self, request, *args, **kwargs):
         self.object_list = self.get_queryset()

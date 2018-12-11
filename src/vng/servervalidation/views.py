@@ -37,8 +37,6 @@ class ServerRunView(LoginRequiredMixin, ListAppendView):
         return reverse('server_run:server-run_list')
 
     def form_valid(self, form):
-        print('@@@@@@')
-        print(form.instance.api_endpoint)
         form.instance.user = self.request.user
         form.instance.started = timezone.now()
         if form.is_valid():

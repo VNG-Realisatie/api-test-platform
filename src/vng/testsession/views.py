@@ -2,18 +2,28 @@ import time
 import json
 import time
 import re
-
+import pdfkit
+import uuid
+import io
+import os
 import requests
+import logging
+
+from weasyprint import HTML
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, FileResponse
 from django.shortcuts import get_object_or_404
-from django.urls import reverse
+from django.urls import reverse, resolve
 from django.utils import timezone
+from django.conf import settings
 from django.views import View
 from django.views.generic.edit import CreateView
 from django.views.generic.list import ListView
 from django.views.generic.detail import SingleObjectMixin, DetailView
+from django.template.loader import render_to_string
+
 from rest_framework import permissions, generics
 from rest_framework import viewsets
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
@@ -114,6 +124,33 @@ class SessionReport(OwnerMultipleObjects):
             'session': self.session
         })
         return context
+
+
+def get_static_css(folder=None):
+    print(folder)
+    res = []
+    static = os.path.abspath(os.path.join(folder, os.pardir))
+    for root, dirs, files in os.walk(folder):
+        print(root, dirs, files)
+        for file in files:
+            rp = os.path.relpath(root, static)
+            res.append('{}/{}/{}'.format(static, rp, file))
+    res.append("https://getbootstrap.com/docs/4.1/dist/css/bootstrap.min.css")
+    return res
+
+
+class SessionReportPdf(SessionReport):
+
+    template_name = 'testsession/session-report-pdf.html'
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs).render().content.decode('utf-8')
+        base_url = 'http://' + request.get_host()
+        print(base_url)
+        pdf = HTML(string=response, base_url=base_url).write_pdf()
+        # return HttpResponse(response)
+        response = HttpResponse(pdf, content_type='application/pdf')
+        return response
 
 
 class RunTest(SingleObjectMixin, View):

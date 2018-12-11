@@ -202,12 +202,13 @@ class RunTest(SingleObjectMixin, View):
         req_json = json.dumps(req_json)
         session_log.request = req_json
 
-        r = requests.get(session.api_endpoint + relative_url)
+        request_url = session.api_endpoint + relative_url
+        r = requests.get(request_url)
         res_json = {
             "response": {
                 "status_code": r.status_code,
                 "body": r.text,
-                "path": "{} {}".format(json.dumps(request.GET), request.build_absolute_uri()),
+                "path": "{} {}".format(request.method, request_url),
             }
         }
         res_json = json.dumps(res_json)
@@ -230,12 +231,13 @@ class RunTest(SingleObjectMixin, View):
         req_json = json.dumps(req_json)
         session_log.request = req_json
 
-        r = requests.post(session.api_endpoint + relative_url, data=request.body)
+        request_url = session.api_endpoint + relative_url
+        r = requests.get(request_url, data=request.body)
         res_json = res_json = {
             "response": {
                 "status_code": r.status_code,
                 "body": r.text,
-                "path": "{} {}".format(json.dumps(request.GET), request.build_absolute_uri()),
+                "path": "{} {}".format(request.method, request_url),
             }
         }
         res_json = json.dumps(res_json)

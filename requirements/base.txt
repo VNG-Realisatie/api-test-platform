@@ -7,6 +7,7 @@
 cachetools==3.0.0         # via google-auth
 certifi==2018.10.15       # via requests
 chardet==3.0.4            # via requests
+contextlib2==0.5.5        # via raven
 diff-match-patch==20121119
 django-admin-index==1.0.1
 django-appconf==1.0.2     # via django-axes

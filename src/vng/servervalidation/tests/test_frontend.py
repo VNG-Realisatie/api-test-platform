@@ -17,7 +17,7 @@ class TestCreation(WebTest):
 
         call = self.app.get(reverse('server_run:server-run_list'), user='test')
         form = call.forms[0]
-        form['test_scenario'].select('1')
+        form['test_scenario'].force_value('1')
         form['api_endpoint'] = 'http:google.com'
         # form.submit()
         #call = self.app.get(reverse('server_run:server-run_list'), user='test')

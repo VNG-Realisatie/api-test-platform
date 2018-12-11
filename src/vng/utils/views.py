@@ -73,7 +73,7 @@ class OwnerObjectMixin(LoginRequiredMixin):
             return obj
 
 
-class SingleOwnerObject(DetailView):
+class SingleOwnerObject(LoginRequiredMixin, DetailView):
 
     def get_object(self, obj):
         if not self.field_name:
@@ -91,7 +91,7 @@ class SingleOwnerObject(DetailView):
         return self.render_to_response(context)
 
 
-class OwnerMultipleObjects(ListView):
+class OwnerMultipleObjects(LoginRequiredMixin, ListView):
 
     def check_ownership(self, queryset):
         print(queryset)

@@ -16,6 +16,9 @@
             <input type="button" class="button button--primary" value="Report" onclick="location.href = '{% url 'testsession:session_report' log_list.0.session.id %}';">
         {% endif %}
         {% if log_list %}
+            <input type="button" class="button button--primary" value="Report PDF" onclick="location.href = '{% url 'testsession:session_report-pdf' log_list.0.session.id %}';">
+        {% endif %}
+        {% if log_list %}
         <table class="table">
             {% include 'components/table/header-session-log.html' only %}
             {% for log in log_list %}

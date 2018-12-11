@@ -19,7 +19,7 @@ __pycache__
 # Environment
 local.py
 /env/
-/media/
+
 /static/
 /src/vng/static/css
 /src/vng/static/js

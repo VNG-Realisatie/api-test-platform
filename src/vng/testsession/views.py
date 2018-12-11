@@ -2,7 +2,6 @@ import time
 import json
 import time
 import re
-import pdfkit
 import uuid
 import io
 import os

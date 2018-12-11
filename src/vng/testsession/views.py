@@ -12,7 +12,7 @@ from weasyprint import HTML
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse, HttpResponseRedirect, FileResponse
+from django.http import HttpResponse, HttpResponseRedirect, FileResponse, Http404
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, resolve
 from django.utils import timezone
@@ -115,7 +115,10 @@ class SessionReport(OwnerMultipleObjects):
 
     def get_queryset(self):
         self.session = get_object_or_404(Session, pk=self.kwargs['session_id'])
-        return self.model.objects.filter(scenario__pk=self.session.scenario.pk)
+        if self.session.scenario:
+            return self.model.objects.filter(scenario__pk=self.session.scenario.pk)
+        else:
+            raise Http404
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

@@ -2,7 +2,7 @@ from django.utils import timezone
 import factory
 from factory.django import DjangoModelFactory as Dmf
 from vng.accounts.models import User
-from ..models import SessionType, Session
+from ..models import SessionType, Session, Scenario, ScenarioCase
 from ...utils import choices
 
 
@@ -24,6 +24,27 @@ class UserFactory(Dmf):
     password = factory.PostGenerationMethodCall('set_password', 'pippopippo')
 
 
+class ScenarioFactory(Dmf):
+
+    class Meta:
+        model = Scenario
+
+    standard = 'Stardard'
+    role = 'Role'
+    application = 'Application'
+    version = '1.2.4'
+
+
+class ScenarioCaseFactory(Dmf):
+
+    class Meta:
+        model = ScenarioCase
+
+    url = 'unknown/23'
+    HTTP_method = choices.HTTPMethodChoiches.GET
+    scenario = factory.SubFactory(ScenarioFactory)
+
+
 class SessionFactory(Dmf):
 
     class Meta:
@@ -33,4 +54,6 @@ class SessionFactory(Dmf):
     started = timezone.now()
     status = choices.StatusChoices.starting
     user = factory.SubFactory(UserFactory)
-    api_endpoint = 'http://google.com'
+    api_endpoint = 'https://reqres.in/api/'
+    exposed_api = 'tst'
+    scenario = factory.SubFactory(ScenarioFactory)

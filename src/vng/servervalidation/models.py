@@ -1,12 +1,15 @@
 from django.db import models
-from vng.accounts.models import User
 from django.utils import timezone
+from django.conf import settings
+
+from vng.accounts.models import User
+
 from ..utils import choices
 
 
 class TestScenario(models.Model):
     name = name = models.CharField(max_length=200, unique=True)
-    validation_file = models.FileField('/files/uploaded_files')
+    validation_file = models.FileField(settings.MEDIA_FOLDER_FILES['test_scenario'])
 
     def __str__(self):
         return self.name
@@ -20,7 +23,7 @@ class ServerRun(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     stopped = models.DateTimeField(null=True, default=None, blank=True)
     status = models.CharField(max_length=10, choices=choices.StatusChoices.choices, default=choices.StatusChoices.starting)
-    log = models.FileField('/files/log', blank=True, null=True, default=None)
+    log = models.FileField(settings.MEDIA_FOLDER_FILES['servervalidation_log'], blank=True, null=True, default=None)
 
     def __str__(self):
         if self.user and self.api_endpoint:

@@ -18,7 +18,7 @@ from .forms import CreateServerRunForm
 from .models import ServerRun
 from ..utils.newman import NewmanManager
 from .serializers import ServerRunSerializer
-from ..utils.views import OwnerObjectMixin
+from ..utils.views import OwnerSingleObject
 from ..utils import choices
 from ..permissions.UserPermissions import *
 
@@ -56,7 +56,7 @@ class ServerRunOutput(LoginRequiredMixin, DetailView):
     template_name = 'servervalidation/server-run_detail.html'
 
 
-class StopServer(OwnerObjectMixin, View):
+class StopServer(OwnerSingleObject, View):
     model = ServerRun
     pk_name = 'server_id'
 

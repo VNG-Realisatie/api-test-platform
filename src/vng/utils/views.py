@@ -1,3 +1,5 @@
+import collections
+
 from django import http
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.template import loader, TemplateDoesNotExist
@@ -58,7 +60,27 @@ class ListAppendView(MultipleObjectMixin, MultipleObjectTemplateResponseMixin, M
         return self.render_to_response(self.get_context_data(object_list=self.object_list, form=form))
 
 
-class OwnerObjectMixin(LoginRequiredMixin):
+class ObjectOwner(LoginRequiredMixin):
+    field_name = None
+    user_field = 'user'
+
+    def check_ownership(self, queryset):
+        if not self.field_name:
+            raise Exception('Field "field_name" in subclasses has not been defined')
+        if self.field_name is None:
+            params = {
+                self.user_field: self.request.user
+            }
+        else:
+            params = {
+                self.field_name: self.request.user
+            }
+        qs = queryset.filter(**params).distinct()
+        if len(qs) == 0:
+            return Http404
+        else:
+            return qs
+
     def get_object(self):
         if not self.pk_name:
             raise Exception('Field "pk_name" in subclasses has not been defined')
@@ -73,33 +95,19 @@ class OwnerObjectMixin(LoginRequiredMixin):
             return obj
 
 
-class SingleOwnerObject(LoginRequiredMixin, DetailView):
+class OwnerSingleObject(ObjectOwner, DetailView):
 
-    def get_object(self, obj):
-        if not self.field_name:
-            raise Exception('Field "field_name" in subclasses has not been defined')
-
-        if getattr(obj, self.field_name).user != self.request.user:
-            return HttpResponse('Unauthorized', status=401)
-        else:
-            return obj
+    def get_queryset(self, object):
+        return object.__class__.objects.filter(pk=object.pk)
 
     def get(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        self.object = self.get_object(queryset)
+        self.object = self.get_object()
+        self.check_ownership(self.get_queryset(self.object))
         context = self.get_context_data(object=self.object)
         return self.render_to_response(context)
 
 
-class OwnerMultipleObjects(LoginRequiredMixin, ListView):
-
-    def check_ownership(self, queryset):
-        if not self.field_name:
-            raise Exception('Field "field_name" in subclasses has not been defined')
-        params = {
-            self.field_name: self.request.user
-        }
-        return queryset.filter(**params).distinct()
+class OwnerMultipleObjects(ObjectOwner, ListView):
 
     def get(self, request, *args, **kwargs):
         self.object_list = self.get_queryset()
@@ -107,9 +115,6 @@ class OwnerMultipleObjects(LoginRequiredMixin, ListView):
         allow_empty = self.get_allow_empty()
 
         if not allow_empty:
-            # When pagination is enabled and object_list is a queryset,
-            # it's better to do a cheap query than to load the unpaginated
-            # queryset in memory.
             if self.get_paginate_by(self.object_list) is not None and hasattr(self.object_list, 'exists'):
                 is_empty = not self.object_list.exists()
             else:

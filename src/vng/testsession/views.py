@@ -12,7 +12,7 @@ from weasyprint import HTML
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse, HttpResponseRedirect, FileResponse, Http404
+from django.http import HttpResponse, HttpResponseRedirect, FileResponse, Http404, HttpResponseServerError
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, resolve
 from django.utils import timezone
@@ -84,13 +84,20 @@ class StopSession(OwnerSingleObject, View):
 
     def post(self, request, *args, **kwargs):
         session = self.get_object()
-        session.status = choices.StatusChoices.stopped
+
         # running the test
         if session.test:
-            newman = NewmanManager(session.test.test_file, session.api_endpoint)
-            result = newman.execute_test()
-            session.save_test(result)
-
+            try:
+                newman = NewmanManager(session.test.test_file, session.api_endpoint)
+                result = newman.execute_test()
+                session.save_test(result)
+                result_json = newman.execute_test_json()
+                session.save_test_json(result_json)
+                result_json.close()
+            except Exception:
+                return HttpResponse(str(Exception))
+                return HttpResponseServerError()
+        session.status = choices.StatusChoices.stopped
         session.save()
         return HttpResponseRedirect(reverse('testsession:sessions'))
 

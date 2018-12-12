@@ -14,7 +14,8 @@ logger = logging.getLogger(__name__)
 
 class NewmanManager:
     REPORT_FOLDER = settings.MEDIA_ROOT + '/newman'
-    RUN_COMMAND = 'newman run --reporters html {} --reporter-html-export ' + REPORT_FOLDER + '/{}.html'
+    RUN_HTML_REPORT = 'newman run --reporters html {} --reporter-html-export ' + REPORT_FOLDER + '/{}.html'
+    RUN_JSON_REPORT = 'newman run  {} -r json --reporter-json-export ' + REPORT_FOLDER + '/{}.json'
     TOKEN = 'TOKEN'
 
     def __init__(self, file, api_endpoint):
@@ -63,9 +64,23 @@ class NewmanManager:
         else:
             self.file_path = self.file.path
         filename = str(uuid.uuid4())
-        output, error = self.run_command(self.RUN_COMMAND, self.file_path, filename)
+        output, error = self.run_command(self.RUN_HTML_REPORT, self.file_path, filename)
         if error:
             raise HttpResponse(status=500)
         f = open('{}/{}.html'.format(self.REPORT_FOLDER, filename))
+        # self.file_to_be_discarted.append(f)
+        return f
+
+    def execute_test_json(self):
+
+        if self.api_endpoint is not None:
+            self.prepare_file()
+        else:
+            self.file_path = self.file.path
+        filename = str(uuid.uuid4())
+        output, error = self.run_command(self.RUN_JSON_REPORT, self.file_path, filename)
+        if error:
+            raise HttpResponse(status=500)
+        f = open('{}/{}.json'.format(self.REPORT_FOLDER, filename))
         # self.file_to_be_discarted.append(f)
         return f

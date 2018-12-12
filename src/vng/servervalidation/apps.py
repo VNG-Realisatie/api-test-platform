@@ -3,7 +3,7 @@ import os
 from django.apps import AppConfig
 from django.conf import settings
 
-from .newman import NewmanManager
+from ..utils.newman import NewmanManager
 
 
 class ServervalidationConfig(AppConfig):

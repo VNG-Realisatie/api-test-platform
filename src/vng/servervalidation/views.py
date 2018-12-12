@@ -16,7 +16,7 @@ from rest_framework.authentication import SessionAuthentication, TokenAuthentica
 from ..utils.views import ListAppendView
 from .forms import CreateServerRunForm
 from .models import ServerRun
-from .newman import NewmanManager
+from ..utils.newman import NewmanManager
 from .serializers import ServerRunSerializer
 from ..utils.views import OwnerObjectMixin
 from ..utils import choices

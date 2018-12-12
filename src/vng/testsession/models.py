@@ -72,15 +72,10 @@ class Session(models.Model):
     status = models.CharField(max_length=10, choices=choices.StatusChoices.choices, default=choices.StatusChoices.starting)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     api_endpoint = models.URLField(max_length=200, blank=True, null=True, default=None)
-    exposed_api = models.CharField(max_length=200, unique=True, null=True)
+    exposed_api = models.CharField(max_length=200, blank=True, null=True, default=None)
     scenario = models.ForeignKey(Scenario, blank=True, null=True, default=None)
     test = models.ForeignKey(TestSession, blank=True, null=True, default=None)
-    log = models.FileField(settings.MEDIA_FOLDER_FILES['testsession_log'], blank=True, null=True, default=None)
-
-    def create_empty_log(self):
-        filename = str(uuid.uuid4())
-        with open("/files/log/{}".format(filename)) as file:
-            self.log.save(filename, File(file))
+    test_result = models.FileField(settings.MEDIA_FOLDER_FILES['testsession_log'], blank=True, null=True, default=None)
 
     def __str__(self):
         if self.user:
@@ -96,6 +91,11 @@ class Session(models.Model):
 
     def is_starting(self):
         return self.status == choices.StatusChoices.starting
+
+    def save_test(self, file):
+        name_file = str(uuid.uuid4())
+        django_file = File(file)
+        self.test_result.save(name_file, django_file)
 
 
 class SessionLog(models.Model):

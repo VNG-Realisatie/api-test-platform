@@ -7,7 +7,7 @@ from urllib.parse import urlparse
 from django.conf import settings
 from django.http import HttpResponse
 
-from ..utils.commands import run_command, run_command_f
+from ..utils.commands import run_command, run_command_with_shell
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +35,7 @@ class NewmanManager:
 
     def run_command(self, command, *args):
         command = command.format(*args)
-        return run_command_f(command)
+        return run_command_with_shell(command)
 
     def prepare_file(self):
         '''

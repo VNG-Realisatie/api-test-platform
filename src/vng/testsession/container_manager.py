@@ -2,66 +2,92 @@ from ..utils.commands import run_command
 import re
 
 
-class ContainerManagerHelper():
-    '''
-    Not used yet but it can be used in order to get a feedback by the server
-    '''
-
-    def __init__(self, cluster, zone="europe-west4-a"):
-        self.cluster = cluster
-        self.zone = zone
-
-    def poolList(self):
-        COMMAND = "gcloud container node-pools list --cluster={} --zone={}".format(self.cluster, self.zone)
-        res = run_command(COMMAND)
-        return res
-
-    def createPool(self, pool_name):
-        COMMAND = "gcloud container node-pools create {} --cluster={} --zone={}".format(pool_name, self.cluster, self.zone)
-        res = run_command(COMMAND)
-        return res
-
-    def deletePool(self, pool_name):
-        COMMAND = "gcloud container node-pools delete {} --cluster={} --zone={} -q".format(pool_name, self.cluster, self.zone)
-        res = run_command(COMMAND)
-        return res
-
-
 class K8S():
 
-    def deploy(self, app_name, image, port=None):
+    def __init__(self):
+        set_zone = [
+            'gcloud',
+            'config',
+            'set',
+            'compute/zone',
+            'europe-west4-a'
+        ]
+        set_project = [
+            'gcloud',
+            'config',
+            'set',
+            'core/project',
+            'vng-test-platform'
+        ]
+        run_command(set_zone)
+        run_command(set_project)
 
-        COMMAND = ['kubectl',
-                   'run',
-                   app_name,
-                   '--image=',
-                   image,
-                   '--env="DOMAIN=cluster"']
-        if port is not None:
-            COMMAND += [
-                'port',
-                port
-            ]
-        res = run_command(COMMAND)
-        return res
+    def deploy(self, app_name, image, port=8080):
+        create_cluster = [
+            'gcloud',
+            'container',
+            'clusters',
+            'create',
+            app_name,
+            '--num-nodes=1',
+        ]
+        get_credentials = [
+            'gcloud',
+            'container',
+            'clusters',
+            'get-credentials',
+            app_name,
+        ]
+        deploy_image = [
+            'kubectl',
+            'run',
+            '{}'.format(app_name),
+            '--image={}'.format(image),
+            '--port',
+            '{}'.format(port),
+        ]
+        auto_balancer = [
+            'kubectl',
+            'expose',
+            'deployment',
+            '{}'.format(app_name),
+            '--type=LoadBalancer',
+        ]
+        run_command(create_cluster)
+        run_command(get_credentials)
+        run_command(deploy_image)
+        run_command(auto_balancer)
 
     def delete(self, app_name):
-        COMMAND = 'kubectl delete -n default deployment {}'.format(app_name)
-        res1 = run_command(COMMAND)
-        return res1
+        delete_service = [
+            'kubectl',
+            'delete',
+            'service',
+            '{}'.format(app_name),
+        ]
+        clean_up = [
+            'kubectl',
+            'delete',
+            'deployment',
+            '{}'.format(app_name),
+        ]
+
+        res1 = run_command(delete_service)
+        res1 = run_command(clean_up)
 
     def status(self, app_name):
-        NAMES = ['namespace', 'desired', 'current', 'up-to-date', 'available', 'age']
-        COMMAND = ['kubectl',
-                   'get',
-                   'deployments',
-                   '--all-namespaces']
-        res1 = run_command(COMMAND)[0].decode('utf-8')
-        reg = re.search(r'(\S*) *{} *(\S*) *(\S*) *(\S*) *(\S*) *(\S*) *\n'.format(app_name), res1, re.M)
+        NAMES = ['type', 'cluster_ip', 'external_ip', 'port', 'age']
+        staus_command = [
+            'kubectl',
+            'get',
+            'service',
+        ]
+        res1 = run_command(staus_command).decode('utf-8')
+        reg = re.search(r'.*{} *(\S+) *(\S+) *(\S+) *(\S+) *(\S+).*\n'.format(app_name), res1, re.M)
         if reg:
             status = {'app_name': app_name}
-            for i, name in zip(range(1, 7), NAMES):
+            for i, name in zip(range(1, len(NAMES)), NAMES):
                 status[name] = reg.group(i)
             return status
         else:
-            return None
+            raise Exception('Application {} not found in the deployed cluster'.format(app_name))

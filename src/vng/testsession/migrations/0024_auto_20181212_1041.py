@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='session',
-            name='log',
+            name='test_result',
             field=models.FileField(blank=True, default=None, null=True, upload_to='', verbose_name='/files/log'),
         ),
         migrations.AddField(

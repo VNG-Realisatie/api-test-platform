@@ -7,6 +7,8 @@ import io
 import os
 import requests
 import logging
+import random
+
 from munch import munchify
 
 from weasyprint import HTML
@@ -57,6 +59,7 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
     def start_app(self, form):
         kuber = K8S()
         r = kuber.deploy(form.name, form.session_type.docker_image)
+        return kuber.status(form.name)
 
     def get_success_url(self):
         return reverse('testsession:sessions')
@@ -66,7 +69,9 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
         form.instance.started = timezone.now()
         form.instance.status = 'started'
         form.instance.name = str(self.request.user.id) + str(time.time()).replace('.', '-')
-        self.start_app(form.instance)
+        status = self.start_app(form.instance)
+        form.instance.api_endpoint = '{}:{}'.format(status['external_ip'], status['port'])
+        form.instance.exposed_api = int(time.time()) * 100 + random.randint(0, 99)
         return super().form_valid(form)
 
 

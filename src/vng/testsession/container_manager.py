@@ -93,7 +93,7 @@ class K8S():
 
             # extract the port from the format 8080:32741/TCP
             port = re.match('[0-9]+', status['port']).group(0)
-            statu['port'] = int(port)
+            status['port'] = port
             return status
         else:
             raise Exception('Application {} not found in the deployed cluster'.format(app_name))

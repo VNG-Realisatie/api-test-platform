@@ -8,3 +8,5 @@ mock
 pyquery
 tblib
 webtest
+pep8
+pylint<2

@@ -1,0 +1,105 @@
+{% load staticfiles %}
+{% load static %}
+{% with red="bgcolor='#FF0000' style='color:#ffffff' " %}
+{% with green="bgcolor='#1d8719' style='color:#ffffff'" %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Session Report</title>
+</head>
+
+<body>
+    <img src="/static/img/components/logo/logo.svg">
+    <div>
+        <h1>Session Report</h1>
+
+        <h2>Scenario</h2>
+        <table class='table-t'>
+            <tbody>
+                <tr>
+                    <td class='cell-name'>Standard</td>
+                    <td>{{ session.scenario.standard }}</td>
+                </tr>
+                <tr>
+                    <td class='cell-name'>Role</td>
+                    <td>{{ session.scenario.role }}</td>
+                </tr>
+                <tr>
+                    <td class='cell-name'>Application</td>
+                    <td>{{ session.scenario.application }}</td>
+                </tr>
+                <tr>
+                    <td class='cell-name'>Version</td>
+                    <td>{{ session.scenario.version }}</td>
+                </tr>
+                <tr>
+                    <td class='cell-name'>Created</td>
+                    <td>{{ session.scenario.created }}</td>
+                </tr>
+                <tr>
+                    <td class='cell-name'>Performed</td>
+                    {% if session.scenario.performed %}
+                    <td>{{ session.scenario.performed }}</td>
+                    {% endif %}
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Scenario cases</h2>
+        <table class='table-t'>
+            <tbody>
+                {% for scenarioCase in object_list %}
+                <tr>
+                    <td class='cell-name'>{{ scenarioCase.url }}</td>
+                    {% if scenarioCase.is_success %}
+                    <td class='cell-success cell-content-fix'>{{ scenarioCase.result }}</td>
+                    {% elif scenarioCase.is_failed %}
+                    <td class='cell-fail cell-content-fix'>{{ scenarioCase.result }}</td>
+                    {% else %}
+                    <td>{{ scenarioCase.result }}</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html>
+
+<style>
+    .cell-success {
+        background-color: green;
+        color: white
+    }
+
+    .cell-fail {
+        background-color: red;
+        color: white
+    }
+
+    .table-t {
+        table-layout: auto;
+        border-collapse: collapse;
+        width: 100%
+    }
+
+    .cell-name {
+        width: 30%
+    }
+
+    .cell-content-fix {
+        max-width: 100%;
+        white-space: nowrap;
+    }
+
+    .cell-content {
+        width: 70%
+    }
+
+</style>
+
+{% endwith %}
+{% endwith %}

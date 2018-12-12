@@ -4,7 +4,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
-from .newman import NewmanManager
+from ..utils.newman import NewmanManager
 from .models import ServerRun
 
 logger = logging.getLogger(__name__)

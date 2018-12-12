@@ -2,6 +2,9 @@ import uuid
 from django.db import models
 from django.utils import timezone
 from django.core.files import File
+
+from ordered_model.models import OrderedModel
+
 from vng.accounts.models import User
 from ..utils import choices
 
@@ -28,7 +31,7 @@ class Scenario(models.Model):
         return '{}-{}'.format(self.application, self.version)
 
 
-class ScenarioCase(models.Model):
+class ScenarioCase(OrderedModel):
 
     url = models.CharField(max_length=200, unique=True, null=True)
     HTTP_method = models.CharField(max_length=20, choices=choices.HTTPMethodChoiches.choices, default=choices.HTTPMethodChoiches.GET)

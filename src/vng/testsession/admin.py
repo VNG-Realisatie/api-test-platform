@@ -1,6 +1,8 @@
 from django.contrib import admin
 import vng.testsession.models as model
 
+from ordered_model.admin import OrderedModelAdmin
+
 
 def get_all_fields(mo):
     l = [field.name for field in mo._meta.fields]
@@ -37,5 +39,7 @@ class ScenarioAdmin(admin.ModelAdmin):
 
 
 @admin.register(model.ScenarioCase)
-class ScenarioCaseAdmin(admin.ModelAdmin):
-    list_display = get_all_fields(model.ScenarioCase)
+class ScenarioCaseAdmin(OrderedModelAdmin):
+    list_display = ('move_up_down_links', 'url', 'HTTP_method', 'result', 'scenario')
+    list_filter = ['scenario']
+    search_fields = ['scenario']

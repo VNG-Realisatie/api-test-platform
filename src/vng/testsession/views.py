@@ -7,6 +7,7 @@ import io
 import os
 import requests
 import logging
+from munch import munchify
 
 from weasyprint import HTML
 
@@ -275,9 +276,29 @@ class SessionTestReportPDF(PDFGenerator, SessionTestReport):
 
     template_name = 'testsession/session-test-report-PDF.html'
 
+    def parse_json(self, obj):
+        parsed = json.loads(obj)
+        #parsed = munchify(parsed)
+        for i, run in enumerate(parsed['run']['executions']):
+            print(run)
+            url = run['request']['url']
+            new_url = url['protocol'] + '://'
+            for k in run['request']['header']:
+                if k['key'] == 'Host':
+                    new_url += k['value']
+            new_url += '/'
+            for p in url['path']:
+                new_url += p + '/'
+
+            run['request']['url'] = new_url
+
+        return parsed
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        session = kwargs['object']
+
         context.update({
-            'tst': 1
+            'report': self.parse_json(session.json_result)
         })
         return context

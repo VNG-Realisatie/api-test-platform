@@ -7,59 +7,33 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Session Report</title>
+    <title>Session test report</title>
 </head>
 
 <body>
     <img src="/static/img/components/logo/logo.svg">
     <div>
-        <h1>Session Report</h1>
+        <h1>Session test report</h1>
 
-        <h2>Scenario</h2>
         <table class='table-t'>
+            <thead>
+                <tr>
+                    <td>HTTP method</td>
+                    <td>HTTP url</td>
+                    <td>Response</td>
+                </tr>
+            </thead>
             <tbody>
+                {% for exc in report.run.executions %}
                 <tr>
-                    <td class='cell-name'>Standard</td>
-                    <td>{{ session.scenario.standard }}</td>
-                </tr>
-                <tr>
-                    <td class='cell-name'>Role</td>
-                    <td>{{ session.scenario.role }}</td>
-                </tr>
-                <tr>
-                    <td class='cell-name'>Application</td>
-                    <td>{{ session.scenario.application }}</td>
-                </tr>
-                <tr>
-                    <td class='cell-name'>Version</td>
-                    <td>{{ session.scenario.version }}</td>
-                </tr>
-                <tr>
-                    <td class='cell-name'>Created</td>
-                    <td>{{ session.scenario.created }}</td>
-                </tr>
-                <tr>
-                    <td class='cell-name'>Performed</td>
-                    {% if session.scenario.performed %}
-                    <td>{{ session.scenario.performed }}</td>
-                    {% endif %}
-                </tr>
-            </tbody>
-        </table>
-
-        <h2>Scenario cases</h2>
-        <table class='table-t'>
-            <tbody>
-                {% for scenarioCase in object_list %}
-                <tr>
-                    <td class='cell-name'>{{ scenarioCase.url }}</td>
-                    {% if scenarioCase.is_success %}
-                    <td class='cell-success cell-content-fix'>{{ scenarioCase.result }}</td>
-                    {% elif scenarioCase.is_failed %}
-                    <td class='cell-fail cell-content-fix'>{{ scenarioCase.result }}</td>
+                    <td>{{exc.request.method}}</td>
+                    <td>{{exc.request.url}}</td>
+                    {% if exc.response.code >= 400 and exc.response.code <= 500 %}
+                        <td class='cell-fail cell-content-fix'>{{exc.response.code}}</td>
                     {% else %}
-                    <td>{{ scenarioCase.result }}</td>
+                        <td class='cell-success cell-content-fix'>{{exc.response.code}}</td>
                     {% endif %}
+
                 </tr>
                 {% endfor %}
             </tbody>

@@ -101,9 +101,8 @@ class Session(models.Model):
         self.test_result.save(name_file, django_file)
 
     def save_test_json(self, file):
-        name_file = str(uuid.uuid4())
-        text = file.read()
-        self.json_result = (name_file, text)
+        text = file.read().replace('\n', '')
+        self.json_result = text
 
     def display_test_result(self):
         if self.test_result:

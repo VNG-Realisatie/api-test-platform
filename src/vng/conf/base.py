@@ -284,6 +284,13 @@ LOGGING = {
     }
 }
 
+MEDIA_FOLDER_FILES = {
+    'test_scenario': '/files/uploaded_files',
+    'test_session': '/files/uploaded_files',
+    'servervalidation_log': '/files/log',
+    'testsession_log': '/files/log',
+}
+
 #
 # Additional Django settings
 #

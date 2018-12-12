@@ -1,4 +1,6 @@
 import uuid
+import json
+
 from django.db import models
 from django.utils import timezone
 from django.core.files import File
@@ -76,6 +78,7 @@ class Session(models.Model):
     scenario = models.ForeignKey(Scenario, blank=True, null=True, default=None)
     test = models.ForeignKey(TestSession, blank=True, null=True, default=None)
     test_result = models.FileField(settings.MEDIA_FOLDER_FILES['testsession_log'], blank=True, null=True, default=None)
+    json_result = models.TextField(blank=True, null=True, default=None)
 
     def __str__(self):
         if self.user:
@@ -96,6 +99,11 @@ class Session(models.Model):
         name_file = str(uuid.uuid4())
         django_file = File(file)
         self.test_result.save(name_file, django_file)
+
+    def save_test_json(self, file):
+        name_file = str(uuid.uuid4())
+        text = file.read()
+        self.json_result = (name_file, text)
 
     def display_test_result(self):
         if self.test_result:

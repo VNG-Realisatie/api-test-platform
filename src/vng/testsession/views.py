@@ -30,7 +30,7 @@ from rest_framework.authentication import SessionAuthentication, TokenAuthentica
 from vng.testsession.models import Session, SessionType, SessionLog, Scenario, ScenarioCase
 from .container_manager import K8S
 from .serializers import SessionSerializer, SessionTypesSerializer
-from ..utils.views import ListAppendView, OwnerObjectMixin, SingleOwnerObject, OwnerMultipleObjects
+from ..utils.views import ListAppendView, OwnerSingleObject, OwnerSingleObject, OwnerMultipleObjects
 from ..utils import choices
 from ..utils.newman import NewmanManager
 from ..permissions import UserPermissions
@@ -78,7 +78,7 @@ class SessionLogView(LoginRequiredMixin, ListView):
         return SessionLog.objects.filter(session__pk=self.kwargs['session_id']).order_by('-date')
 
 
-class StopSession(OwnerObjectMixin, View):
+class StopSession(OwnerSingleObject, View):
     model = Session
     pk_name = 'session_id'
 
@@ -254,3 +254,9 @@ class RunTest(SingleObjectMixin, View):
         session_log.save()
         self.save_call(request, url, relative_url, session, r.status_code)
         return HttpResponse(r.text)
+
+
+class SessionTestReport(OwnerSingleObject):
+    model = Session
+    template_name = 'testsession/session-report.html'
+    field_name = 'user'

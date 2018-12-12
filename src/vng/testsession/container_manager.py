@@ -83,11 +83,17 @@ class K8S():
             'service',
         ]
         res1 = run_command(staus_command).decode('utf-8')
+
+        # extract the information from the output of the command
         reg = re.search(r'.*{} *(\S+) *(\S+) *(\S+) *(\S+) *(\S+).*\n'.format(app_name), res1, re.M)
         if reg:
             status = {'app_name': app_name}
-            for i, name in zip(range(1, len(NAMES)), NAMES):
+            for i, name in zip(range(1, len(NAMES) + 1), NAMES):
                 status[name] = reg.group(i)
+
+            # extract the port from the format 8080:32741/TCP
+            port = re.match('[0-9]+', status['port']).group(0)
+            statu['port'] = int(port)
             return status
         else:
             raise Exception('Application {} not found in the deployed cluster'.format(app_name))

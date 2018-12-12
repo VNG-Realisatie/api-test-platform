@@ -155,18 +155,19 @@ def get_static_css(folder=None):
     return res
 
 
-class SessionReportPdf(SessionReport):
-
-    template_name = 'testsession/session-report-pdf.html'
+class PDFGenerator():
 
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs).render().content.decode('utf-8')
         base_url = 'http://' + request.get_host()
-        print(base_url)
         pdf = HTML(string=response, base_url=base_url).write_pdf()
-        # return HttpResponse(response)
         response = HttpResponse(pdf, content_type='application/pdf')
         return response
+
+
+class SessionReportPdf(PDFGenerator, SessionReport):
+
+    template_name = 'testsession/session-report-PDF.html'
 
 
 class RunTest(SingleObjectMixin, View):
@@ -264,6 +265,19 @@ class RunTest(SingleObjectMixin, View):
 
 
 class SessionTestReport(OwnerSingleObject):
+
     model = Session
     template_name = 'testsession/session-test-report.html'
     pk_name = 'session_id'
+
+
+class SessionTestReportPDF(PDFGenerator, SessionTestReport):
+
+    template_name = 'testsession/session-test-report-PDF.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'tst': 1
+        })
+        return context

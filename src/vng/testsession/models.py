@@ -36,7 +36,7 @@ class Scenario(models.Model):
 
 class ScenarioCase(OrderedModel):
 
-    url = models.CharField(max_length=200, unique=True, null=True)
+    url = models.CharField(max_length=200)
     HTTP_method = models.CharField(max_length=20, choices=choices.HTTPMethodChoiches.choices, default=choices.HTTPMethodChoiches.GET)
     result = models.CharField(max_length=20, choices=choices.HTTPCallChoiches.choices, default=choices.HTTPCallChoiches.not_called)
     scenario = models.ForeignKey(Scenario, on_delete=models.SET_NULL, null=True, default=None)

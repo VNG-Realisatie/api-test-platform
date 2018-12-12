@@ -1,4 +1,5 @@
 {% load staticfiles %}
+{% load static %}
 {% spaceless %}
     <!DOCTYPE html>
     <html lang="en">
@@ -9,7 +10,7 @@
         <meta name="description" content="">
         <meta name="author" content="">
 
-        <link href="{% static 'css/screen.css' %}" media="screen" rel="stylesheet"/>
+        <link href="{{ get_media_prefix }}{% static 'css/screen.css' %}" media="screen" rel="stylesheet"/>
         {% block extra_css %}{% endblock %}
         <link rel="shortcut icon" href="{% static 'ico/favicon.png' %}">
     </head>

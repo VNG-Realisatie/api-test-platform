@@ -1,0 +1,19 @@
+{% with red="bgcolor='#FF0000' style='color:#ffffff' " %}
+    {% with green="bgcolor='#1d8719' style='color:#ffffff'" %}
+
+{% spaceless %}
+<tr>
+    <td class="table__cell" >{{ scenarioCase.url }}</td>
+    {% if scenarioCase.is_success %}
+        <td class="table__cell" {{ green }}>{{ scenarioCase.result }}</td>
+    {% elif scenarioCase.is_failed %}
+        <td class="table__cell" {{ red }} >{{ scenarioCase.result }}</td>
+    {% else %}
+        <td class="table__cell">{{ scenarioCase.result }}</td>
+    {% endif %}
+</tr>
+{% endspaceless %}
+
+
+    {% endwith %}
+{% endwith %}

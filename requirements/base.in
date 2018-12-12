@@ -14,16 +14,13 @@ django-rosetta
 django-sniplates
 django-redis
 django_admin_index
-django-cms
 django-import-export
 django-countries
 djangorestframework-filters
 django-solo
 django-dynamic-raw-id
-djangocms-picture
 django-filer
 djangorestframework
-djangocms-text-ckeditor
 google-api-python-client
 oauth2client
 easy-thumbnails
@@ -32,4 +29,5 @@ django-ordered-model<3.0
 diff-match-patch==20121119
 redis>=2.10.0,<3
 django-background-tasks
-django-debug-toolbar<1.11
+WeasyPrint
+munch

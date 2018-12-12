@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views import View
 from django.views.generic import DetailView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from rest_framework import permissions
 from rest_framework import viewsets
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
@@ -15,8 +16,10 @@ from rest_framework.authentication import SessionAuthentication, TokenAuthentica
 from ..utils.views import ListAppendView
 from .forms import CreateServerRunForm
 from .models import ServerRun
-from .newman import NewmanManager
+from ..utils.newman import NewmanManager
 from .serializers import ServerRunSerializer
+from ..utils.views import OwnerSingleObject
+from ..utils import choices
 from ..permissions.UserPermissions import *
 
 
@@ -41,28 +44,31 @@ class ServerRunView(LoginRequiredMixin, ListAppendView):
             file = NewmanManager(form.instance.test_scenario.validation_file, form.instance.api_endpoint) \
                 .execute_test()
             form.instance.log.save(file_name, File(file))
-            form.instance.status = ServerRun.StatusChoices.stopped
+            form.instance.status = choices.StatusChoices.stopped
             form.instance.stopped = timezone.now()
 
         redirect = super().form_valid(form)
         return redirect
 
 
-class ServerRunOutput(DetailView):
+class ServerRunOutput(LoginRequiredMixin, DetailView):
     model = ServerRun
     template_name = 'servervalidation/server-run_detail.html'
 
 
-def stop_session(request, session_id):
-    server = get_object_or_404(ServerRun, pk=session_id)
-    if request.user != server.user:
-        return HttpResponse('Unauthorized', status=401)
-    server.stopped = timezone.now()
-    server.save()
-    return redirect(reverse('server-run_list'))
+class StopServer(OwnerSingleObject, View):
+    model = ServerRun
+    pk_name = 'server_id'
+
+    def post(self, request, *args, **kwargs):
+        server = self.get_object()
+        server.stopped = timezone.now()
+        server.status = choices.StatusChoices.stopped
+        server.save()
+        return redirect(reverse('server_run:server-run_list'))
 
 
-class ServerRunViewSet(viewsets.ModelViewSet):
+class ServerRunViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = ServerRunSerializer
@@ -74,11 +80,7 @@ class ServerRunViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user, pk=None)
 
 
-def isOwner(obj, user):
-    return obj.user == user
-
-
-class ServerRunLogView(View):
+class ServerRunLogView(LoginRequiredMixin, View):
     def get(self, request, pk):
         server_run = get_object_or_404(ServerRun, pk=pk)
         if not isOwner(server_run, request.user):

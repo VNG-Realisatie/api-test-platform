@@ -1,0 +1,16 @@
+{% extends 'master.html' %}
+
+{% block title %}Session Report{% endblock%}
+
+{% block content %}
+
+
+<article class="article">
+    <div class="article__section">
+        <h1>Session test</h1>
+        <input type="button" class="button button--primary" value="Back to the details" onclick="location.href = '{% url 'testsession:sessions' %}';">
+        {{ session.display_test_result |safe }}
+    </div>
+</article>
+{% endblock %}
+

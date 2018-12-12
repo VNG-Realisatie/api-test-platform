@@ -97,6 +97,11 @@ class Session(models.Model):
         django_file = File(file)
         self.test_result.save(name_file, django_file)
 
+    def display_test_result(self):
+        if self.test_result:
+            with open(self.test_result.path) as fp:
+                return fp.read().replace('\n', '<br>')
+
 
 class SessionLog(models.Model):
 

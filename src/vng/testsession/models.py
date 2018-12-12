@@ -2,6 +2,7 @@ import uuid
 from django.db import models
 from django.utils import timezone
 from django.core.files import File
+from django.conf import settings
 
 from ordered_model.models import OrderedModel
 
@@ -54,6 +55,14 @@ class ScenarioCase(OrderedModel):
         return self.result == choices.HTTPCallChoiches.not_called
 
 
+class TestSession(models.Model):
+    name = name = models.CharField(max_length=200, unique=True)
+    test_file = models.FileField(settings.MEDIA_FOLDER_FILES['test_session'])
+
+    def __str__(self):
+        return self.name
+
+
 class Session(models.Model):
 
     name = models.CharField(max_length=20, unique=True, null=True)
@@ -65,6 +74,8 @@ class Session(models.Model):
     api_endpoint = models.URLField(max_length=200, blank=True, null=True, default=None)
     exposed_api = models.CharField(max_length=200, unique=True, null=True)
     scenario = models.ForeignKey(Scenario, blank=True, null=True, default=None)
+    test = models.ForeignKey(TestSession, blank=True, null=True, default=None)
+    log = models.FileField(settings.MEDIA_FOLDER_FILES['testsession_log'], blank=True, null=True, default=None)
 
     def create_empty_log(self):
         filename = str(uuid.uuid4())

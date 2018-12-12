@@ -43,3 +43,10 @@ class ScenarioCaseAdmin(OrderedModelAdmin):
     list_display = ('move_up_down_links', 'url', 'HTTP_method', 'result', 'scenario')
     list_filter = ['scenario']
     search_fields = ['scenario']
+
+
+@admin.register(model.TestSession)
+class TestSessionAdmin(admin.ModelAdmin):
+    list_display = get_all_fields(model.TestSession)
+    list_filter = ['test_file', 'name']
+    search_fields = ['test_file', 'name']

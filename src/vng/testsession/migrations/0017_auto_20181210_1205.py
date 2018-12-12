@@ -5,7 +5,16 @@ from __future__ import unicode_literals
 from django.db import migrations, models
 import django.db.models.deletion
 
+def forwards_func(apps, schema_editor):
+    Scenario = apps.get_model('testsession', 'Scenario')
+    try:
+        Scenario.objects.get(pk=1)
+    except Scenario.DoesNotExist:
+        Scenario.objects.create(pk=1, standard='Example scenario')
 
+def reverse_func(apps, schema_editor):
+    pass
+        
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -17,6 +26,7 @@ class Migration(migrations.Migration):
             model_name='scenario',
             name='session',
         ),
+        migrations.RunPython(forwards_func, reverse_func),
         migrations.AddField(
             model_name='session',
             name='scenario',

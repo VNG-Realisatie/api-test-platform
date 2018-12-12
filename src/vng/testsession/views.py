@@ -32,6 +32,7 @@ from .container_manager import K8S
 from .serializers import SessionSerializer, SessionTypesSerializer
 from ..utils.views import ListAppendView, OwnerObjectMixin, SingleOwnerObject, OwnerMultipleObjects
 from ..utils import choices
+from ..utils.newman import NewmanManager
 from ..permissions import UserPermissions
 
 
@@ -84,6 +85,12 @@ class StopSession(OwnerObjectMixin, View):
     def post(self, request, *args, **kwargs):
         session = self.get_object()
         session.status = choices.StatusChoices.stopped
+        # running the test
+        if session.test:
+            newman = NewmanManager(session.test.test_file, session.api_endpoint)
+            result = newman.execute_test()
+            session.save_test(result)
+
         session.save()
         return HttpResponseRedirect(reverse('testsession:sessions'))
 

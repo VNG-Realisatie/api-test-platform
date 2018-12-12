@@ -258,5 +258,5 @@ class RunTest(SingleObjectMixin, View):
 
 class SessionTestReport(OwnerSingleObject):
     model = Session
-    template_name = 'testsession/session-report.html'
-    field_name = 'user'
+    template_name = 'testsession/session-test-report.html'
+    pk_name = 'session_id'

@@ -17,12 +17,18 @@
     {% else %}
     <td class="table__cell">None</td>
     {% endif %}
+
     <td class="table__cell">
         {% if not session.is_stopped %}
         <form method="POST" action="{% url 'testsession:stop_session' session.id %}">
             {% csrf_token %}
             <input type="submit" type="button" class="button button--primary" value="Stop">
         </form>
+        {% else %}
+            {% if session.test_result %}
+                <input type="button" class="button button--primary" value="Test report" onclick="location.href = '{% url 'testsession:session-test_report' session.id %}';">
+            {% endif %}
+
         {% endif %}
     </td>
 </tr>

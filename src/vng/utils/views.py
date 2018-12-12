@@ -65,8 +65,6 @@ class ObjectOwner(LoginRequiredMixin):
     user_field = 'user'
 
     def check_ownership(self, queryset):
-        if not self.field_name:
-            raise Exception('Field "field_name" in subclasses has not been defined')
         if self.field_name is None:
             params = {
                 self.user_field: self.request.user
@@ -82,11 +80,11 @@ class ObjectOwner(LoginRequiredMixin):
             return qs
 
     def get_object(self):
-        if not self.pk_name:
+        if not hasattr(self, 'pk_name'):
             raise Exception('Field "pk_name" in subclasses has not been defined')
 
         pk = self.kwargs.get(self.pk_name)
-        if pk is None:
+        if not pk:
             raise Exception('Primary key param name not defined')
         obj = get_object_or_404(self.model, pk=pk)
         if obj.user != self.request.user:

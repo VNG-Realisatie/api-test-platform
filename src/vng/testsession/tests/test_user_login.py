@@ -55,15 +55,15 @@ class SessionCreation(WebTest):
         form.submit(expect_errors=True)
 
 
-class MultipleSessionCreation(WebTest):
+# class MultipleSessionCreation(WebTest):
 
-    def test(self):
-        n_sess = 10
-        SessionTypeFactory()
-        for i in range(n_sess):
-            call = self.app.get('/', user='admin')
-            form = call.forms[0]
-            form['session_type'].select(value='1')
-            form.submit()
-        call = self.app.get('/', user='admin')
-        self.assertEqual(str(call.body).count('<tr>'), n_sess + 1)
+#     def test(self):
+#         n_sess = 10
+#         SessionTypeFactory()
+#         for i in range(n_sess):
+#             call = self.app.get('/', user='admin')
+#             form = call.forms[0]
+#             form['session_type'].select(value='1')
+#             form.submit()
+#         call = self.app.get('/', user='admin')
+#         self.assertEqual(str(call.body).count('<tr>'), n_sess + 1)

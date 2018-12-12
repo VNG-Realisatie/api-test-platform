@@ -12,7 +12,12 @@
     <div class="article__section">
         <h1>VNG Testplatform log</h1>
         <input type="button" class="button button--primary" value="Session list" onclick="location.href = '{% url 'testsession:sessions'  %}';">
-
+        {% if log_list %}
+            <input type="button" class="button button--primary" value="Report" onclick="location.href = '{% url 'testsession:session_report' log_list.0.session.id %}';">
+        {% endif %}
+        {% if log_list %}
+            <input type="button" class="button button--primary" value="Report PDF" onclick="location.href = '{% url 'testsession:session_report-pdf' log_list.0.session.id %}';">
+        {% endif %}
         {% if log_list %}
         <table class="table">
             {% include 'components/table/header-session-log.html' only %}

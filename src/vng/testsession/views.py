@@ -1,42 +1,39 @@
-import time
 import json
-import time
-import re
-import uuid
-import io
 import os
-import requests
-import logging
 import random
+import re
+import time
 
-from munch import munchify
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import (
+    Http404, HttpResponse, HttpResponseRedirect, HttpResponseServerError
+)
+from django.shortcuts import get_object_or_404
+from django.urls import reverse
+from django.utils import timezone
+from django.utils.translation import ugettext_lazy as _
+from django.views import View
+from django.views.generic.detail import SingleObjectMixin
+from django.views.generic.list import ListView
 
+import requests
+from rest_framework import generics, permissions, viewsets
+from rest_framework.authentication import (
+    SessionAuthentication, TokenAuthentication
+)
 from weasyprint import HTML
 
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse, HttpResponseRedirect, FileResponse, Http404, HttpResponseServerError
-from django.shortcuts import get_object_or_404
-from django.urls import reverse, resolve
-from django.utils import timezone
-from django.conf import settings
-from django.views import View
-from django.views.generic.edit import CreateView
-from django.views.generic.list import ListView
-from django.views.generic.detail import SingleObjectMixin, DetailView
-from django.template.loader import render_to_string
+from vng.testsession.models import (
+    ScenarioCase, Session, SessionLog, SessionType
+)
 
-from rest_framework import permissions, generics
-from rest_framework import viewsets
-from rest_framework.authentication import SessionAuthentication, TokenAuthentication
-
-from vng.testsession.models import Session, SessionType, SessionLog, Scenario, ScenarioCase
-from .container_manager import K8S
-from .serializers import SessionSerializer, SessionTypesSerializer
-from ..utils.views import ListAppendView, OwnerSingleObject, OwnerSingleObject, OwnerMultipleObjects
 from ..utils import choices
 from ..utils.newman import NewmanManager
-from ..permissions import UserPermissions
+from ..utils.views import (
+    ListAppendView, OwnerMultipleObjects, OwnerSingleObject
+)
+from .container_manager import K8S
+from .serializers import SessionSerializer, SessionTypesSerializer
 
 
 class SessionListView(LoginRequiredMixin, ListAppendView):
@@ -56,10 +53,11 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
     def get_queryset(self):
         return Session.objects.filter(user=self.request.user).order_by('-started')
 
-    def start_app(self, form):
+    def start_app(self, session):
         kuber = K8S()
-        r = kuber.deploy(form.name, form.session_type.docker_image)
-        return kuber.status(form.name)
+        kuber.deploy(session.name, session.session_type.docker_image, session.port)
+        time.sleep(55) # Waiting for the load balancer to be loaded
+        return kuber.status(session.name)
 
     def get_success_url(self):
         return reverse('testsession:sessions')
@@ -68,10 +66,18 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
         form.instance.user = self.request.user
         form.instance.started = timezone.now()
         form.instance.status = 'started'
-        form.instance.name = str(self.request.user.id) + str(time.time()).replace('.', '-')
-        status = self.start_app(form.instance)
-        form.instance.api_endpoint = '{}:{}'.format(status['external_ip'], status['port'])
-        form.instance.exposed_api = int(time.time()) * 100 + random.randint(0, 99)
+        form.instance.name = "s{}{}".format(str(self.request.user.id), str(time.time()).replace('.', '-'))
+        session = form.save()
+
+        try:
+            status = self.start_app(session)
+        except Exception:
+            session.delete()
+            form.add_error('__all__', _('Something went wrong please try again later'))
+            return self.form_invalid(form)
+        session.api_endpoint = 'http://{}:{}'.format(status, session.port)
+        session.exposed_api = int(time.time()) * 100 + random.randint(0, 99)
+
         return super().form_valid(form)
 
 
@@ -105,6 +111,8 @@ class StopSession(OwnerSingleObject, View):
                 return HttpResponseServerError()
         session.status = choices.StatusChoices.stopped
         session.save()
+        kuber = K8S()
+        kuber.delete(session.name)
         return HttpResponseRedirect(reverse('testsession:sessions'))
 
 

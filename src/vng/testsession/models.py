@@ -1,14 +1,15 @@
-import uuid
 import json
+import uuid
 
+from django.conf import settings
+from django.core.files import File
 from django.db import models
 from django.utils import timezone
-from django.core.files import File
-from django.conf import settings
 
 from ordered_model.models import OrderedModel
 
 from vng.accounts.models import User
+
 from ..utils import choices
 
 
@@ -74,6 +75,7 @@ class Session(models.Model):
     status = models.CharField(max_length=10, choices=choices.StatusChoices.choices, default=choices.StatusChoices.starting)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     api_endpoint = models.URLField(max_length=200, blank=True, null=True, default=None)
+    port = models.PositiveIntegerField(default=8080)
     exposed_api = models.CharField(max_length=200, blank=True, null=True, default=None)
     scenario = models.ForeignKey(Scenario, blank=True, null=True, default=None)
     test = models.ForeignKey(TestSession, blank=True, null=True, default=None)

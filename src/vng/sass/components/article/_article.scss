@@ -23,6 +23,10 @@ $article-color-subsection-background: lighten($color-blue, 60);
     &:last-child {
       @include omega(true, margin-bottom);
     }
+
+    .container {
+      width: 100%;
+    }
   }
 
   .definition-list,

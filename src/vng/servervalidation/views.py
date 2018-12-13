@@ -3,24 +3,24 @@ import uuid
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.files import File
 from django.http import HttpResponse, HttpResponseForbidden
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.views import View
 from django.views.generic import DetailView
-from django.contrib.auth.mixins import LoginRequiredMixin
-from rest_framework import permissions
-from rest_framework import viewsets
-from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 
-from ..utils.views import ListAppendView
+from rest_framework import permissions, viewsets
+from rest_framework.authentication import (
+    SessionAuthentication, TokenAuthentication
+)
+
+from ..permissions.UserPermissions import *
+from ..utils import choices
+from ..utils.newman import DidNotRunException, NewmanManager
+from ..utils.views import ListAppendView, OwnerSingleObject
 from .forms import CreateServerRunForm
 from .models import ServerRun
-from ..utils.newman import NewmanManager
 from .serializers import ServerRunSerializer
-from ..utils.views import OwnerSingleObject
-from ..utils import choices
-from ..permissions.UserPermissions import *
 
 
 class ServerRunView(LoginRequiredMixin, ListAppendView):
@@ -41,8 +41,11 @@ class ServerRunView(LoginRequiredMixin, ListAppendView):
         form.instance.started = timezone.now()
         if form.is_valid():
             file_name = str(uuid.uuid4())
-            file = NewmanManager(form.instance.test_scenario.validation_file, form.instance.api_endpoint) \
-                .execute_test()
+            try:
+                file = NewmanManager(form.instance.test_scenario.validation_file, form.instance.api_endpoint) \
+                    .execute_test()
+            except DidNotRunException:
+                return HttpResponse(status=500)
             form.instance.log.save(file_name, File(file))
             form.instance.status = choices.StatusChoices.stopped
             form.instance.stopped = timezone.now()

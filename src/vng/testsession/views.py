@@ -184,11 +184,11 @@ class SessionReportPdf(PDFGenerator, SessionReport):
     template_name = 'testsession/session-report-PDF.html'
 
 
-class RunTest(SingleObjectMixin, View):
+class RunTest(View):
     error_codes = [(400, 500)]
 
     def get_queryset(self):
-        return get_object_or_404(Session, exposed_api=self.kwargs['url'])
+        return get_object_or_404(Session, exposed_api=self.kwargs['exposed_api'])
 
     def match_url(self, url, compare):
         '''
@@ -220,62 +220,52 @@ class RunTest(SingleObjectMixin, View):
                         case.result = choices.HTTPCallChoiches.success
                     case.save()
 
-    def get(self, request, url, relative_url):
-        session = self.get_queryset()
-        session_log = SessionLog()
-        session_log.session = session
+    def get(self, request, *args, **kwargs):
+        session_log, session = self.build_session_log(request)
 
-        req_json = {
+        request_url = '{}/{}'.format(session.api_endpoint, self.kwargs['relative_url'])
+        response = requests.get(request_url)
+
+        self.add_response(response, session_log, request_url, request)
+
+        self.save_call(request, self.kwargs['exposed_api'], self.kwargs['relative_url'], session, response.status_code)
+        return HttpResponse(response.text)
+
+    def post(self, request, *args, **kwargs):
+        session_log, session = self.build_session_log(request)
+
+        request_url = '{}/{}'.format(session.api_endpoint, self.kwargs['relative_url'])
+        response = requests.post(request_url, data=request.body)
+
+        self.add_response(response, session_log, request_url, request)
+
+        self.save_call(request, self.kwargs['exposed_api'], self.kwargs['relative_url'], session, response.status_code)
+        return HttpResponse(response.text)
+
+    def build_session_log(self, request):
+        session = self.get_queryset()
+        session_log = SessionLog(session=session)
+
+        request_dict = {
             "request": {
-                "path": "GET {}".format(request.build_absolute_uri()),
+                "path": "{} {}".format(request.method, request.build_absolute_uri()),
+                "body": request.body.decode('utf-8')
             }
         }
-        req_json = json.dumps(req_json)
-        session_log.request = req_json
+        session_log.request = json.dumps(request_dict)
 
-        request_url = session.api_endpoint + relative_url
-        r = requests.get(request_url)
-        res_json = {
+        return session_log, session
+
+    def add_response(self, response, session_log, request_url, request):
+        response_dict = {
             "response": {
-                "status_code": r.status_code,
-                "body": r.text,
+                "status_code": response.status_code,
+                "body": response.text,
                 "path": "{} {}".format(request.method, request_url),
             }
         }
-        res_json = json.dumps(res_json)
-        session_log.response = res_json
+        session_log.response = json.dumps(response_dict)
         session_log.save()
-        self.save_call(request, url, relative_url, session, r.status_code)
-        return HttpResponse(r.text)
-
-    def post(self, request, url, relative_url):
-        session = self.get_queryset()
-        session_log = SessionLog()
-        session_log.session = session
-
-        req_json = {
-            "request": {
-                "path": "POST {}".format(request.build_absolute_uri()),
-                "body": request.body
-            }
-        }
-        req_json = json.dumps(req_json)
-        session_log.request = req_json
-
-        request_url = session.api_endpoint + relative_url
-        r = requests.get(request_url, data=request.body)
-        res_json = res_json = {
-            "response": {
-                "status_code": r.status_code,
-                "body": r.text,
-                "path": "{} {}".format(request.method, request_url),
-            }
-        }
-        res_json = json.dumps(res_json)
-        session_log.response = res_json
-        session_log.save()
-        self.save_call(request, url, relative_url, session, r.status_code)
-        return HttpResponse(r.text)
 
 
 class SessionTestReport(OwnerSingleObject):

@@ -1,16 +1,17 @@
-from django.conf.urls import url, include
-from rest_framework import routers, serializers, viewsets
+from django.conf.urls import include, url
 from django.contrib.auth.decorators import login_required
-from django.conf.urls import url
+
+from rest_framework import routers, serializers, viewsets
+
 from . import views
 
 urlpatterns = [
     url('^$', views.SessionListView.as_view(), name='sessions'),
+    url(r'runtest/(?P<exposed_api>([^/])+)/(?P<relative_url>(.)*)$', views.RunTest.as_view(), name='run_test'),
     url('(?P<session_id>[0-9]+)/stop', views.StopSession.as_view(), name='stop_session'),
     url('(?P<session_id>[0-9]+)/report-pdf', views.SessionReportPdf.as_view(), name='session_report-pdf'),
     url('(?P<session_id>[0-9]+)/report', views.SessionReport.as_view(), name='session_report'),
     url('(?P<session_id>[0-9]+)/test-report-pdf', views.SessionTestReportPDF.as_view(), name='session-test_report-pdf'),
     url('(?P<session_id>[0-9]+)/test-report', views.SessionTestReport.as_view(), name='session-test_report'),
-    url(r'runtest/(?P<url>([^/])+)/(?P<relative_url>(.)*)$', views.RunTest.as_view(), name='run_test'),
-    url('(?P<session_id>[0-9]+)', views.SessionLogView.as_view(), name='session_log'),
+    url('(?P<session_id>\d+)/', views.SessionLogView.as_view(), name='session_log'),
 ]

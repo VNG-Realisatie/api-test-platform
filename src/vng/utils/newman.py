@@ -1,15 +1,18 @@
-import uuid
-import subprocess
+import json
 import logging
 import os
-import json
+import uuid
 from urllib.parse import urlparse
-from django.conf import settings
-from django.http import HttpResponse
 
-from ..utils.commands import run_command, run_command_with_shell
+from django.conf import settings
+
+from ..utils.commands import run_command_with_shell
 
 logger = logging.getLogger(__name__)
+
+
+class DidNotRunException(Exception):
+    pass
 
 
 class NewmanManager:
@@ -66,7 +69,8 @@ class NewmanManager:
         filename = str(uuid.uuid4())
         output, error = self.run_command(self.RUN_HTML_REPORT, self.file_path, filename)
         if error:
-            raise HttpResponse(status=500)
+            logger.exception(error)
+            raise DidNotRunException()
         f = open('{}/{}.html'.format(self.REPORT_FOLDER, filename))
         # self.file_to_be_discarted.append(f)
         return f
@@ -80,7 +84,8 @@ class NewmanManager:
         filename = str(uuid.uuid4())
         output, error = self.run_command(self.RUN_JSON_REPORT, self.file_path, filename)
         if error:
-            raise HttpResponse(status=500)
+            logger.exception(error)
+            raise DidNotRunException(error)
         f = open('{}/{}.json'.format(self.REPORT_FOLDER, filename))
         # self.file_to_be_discarted.append(f)
         return f

@@ -1,5 +1,6 @@
+import json
+
 from ..utils.commands import run_command
-import re
 
 
 class K8S():
@@ -28,7 +29,7 @@ class K8S():
             'container',
             'clusters',
             'create',
-            app_name,
+            'test-sessions',
             '--num-nodes=1',
         ]
         get_credentials = [
@@ -36,7 +37,7 @@ class K8S():
             'container',
             'clusters',
             'get-credentials',
-            app_name,
+            'test-sessions',
         ]
         deploy_image = [
             'kubectl',
@@ -46,17 +47,25 @@ class K8S():
             '--port',
             '{}'.format(port),
         ]
-        auto_balancer = [
+        load_balancer = [
             'kubectl',
             'expose',
             'deployment',
             '{}'.format(app_name),
             '--type=LoadBalancer',
         ]
+
+        # Create a general cluster (will error if it already exists)
         run_command(create_cluster)
+
+        # Get the credentials to use kubectl for the correct cluster
         run_command(get_credentials)
+
+        # Create a workload with pods
         run_command(deploy_image)
-        run_command(auto_balancer)
+
+        # Create a load balancer to expose the cluster
+        run_command(load_balancer)
 
     def delete(self, app_name):
         delete_service = [
@@ -72,8 +81,11 @@ class K8S():
             '{}'.format(app_name),
         ]
 
-        res1 = run_command(delete_service)
-        res1 = run_command(clean_up)
+        # Delete the load balancer
+        run_command(delete_service)
+
+        # Delete the workload
+        run_command(clean_up)
 
     def status(self, app_name):
         NAMES = ['type', 'cluster_ip', 'external_ip', 'port', 'age']
@@ -81,19 +93,15 @@ class K8S():
             'kubectl',
             'get',
             'service',
+            '--output=json'
         ]
         res1 = run_command(staus_command).decode('utf-8')
-
-        # extract the information from the output of the command
-        reg = re.search(r'.*{} *(\S+) *(\S+) *(\S+) *(\S+) *(\S+).*\n'.format(app_name), res1, re.M)
-        if reg:
-            status = {'app_name': app_name}
-            for i, name in zip(range(1, len(NAMES) + 1), NAMES):
-                status[name] = reg.group(i)
-
-            # extract the port from the format 8080:32741/TCP
-            port = re.match('[0-9]+', status['port']).group(0)
-            status['port'] = port
-            return status
-        else:
-            raise Exception('Application {} not found in the deployed cluster'.format(app_name))
+        services = json.loads(res1)
+        items = services.get('items')
+        for item in items:
+            metadata = item.get('metadata')
+            if metadata and metadata.get('name') == app_name:
+                ip_list = item.get('status').get('loadBalancer').get('ingress')
+                if ip_list:
+                    return ip_list[0].get('ip')
+        raise Exception('Application {} not found in the deployed cluster'.format(app_name))

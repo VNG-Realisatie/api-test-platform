@@ -113,6 +113,7 @@ class Session(models.Model):
 class SessionLog(models.Model):
 
     date = models.DateTimeField(default=timezone.now)
+    session = models.ForeignKey(Session, on_delete=models.SET_NULL, null=True)
     request = models.CharField(max_length=20000, null=True)
     response = models.CharField(max_length=20000, null=True)
-    session = models.ForeignKey(Session, on_delete=models.SET_NULL, null=True)
+    response_status = models.CharField(max_length=10, blank=True, null=True, default=None)

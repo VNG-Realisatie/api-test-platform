@@ -10,7 +10,7 @@ from django_webtest import WebTest
 from vng.accounts.models import User
 
 from ..models import Session, SessionType
-from .factories import SessionFactory, SessionTypeFactory, UserFactory, ScenarioCaseFactory, ScenarioFactory
+from .factories import SessionFactory, SessionTypeFactory, UserFactory, ScenarioCaseFactory
 from ...utils import choices
 
 
@@ -115,7 +115,7 @@ class TestLog(WebTest):
     def setUp(self):
         self.scenarioCase = ScenarioCaseFactory()
         self.session = SessionFactory()
-        self.scenarioCase.scenario = self.session.scenario
+        self.scenarioCase.vng_endpoint.session_type = self.session.session_type
 
     def test_retrieve_no_logged(self):
         call = self.app.get(reverse('testsession:session_log', kwargs={'session_id': self.session.id}), status=302)
@@ -136,7 +136,6 @@ class TestLog(WebTest):
     def test_log_report(self):
         self.test_retrieve_no_entry()
         call = self.app.get(reverse('testsession:session_report', kwargs={'session_id': self.session.id}), user=self.session.user)
-        self.assertEqual(self.scenarioCase.scenario.id, self.session.scenario.id)
 
     def test_log_report_pdf(self):
         self.test_retrieve_no_entry()

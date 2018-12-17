@@ -173,9 +173,14 @@ class SessionReport(OwnerSingleObject):
         scenario_case = self.model.objects.filter(vng_endpoint__session_type=self.session.session_type)
         context.update({
             'session': self.session,
-            'object_list': scenario_case,
-            'session_type': scenario_case[0].vng_endpoint.session_type
+            'object_list': scenario_case
         })
+        if len(scenario_case) > 0:
+            s_type = scenario_case[0].vng_endpoint.session_type
+            context.update({
+                'session_type': s_type
+            })
+
         return context
 
 

@@ -248,11 +248,22 @@ class RunTest(View):
                         case.result = choices.HTTPCallChoiches.success
                     case.save()
 
+    def get_http_header(self, request):
+        regex_http_ = re.compile(r'^HTTP_.+$')
+        regex_content_type = re.compile(r'^CONTENT_TYPE$')
+        regex_content_length = re.compile(r'^CONTENT_LENGTH$')
+
+        request_headers = {}
+        for header in request.META:
+            if regex_http_.match(header) or regex_content_type.match(header) or regex_content_length.match(header):
+                request_headers[header] = request.META[header]
+        return request_headers
+
     def get(self, request, *args, **kwargs):
         session_log, session = self.build_session_log(request)
 
         request_url = '{}/{}'.format(session.api_endpoint, self.kwargs['relative_url'])
-        response = requests.get(request_url)
+        response = requests.get(request_url, headers=self.get_http_header(request))
 
         self.add_response(response, session_log, request_url, request)
 
@@ -263,7 +274,7 @@ class RunTest(View):
         session_log, session = self.build_session_log(request)
 
         request_url = '{}/{}'.format(session.api_endpoint, self.kwargs['relative_url'])
-        response = requests.post(request_url, data=request.body)
+        response = requests.post(request_url, data=request.body, headers=self.get_http_header(request))
 
         self.add_response(response, session_log, request_url, request)
 

@@ -16,7 +16,7 @@ from ..utils import choices
 class SessionType(models.Model):
 
     name = models.CharField(max_length=200, unique=True)
-    docker_image = models.CharField(max_length=200)
+    docker_image = models.CharField(max_length=200, blank=True, null=True, default=None)
 
     def __str__(self):
         return self.name

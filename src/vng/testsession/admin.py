@@ -50,3 +50,8 @@ class TestSessionAdmin(admin.ModelAdmin):
     list_display = get_all_fields(model.TestSession)
     list_filter = ['test_file', 'name']
     search_fields = ['test_file', 'name']
+
+
+@admin.register(model.VNGEndpoint)
+class TestSessionAdmin(admin.ModelAdmin):
+    list_display = get_all_fields(model.VNGEndpoint)

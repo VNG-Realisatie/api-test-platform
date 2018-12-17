@@ -120,13 +120,13 @@ class TestLog(WebTest):
     def test_retrieve_no_logged(self):
         call = self.app.get(reverse('testsession:session_log', kwargs={'session_id': self.session.id}), status=302)
 
-    def test_retrieve_no_entry(self):
+    def test_retrieve_no_entries(self):
         call = self.app.get(reverse('testsession:session_log', kwargs={'session_id': self.session.id}), user=self.session.user)
         self.assertTrue('no log' in call.text)
 
     def test_retrieve_no_entry(self):
         url = reverse('testsession:run_test', kwargs={
-            'url': self.session.exposed_api,
+            'exposed_api': self.session.exposed_api,
             'relative_url': self.scenarioCase.url
         })
         call = self.app.get(url, user=self.session.user)

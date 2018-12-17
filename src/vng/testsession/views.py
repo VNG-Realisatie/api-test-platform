@@ -88,16 +88,19 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
         return super().form_valid(form)
 
 
-class SessionLogDetailView(LoginRequiredMixin, DetailView):
+class SessionLogDetailView(OwnerSingleObject):
     template_name = 'testsession/session-log-detail.html'
     context_object_name = 'log_list'
     model = SessionLog
+    pk_name = 'pk'
+    user_field = 'session__user'
 
 
-class SessionLogView(LoginRequiredMixin, ListView):
+class SessionLogView(OwnerMultipleObjects):
     template_name = 'testsession/session-log.html'
     context_object_name = 'log_list'
     paginate_by = 20
+    field_name = 'session__user'
 
     def get_queryset(self):
         return SessionLog.objects.filter(session__pk=self.kwargs['session_id']).order_by('-date')

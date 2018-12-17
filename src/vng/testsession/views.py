@@ -135,23 +135,22 @@ class SessionTypesViewSet(generics.ListAPIView):
     queryset = SessionType.objects.all()
 
 
-class SessionReport(OwnerMultipleObjects):
+class SessionReport(OwnerSingleObject):
 
     model = ScenarioCase
     template_name = 'testsession/session-report.html'
-    field_name = 'scenario__session__user'
 
-    def get_queryset(self):
+    def get_object(self):
         self.session = get_object_or_404(Session, pk=self.kwargs['session_id'])
-        if self.session.scenario:
-            return self.model.objects.filter(scenario__pk=self.session.scenario.pk)
-        else:
-            raise Http404
+        return self.session
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        scenario_case = self.model.objects.filter(vng_endpoint__session_type=self.session.session_type)
         context.update({
-            'session': self.session
+            'session': self.session,
+            'object_list': scenario_case,
+            'session_type': scenario_case[0].vng_endpoint.session_type
         })
         return context
 
@@ -206,9 +205,9 @@ class RunTest(View):
         Find the matching scenario case with the same url and method, if one match is found,
         the result of the call is overrided
         '''
-        scenario_cases = ScenarioCase.objects.filter(scenario__pk=session.scenario.pk)
+        scenario_cases = ScenarioCase.objects.filter(vng_endpoint__session_type=session.session_type)
         for case in scenario_cases:
-            if case.HTTP_method == request.method:
+            if case.http_method == request.method:
                 if self.match_url(request.build_absolute_uri(), case.url):
                     is_failed = False
                     for a, b in self.error_codes:
@@ -264,6 +263,7 @@ class RunTest(View):
                 "path": "{} {}".format(request.method, request_url),
             }
         }
+        session_log.response_status = response.status_code
         session_log.response = json.dumps(response_dict)
         session_log.save()
 

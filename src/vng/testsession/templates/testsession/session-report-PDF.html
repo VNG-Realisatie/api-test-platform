@@ -20,33 +20,23 @@
             <tbody>
                 <tr>
                     <td class='cell-name'>Standard</td>
-                    <td>{{ session.scenario.standard }}</td>
+                    <td>{{ session_type.standard }}</td>
                 </tr>
                 <tr>
                     <td class='cell-name'>Role</td>
-                    <td>{{ session.scenario.role }}</td>
+                    <td>{{ session_type.role }}</td>
                 </tr>
                 <tr>
                     <td class='cell-name'>Application</td>
-                    <td>{{ session.scenario.application }}</td>
+                    <td>{{ session_type.application }}</td>
                 </tr>
                 <tr>
                     <td class='cell-name'>Version</td>
-                    <td>{{ session.scenario.version }}</td>
+                    <td>{{ session_type.version }}</td>
                 </tr>
-                <tr>
-                    <td class='cell-name'>Created</td>
-                    <td>{{ session.scenario.created }}</td>
-                </tr>
-                <tr>
-                    <td class='cell-name'>Performed</td>
-                    {% if session.scenario.performed %}
-                    <td>{{ session.scenario.performed }}</td>
-                    {% endif %}
-                </tr>
+
             </tbody>
         </table>
-
         <h2>Scenario cases</h2>
         <table class='table-t'>
             <tbody>

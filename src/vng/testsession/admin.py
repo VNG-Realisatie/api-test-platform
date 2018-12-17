@@ -7,7 +7,16 @@ from ordered_model.admin import OrderedModelAdmin
 def get_all_fields(mo):
     l = [field.name for field in mo._meta.fields]
     l.remove('id')
+    l.append('id')
     return l
+
+
+class VNGEndpointInline(admin.TabularInline):
+    model = model.VNGEndpoint
+
+
+class ScenarioCaseInline(admin.TabularInline):
+    model = model.ScenarioCase
 
 
 @admin.register(model.SessionType)
@@ -15,6 +24,8 @@ class SessionTypeAdmin(admin.ModelAdmin):
     list_display = get_all_fields(model.SessionType)
     list_filter = ['name']
     search_fields = ['name']
+
+    inlines = [VNGEndpointInline]
 
 
 @admin.register(model.Session)
@@ -31,18 +42,11 @@ class SessionLogAdmin(admin.ModelAdmin):
     search_fields = ['session', 'date']
 
 
-@admin.register(model.Scenario)
-class ScenarioAdmin(admin.ModelAdmin):
-    list_display = get_all_fields(model.Scenario)
-    list_filter = ['version', 'application']
-    search_fields = ['version', 'application']
-
-
 @admin.register(model.ScenarioCase)
 class ScenarioCaseAdmin(OrderedModelAdmin):
-    list_display = ('move_up_down_links', 'url', 'HTTP_method', 'result', 'scenario')
-    list_filter = ['scenario']
-    search_fields = ['scenario']
+    list_display = ('url', 'move_up_down_links', 'http_method', 'result', 'vng_endpoint')
+    list_filter = ['vng_endpoint']
+    search_fields = ['vng_endpoint']
 
 
 @admin.register(model.TestSession)
@@ -50,3 +54,10 @@ class TestSessionAdmin(admin.ModelAdmin):
     list_display = get_all_fields(model.TestSession)
     list_filter = ['test_file', 'name']
     search_fields = ['test_file', 'name']
+
+
+@admin.register(model.VNGEndpoint)
+class VNGEndpointAdmin(admin.ModelAdmin):
+    list_display = get_all_fields(model.VNGEndpoint)
+
+    inlines = [ScenarioCaseInline]

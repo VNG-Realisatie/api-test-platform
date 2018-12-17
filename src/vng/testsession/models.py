@@ -16,37 +16,35 @@ from ..utils import choices
 class SessionType(models.Model):
 
     name = models.CharField(max_length=200, unique=True)
-    docker_image = models.CharField(max_length=200)
+    standard = models.CharField(max_length=200, null=True)
+    role = models.CharField(max_length=200, null=True)
+    application = models.CharField(max_length=200, null=True)
+    version = models.CharField(max_length=200, null=True)
 
     def __str__(self):
         return self.name
 
 
-class Scenario(models.Model):
+class VNGEndpoint(models.Model):
 
-    standard = models.CharField(max_length=200, null=True)
-    role = models.CharField(max_length=200, null=True)
-    application = models.CharField(max_length=200, null=True)
-    version = models.CharField(max_length=200, null=True)
-    created = models.DateTimeField(default=timezone.now)
-    performed = models.DateTimeField(null=True, blank=True)
+    name = models.CharField(max_length=200, unique=True)
+    url = models.URLField(max_length=200)
+    docker_image = models.CharField(max_length=200, blank=True, null=True, default=None)
+    session_type = models.ForeignKey(SessionType)
 
     def __str__(self):
-        return '{}-{}'.format(self.application, self.version)
+        return self.name
 
 
 class ScenarioCase(OrderedModel):
 
     url = models.CharField(max_length=200)
-    HTTP_method = models.CharField(max_length=20, choices=choices.HTTPMethodChoiches.choices, default=choices.HTTPMethodChoiches.GET)
+    http_method = models.CharField(max_length=20, choices=choices.HTTPMethodChoiches.choices, default=choices.HTTPMethodChoiches.GET)
     result = models.CharField(max_length=20, choices=choices.HTTPCallChoiches.choices, default=choices.HTTPCallChoiches.not_called)
-    scenario = models.ForeignKey(Scenario, on_delete=models.SET_NULL, null=True, default=None)
+    vng_endpoint = models.ForeignKey(VNGEndpoint)
 
     def __str__(self):
-        if self.scenario:
-            return '{} - {} - {}'.format(self.scenario.application, self.url, self.result)
-        else:
-            return '{} - {}'.format(self.url, self.result)
+        return '{} - {}'.format(self.url, self.result)
 
     def is_success(self):
         return self.result == choices.HTTPCallChoiches.success
@@ -59,7 +57,7 @@ class ScenarioCase(OrderedModel):
 
 
 class TestSession(models.Model):
-    name = name = models.CharField(max_length=200, unique=True)
+    name = models.CharField(max_length=200, unique=True)
     test_file = models.FileField(settings.MEDIA_FOLDER_FILES['test_session'])
 
     def __str__(self):
@@ -77,7 +75,7 @@ class Session(models.Model):
     api_endpoint = models.URLField(max_length=200, blank=True, null=True, default=None)
     port = models.PositiveIntegerField(default=8080)
     exposed_api = models.CharField(max_length=200, blank=True, null=True, default=None)
-    scenario = models.ForeignKey(Scenario, blank=True, null=True, default=None)
+    session_type = models.ForeignKey(SessionType, blank=True, null=True, default=None)
     test = models.ForeignKey(TestSession, blank=True, null=True, default=None)
     test_result = models.FileField(settings.MEDIA_FOLDER_FILES['testsession_log'], blank=True, null=True, default=None)
     json_result = models.TextField(blank=True, null=True, default=None)
@@ -115,6 +113,7 @@ class Session(models.Model):
 class SessionLog(models.Model):
 
     date = models.DateTimeField(default=timezone.now)
+    session = models.ForeignKey(Session, on_delete=models.SET_NULL, null=True)
     request = models.CharField(max_length=20000, null=True)
     response = models.CharField(max_length=20000, null=True)
-    session = models.ForeignKey(Session, on_delete=models.SET_NULL, null=True)
+    response_status = models.PositiveIntegerField(blank=True, null=True, default=None)

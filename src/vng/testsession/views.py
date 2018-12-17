@@ -24,7 +24,7 @@ from rest_framework.authentication import (
 from weasyprint import HTML
 
 from vng.testsession.models import (
-    ScenarioCase, Session, SessionLog, SessionType
+    ScenarioCase, Session, SessionLog, SessionType, VNGEndpoint
 )
 
 from ..utils import choices
@@ -45,12 +45,18 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
+        # for session in context['object_list']:
+        #    session.endpoint = VNGEndpoint.objects.filter(session_type__session__pk=session.pk)
+        # print(context['object_list'])
         context.update({
-            'stop': choices.StatusChoices.stopped
+            'stop': choices.StatusChoices.stopped,
+            # 'vng_endpoint': VNGEndpoint.objects.filter(sessi)
         })
         return context
 
     def get_queryset(self):
+        # VNGEndpoint.objects.filter(session_type__session__user=self.request.user)
         return Session.objects.filter(user=self.request.user).order_by('-started')
 
     def start_app(self, session):

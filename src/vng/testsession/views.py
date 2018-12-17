@@ -15,6 +15,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.views import View
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.list import ListView
+from django.views.generic import DetailView
 
 import requests
 from rest_framework import generics, permissions, viewsets
@@ -87,6 +88,12 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
         return super().form_valid(form)
 
 
+class SessionLogDetailView(LoginRequiredMixin, DetailView):
+    template_name = 'testsession/session-log-detail.html'
+    context_object_name = 'log_list'
+    model = SessionLog
+
+
 class SessionLogView(LoginRequiredMixin, ListView):
     template_name = 'testsession/session-log.html'
     context_object_name = 'log_list'
@@ -94,6 +101,14 @@ class SessionLogView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return SessionLog.objects.filter(session__pk=self.kwargs['session_id']).order_by('-date')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        session = get_object_or_404(Session, pk=self.kwargs['session_id'])
+        context.update({
+            'session': session,
+        })
+        return context
 
 
 class StopSession(OwnerSingleObject, View):
@@ -287,7 +302,7 @@ class SessionTestReportPDF(PDFGenerator, SessionTestReport):
 
     def parse_json(self, obj):
         parsed = json.loads(obj)
-        #parsed = munchify(parsed)
+        # parsed = munchify(parsed)
         for i, run in enumerate(parsed['run']['executions']):
             print(run)
             url = run['request']['url']

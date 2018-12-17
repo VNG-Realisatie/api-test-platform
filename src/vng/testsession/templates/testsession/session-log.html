@@ -22,7 +22,7 @@
         <table class="table">
             {% include 'components/table/header-session-log.html' only %}
             {% for log in log_list %}
-            {% include 'components/table/row-session-log.html' with log=log only %}
+            {% include 'components/table/row-session-log.html' with log=log session=session only %}
             {% endfor %}
         </table>
         {% else %}

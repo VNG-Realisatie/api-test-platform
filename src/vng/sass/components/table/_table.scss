@@ -17,7 +17,7 @@ $table-color-border: $color-gray;
     @include mono;
     @include responsive(display, block, table-cell, table-cell, table-cell);
     border-top: 2px solid $table-color-border;
-    padding: 10px 0;
+    padding: 10px;
     position: relative;
     text-align: left;
     vertical-align: top;

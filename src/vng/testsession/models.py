@@ -23,20 +23,13 @@ class SessionType(models.Model):
     name = models.CharField(max_length=200, unique=True)
     docker_image = models.CharField(max_length=200, blank=True, null=True, default=None)
     api_endpoint = models.ManyToManyField(VNGEndpoint)
-
-    def __str__(self):
-        return self.name
-
-
-class Scenario(models.Model):
-
     standard = models.CharField(max_length=200, null=True)
     role = models.CharField(max_length=200, null=True)
     application = models.CharField(max_length=200, null=True)
     version = models.CharField(max_length=200, null=True)
 
     def __str__(self):
-        return '{}-{}'.format(self.application, self.version)
+        return self.name
 
 
 class ScenarioCase(OrderedModel):
@@ -44,7 +37,7 @@ class ScenarioCase(OrderedModel):
     url = models.CharField(max_length=200)
     HTTP_method = models.CharField(max_length=20, choices=choices.HTTPMethodChoiches.choices, default=choices.HTTPMethodChoiches.GET)
     result = models.CharField(max_length=20, choices=choices.HTTPCallChoiches.choices, default=choices.HTTPCallChoiches.not_called)
-    scenario = models.ForeignKey(Scenario, on_delete=models.SET_NULL, null=True, default=None)
+    session_type = models.ForeignKey(SessionType, on_delete=models.SET_NULL, null=True, default=None)
 
     def __str__(self):
         if self.scenario:
@@ -81,7 +74,7 @@ class Session(models.Model):
     api_endpoint = models.URLField(max_length=200, blank=True, null=True, default=None)
     port = models.PositiveIntegerField(default=8080)
     exposed_api = models.CharField(max_length=200, blank=True, null=True, default=None)
-    scenario = models.ForeignKey(Scenario, blank=True, null=True, default=None)
+    session_type = models.ForeignKey(SessionType, blank=True, null=True, default=None)
     test = models.ForeignKey(TestSession, blank=True, null=True, default=None)
     test_result = models.FileField(settings.MEDIA_FOLDER_FILES['testsession_log'], blank=True, null=True, default=None)
     json_result = models.TextField(blank=True, null=True, default=None)

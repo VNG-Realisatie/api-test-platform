@@ -87,10 +87,8 @@ class ObjectOwner(LoginRequiredMixin):
         if not pk:
             raise Exception('Primary key param name not defined')
         obj = get_object_or_404(self.model, pk=pk)
-        if obj.user != self.request.user:
-            return HttpResponse('Unauthorized', status=401)
-        else:
-            return obj
+
+        return obj
 
 
 class OwnerSingleObject(ObjectOwner, DetailView):

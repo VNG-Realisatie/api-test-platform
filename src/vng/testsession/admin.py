@@ -11,11 +11,21 @@ def get_all_fields(mo):
     return l
 
 
+class VNGEndpointInline(admin.TabularInline):
+    model = model.VNGEndpoint
+
+
+class ScenarioCaseInline(admin.TabularInline):
+    model = model.ScenarioCase
+
+
 @admin.register(model.SessionType)
 class SessionTypeAdmin(admin.ModelAdmin):
     list_display = get_all_fields(model.SessionType)
     list_filter = ['name']
     search_fields = ['name']
+
+    inlines = [VNGEndpointInline]
 
 
 @admin.register(model.Session)
@@ -47,5 +57,7 @@ class TestSessionAdmin(admin.ModelAdmin):
 
 
 @admin.register(model.VNGEndpoint)
-class TestSessionAdmin(admin.ModelAdmin):
+class VNGEndpointAdmin(admin.ModelAdmin):
     list_display = get_all_fields(model.VNGEndpoint)
+
+    inlines = [ScenarioCaseInline]

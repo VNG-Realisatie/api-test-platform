@@ -15,6 +15,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.views import View
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.list import ListView
+from django.views.generic import DetailView
 
 import requests
 from rest_framework import generics, permissions, viewsets
@@ -24,7 +25,7 @@ from rest_framework.authentication import (
 from weasyprint import HTML
 
 from vng.testsession.models import (
-    ScenarioCase, Session, SessionLog, SessionType
+    ScenarioCase, Session, SessionLog, SessionType, VNGEndpoint
 )
 
 from ..utils import choices
@@ -45,12 +46,18 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
+        # for session in context['object_list']:
+        #    session.endpoint = VNGEndpoint.objects.filter(session_type__session__pk=session.pk)
+        # print(context['object_list'])
         context.update({
-            'stop': choices.StatusChoices.stopped
+            'stop': choices.StatusChoices.stopped,
+            # 'vng_endpoint': VNGEndpoint.objects.filter(sessi)
         })
         return context
 
     def get_queryset(self):
+        # VNGEndpoint.objects.filter(session_type__session__user=self.request.user)
         return Session.objects.filter(user=self.request.user).order_by('-started')
 
     def start_app(self, session):
@@ -81,13 +88,30 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
         return super().form_valid(form)
 
 
-class SessionLogView(LoginRequiredMixin, ListView):
+class SessionLogDetailView(OwnerSingleObject):
+    template_name = 'testsession/session-log-detail.html'
+    context_object_name = 'log_list'
+    model = SessionLog
+    pk_name = 'pk'
+    user_field = 'session__user'
+
+
+class SessionLogView(OwnerMultipleObjects):
     template_name = 'testsession/session-log.html'
     context_object_name = 'log_list'
     paginate_by = 20
+    field_name = 'session__user'
 
     def get_queryset(self):
         return SessionLog.objects.filter(session__pk=self.kwargs['session_id']).order_by('-date')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        session = get_object_or_404(Session, pk=self.kwargs['session_id'])
+        context.update({
+            'session': session,
+        })
+        return context
 
 
 class StopSession(OwnerSingleObject, View):
@@ -149,9 +173,14 @@ class SessionReport(OwnerSingleObject):
         scenario_case = self.model.objects.filter(vng_endpoint__session_type=self.session.session_type)
         context.update({
             'session': self.session,
-            'object_list': scenario_case,
-            'session_type': scenario_case[0].vng_endpoint.session_type
+            'object_list': scenario_case
         })
+        if len(scenario_case) > 0:
+            s_type = scenario_case[0].vng_endpoint.session_type
+            context.update({
+                'session_type': s_type
+            })
+
         return context
 
 
@@ -219,11 +248,22 @@ class RunTest(View):
                         case.result = choices.HTTPCallChoiches.success
                     case.save()
 
+    def get_http_header(self, request):
+        regex_http_ = re.compile(r'^HTTP_.+$')
+        regex_content_type = re.compile(r'^CONTENT_TYPE$')
+        regex_content_length = re.compile(r'^CONTENT_LENGTH$')
+
+        request_headers = {}
+        for header in request.META:
+            if regex_http_.match(header) or regex_content_type.match(header) or regex_content_length.match(header):
+                request_headers[header] = request.META[header]
+        return request_headers
+
     def get(self, request, *args, **kwargs):
         session_log, session = self.build_session_log(request)
 
         request_url = '{}/{}'.format(session.api_endpoint, self.kwargs['relative_url'])
-        response = requests.get(request_url)
+        response = requests.get(request_url, headers=self.get_http_header(request))
 
         self.add_response(response, session_log, request_url, request)
 
@@ -234,7 +274,7 @@ class RunTest(View):
         session_log, session = self.build_session_log(request)
 
         request_url = '{}/{}'.format(session.api_endpoint, self.kwargs['relative_url'])
-        response = requests.post(request_url, data=request.body)
+        response = requests.post(request_url, data=request.body, headers=self.get_http_header(request))
 
         self.add_response(response, session_log, request_url, request)
 
@@ -281,7 +321,7 @@ class SessionTestReportPDF(PDFGenerator, SessionTestReport):
 
     def parse_json(self, obj):
         parsed = json.loads(obj)
-        #parsed = munchify(parsed)
+        # parsed = munchify(parsed)
         for i, run in enumerate(parsed['run']['executions']):
             print(run)
             url = run['request']['url']

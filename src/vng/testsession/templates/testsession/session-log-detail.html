@@ -1,0 +1,35 @@
+{% extends 'master.html' %}
+
+{% block title %}Session Log{% endblock%}
+
+{% block content %}
+
+
+
+
+
+<article class="article">
+    <div class="article__section">
+        <h1>VNG Testplatform log</h1>
+        <input type="button" class="button button--primary" value="Session list" onclick="location.href = '{% url 'testsession:sessions'  %}';">
+
+    </div>
+    <div class="article__section">
+        <table class="table">
+            <tr>
+                <td class="table__cell">Request</td>
+                <td class="table__cell">{{ object.request }}</td>
+            </tr>
+            <tr>
+                <td class="table__cell">Response Status</td>
+                <td class="table__cell">{{ object.response_status }}</td>
+            </tr>
+            <tr>
+                <td class="table__cell">Response</td>
+                <td class="table__cell">{{ object.response }}</td>
+            </tr>
+        </table>
+    </div>
+
+</article>
+{% endblock %}

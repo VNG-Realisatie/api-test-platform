@@ -11,4 +11,10 @@ class SessionSerializer(serializers.ModelSerializer):
 class SessionTypesSerializer(serializers.ModelSerializer):
     class Meta:
         model = SessionType
-        fields = ['id', 'name', 'docker_image']
+        fields = ['id', 'name', 'standard', 'role', 'application', 'version']
+
+
+# class VNGEndpointSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = VNGEndpoint
+#         fields = ['id', 'name', 'url', 'docker_image', 'sessio_type']

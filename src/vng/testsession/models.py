@@ -34,8 +34,6 @@ class Scenario(models.Model):
     role = models.CharField(max_length=200, null=True)
     application = models.CharField(max_length=200, null=True)
     version = models.CharField(max_length=200, null=True)
-    created = models.DateTimeField(default=timezone.now)
-    performed = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return '{}-{}'.format(self.application, self.version)

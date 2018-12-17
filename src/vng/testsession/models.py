@@ -26,10 +26,14 @@ class SessionType(models.Model):
 
 
 class VNGEndpoint(models.Model):
+
     name = models.CharField(max_length=200, unique=True)
     url = models.URLField(max_length=200)
     docker_image = models.CharField(max_length=200, blank=True, null=True, default=None)
     session_type = models.ForeignKey(SessionType)
+
+    def __str__(self):
+        return self.name
 
 
 class ScenarioCase(OrderedModel):
@@ -37,13 +41,10 @@ class ScenarioCase(OrderedModel):
     url = models.CharField(max_length=200)
     http_method = models.CharField(max_length=20, choices=choices.HTTPMethodChoiches.choices, default=choices.HTTPMethodChoiches.GET)
     result = models.CharField(max_length=20, choices=choices.HTTPCallChoiches.choices, default=choices.HTTPCallChoiches.not_called)
-    vng_endpoint = models.ForeignKey(SessionType)
+    vng_endpoint = models.ForeignKey(VNGEndpoint)
 
     def __str__(self):
-        if self.scenario:
-            return '{} - {} - {}'.format(self.scenario.application, self.url, self.result)
-        else:
-            return '{} - {}'.format(self.url, self.result)
+        return '{} - {}'.format(self.url, self.result)
 
     def is_success(self):
         return self.result == choices.HTTPCallChoiches.success

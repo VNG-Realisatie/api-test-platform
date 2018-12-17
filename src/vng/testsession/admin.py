@@ -7,6 +7,7 @@ from ordered_model.admin import OrderedModelAdmin
 def get_all_fields(mo):
     l = [field.name for field in mo._meta.fields]
     l.remove('id')
+    l.append('id')
     return l
 
 
@@ -33,7 +34,7 @@ class SessionLogAdmin(admin.ModelAdmin):
 
 @admin.register(model.ScenarioCase)
 class ScenarioCaseAdmin(OrderedModelAdmin):
-    list_display = ('move_up_down_links', 'url', 'http_method', 'result', 'vng_endpoint')
+    list_display = ('url', 'move_up_down_links', 'http_method', 'result', 'vng_endpoint')
     list_filter = ['vng_endpoint']
     search_fields = ['vng_endpoint']
 

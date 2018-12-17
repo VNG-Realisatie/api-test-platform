@@ -135,23 +135,22 @@ class SessionTypesViewSet(generics.ListAPIView):
     queryset = SessionType.objects.all()
 
 
-class SessionReport(OwnerMultipleObjects):
+class SessionReport(OwnerSingleObject):
 
     model = ScenarioCase
     template_name = 'testsession/session-report.html'
-    field_name = 'scenario__session__user'
 
-    def get_queryset(self):
+    def get_object(self):
         self.session = get_object_or_404(Session, pk=self.kwargs['session_id'])
-        if self.session.scenario:
-            return self.model.objects.filter(scenario__pk=self.session.scenario.pk)
-        else:
-            raise Http404
+        return self.session
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        scenario_case = self.model.objects.filter(vng_endpoint__session_type=self.session.session_type)
         context.update({
-            'session': self.session
+            'session': self.session,
+            'object_list': scenario_case,
+            'session_type': scenario_case[0].vng_endpoint.session_type
         })
         return context
 

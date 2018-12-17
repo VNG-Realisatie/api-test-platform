@@ -33,9 +33,9 @@ class SessionLogAdmin(admin.ModelAdmin):
 
 @admin.register(model.ScenarioCase)
 class ScenarioCaseAdmin(OrderedModelAdmin):
-    list_display = ('move_up_down_links', 'url', 'HTTP_method', 'result', 'session_type')
-    list_filter = ['session_type']
-    search_fields = ['session_type']
+    list_display = ('move_up_down_links', 'url', 'http_method', 'result', 'vng_endpoint')
+    list_filter = ['vng_endpoint']
+    search_fields = ['vng_endpoint']
 
 
 @admin.register(model.TestSession)

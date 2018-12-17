@@ -13,16 +13,9 @@ from vng.accounts.models import User
 from ..utils import choices
 
 
-class VNGEndpoint(models.Model):
-    name = models.CharField(max_length=200, unique=True)
-    url = models.URLField(max_length=200)
-
-
 class SessionType(models.Model):
 
     name = models.CharField(max_length=200, unique=True)
-    docker_image = models.CharField(max_length=200, blank=True, null=True, default=None)
-    api_endpoint = models.ManyToManyField(VNGEndpoint)
     standard = models.CharField(max_length=200, null=True)
     role = models.CharField(max_length=200, null=True)
     application = models.CharField(max_length=200, null=True)
@@ -32,12 +25,19 @@ class SessionType(models.Model):
         return self.name
 
 
+class VNGEndpoint(models.Model):
+    name = models.CharField(max_length=200, unique=True)
+    url = models.URLField(max_length=200)
+    docker_image = models.CharField(max_length=200, blank=True, null=True, default=None)
+    session_type = models.ForeignKey(SessionType)
+
+
 class ScenarioCase(OrderedModel):
 
     url = models.CharField(max_length=200)
-    HTTP_method = models.CharField(max_length=20, choices=choices.HTTPMethodChoiches.choices, default=choices.HTTPMethodChoiches.GET)
+    http_method = models.CharField(max_length=20, choices=choices.HTTPMethodChoiches.choices, default=choices.HTTPMethodChoiches.GET)
     result = models.CharField(max_length=20, choices=choices.HTTPCallChoiches.choices, default=choices.HTTPCallChoiches.not_called)
-    session_type = models.ForeignKey(SessionType, on_delete=models.SET_NULL, null=True, default=None)
+    vng_endpoint = models.ForeignKey(SessionType)
 
     def __str__(self):
         if self.scenario:
@@ -56,7 +56,7 @@ class ScenarioCase(OrderedModel):
 
 
 class TestSession(models.Model):
-    name = name = models.CharField(max_length=200, unique=True)
+    name = models.CharField(max_length=200, unique=True)
     test_file = models.FileField(settings.MEDIA_FOLDER_FILES['test_session'])
 
     def __str__(self):

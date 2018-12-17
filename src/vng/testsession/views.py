@@ -205,9 +205,9 @@ class RunTest(View):
         Find the matching scenario case with the same url and method, if one match is found,
         the result of the call is overrided
         '''
-        scenario_cases = ScenarioCase.objects.filter(scenario__pk=session.scenario.pk)
+        scenario_cases = ScenarioCase.objects.filter(vng_endpoint__session_type=session.session_type)
         for case in scenario_cases:
-            if case.HTTP_method == request.method:
+            if case.http_method == request.method:
                 if self.match_url(request.build_absolute_uri(), case.url):
                     is_failed = False
                     for a, b in self.error_codes:
@@ -263,6 +263,7 @@ class RunTest(View):
                 "path": "{} {}".format(request.method, request_url),
             }
         }
+        session_log.response_status = response.status_code
         session_log.response = json.dumps(response_dict)
         session_log.save()
 

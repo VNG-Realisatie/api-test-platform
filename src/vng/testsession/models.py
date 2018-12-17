@@ -13,10 +13,16 @@ from vng.accounts.models import User
 from ..utils import choices
 
 
+class VNGEndpoint(models.Model):
+    name = models.CharField(max_length=200, unique=True)
+    url = models.URLField(max_length=200)
+
+
 class SessionType(models.Model):
 
     name = models.CharField(max_length=200, unique=True)
     docker_image = models.CharField(max_length=200, blank=True, null=True, default=None)
+    api_endpoint = models.ManyToManyField(VNGEndpoint)
 
     def __str__(self):
         return self.name

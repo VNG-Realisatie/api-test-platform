@@ -116,4 +116,4 @@ class SessionLog(models.Model):
     session = models.ForeignKey(Session, on_delete=models.SET_NULL, null=True)
     request = models.CharField(max_length=20000, null=True)
     response = models.CharField(max_length=20000, null=True)
-    response_status = models.CharField(max_length=10, blank=True, null=True, default=None)
+    response_status = models.PositiveIntegerField(blank=True, null=True, default=None)

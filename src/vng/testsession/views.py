@@ -210,7 +210,7 @@ class RunTest(View):
     error_codes = [(400, 500)]
 
     def get_queryset(self):
-        return get_object_or_404(ExposedUrl, exposed_url=self.kwargs['exposed_api']).session
+        return get_object_or_404(ExposedUrl, exposed_url=self.kwargs['exposed_url']).session
 
     def match_url(self, url, compare):
         '''
@@ -256,12 +256,14 @@ class RunTest(View):
     def get(self, request, *args, **kwargs):
         session_log, session = self.build_session_log(request)
 
-        request_url = '{}/{}'.format(session.api_endpoint, self.kwargs['relative_url'])
+        eu = get_object_or_404(ExposedUrl, session=session, exposed_url=self.kwargs['exposed_url'])  # ExposedUrl.objects.filter(session=session).filter(exposed_url=self.kwargs['exposed_url'])
+
+        request_url = '{}/{}'.format(eu.vng_endpoint.url, self.kwargs['relative_url'])
         response = requests.get(request_url, headers=self.get_http_header(request))
 
         self.add_response(response, session_log, request_url, request)
 
-        self.save_call(request, self.kwargs['exposed_api'], self.kwargs['relative_url'], session, response.status_code)
+        self.save_call(request, self.kwargs['exposed_url'], self.kwargs['relative_url'], session, response.status_code)
         return HttpResponse(response.text)
 
     def post(self, request, *args, **kwargs):

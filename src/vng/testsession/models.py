@@ -72,7 +72,6 @@ class Session(models.Model):
     stopped = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=10, choices=choices.StatusChoices.choices, default=choices.StatusChoices.starting)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    api_endpoint = models.URLField(max_length=200, blank=True, null=True, default=None)
     port = models.PositiveIntegerField(default=8080)
     session_type = models.ForeignKey(SessionType, blank=True, null=True, default=None)
     test = models.ForeignKey(TestSession, blank=True, null=True, default=None)

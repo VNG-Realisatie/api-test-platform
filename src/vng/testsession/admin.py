@@ -41,7 +41,6 @@ class SessionAdmin(admin.ModelAdmin):
         'stopped',
         'status',
         'user',
-        'api_endpoint',
         'port',
         'session_type',
         'test',

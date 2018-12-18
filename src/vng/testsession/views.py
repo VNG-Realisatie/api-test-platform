@@ -210,7 +210,7 @@ class RunTest(View):
     error_codes = [(400, 500)]
 
     def get_queryset(self):
-        return get_object_or_404(Session, exposed_api=self.kwargs['exposed_api'])
+        return get_object_or_404(ExposedUrl, exposed_url=self.kwargs['exposed_api']).session
 
     def match_url(self, url, compare):
         '''

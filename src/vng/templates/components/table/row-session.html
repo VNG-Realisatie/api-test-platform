@@ -7,7 +7,9 @@
         <td class="table__cell">{{ endpoint.session.session_type.name }}</td>
 
 
-        <td class="table__cell">{{endpoint.exposed_url}}</td>
+        <td class="table__cell">
+            <a href="{% url 'testsession:run_test' endpoint.exposed_url '' %}">{{endpoint.exposed_url}}</a>
+        </td>
 
 
         <td class="table__cell">

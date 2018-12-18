@@ -10,12 +10,16 @@ from django_webtest import WebTest
 from vng.accounts.models import User
 
 from ..models import Session, SessionType
-from .factories import SessionFactory, SessionTypeFactory, UserFactory, ScenarioCaseFactory
+from .factories import SessionFactory, SessionTypeFactory, UserFactory, ScenarioCaseFactory, ExposedUrlFactory
 from ...utils import choices
 
 
 def get_object(r):
     return json.loads(r.decode('utf-8'))
+
+
+def get_username():
+    return User.objects.all()[0].username
 
 
 class RetrieveSessionType(WebTest):
@@ -45,13 +49,13 @@ class AuthorizationTests(WebTest):
 
     def test_right_login(self):
         call = self.app.post('/api/auth/login/', params=collections.OrderedDict([
-            ('username', 'test'),
-            ('password', 'pippopippo')]))
+            ('username', get_username()),
+            ('password', 'password')]))
         self.assertIsNotNone(call.json.get('key'))
 
     def test_wrong_login(self):
         call = self.app.post(reverse('apiv1_auth:rest_login'), {
-            'username': 'test',
+            'username': get_username(),
             'password': 'wrong'
         }, status=400)
 
@@ -82,8 +86,8 @@ class CreationAndDeletion(WebTest):
             'api_endpoint': 'http://google.com'
         }
         call = self.app.post('/api/auth/login/', params=collections.OrderedDict([
-            ('username', 'test'),
-            ('password', 'pippopippo')]))
+            ('username', get_username()),
+            ('password', 'password')]))
         key = get_object(call.body)['key']
         head = {'Authorization': 'Token {}'.format(key)}
         call = self.app.post(reverse('apiv1:test_session_list'), session, headers=head)
@@ -99,8 +103,8 @@ class CreationAndDeletion(WebTest):
         }
 
         call = self.app.post('/api/auth/login/', params=collections.OrderedDict([
-            ('username', 'test'),
-            ('password', 'pippopippo')]))
+            ('username', get_username()),
+            ('password', 'password')]))
         key = get_object(call.body)['key']
         head = {'Authorization': 'Token {}'.format(key)}
         call = self.app.post(reverse('apiv1:test_session_list'), session, headers=head)
@@ -114,8 +118,10 @@ class TestLog(WebTest):
 
     def setUp(self):
         self.scenarioCase = ScenarioCaseFactory()
-        self.session = SessionFactory()
-        self.scenarioCase.vng_endpoint.session_type = self.session.session_type
+        self.exp_url = ExposedUrlFactory()
+        self.session = self.exp_url.session
+        self.exp_url.session = self.session
+        self.scenarioCase.vng_endpoint = self.exp_url.vng_endpoint
 
     def test_retrieve_no_logged(self):
         call = self.app.get(reverse('testsession:session_log', kwargs={'session_id': self.session.id}), status=302)
@@ -126,8 +132,8 @@ class TestLog(WebTest):
 
     def test_retrieve_no_entry(self):
         url = reverse('testsession:run_test', kwargs={
-            'exposed_api': self.session.exposed_api,
-            'relative_url': self.scenarioCase.url
+            'exposed_url': self.exp_url.exposed_url,
+            'relative_url': self.exp_url.vng_endpoint.url
         })
         call = self.app.get(url, user=self.session.user)
         call2 = self.app.get(reverse('testsession:session_log', kwargs={'session_id': self.session.id}), user=self.session.user)

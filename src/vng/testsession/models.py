@@ -126,3 +126,6 @@ class SessionLog(models.Model):
     request = models.CharField(max_length=20000, null=True)
     response = models.CharField(max_length=20000, null=True)
     response_status = models.PositiveIntegerField(blank=True, null=True, default=None)
+
+    def request_path(self):
+        return json.loads(self.request)['request']['path']

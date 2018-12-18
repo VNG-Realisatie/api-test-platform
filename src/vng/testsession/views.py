@@ -27,7 +27,7 @@ from weasyprint import HTML
 from zds_client import ClientAuth
 
 from vng.testsession.models import (
-    ScenarioCase, Session, SessionLog, SessionType, VNGEndpoint, ExposedUrl
+    ScenarioCase, Session, SessionLog, SessionType, VNGEndpoint, ExposedUrl, TestSession
 )
 
 from ..utils import choices
@@ -137,23 +137,32 @@ class StopSession(OwnerSingleObject, View):
 
     def post(self, request, *args, **kwargs):
         session = self.get_object()
+        if session.status == choices.StatusChoices.stopped:
+            return HttpResponseRedirect(reverse('testsession:sessions'))
 
+        endpoints = VNGEndpoint.objects.filter(session_type=session.session_type)
         # running the test
-        if session.test:
-            try:
-                newman = NewmanManager(session.test.test_file, session.api_endpoint)
+
+        for ep in endpoints:
+            for t in TestSession.objects.filter(vng_endpoint=ep):
+                newman = NewmanManager(t.test_file, ep.url)
                 result = newman.execute_test()
-                session.save_test(result)
+
+                t.save_test(result)
                 result_json = newman.execute_test_json()
-                session.save_test_json(result_json)
+                t.save_test_json(result_json)
                 result_json.close()
-            except Exception:
-                return HttpResponse(str(Exception))
-                return HttpResponseServerError()
+
+                t.save()
+
         session.status = choices.StatusChoices.stopped
         session.save()
-        kuber = K8S()
-        kuber.delete(session.name)
+
+        endpoint = VNGEndpoint.objects.filter(session_type=session.session_type)
+        for ep in endpoint:
+            if ep.docker_image:
+                kuber = K8S()
+                kuber.delete(session.name)
         return HttpResponseRedirect(reverse('testsession:sessions'))
 
 

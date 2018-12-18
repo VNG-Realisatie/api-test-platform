@@ -9,8 +9,9 @@ from django_webtest import WebTest
 
 from vng.accounts.models import User
 
-from ..models import Session, SessionType
-from .factories import SessionFactory, SessionTypeFactory, UserFactory, ScenarioCaseFactory, ExposedUrlFactory
+from ..models import Session, SessionType, SessionLog
+from .factories import (
+    SessionFactory, SessionTypeFactory, UserFactory, ScenarioCaseFactory, ExposedUrlFactory, SessionLogFactory)
 from ...utils import choices
 
 
@@ -113,6 +114,10 @@ class CreationAndDeletion(WebTest):
         user = User.objects.all()[0]
         self.assertEqual(session.user.pk, user.pk)
 
+    def stop_session_no_auth(self):
+        session = SessionFactory()
+        call = self.app.post(reverse('testsession:stop_session', kwargs={'session_id': session.id}), user=SessionFactory().user, status=403)
+
 
 class TestLog(WebTest):
 
@@ -122,6 +127,7 @@ class TestLog(WebTest):
         self.session = self.exp_url.session
         self.exp_url.session = self.session
         self.scenarioCase.vng_endpoint = self.exp_url.vng_endpoint
+        self.session_log = SessionLogFactory()
 
     def test_retrieve_no_logged(self):
         call = self.app.get(reverse('testsession:session_log', kwargs={'session_id': self.session.id}), status=302)
@@ -146,3 +152,19 @@ class TestLog(WebTest):
     def test_log_report_pdf(self):
         self.test_retrieve_no_entry()
         call = self.app.get(reverse('testsession:session_report-pdf', kwargs={'session_id': self.session.id}), user=self.session.user)
+
+    def test_log_detail_view(self):
+        sl = self.session_log
+        call = self.app.get(reverse('testsession:session_log-detail',
+                                    kwargs={
+                                        'session_id': sl.session.id,
+                                        'pk': sl.pk}),
+                            user=sl.session.user)
+
+    def test_log_detail_view_no_authorized(self):
+        sl = self.session_log
+        call = self.app.get(reverse('testsession:session_log-detail',
+                                    kwargs={
+                                        'session_id': sl.session.id,
+                                        'pk': sl.id}),
+                            status=[302, 401, 403, 404])

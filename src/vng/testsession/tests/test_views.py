@@ -9,13 +9,18 @@ from django_webtest import WebTest
 
 from vng.accounts.models import User
 
-from ..models import Session, SessionType
-from .factories import SessionFactory, SessionTypeFactory, UserFactory, ScenarioCaseFactory, ScenarioFactory
+from ..models import Session, SessionType, SessionLog
+from .factories import (
+    SessionFactory, SessionTypeFactory, UserFactory, ScenarioCaseFactory, ExposedUrlFactory, SessionLogFactory)
 from ...utils import choices
 
 
 def get_object(r):
     return json.loads(r.decode('utf-8'))
+
+
+def get_username():
+    return User.objects.all().first().username
 
 
 class RetrieveSessionType(WebTest):
@@ -45,13 +50,13 @@ class AuthorizationTests(WebTest):
 
     def test_right_login(self):
         call = self.app.post('/api/auth/login/', params=collections.OrderedDict([
-            ('username', 'test'),
-            ('password', 'pippopippo')]))
+            ('username', get_username()),
+            ('password', 'password')]))
         self.assertIsNotNone(call.json.get('key'))
 
     def test_wrong_login(self):
         call = self.app.post(reverse('apiv1_auth:rest_login'), {
-            'username': 'test',
+            'username': get_username(),
             'password': 'wrong'
         }, status=400)
 
@@ -82,8 +87,8 @@ class CreationAndDeletion(WebTest):
             'api_endpoint': 'http://google.com'
         }
         call = self.app.post('/api/auth/login/', params=collections.OrderedDict([
-            ('username', 'test'),
-            ('password', 'pippopippo')]))
+            ('username', get_username()),
+            ('password', 'password')]))
         key = get_object(call.body)['key']
         head = {'Authorization': 'Token {}'.format(key)}
         call = self.app.post(reverse('apiv1:test_session_list'), session, headers=head)
@@ -99,35 +104,42 @@ class CreationAndDeletion(WebTest):
         }
 
         call = self.app.post('/api/auth/login/', params=collections.OrderedDict([
-            ('username', 'test'),
-            ('password', 'pippopippo')]))
+            ('username', get_username()),
+            ('password', 'password')]))
         key = get_object(call.body)['key']
         head = {'Authorization': 'Token {}'.format(key)}
         call = self.app.post(reverse('apiv1:test_session_list'), session, headers=head)
         response_parsed = get_object(call.body)
         session = Session.objects.filter(pk=response_parsed['id'])[0]
-        user = User.objects.all()[0]
+        user = User.objects.all().first()
         self.assertEqual(session.user.pk, user.pk)
+
+    def stop_session_no_auth(self):
+        session = SessionFactory()
+        call = self.app.post(reverse('testsession:stop_session', kwargs={'session_id': session.id}), user=SessionFactory().user, status=403)
 
 
 class TestLog(WebTest):
 
     def setUp(self):
         self.scenarioCase = ScenarioCaseFactory()
-        self.session = SessionFactory()
-        self.scenarioCase.scenario = self.session.scenario
+        self.exp_url = ExposedUrlFactory()
+        self.session = self.exp_url.session
+        self.exp_url.session = self.session
+        self.scenarioCase.vng_endpoint = self.exp_url.vng_endpoint
+        self.session_log = SessionLogFactory()
 
     def test_retrieve_no_logged(self):
         call = self.app.get(reverse('testsession:session_log', kwargs={'session_id': self.session.id}), status=302)
 
-    def test_retrieve_no_entry(self):
+    def test_retrieve_no_entries(self):
         call = self.app.get(reverse('testsession:session_log', kwargs={'session_id': self.session.id}), user=self.session.user)
         self.assertTrue('no log' in call.text)
 
     def test_retrieve_no_entry(self):
         url = reverse('testsession:run_test', kwargs={
-            'url': self.session.exposed_api,
-            'relative_url': self.scenarioCase.url
+            'exposed_url': self.exp_url.exposed_url,
+            'relative_url': self.exp_url.vng_endpoint.url
         })
         call = self.app.get(url, user=self.session.user)
         call2 = self.app.get(reverse('testsession:session_log', kwargs={'session_id': self.session.id}), user=self.session.user)
@@ -136,8 +148,23 @@ class TestLog(WebTest):
     def test_log_report(self):
         self.test_retrieve_no_entry()
         call = self.app.get(reverse('testsession:session_report', kwargs={'session_id': self.session.id}), user=self.session.user)
-        self.assertEqual(self.scenarioCase.scenario.id, self.session.scenario.id)
 
     def test_log_report_pdf(self):
         self.test_retrieve_no_entry()
         call = self.app.get(reverse('testsession:session_report-pdf', kwargs={'session_id': self.session.id}), user=self.session.user)
+
+    def test_log_detail_view(self):
+        sl = self.session_log
+        call = self.app.get(reverse('testsession:session_log-detail',
+                                    kwargs={
+                                        'session_id': sl.session.id,
+                                        'pk': sl.pk}),
+                            user=sl.session.user)
+
+    def test_log_detail_view_no_authorized(self):
+        sl = self.session_log
+        call = self.app.get(reverse('testsession:session_log-detail',
+                                    kwargs={
+                                        'session_id': sl.session.id,
+                                        'pk': sl.id}),
+                            status=[302, 401, 403, 404])

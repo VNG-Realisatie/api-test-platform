@@ -1,13 +1,21 @@
-from django.utils import timezone
 import collections
 import json
+
+from django.utils import timezone
 from django.test import TestCase
 from django_webtest import WebTest
+
+from vng.accounts.models import User
+
 from .factories import ServerRunFactory, TestScenarioFactory
 
 
 def get_object(r):
     return json.loads(r.decode('utf-8'))
+
+
+def get_username():
+    return User.objects.all().first().username
 
 
 class RetrieveCreationTest(WebTest):
@@ -18,8 +26,8 @@ class RetrieveCreationTest(WebTest):
 
     def get_user_key(self):
         call = self.app.post('/api/auth/login/', params=collections.OrderedDict([
-            ('username', 'test'),
-            ('password', 'pippopippo')]))
+            ('username', get_username()),
+            ('password', 'password')]))
         key = get_object(call.body)['key']
         head = {'Authorization': 'Token {}'.format(key)}
         return head

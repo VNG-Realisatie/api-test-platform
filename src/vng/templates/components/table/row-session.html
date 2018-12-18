@@ -1,32 +1,42 @@
 {% spaceless %}
-<tr>
-    <td class="table__cell">
-        <a href="{% url 'testsession:session_log' session.pk %}">{{ session.started }}</a>
-    </td>
-    <td class="table__cell">{{ session.stopped }}</td>
-    <td class="table__cell">{{ session.status }}</td>
-    <td class="table__cell">{{ session.session_type.name }}</td>
-    <td class="table__cell">{{ session.user.username }}</td>
-    <td class="table__cell">{{ session.api_endpoint }}</td>
+    <tr>
+        <td class="table__cell">
+            <a href="{% url 'testsession:session_log' cluster.0.session.id %}">{{ cluster.0.session.started }}</a>
+        </td>
+        <td class="table__cell">{{ cluster.0.session.status }}</td>
+        <td class="table__cell">{{ cluster.0.session.session_type.name }}</td>
 
-    {% if session.exposed_api %}
-        {% url 'testsession:run_test' exposed_api=session.exposed_api relative_url='' as proxy_url %}
-        <td class="table__cell"><a href="{{ proxy_url }}" target="_blank">{{ proxy_url }}</a></td>
-    {% else %}
-        <td class="table__cell">None</td>
-    {% endif %}
 
-    <td class="table__cell">
-        {% if not session.is_stopped %}
-            <form method="POST" action="{% url 'testsession:stop_session' session.id %}">
-                {% csrf_token %}
-                <input type="submit" type="button" class="button button--primary" value="Stop">
-            </form>
-        {% else %}
-            {% if session.test_result %}
-                <input type="button" class="button button--primary" value="Test report" onclick="location.href = '{% url 'testsession:session-test_report' session.id %}';">
+        <td class="table__cell">
+            <table>
+                {% for endpoint in cluster %}
+                    <tr>
+                        <td>
+                            {{endpoint.vng_endpoint.name}} <a href="{% url 'testsession:run_test' endpoint.exposed_url '' %}">{{endpoint.exposed_url}}</a>
+                        <td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </td>
+
+
+        <td class="table__cell">
+            {% if not cluster.0.session.is_stopped %}
+                <form method="POST" action="{% url 'testsession:stop_session' cluster.0.session.id %}">
+                    {% csrf_token %}
+                    <input type="submit" type="button" class="button button--primary" value="Stop">
+                </form>
+            {% else %}
+                <table>
+                {% for endpoint in cluster %}
+                    <tr>
+                        <td>
+                            <input type="button" class="button button--primary" value="{{endpoint.vng_endpoint.name}} Test report" onclick="location.href = '{% url 'testsession:session-test_report' endpoint.session.id endpoint.test_session.id %}';">
+                        <td>
+                    </tr>
+                {% endfor %}
+                </table>
             {% endif %}
-        {% endif %}
-    </td>
-</tr>
+        </td>
+    </tr>
 {% endspaceless %}

@@ -1,11 +1,12 @@
 import collections
 
 from django import http
-from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.template import loader, TemplateDoesNotExist
 from django.shortcuts import get_object_or_404
 from django.views.defaults import ERROR_500_TEMPLATE_NAME
 from django.views.decorators.csrf import requires_csrf_token
+from django.core.exceptions import PermissionDenied
 from django.views.generic.edit import ModelFormMixin, ProcessFormView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.list import MultipleObjectMixin, MultipleObjectTemplateResponseMixin, ListView
@@ -65,6 +66,8 @@ class ObjectOwner(LoginRequiredMixin):
     user_field = 'user'
 
     def check_ownership(self, queryset):
+        if len(queryset) == 0:
+            return queryset
         if self.field_name is None:
             params = {
                 self.user_field: self.request.user
@@ -75,25 +78,13 @@ class ObjectOwner(LoginRequiredMixin):
             }
         qs = queryset.filter(**params).distinct()
         if len(qs) == 0:
-            return Http404
+            raise PermissionDenied
         else:
             return qs
 
-    def get_object(self):
-        if not hasattr(self, 'pk_name'):
-            raise Exception('Field "pk_name" in subclasses has not been defined')
-
-        pk = self.kwargs.get(self.pk_name)
-        if not pk:
-            raise Exception('Primary key param name not defined')
-        obj = get_object_or_404(self.model, pk=pk)
-        if obj.user != self.request.user:
-            return HttpResponse('Unauthorized', status=401)
-        else:
-            return obj
-
 
 class OwnerSingleObject(ObjectOwner, DetailView):
+    pk_name = 'pk'
 
     def get_queryset(self, object):
         return object.__class__.objects.filter(pk=object.pk)
@@ -103,6 +94,17 @@ class OwnerSingleObject(ObjectOwner, DetailView):
         self.check_ownership(self.get_queryset(self.object))
         context = self.get_context_data(object=self.object)
         return self.render_to_response(context)
+
+    def get_object(self):
+        if not hasattr(self, 'pk_name'):
+            raise Exception('Field "pk_name" in subclasses has not been defined')
+
+        pk = self.kwargs.get(self.pk_name)
+        if not pk:
+            raise Exception('Primary key param name not defined in the URLs')
+        obj = get_object_or_404(self.model, pk=pk)
+
+        return obj
 
 
 class OwnerMultipleObjects(ObjectOwner, ListView):

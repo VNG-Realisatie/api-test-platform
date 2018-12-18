@@ -15,7 +15,7 @@ def get_object(r):
 
 
 def get_username():
-    return User.objects.all()[0].username
+    return User.objects.all().first().username
 
 
 class RetrieveCreationTest(WebTest):

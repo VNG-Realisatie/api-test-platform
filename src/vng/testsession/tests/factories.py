@@ -2,7 +2,8 @@ from django.utils import timezone
 import factory
 from factory.django import DjangoModelFactory as Dmf
 from vng.accounts.models import User
-from ..models import SessionType, Session, ScenarioCase, VNGEndpoint, ExposedUrl, SessionLog
+from django.conf import settings
+from ..models import SessionType, Session, ScenarioCase, VNGEndpoint, ExposedUrl, SessionLog, TestSession
 from ...utils import choices
 
 
@@ -60,6 +61,14 @@ class SessionFactory(Dmf):
     name = factory.Sequence(lambda n: 'name%s' % n)
 
 
+class TestSessionFactory(Dmf):
+
+    class Meta:
+        model = TestSession
+
+    test_file = factory.django.FileField(from_path=settings.MEDIA_ROOT + '/VNG.postman_collection.json')
+
+
 class ExposedUrlFactory(Dmf):
 
     class Meta:
@@ -68,6 +77,7 @@ class ExposedUrlFactory(Dmf):
     exposed_url = factory.Sequence(lambda n: 'tst%s' % n)
     session = factory.SubFactory(SessionFactory)
     vng_endpoint = factory.SubFactory(VNGEndpointFactory)
+    test_session = factory.SubFactory(TestSessionFactory)
 
     def __init___(self, **args):
         super().__init__(**args)

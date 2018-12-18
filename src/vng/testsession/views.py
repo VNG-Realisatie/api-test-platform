@@ -24,6 +24,8 @@ from rest_framework.authentication import (
 )
 from weasyprint import HTML
 
+from zds_client import ClientAuth
+
 from vng.testsession.models import (
     ScenarioCase, Session, SessionLog, SessionType, VNGEndpoint, ExposedUrl
 )
@@ -251,7 +253,13 @@ class RunTest(View):
         for header in request.META:
             if regex_http_.match(header) or regex_content_type.match(header) or regex_content_length.match(header):
                 request_headers[header] = request.META[header]
-        return request_headers
+
+        client_id = 'Test platform-sO4v8gEKOypU'
+        secret = 'k41Zchaq3H4K7e1OBIgWzZhQxUF2aQLb'
+
+        client_auth = ClientAuth(client_id, secret)
+
+        return {**request_headers, **client_auth.credentials()}
 
     def get(self, request, *args, **kwargs):
         session_log, session = self.build_session_log(request)

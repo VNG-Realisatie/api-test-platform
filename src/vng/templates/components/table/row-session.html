@@ -21,7 +21,7 @@
 
 
         <td class="table__cell">
-            {% if not cluster.0..session.is_stopped %}
+            {% if not cluster.0.session.is_stopped %}
                 <form method="POST" action="{% url 'testsession:stop_session' cluster.0.session.id %}">
                     {% csrf_token %}
                     <input type="submit" type="button" class="button button--primary" value="Stop">

@@ -42,9 +42,6 @@ class SessionAdmin(admin.ModelAdmin):
         'status',
         'user',
         'session_type',
-        'test',
-        'test_result',
-        'json_result',
     ]
     list_filter = ['user']
     search_fields = ['user', 'api_endpoint']
@@ -78,9 +75,14 @@ class ScenarioCaseAdmin(OrderedModelAdmin):
 
 @admin.register(model.TestSession)
 class TestSessionAdmin(admin.ModelAdmin):
-    list_display = ['name', 'test_file']
-    list_filter = ['test_file', 'name']
-    search_fields = ['test_file', 'name']
+    list_display = [
+        'vng_endpoint',
+        'test_file',
+        'test_result',
+        'json_result',
+    ]
+    list_filter = ['test_file', 'vng_endpoint']
+    search_fields = ['test_file', 'vng_endpoint']
 
 
 @admin.register(model.VNGEndpoint)

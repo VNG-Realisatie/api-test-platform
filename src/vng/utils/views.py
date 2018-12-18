@@ -1,11 +1,12 @@
 import collections
 
 from django import http
-from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.template import loader, TemplateDoesNotExist
 from django.shortcuts import get_object_or_404
 from django.views.defaults import ERROR_500_TEMPLATE_NAME
 from django.views.decorators.csrf import requires_csrf_token
+from django.core.exceptions import PermissionDenied
 from django.views.generic.edit import ModelFormMixin, ProcessFormView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.list import MultipleObjectMixin, MultipleObjectTemplateResponseMixin, ListView
@@ -65,6 +66,8 @@ class ObjectOwner(LoginRequiredMixin):
     user_field = 'user'
 
     def check_ownership(self, queryset):
+        if len(queryset) == 0:
+            return queryset
         if self.field_name is None:
             params = {
                 self.user_field: self.request.user
@@ -75,7 +78,7 @@ class ObjectOwner(LoginRequiredMixin):
             }
         qs = queryset.filter(**params).distinct()
         if len(qs) == 0:
-            return Http404
+            raise PermissionDenied
         else:
             return qs
 

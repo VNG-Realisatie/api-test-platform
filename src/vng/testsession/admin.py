@@ -18,7 +18,7 @@ class ExposedUrlInline(admin.TabularInline):
 
 @admin.register(model.ExposedUrl)
 class ExposedUrl(admin.ModelAdmin):
-    list_display = ['session', 'vng_endpoint', 'exposed_url']
+    list_display = ['session', 'vng_endpoint', 'exposed_url', 'test_session', 'id']
     list_filter = ['session']
     search_fields = ['session']
 
@@ -76,13 +76,12 @@ class ScenarioCaseAdmin(OrderedModelAdmin):
 @admin.register(model.TestSession)
 class TestSessionAdmin(admin.ModelAdmin):
     list_display = [
-        'vng_endpoint',
         'test_file',
         'test_result',
         'json_result',
     ]
-    list_filter = ['test_file', 'vng_endpoint']
-    search_fields = ['test_file', 'vng_endpoint']
+    list_filter = ['test_file', ]
+    search_fields = ['test_file', ]
 
 
 @admin.register(model.VNGEndpoint)

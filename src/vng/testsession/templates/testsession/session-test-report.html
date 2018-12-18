@@ -9,8 +9,8 @@
     <div class="article__section">
         <h1>Session test report</h1>
         <input type="button" class="button button--primary" value="Back to the details" onclick="location.href = '{% url 'testsession:sessions' %}';">
-        <input type="button" class="button button--primary" value="View PDF" onclick="location.href = '{% url 'testsession:session-test_report-pdf' session.id %}';">
-        {{ session.display_test_result |safe }}
+        <input type="button" class="button button--primary" value="View PDF" onclick="location.href = '{% url 'testsession:session-test_report-pdf' session.id object.id %}';">
+        {{ object.display_test_result |safe }}
     </div>
 </article>
 {% endblock %}

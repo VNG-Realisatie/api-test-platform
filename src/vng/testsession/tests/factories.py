@@ -2,7 +2,7 @@ from django.utils import timezone
 import factory
 from factory.django import DjangoModelFactory as Dmf
 from vng.accounts.models import User
-from ..models import SessionType, Session, ScenarioCase, VNGEndpoint, ExposedUrl
+from ..models import SessionType, Session, ScenarioCase, VNGEndpoint, ExposedUrl, SessionLog
 from ...utils import choices
 
 
@@ -61,6 +61,7 @@ class SessionFactory(Dmf):
 
 
 class ExposedUrlFactory(Dmf):
+
     class Meta:
         model = ExposedUrl
 
@@ -71,3 +72,15 @@ class ExposedUrlFactory(Dmf):
     def __init___(self, **args):
         super().__init__(**args)
         self.vng_endpoint.session_type = self.session.session_type
+
+
+class SessionLogFactory(Dmf):
+
+    class Meta:
+        model = SessionLog
+
+    date = timezone.now()
+    session = factory.SubFactory(SessionFactory)
+    request = '{"request": {"path": "GET http://localhost:8000/runtest/154513515134/", "body": ""}}'
+    response = '{"response": {"status_code": 404, "body": "{}", "path": "{} http://localhost:8000/runtest/tst/unknown/23"}}'
+    response_status = 404

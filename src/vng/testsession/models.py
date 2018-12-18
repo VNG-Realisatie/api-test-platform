@@ -57,14 +57,6 @@ class ScenarioCase(OrderedModel):
         return self.result == choices.HTTPCallChoiches.not_called
 
 
-class TestSession(models.Model):
-    name = models.CharField(max_length=200, unique=True)
-    test_file = models.FileField(settings.MEDIA_FOLDER_FILES['test_session'])
-
-    def __str__(self):
-        return self.name
-
-
 class Session(models.Model):
 
     name = models.CharField(max_length=20, unique=True, null=True)
@@ -74,9 +66,6 @@ class Session(models.Model):
     status = models.CharField(max_length=10, choices=choices.StatusChoices.choices, default=choices.StatusChoices.starting)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     session_type = models.ForeignKey(SessionType, blank=True, null=True, default=None)
-    test = models.ForeignKey(TestSession, blank=True, null=True, default=None)
-    test_result = models.FileField(settings.MEDIA_FOLDER_FILES['testsession_log'], blank=True, null=True, default=None)
-    json_result = models.TextField(blank=True, null=True, default=None)
 
     def __str__(self):
         if self.user:
@@ -92,6 +81,16 @@ class Session(models.Model):
 
     def is_starting(self):
         return self.status == choices.StatusChoices.starting
+
+
+class TestSession(models.Model):
+    test_file = models.FileField(settings.MEDIA_FOLDER_FILES['test_session'])
+    test_result = models.FileField(settings.MEDIA_FOLDER_FILES['testsession_log'], blank=True, null=True, default=None)
+    json_result = models.TextField(blank=True, null=True, default=None)
+    vng_endpoint = models.ForeignKey(VNGEndpoint)
+
+    def __str__(self):
+        return str(self.session)
 
     def save_test(self, file):
         name_file = str(uuid.uuid4())

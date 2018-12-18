@@ -27,9 +27,14 @@
                     <input type="submit" type="button" class="button button--primary" value="Stop">
                 </form>
             {% else %}
-                {% if session.test_result %}
-                    <input type="button" class="button button--primary" value="Test report" onclick="location.href = '{% url 'testsession:session-test_report' session.id %}';">
-                {% endif %}
+                {% for endpoint in cluster %}
+                    <tr>
+                        <td>
+                            <input type="button" class="button button--primary" value="Test report" onclick="location.href = '{% url 'testsession:session-test_report' endpoint.session.id endpoint.test_session.id %}';">
+                        <td>
+                    </tr>
+                {% endfor %}
+
             {% endif %}
         </td>
     </tr>

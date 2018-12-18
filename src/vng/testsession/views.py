@@ -141,19 +141,20 @@ class StopSession(OwnerSingleObject, View):
             return HttpResponseRedirect(reverse('testsession:sessions'))
 
         endpoints = VNGEndpoint.objects.filter(session_type=session.session_type)
-        # running the test
+        exposed_url = ExposedUrl.objects.filter(vng_enpoint=endpoints)
 
-        for ep in endpoints:
-            for t in TestSession.objects.filter(vng_endpoint=ep):
-                newman = NewmanManager(t.test_file, ep.url)
-                result = newman.execute_test()
+        for eu in exposed_url:
+            t = eu.test_session
+            ep = eu.vng_endpoint
+            newman = NewmanManager(t.test_file, ep.url)
+            result = newman.execute_test()
 
-                t.save_test(result)
-                result_json = newman.execute_test_json()
-                t.save_test_json(result_json)
-                result_json.close()
+            t.save_test(result)
+            result_json = newman.execute_test_json()
+            t.save_test_json(result_json)
+            result_json.close()
 
-                t.save()
+            t.save()
 
         session.status = choices.StatusChoices.stopped
         session.save()
@@ -344,9 +345,18 @@ class RunTest(View):
 
 class SessionTestReport(OwnerSingleObject):
 
-    model = Session
+    model = TestSession
     template_name = 'testsession/session-test-report.html'
-    pk_name = 'session_id'
+    pk_name = 'pk'
+    user_field = 'exposedurl__session__user'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        session = ExposedUrl.objects.filter(test_session=self.object)[0].session
+        context.update({
+            'session': session
+        })
+        return context
 
 
 class SessionTestReportPDF(PDFGenerator, SessionTestReport):

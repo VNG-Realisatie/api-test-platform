@@ -82,19 +82,9 @@ class ObjectOwner(LoginRequiredMixin):
         else:
             return qs
 
-    def get_object(self):
-        if not hasattr(self, 'pk_name'):
-            raise Exception('Field "pk_name" in subclasses has not been defined')
-
-        pk = self.kwargs.get(self.pk_name)
-        if not pk:
-            raise Exception('Primary key param name not defined')
-        obj = get_object_or_404(self.model, pk=pk)
-
-        return obj
-
 
 class OwnerSingleObject(ObjectOwner, DetailView):
+    pk_name = 'pk'
 
     def get_queryset(self, object):
         return object.__class__.objects.filter(pk=object.pk)
@@ -104,6 +94,17 @@ class OwnerSingleObject(ObjectOwner, DetailView):
         self.check_ownership(self.get_queryset(self.object))
         context = self.get_context_data(object=self.object)
         return self.render_to_response(context)
+
+    def get_object(self):
+        if not hasattr(self, 'pk_name'):
+            raise Exception('Field "pk_name" in subclasses has not been defined')
+
+        pk = self.kwargs.get(self.pk_name)
+        if not pk:
+            raise Exception('Primary key param name not defined in the URLs')
+        obj = get_object_or_404(self.model, pk=pk)
+
+        return obj
 
 
 class OwnerMultipleObjects(ObjectOwner, ListView):

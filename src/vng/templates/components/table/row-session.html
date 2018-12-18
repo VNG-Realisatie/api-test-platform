@@ -1,23 +1,18 @@
 {% spaceless %}
     <tr>
         <td class="table__cell">
-            <a href="{% url 'testsession:session_log' session.pk %}">{{ session.started }}</a>
+            <a href="{% url 'testsession:session_log' endpoint.session.id %}">{{ endpoint.session.started }}</a>
         </td>
-        <td class="table__cell">{{ session.status }}</td>
-        <td class="table__cell">{{ session.session_type.name }}</td>
+        <td class="table__cell">{{ endpoint.session.status }}</td>
+        <td class="table__cell">{{ endpoint.session.session_type.name }}</td>
 
 
+        <td class="table__cell">{{endpoint.exposed_url}}</td>
 
-        {% if session.exposed_api %}
-            {% url 'testsession:run_test' exposed_api=session.exposed_api relative_url='' as proxy_url %}
-            <td class="table__cell"><a href="{{ proxy_url }}" target="_blank">{{ proxy_url }}</a></td>
-        {% else %}
-            <td class="table__cell">None</td>
-        {% endif %}
 
         <td class="table__cell">
-            {% if not session.is_stopped %}
-                <form method="POST" action="{% url 'testsession:stop_session' session.id %}">
+            {% if not endpoint.session.is_stopped %}
+                <form method="POST" action="{% url 'testsession:stop_session' endpoint.session.id %}">
                     {% csrf_token %}
                     <input type="submit" type="button" class="button button--primary" value="Stop">
                 </form>

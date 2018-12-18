@@ -1,23 +1,28 @@
 {% spaceless %}
-{% for endpoint in cluster %}
     <tr>
         <td class="table__cell">
-            {% if forloop.counter is 1 %}
-            <a href="{% url 'testsession:session_log' endpoint.session.id %}">{{ endpoint.session.started }}</a>
-            {% endif %}
+            <a href="{% url 'testsession:session_log' cluster.0.session.id %}">{{ cluster.0.session.started }}</a>
         </td>
-        <td class="table__cell">{{ endpoint.session.status }}</td>
-        <td class="table__cell">{{ endpoint.session.session_type.name }}</td>
+        <td class="table__cell">{{ cluster.0.session.status }}</td>
+        <td class="table__cell">{{ cluster.0.session.session_type.name }}</td>
 
 
         <td class="table__cell">
-            <a href="{% url 'testsession:run_test' endpoint.exposed_url '' %}">{{endpoint.exposed_url}}</a>
+            <table>
+                {% for endpoint in cluster %}
+                    <tr>
+                        <td>
+                            {{endpoint.vng_endpoint.name}} <a href="{% url 'testsession:run_test' endpoint.exposed_url '' %}">{{endpoint.exposed_url}}</a>
+                        <td>
+                    </tr>
+                {% endfor %}
+            </table>
         </td>
 
 
         <td class="table__cell">
-            {% if not endpoint.session.is_stopped %}
-                <form method="POST" action="{% url 'testsession:stop_session' endpoint.session.id %}">
+            {% if not cluster.0..session.is_stopped %}
+                <form method="POST" action="{% url 'testsession:stop_session' cluster.0.session.id %}">
                     {% csrf_token %}
                     <input type="submit" type="button" class="button button--primary" value="Stop">
                 </form>
@@ -28,5 +33,4 @@
             {% endif %}
         </td>
     </tr>
-{% endfor %}
 {% endspaceless %}

@@ -57,7 +57,7 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
     def start_app(self, session):
         kuber = K8S()
         kuber.deploy(session.name, session.session_type.docker_image, session.port)
-        time.sleep(55) # Waiting for the load balancer to be loaded
+        time.sleep(55)                      # Waiting for the load balancer to be loaded
         return kuber.status(session.name)
 
     def get_success_url(self):
@@ -256,8 +256,6 @@ class RunTest(View):
     def get(self, request, *args, **kwargs):
         session_log, session = self.build_session_log(request)
 
-        #scenario_c = ScenarioCase.objects.filter(vng_endpoint__session_type=session.session_type)
-
         request_url = '{}/{}'.format(session.api_endpoint, self.kwargs['relative_url'])
         response = requests.get(request_url, headers=self.get_http_header(request))
 
@@ -317,7 +315,6 @@ class SessionTestReportPDF(PDFGenerator, SessionTestReport):
 
     def parse_json(self, obj):
         parsed = json.loads(obj)
-        # parsed = munchify(parsed)
         for i, run in enumerate(parsed['run']['executions']):
             print(run)
             url = run['request']['url']

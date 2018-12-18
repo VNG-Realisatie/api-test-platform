@@ -54,7 +54,18 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
         return context
 
     def get_queryset(self):
-        return ExposedUrl.objects.filter(session__user=self.request.user).order_by('session__started')
+        '''
+        Group all the exposed url by the session in order to display later all related url together
+        '''
+        res = {}
+        aggromerate = ExposedUrl.objects.filter(session__user=self.request.user).order_by('-session__started')
+        for eu in aggromerate:
+            if eu.session not in res:
+                res[eu.session] = [eu]
+            else:
+                res[eu.session].append(eu)
+
+        return list(res.values())
 
     def start_app(self, session, endpoint):
         kuber = K8S()

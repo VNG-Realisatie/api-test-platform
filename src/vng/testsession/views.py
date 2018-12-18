@@ -56,9 +56,9 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
     def get_queryset(self):
         return ExposedUrl.objects.filter(session__user=self.request.user).order_by('session__started')
 
-    def start_app(self, session):
+    def start_app(self, session, endpoint):
         kuber = K8S()
-        kuber.deploy(session.name, session.session_type.docker_image, session.port)
+        kuber.deploy(session.name, endpoint.docker_image, endpoint.port)
         time.sleep(55)                      # Waiting for the load balancer to be loaded
         return kuber.status(session.name)
 
@@ -70,16 +70,26 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
         form.instance.started = timezone.now()
         form.instance.status = 'started'
         form.instance.name = "s{}{}".format(str(self.request.user.id), str(time.time()).replace('.', '-'))
+
+        endpoint = VNGEndpoint.objects.filter(session_type=form.instance.session_type)
+
         session = form.save()
 
         try:
-            status = self.start_app(session)
+            for ep in endpoint:
+                if ep.docker_image:
+                    status = self.start_app(session, ep)
+                else:
+                    bind_url = ExposedUrl()
+                    bind_url.session = session
+                    bind_url.vng_endpoint = ep
+                    bind_url.exposed_url = int(time.time()) * 100 + random.randint(0, 99)
+                    bind_url.save()
+
         except Exception:
             session.delete()
             form.add_error('__all__', _('Something went wrong please try again later'))
             return self.form_invalid(form)
-        session.api_endpoint = 'http://{}:{}'.format(status, session.port)
-        session.exposed_api = int(time.time()) * 100 + random.randint(0, 99)
 
         return super().form_valid(form)
 

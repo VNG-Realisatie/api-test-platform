@@ -20,7 +20,7 @@ def get_object(r):
 
 
 def get_username():
-    return User.objects.all()[0].username
+    return User.objects.all().first().username
 
 
 class RetrieveSessionType(WebTest):
@@ -111,7 +111,7 @@ class CreationAndDeletion(WebTest):
         call = self.app.post(reverse('apiv1:test_session_list'), session, headers=head)
         response_parsed = get_object(call.body)
         session = Session.objects.filter(pk=response_parsed['id'])[0]
-        user = User.objects.all()[0]
+        user = User.objects.all().first()
         self.assertEqual(session.user.pk, user.pk)
 
     def stop_session_no_auth(self):

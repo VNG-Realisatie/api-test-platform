@@ -12,9 +12,6 @@ class SessionSerializer(serializers.ModelSerializer):
             'stopped',
             'status',
             'session_type',
-            'test',
-            'test_result',
-            'json_result',
         ]
 
 

@@ -203,7 +203,7 @@ class SessionReport(OwnerSingleObject):
             'object_list': scenario_case
         })
         if len(scenario_case) > 0:
-            s_type = scenario_case[0].vng_endpoint.session_type
+            s_type = scenario_case.first().vng_endpoint.session_type
             context.update({
                 'session_type': s_type
             })
@@ -352,7 +352,7 @@ class SessionTestReport(OwnerSingleObject):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        session = ExposedUrl.objects.filter(test_session=self.object)[0].session
+        session = ExposedUrl.objects.filter(test_session=self.object).first().session
         context.update({
             'session': session
         })

@@ -19,6 +19,17 @@ class ScenarioCaseInline(admin.TabularInline):
     model = model.ScenarioCase
 
 
+class ExposedUrlInline(admin.TabularInline):
+    model = model.ExposedUrl
+
+
+@admin.register(model.ExposedUrl)
+class ExposedUrl(admin.ModelAdmin):
+    list_display = ['session', 'vng_endpoint', 'exposed_url']
+    list_filter = ['session']
+    search_fields = ['session']
+
+
 @admin.register(model.SessionType)
 class SessionTypeAdmin(admin.ModelAdmin):
     list_display = get_all_fields(model.SessionType)
@@ -33,6 +44,7 @@ class SessionAdmin(admin.ModelAdmin):
     list_display = get_all_fields(model.Session)
     list_filter = ['user']
     search_fields = ['user', 'api_endpoint']
+    inlines = [ExposedUrlInline]
 
 
 @admin.register(model.SessionLog)
@@ -59,5 +71,4 @@ class TestSessionAdmin(admin.ModelAdmin):
 @admin.register(model.VNGEndpoint)
 class VNGEndpointAdmin(admin.ModelAdmin):
     list_display = get_all_fields(model.VNGEndpoint)
-
     inlines = [ScenarioCaseInline]

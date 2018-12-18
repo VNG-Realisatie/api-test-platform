@@ -25,7 +25,7 @@ from rest_framework.authentication import (
 from weasyprint import HTML
 
 from vng.testsession.models import (
-    ScenarioCase, Session, SessionLog, SessionType, VNGEndpoint
+    ScenarioCase, Session, SessionLog, SessionType, VNGEndpoint, ExposedUrl
 )
 
 from ..utils import choices
@@ -46,19 +46,13 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
-        # for session in context['object_list']:
-        #    session.endpoint = VNGEndpoint.objects.filter(session_type__session__pk=session.pk)
-        # print(context['object_list'])
         context.update({
             'stop': choices.StatusChoices.stopped,
-            # 'vng_endpoint': VNGEndpoint.objects.filter(sessi)
         })
         return context
 
     def get_queryset(self):
-        # VNGEndpoint.objects.filter(session_type__session__user=self.request.user)
-        return Session.objects.filter(user=self.request.user).order_by('-started')
+        return ExposedUrl.objects.filter(session__user=self.request.user).order_by('session__started')
 
     def start_app(self, session):
         kuber = K8S()
@@ -261,6 +255,8 @@ class RunTest(View):
 
     def get(self, request, *args, **kwargs):
         session_log, session = self.build_session_log(request)
+
+        #scenario_c = ScenarioCase.objects.filter(vng_endpoint__session_type=session.session_type)
 
         request_url = '{}/{}'.format(session.api_endpoint, self.kwargs['relative_url'])
         response = requests.get(request_url, headers=self.get_http_header(request))

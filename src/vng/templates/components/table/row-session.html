@@ -1,7 +1,10 @@
 {% spaceless %}
+{% for endpoint in cluster %}
     <tr>
         <td class="table__cell">
+            {% if forloop.counter is 1 %}
             <a href="{% url 'testsession:session_log' endpoint.session.id %}">{{ endpoint.session.started }}</a>
+            {% endif %}
         </td>
         <td class="table__cell">{{ endpoint.session.status }}</td>
         <td class="table__cell">{{ endpoint.session.session_type.name }}</td>
@@ -25,4 +28,5 @@
             {% endif %}
         </td>
     </tr>
+{% endfor %}
 {% endspaceless %}

@@ -2,7 +2,7 @@ from django.utils import timezone
 import factory
 from factory.django import DjangoModelFactory as Dmf
 from vng.accounts.models import User
-from ..models import SessionType, Session, ScenarioCase, VNGEndpoint
+from ..models import SessionType, Session, ScenarioCase, VNGEndpoint, ExposedUrl
 from ...utils import choices
 
 
@@ -23,7 +23,7 @@ class VNGEndpointFactory(Dmf):
     class Meta:
         model = VNGEndpoint
 
-    name = 'DRC'
+    name = factory.Sequence(lambda n: 'name%s' % n)
     url = 'http://ref.tst.vng.cloud/drc/api/v1'
     session_type = factory.SubFactory(SessionTypeFactory)
 
@@ -33,8 +33,8 @@ class UserFactory(Dmf):
     class Meta:
         model = User
 
-    username = 'test'
-    password = factory.PostGenerationMethodCall('set_password', 'pippopippo')
+    username = factory.Sequence(lambda n: 'test%s' % n)
+    password = factory.PostGenerationMethodCall('set_password', 'password')
 
 
 class ScenarioCaseFactory(Dmf):
@@ -57,3 +57,17 @@ class SessionFactory(Dmf):
     status = choices.StatusChoices.starting
     user = factory.SubFactory(UserFactory)
     session_type = factory.SubFactory(SessionTypeFactory)
+    name = factory.Sequence(lambda n: 'name%s' % n)
+
+
+class ExposedUrlFactory(Dmf):
+    class Meta:
+        model = ExposedUrl
+
+    exposed_url = factory.Sequence(lambda n: 'tst%s' % n)
+    session = factory.SubFactory(SessionFactory)
+    vng_endpoint = factory.SubFactory(VNGEndpointFactory)
+
+    def __init___(self, **args):
+        super().__init__(**args)
+        self.vng_endpoint.session_type = self.session.session_type

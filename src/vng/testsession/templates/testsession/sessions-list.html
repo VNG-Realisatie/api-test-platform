@@ -34,11 +34,10 @@
                 <h2>Session list</h2>
                 <table class="table">
                     {% include 'components/table/header-session.html' only %}
-                    {% for endp in object_list %}
-                        {% include 'components/table/row-session.html' with endpoint=endp %}
+                    {% for cluster in object_list %}
+                        {% include 'components/table/row-session.html' with cluster=cluster %}
                     {% endfor %}
                 </table>
-
                 {% include 'components/pagination/pagination.html' %}
             {% endif %}
         </div>

@@ -27,14 +27,15 @@
                     <input type="submit" type="button" class="button button--primary" value="Stop">
                 </form>
             {% else %}
+                <table>
                 {% for endpoint in cluster %}
                     <tr>
                         <td>
-                            <input type="button" class="button button--primary" value="Test report" onclick="location.href = '{% url 'testsession:session-test_report' endpoint.session.id endpoint.test_session.id %}';">
+                            <input type="button" class="button button--primary" value="{{endpoint.vng_endpoint.name}} Test report" onclick="location.href = '{% url 'testsession:session-test_report' endpoint.session.id endpoint.test_session.id %}';">
                         <td>
                     </tr>
                 {% endfor %}
-
+                </table>
             {% endif %}
         </td>
     </tr>

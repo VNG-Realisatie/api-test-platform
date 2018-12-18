@@ -41,7 +41,6 @@ class SessionAdmin(admin.ModelAdmin):
         'stopped',
         'status',
         'user',
-        'port',
         'session_type',
         'test',
         'test_result',
@@ -91,5 +90,6 @@ class VNGEndpointAdmin(admin.ModelAdmin):
         'name',
         'docker_image',
         'session_type',
+        'port'
     ]
     inlines = [ScenarioCaseInline]

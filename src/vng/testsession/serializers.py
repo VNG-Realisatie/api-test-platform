@@ -5,7 +5,17 @@ from rest_framework import serializers
 class SessionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Session
-        fields = ['id', 'session_type', 'started', 'stopped', 'status', 'api_endpoint']
+        fields = [
+            'id',
+            'session_type',
+            'started',
+            'stopped',
+            'status',
+            'session_type',
+            'test',
+            'test_result',
+            'json_result',
+        ]
 
 
 class SessionTypesSerializer(serializers.ModelSerializer):

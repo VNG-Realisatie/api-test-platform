@@ -27,6 +27,7 @@ class SessionType(models.Model):
 
 class VNGEndpoint(models.Model):
 
+    port = models.PositiveIntegerField(default=8080)
     url = models.URLField(max_length=200)
     name = models.CharField(max_length=200, unique=True)
     docker_image = models.CharField(max_length=200, blank=True, null=True, default=None)
@@ -72,7 +73,6 @@ class Session(models.Model):
     stopped = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=10, choices=choices.StatusChoices.choices, default=choices.StatusChoices.starting)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    port = models.PositiveIntegerField(default=8080)
     session_type = models.ForeignKey(SessionType, blank=True, null=True, default=None)
     test = models.ForeignKey(TestSession, blank=True, null=True, default=None)
     test_result = models.FileField(settings.MEDIA_FOLDER_FILES['testsession_log'], blank=True, null=True, default=None)

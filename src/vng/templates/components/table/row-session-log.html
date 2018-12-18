@@ -1,9 +1,9 @@
 {% spaceless %}
 <tr>
     <td class="table__cell">
-        <a href="{% url 'testsession:session_log-detail' session.pk log.pk %}">{{ log.date| date:"H:m:s" }}</a>
+        <a href="{% url 'testsession:session_log-detail' session.pk log.pk %}">{{ log.date| date:"H:i:s" }}</a>
     </td>
-    <td class="table__cell">{{ log.request }}</td>
+    <td class="table__cell">{{ log.request_path }}</td>
     <td class="table__cell">{{ log.response_status }}</td>
 </tr>
 {% endspaceless %}

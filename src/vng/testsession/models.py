@@ -27,8 +27,9 @@ class SessionType(models.Model):
 
 class VNGEndpoint(models.Model):
 
-    name = models.CharField(max_length=200, unique=True)
+    port = models.PositiveIntegerField(default=8080)
     url = models.URLField(max_length=200)
+    name = models.CharField(max_length=200, unique=True)
     docker_image = models.CharField(max_length=200, blank=True, null=True, default=None)
     session_type = models.ForeignKey(SessionType)
 
@@ -56,14 +57,6 @@ class ScenarioCase(OrderedModel):
         return self.result == choices.HTTPCallChoiches.not_called
 
 
-class TestSession(models.Model):
-    name = models.CharField(max_length=200, unique=True)
-    test_file = models.FileField(settings.MEDIA_FOLDER_FILES['test_session'])
-
-    def __str__(self):
-        return self.name
-
-
 class Session(models.Model):
 
     name = models.CharField(max_length=20, unique=True, null=True)
@@ -72,13 +65,7 @@ class Session(models.Model):
     stopped = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=10, choices=choices.StatusChoices.choices, default=choices.StatusChoices.starting)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    api_endpoint = models.URLField(max_length=200, blank=True, null=True, default=None)
-    port = models.PositiveIntegerField(default=8080)
-    exposed_api = models.CharField(max_length=200, blank=True, null=True, default=None)
     session_type = models.ForeignKey(SessionType, blank=True, null=True, default=None)
-    test = models.ForeignKey(TestSession, blank=True, null=True, default=None)
-    test_result = models.FileField(settings.MEDIA_FOLDER_FILES['testsession_log'], blank=True, null=True, default=None)
-    json_result = models.TextField(blank=True, null=True, default=None)
 
     def __str__(self):
         if self.user:
@@ -95,6 +82,12 @@ class Session(models.Model):
     def is_starting(self):
         return self.status == choices.StatusChoices.starting
 
+
+class TestSession(models.Model):
+    test_file = models.FileField(settings.MEDIA_FOLDER_FILES['test_session'])
+    test_result = models.FileField(settings.MEDIA_FOLDER_FILES['testsession_log'], blank=True, null=True, default=None)
+    json_result = models.TextField(blank=True, null=True, default=None)
+
     def save_test(self, file):
         name_file = str(uuid.uuid4())
         django_file = File(file)
@@ -110,6 +103,17 @@ class Session(models.Model):
                 return fp.read().replace('\n', '<br>')
 
 
+class ExposedUrl(models.Model):
+
+    exposed_url = models.CharField(max_length=200, unique=True)
+    session = models.ForeignKey(Session)
+    vng_endpoint = models.ForeignKey(VNGEndpoint)
+    test_session = models.ForeignKey(TestSession)
+
+    def __str__(self):
+        return '{} {}'.format(self.session, self.vng_endpoint)
+
+
 class SessionLog(models.Model):
 
     date = models.DateTimeField(default=timezone.now)
@@ -117,3 +121,6 @@ class SessionLog(models.Model):
     request = models.CharField(max_length=20000, null=True)
     response = models.CharField(max_length=20000, null=True)
     response_status = models.PositiveIntegerField(blank=True, null=True, default=None)
+
+    def request_path(self):
+        return json.loads(self.request)['request']['path']

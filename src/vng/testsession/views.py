@@ -24,8 +24,10 @@ from rest_framework.authentication import (
 )
 from weasyprint import HTML
 
+from zds_client import ClientAuth
+
 from vng.testsession.models import (
-    ScenarioCase, Session, SessionLog, SessionType, VNGEndpoint
+    ScenarioCase, Session, SessionLog, SessionType, VNGEndpoint, ExposedUrl, TestSession
 )
 
 from ..utils import choices
@@ -46,24 +48,29 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
-        # for session in context['object_list']:
-        #    session.endpoint = VNGEndpoint.objects.filter(session_type__session__pk=session.pk)
-        # print(context['object_list'])
         context.update({
             'stop': choices.StatusChoices.stopped,
-            # 'vng_endpoint': VNGEndpoint.objects.filter(sessi)
         })
         return context
 
     def get_queryset(self):
-        # VNGEndpoint.objects.filter(session_type__session__user=self.request.user)
-        return Session.objects.filter(user=self.request.user).order_by('-started')
+        '''
+        Group all the exposed url by the session in order to display later all related url together
+        '''
+        res = {}
+        aggromerate = ExposedUrl.objects.filter(session__user=self.request.user).order_by('-session__started')
+        for eu in aggromerate:
+            if eu.session not in res:
+                res[eu.session] = [eu]
+            else:
+                res[eu.session].append(eu)
 
-    def start_app(self, session):
+        return list(res.values())
+
+    def start_app(self, session, endpoint):
         kuber = K8S()
-        kuber.deploy(session.name, session.session_type.docker_image, session.port)
-        time.sleep(55) # Waiting for the load balancer to be loaded
+        kuber.deploy(session.name, endpoint.docker_image, endpoint.port)
+        time.sleep(55)                      # Waiting for the load balancer to be loaded
         return kuber.status(session.name)
 
     def get_success_url(self):
@@ -74,16 +81,26 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
         form.instance.started = timezone.now()
         form.instance.status = 'started'
         form.instance.name = "s{}{}".format(str(self.request.user.id), str(time.time()).replace('.', '-'))
+
+        endpoint = VNGEndpoint.objects.filter(session_type=form.instance.session_type)
+
         session = form.save()
 
         try:
-            status = self.start_app(session)
+            for ep in endpoint:
+                if ep.docker_image:
+                    status = self.start_app(session, ep)
+                else:
+                    bind_url = ExposedUrl()
+                    bind_url.session = session
+                    bind_url.vng_endpoint = ep
+                    bind_url.exposed_url = int(time.time()) * 100 + random.randint(0, 99)
+                    bind_url.save()
+
         except Exception:
             session.delete()
             form.add_error('__all__', _('Something went wrong please try again later'))
             return self.form_invalid(form)
-        session.api_endpoint = 'http://{}:{}'.format(status, session.port)
-        session.exposed_api = int(time.time()) * 100 + random.randint(0, 99)
 
         return super().form_valid(form)
 
@@ -120,23 +137,33 @@ class StopSession(OwnerSingleObject, View):
 
     def post(self, request, *args, **kwargs):
         session = self.get_object()
+        if session.status == choices.StatusChoices.stopped:
+            return HttpResponseRedirect(reverse('testsession:sessions'))
 
-        # running the test
-        if session.test:
-            try:
-                newman = NewmanManager(session.test.test_file, session.api_endpoint)
-                result = newman.execute_test()
-                session.save_test(result)
-                result_json = newman.execute_test_json()
-                session.save_test_json(result_json)
-                result_json.close()
-            except Exception:
-                return HttpResponse(str(Exception))
-                return HttpResponseServerError()
+        endpoints = VNGEndpoint.objects.filter(session_type=session.session_type)
+        exposed_url = ExposedUrl.objects.filter(vng_enpoint=endpoints)
+
+        for eu in exposed_url:
+            t = eu.test_session
+            ep = eu.vng_endpoint
+            newman = NewmanManager(t.test_file, ep.url)
+            result = newman.execute_test()
+
+            t.save_test(result)
+            result_json = newman.execute_test_json()
+            t.save_test_json(result_json)
+            result_json.close()
+
+            t.save()
+
         session.status = choices.StatusChoices.stopped
         session.save()
-        kuber = K8S()
-        kuber.delete(session.name)
+
+        endpoint = VNGEndpoint.objects.filter(session_type=session.session_type)
+        for ep in endpoint:
+            if ep.docker_image:
+                kuber = K8S()
+                kuber.delete(session.name)
         return HttpResponseRedirect(reverse('testsession:sessions'))
 
 
@@ -176,7 +203,7 @@ class SessionReport(OwnerSingleObject):
             'object_list': scenario_case
         })
         if len(scenario_case) > 0:
-            s_type = scenario_case[0].vng_endpoint.session_type
+            s_type = scenario_case.first().vng_endpoint.session_type
             context.update({
                 'session_type': s_type
             })
@@ -216,7 +243,7 @@ class RunTest(View):
     error_codes = [(400, 500)]
 
     def get_queryset(self):
-        return get_object_or_404(Session, exposed_api=self.kwargs['exposed_api'])
+        return get_object_or_404(ExposedUrl, exposed_url=self.kwargs['exposed_url']).session
 
     def match_url(self, url, compare):
         '''
@@ -257,17 +284,25 @@ class RunTest(View):
         for header in request.META:
             if regex_http_.match(header) or regex_content_type.match(header) or regex_content_length.match(header):
                 request_headers[header] = request.META[header]
-        return request_headers
+
+        client_id = 'Test platform-sO4v8gEKOypU'
+        secret = 'k41Zchaq3H4K7e1OBIgWzZhQxUF2aQLb'
+
+        client_auth = ClientAuth(client_id, secret)
+
+        return {**request_headers, **client_auth.credentials()}
 
     def get(self, request, *args, **kwargs):
         session_log, session = self.build_session_log(request)
 
-        request_url = '{}/{}'.format(session.api_endpoint, self.kwargs['relative_url'])
+        eu = get_object_or_404(ExposedUrl, session=session, exposed_url=self.kwargs['exposed_url'])  # ExposedUrl.objects.filter(session=session).filter(exposed_url=self.kwargs['exposed_url'])
+
+        request_url = '{}/{}'.format(eu.vng_endpoint.url, self.kwargs['relative_url'])
         response = requests.get(request_url, headers=self.get_http_header(request))
 
         self.add_response(response, session_log, request_url, request)
 
-        self.save_call(request, self.kwargs['exposed_api'], self.kwargs['relative_url'], session, response.status_code)
+        self.save_call(request, self.kwargs['exposed_url'], self.kwargs['relative_url'], session, response.status_code)
         return HttpResponse(response.text)
 
     def post(self, request, *args, **kwargs):
@@ -310,9 +345,18 @@ class RunTest(View):
 
 class SessionTestReport(OwnerSingleObject):
 
-    model = Session
+    model = TestSession
     template_name = 'testsession/session-test-report.html'
-    pk_name = 'session_id'
+    pk_name = 'pk'
+    user_field = 'exposedurl__session__user'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        session = ExposedUrl.objects.filter(test_session=self.object).first().session
+        context.update({
+            'session': session
+        })
+        return context
 
 
 class SessionTestReportPDF(PDFGenerator, SessionTestReport):
@@ -321,7 +365,6 @@ class SessionTestReportPDF(PDFGenerator, SessionTestReport):
 
     def parse_json(self, obj):
         parsed = json.loads(obj)
-        # parsed = munchify(parsed)
         for i, run in enumerate(parsed['run']['executions']):
             print(run)
             url = run['request']['url']

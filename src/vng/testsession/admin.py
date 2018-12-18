@@ -4,13 +4,6 @@ import vng.testsession.models as model
 from ordered_model.admin import OrderedModelAdmin
 
 
-def get_all_fields(mo):
-    l = [field.name for field in mo._meta.fields]
-    l.remove('id')
-    l.append('id')
-    return l
-
-
 class VNGEndpointInline(admin.TabularInline):
     model = model.VNGEndpoint
 
@@ -32,7 +25,7 @@ class ExposedUrl(admin.ModelAdmin):
 
 @admin.register(model.SessionType)
 class SessionTypeAdmin(admin.ModelAdmin):
-    list_display = get_all_fields(model.SessionType)
+    list_display = ['name', 'standard', 'role', 'application', 'version']
     list_filter = ['name']
     search_fields = ['name']
 
@@ -41,7 +34,20 @@ class SessionTypeAdmin(admin.ModelAdmin):
 
 @admin.register(model.Session)
 class SessionAdmin(admin.ModelAdmin):
-    list_display = get_all_fields(model.Session)
+    list_display = [
+        'name',
+        'session_type',
+        'started',
+        'stopped',
+        'status',
+        'user',
+        'api_endpoint',
+        'port',
+        'session_type',
+        'test',
+        'test_result',
+        'json_result',
+    ]
     list_filter = ['user']
     search_fields = ['user', 'api_endpoint']
     inlines = [ExposedUrlInline]
@@ -49,26 +55,42 @@ class SessionAdmin(admin.ModelAdmin):
 
 @admin.register(model.SessionLog)
 class SessionLogAdmin(admin.ModelAdmin):
-    list_display = get_all_fields(model.SessionLog)
+    list_display = [
+        'date',
+        'session',
+        'request',
+        'response',
+        'response_status',
+    ]
     list_filter = ['session', 'date']
     search_fields = ['session', 'date']
 
 
 @admin.register(model.ScenarioCase)
 class ScenarioCaseAdmin(OrderedModelAdmin):
-    list_display = ('url', 'move_up_down_links', 'http_method', 'result', 'vng_endpoint')
+    list_display = [
+        'url',
+        'move_up_down_links',
+        'http_method',
+        'result',
+        'vng_endpoint']
     list_filter = ['vng_endpoint']
     search_fields = ['vng_endpoint']
 
 
 @admin.register(model.TestSession)
 class TestSessionAdmin(admin.ModelAdmin):
-    list_display = get_all_fields(model.TestSession)
+    list_display = ['name', 'test_file']
     list_filter = ['test_file', 'name']
     search_fields = ['test_file', 'name']
 
 
 @admin.register(model.VNGEndpoint)
 class VNGEndpointAdmin(admin.ModelAdmin):
-    list_display = get_all_fields(model.VNGEndpoint)
+    list_display = [
+        'url',
+        'name',
+        'docker_image',
+        'session_type',
+    ]
     inlines = [ScenarioCaseInline]

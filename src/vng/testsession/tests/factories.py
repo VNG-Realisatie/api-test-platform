@@ -56,6 +56,4 @@ class SessionFactory(Dmf):
     started = timezone.now()
     status = choices.StatusChoices.starting
     user = factory.SubFactory(UserFactory)
-    api_endpoint = 'https://reqres.in/api/'
-    exposed_api = 'tst'
     session_type = factory.SubFactory(SessionTypeFactory)

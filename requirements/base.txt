@@ -66,4 +66,4 @@ urllib3==1.24.1           # via requests
 xlrd==1.1.0               # via tablib
 xlwt==1.3.0               # via tablib
 WeasyPrint==43
-gemma-zds-client==0.8.1
+git+https://github.com/maykinmedia/gemma-zds-client-3.4.git

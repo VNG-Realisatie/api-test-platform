@@ -9,6 +9,7 @@ def forwards_func(apps, schema_editor):
     VNGEndpoint = apps.get_model("testsession", "VNGEndpoint")
     SessionType = apps.get_model("testsession", "SessionType")
     if not VNGEndpoint.objects.filter(id=1):
+        SessionType.objects.create(name='Example')
         VNGEndpoint.objects.create(name='Example', url='https://vng.nl', session_type=SessionType.objects.first())
 
 def reverse_func(apps, schema_editor):

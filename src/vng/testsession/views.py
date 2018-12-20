@@ -142,11 +142,13 @@ class StopSession(OwnerSingleObject, View):
 
     def run_tests(self, session):
         endpoints = VNGEndpoint.objects.filter(session_type=session.session_type)
-        exposed_url = ExposedUrl.objects.filter(vng_endpoint=endpoints)
-
+        exposed_url = ExposedUrl.objects.filter(session=session, vng_endpoint=endpoints)
+ 
         # stop the session for each exposed url, and eventually run the tests
         for eu in exposed_url:
             t = eu.vng_endpoint.test_session
+            if not t.test_file:
+                continue
             ep = eu.vng_endpoint
             newman = NewmanManager(t.test_file, ep.url)
             result = newman.execute_test()

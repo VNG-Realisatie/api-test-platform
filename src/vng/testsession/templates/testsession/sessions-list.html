@@ -2,14 +2,14 @@
 {% load sniplates %}
 
 
-{% block title %}Session List{% endblock %}
+{% block title %}Test client - Lijstweergave sessies{% endblock %}
 
 
 {% block content %}
     <article class="article">
         <div class="article__section">
-            <h1>Sessions</h1>
-            <h2>Start a new session</h2>
+            <h1>Test client</h1>
+            <h2>Start een nieuwe client test-sessie</h2>
 
             <form class="form" method="post">{% csrf_token %}
                 {% load_widgets form='forms.html' %}
@@ -26,12 +26,12 @@
                     {% form_field field %}
                 {% endfor %}
 
-                <input type="submit" class="button button--primary" value="Create Session">
+                <input type="submit" class="button button--primary" value="Start nieuwe test-sessie">
 
             </form>
 
             {% if object_list %}
-                <h2>Session list</h2>
+                <h2>Client test-sessies</h2>
                 <table class="table">
                     {% include 'components/table/header-session.html' only %}
                     {% for cluster in object_list %}

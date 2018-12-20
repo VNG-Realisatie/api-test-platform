@@ -52,7 +52,7 @@ class VNGEndpoint(models.Model):
     name = models.CharField(max_length=200, unique=True)
     docker_image = models.CharField(max_length=200, blank=True, null=True, default=None)
     session_type = models.ForeignKey(SessionType)
-    test_session = models.ForeignKey(TestSession)
+    test_session = models.ForeignKey(TestSession, blank=True, null=True, default=None)
 
     def __str__(self):
         return self.name
@@ -118,8 +118,8 @@ class SessionLog(models.Model):
 
     date = models.DateTimeField(default=timezone.now)
     session = models.ForeignKey(Session, on_delete=models.SET_NULL, null=True)
-    request = models.CharField(max_length=20000, null=True)
-    response = models.CharField(max_length=20000, null=True)
+    request = models.TextField(blank=True, null=True, default=None)
+    response = models.TextField(blank=True, null=True, default=None)
     response_status = models.PositiveIntegerField(blank=True, null=True, default=None)
 
     def request_path(self):

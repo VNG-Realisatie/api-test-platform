@@ -97,6 +97,10 @@ warnings.filterwarnings(
     RuntimeWarning, r'django\.db\.models\.fields',
 )
 
+MIDDLEWARE += [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+]
+
 INSTALLED_APPS += [
     'django_extensions',
     'debug_toolbar',

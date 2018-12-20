@@ -317,14 +317,26 @@ class RunTest(CSRFExemptMixin, View):
                         case.result = choices.HTTPCallChoiches.success
                     case.save()
 
-    def parse_response(self, response, request, base_url):
-        return re.sub(base_url, request.build_absolute_uri(), response.text)
+    def parse_response(self, response, request, base_url, endpoints):
+        parsed = response.text
+        host = 'https://{}'.format(request.get_host())
+        for ep in endpoints:
+            sub = '{}{}'.format(
+                host,
+                reverse('testsession:run_test', kwargs={
+                    'exposed_url': ep.exposed_url,
+                    'relative_url': ''
+                })
+            )
+            parsed = re.sub(ep.vng_endpoint.url, sub, parsed)
+        return parsed
 
     def build_method(self, name, request, body=False):
         request_header = self.get_http_header(request)
         session_log, session = self.build_session_log(request, request_header)
 
         eu = get_object_or_404(ExposedUrl, session=session, exposed_url=self.kwargs['exposed_url'])  # ExposedUrl.objects.filter(session=session).filter(exposed_url=self.kwargs['exposed_url'])
+        endpoints = ExposedUrl.objects.filter(vng_endpoint__session_type=eu.vng_endpoint.session_type)
 
         request_url = '{}/{}'.format(eu.vng_endpoint.url, self.kwargs['relative_url'])
 
@@ -338,7 +350,7 @@ class RunTest(CSRFExemptMixin, View):
 
         self.save_call(request, self.kwargs['exposed_url'], self.kwargs['relative_url'], session, response.status_code)
 
-        response = HttpResponse(self.parse_response(response, request, eu.vng_endpoint.url))
+        response = HttpResponse(self.parse_response(response, request, eu.vng_endpoint.url, endpoints))
         response['Content-Type'] = 'application/json'
         return response
 

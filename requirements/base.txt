@@ -4,6 +4,7 @@
 #
 #    pip-compile --output-file requirements/base.txt requirements/base.in
 #
+setuptools==40.6.3
 cachetools==3.0.0         # via google-auth
 certifi==2018.10.15       # via requests
 chardet==3.0.4            # via requests

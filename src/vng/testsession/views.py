@@ -290,7 +290,7 @@ class RunTest(View):
 
         client_auth = ClientAuth(client_id, secret)
 
-        return {**request_headers, **client_auth.credentials()}
+        return request_headers.update(client_auth.credentials())
 
     def get(self, request, *args, **kwargs):
         session_log, session = self.build_session_log(request)

@@ -5,7 +5,7 @@
     </td>
     <td class="table__cell">{{ log.request_path }}</td>
     <td class="table__cell"
-        style="color: {% if log.response_status == '200' or log.response_status == '201' %}green{% else %}red{% endif %};">
+        style="color: {% if log.response_status == 200 or log.response_status == 201 %}green{% else %}red{% endif %};">
         {{ log.response_status }}
     </td>
 </tr>

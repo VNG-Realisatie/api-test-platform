@@ -5,7 +5,8 @@ from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpRespons
 from django.template import loader, TemplateDoesNotExist
 from django.shortcuts import get_object_or_404
 from django.views.defaults import ERROR_500_TEMPLATE_NAME
-from django.views.decorators.csrf import requires_csrf_token
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt, requires_csrf_token
 from django.core.exceptions import PermissionDenied
 from django.views.generic.edit import ModelFormMixin, ProcessFormView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -81,6 +82,12 @@ class ObjectOwner(LoginRequiredMixin):
             raise PermissionDenied
         else:
             return qs
+
+
+class CSRFExemptMixin(object):
+    @method_decorator(csrf_exempt)
+    def dispatch(self, *args, **kwargs):
+        return super(CSRFExemptMixin, self).dispatch(*args, **kwargs)
 
 
 class OwnerSingleObject(ObjectOwner, DetailView):

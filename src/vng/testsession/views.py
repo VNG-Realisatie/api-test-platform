@@ -34,7 +34,7 @@ from vng.testsession.models import (
 from ..utils import choices
 from ..utils.newman import NewmanManager
 from ..utils.views import (
-    ListAppendView, OwnerMultipleObjects, OwnerSingleObject
+    ListAppendView, OwnerMultipleObjects, OwnerSingleObject, CSRFExemptMixin
 )
 from .container_manager import K8S
 from .serializers import SessionSerializer, SessionTypesSerializer
@@ -139,11 +139,7 @@ class StopSession(OwnerSingleObject, View):
     model = Session
     pk_name = 'session_id'
 
-    def post(self, request, *args, **kwargs):
-        session = self.get_object()
-        if session.status == choices.StatusChoices.stopped:
-            return HttpResponseRedirect(reverse('testsession:sessions'))
-
+    def run_tests(self, session):
         endpoints = VNGEndpoint.objects.filter(session_type=session.session_type)
         exposed_url = ExposedUrl.objects.filter(vng_endpoint=endpoints)
 
@@ -171,6 +167,14 @@ class StopSession(OwnerSingleObject, View):
             if ep.docker_image:
                 kuber = K8S()
                 kuber.delete(session.name)
+
+    def post(self, request, *args, **kwargs):
+        session = self.get_object()
+        if session.status == choices.StatusChoices.stopped:
+            return HttpResponseRedirect(reverse('testsession:sessions'))
+
+        self.run_tests(session)
+
         return HttpResponseRedirect(reverse('testsession:sessions'))
 
 
@@ -246,7 +250,7 @@ class SessionReportPdf(PDFGenerator, SessionReport):
     template_name = 'testsession/session-report-PDF.html'
 
 
-class RunTest(View):
+class RunTest(CSRFExemptMixin, View):
     error_codes = [(400, 500)]
 
     def get_queryset(self):
@@ -262,6 +266,35 @@ class RunTest(View):
         any_c = '[^/]+'
         parsed_url = '( |/)*' + re.sub(param_pattern, any_c, compare)
         return re.search(parsed_url, url) is not None
+
+    def get_http_header(self, request):
+        '''
+        Extracts the http header from the request and add the authorization header for
+        gemma platform
+        '''
+        regex = [
+            re.compile(r'^HTTP_.+$'),
+            re.compile(r'^CONTENT_TYPE$'),
+            re.compile(r'^CONTENT_LENGTH$'),
+            re.compile(r'^Accept-Crs$'),
+            re.compile(r'^Content-Type$'),
+        ]
+
+        request_headers = {}
+        for header in request.META:
+            cond = False
+            for reg in regex:
+                cond = cond or reg.match(header)
+            if cond:
+                request_headers[header] = request.META[header]
+
+        request_headers['Authorization'] = request_headers.pop('HTTP_AUTHORIZATION')
+        if 'HTTP_ACCEPT_CRS' in request_headers:
+            request_headers['Accept-Crs'] = request_headers.pop('HTTP_ACCEPT_CRS')
+        if 'CONTENT_TYPE' in request_headers:
+            request_headers['Content-Type'] = request_headers.pop('CONTENT_TYPE')
+
+        return request_headers
 
     def save_call(self, request, url, relative_url, session, status_code):
         '''
@@ -282,59 +315,49 @@ class RunTest(View):
                         case.result = choices.HTTPCallChoiches.success
                     case.save()
 
-    def get_http_header(self, request):
-        '''
-        Extracts the http header from the request and add the authorization header for
-        gemma platform
-        '''
-        regex_http_ = re.compile(r'^HTTP_.+$')
-        regex_content_type = re.compile(r'^CONTENT_TYPE$')
-        regex_content_length = re.compile(r'^CONTENT_LENGTH$')
-
-        request_headers = {}
-        for header in request.META:
-            if regex_http_.match(header) or regex_content_type.match(header) or regex_content_length.match(header):
-                request_headers[header] = request.META[header]
-
-        client_id = 'Test platform-sO4v8gEKOypU'
-        secret = 'k41Zchaq3H4K7e1OBIgWzZhQxUF2aQLb'
-
-        client_auth = ClientAuth(client_id, secret)
-
-        return request_headers.update(client_auth.credentials())
-
-    def get(self, request, *args, **kwargs):
-        session_log, session = self.build_session_log(request)
+    def build_method(self, name, request, body=False):
+        request_header = self.get_http_header(request)
+        session_log, session = self.build_session_log(request, request_header)
 
         eu = get_object_or_404(ExposedUrl, session=session, exposed_url=self.kwargs['exposed_url'])  # ExposedUrl.objects.filter(session=session).filter(exposed_url=self.kwargs['exposed_url'])
 
         request_url = '{}/{}'.format(eu.vng_endpoint.url, self.kwargs['relative_url'])
-        response = requests.get(request_url, headers=self.get_http_header(request))
+
+        method = getattr(requests, name)
+        if body:
+            response = method(request_url, data=request.body, headers=request_header)
+        else:
+            response = method(request_url, headers=request_header)
 
         self.add_response(response, session_log, request_url, request)
 
         self.save_call(request, self.kwargs['exposed_url'], self.kwargs['relative_url'], session, response.status_code)
         return HttpResponse(response.text)
 
+    def get(self, request, *args, **kwargs):
+        return self.build_method('get', request)
+
     def post(self, request, *args, **kwargs):
-        session_log, session = self.build_session_log(request)
+        return self.build_method('post', request, body=True)
 
-        request_url = '{}/{}'.format(session.api_endpoint, self.kwargs['relative_url'])
-        response = requests.post(request_url, data=request.body, headers=self.get_http_header(request))
+    def put(self, request, *args, **kwargs):
+        return self.build_method('put', request, body=True)
 
-        self.add_response(response, session_log, request_url, request)
+    def delete(self, request, *args, **kwargs):
+        return self.build_method('delete', request)
 
-        self.save_call(request, self.kwargs['exposed_api'], self.kwargs['relative_url'], session, response.status_code)
-        return HttpResponse(response.text)
+    def patch(self, request, *args, **kwargs):
+        return self.build_method('patch', request)
 
-    def build_session_log(self, request):
+    def build_session_log(self, request, header):
         session = self.get_queryset()
         session_log = SessionLog(session=session)
 
         request_dict = {
             "request": {
                 "path": "{} {}".format(request.method, request.build_absolute_uri()),
-                "body": request.body.decode('utf-8')
+                "body": request.body.decode('utf-8'),
+                "header": header
             }
         }
         session_log.request = json.dumps(request_dict)

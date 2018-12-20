@@ -6,17 +6,6 @@ from django.db import migrations, models
 import django.db.models.deletion
 
 
-def forwards_func(apps, schema_editor):
-    VNGEndpoint = apps.get_model("testsession", "VNGEndpoint")
-    SessionType = apps.get_model("testsession", "TestSession")
-    if not VNGEndpoint.objects.filter(id=1):
-        VNGEndpoint.objects.create(name='Example', url='https://vng.nl', session_type=SessionType.objects.first())
-
-
-def reverse_func(apps, schema_editor):
-    pass
-
-
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -24,7 +13,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(forwards_func, reverse_func),
         migrations.RemoveField(
             model_name='exposedurl',
             name='test_session',
@@ -32,7 +20,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='vngendpoint',
             name='test_session',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to='testsession.TestSession'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='testsession.TestSession', blank=True, default=None, null=True),
             preserve_default=False,
         ),
     ]

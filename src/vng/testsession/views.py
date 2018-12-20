@@ -332,7 +332,10 @@ class RunTest(CSRFExemptMixin, View):
         self.add_response(response, session_log, request_url, request)
 
         self.save_call(request, self.kwargs['exposed_url'], self.kwargs['relative_url'], session, response.status_code)
-        return HttpResponse(response.text)
+
+        response = HttpResponse(response.text)
+        response['Content-Type'] = 'application/json'
+        return response
 
     def get(self, request, *args, **kwargs):
         return self.build_method('get', request)

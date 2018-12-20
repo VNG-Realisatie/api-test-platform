@@ -4,6 +4,7 @@ import random
 import re
 import logging
 import time
+from collections import Iterable
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import (
@@ -288,7 +289,8 @@ class RunTest(CSRFExemptMixin, View):
             if cond:
                 request_headers[header] = request.META[header]
 
-        request_headers['Authorization'] = request_headers.pop('HTTP_AUTHORIZATION')
+        if 'HTTP_AUTHORIZATION' in request_headers:
+            request_headers['Authorization'] = request_headers.pop('HTTP_AUTHORIZATION')
         if 'HTTP_ACCEPT_CRS' in request_headers:
             request_headers['Accept-Crs'] = request_headers.pop('HTTP_ACCEPT_CRS')
         if 'CONTENT_TYPE' in request_headers:
@@ -315,6 +317,9 @@ class RunTest(CSRFExemptMixin, View):
                         case.result = choices.HTTPCallChoiches.success
                     case.save()
 
+    def parse_response(self, response, request, base_url):
+        return re.sub(base_url, request.build_absolute_uri(), response.text)
+
     def build_method(self, name, request, body=False):
         request_header = self.get_http_header(request)
         session_log, session = self.build_session_log(request, request_header)
@@ -333,7 +338,7 @@ class RunTest(CSRFExemptMixin, View):
 
         self.save_call(request, self.kwargs['exposed_url'], self.kwargs['relative_url'], session, response.status_code)
 
-        response = HttpResponse(response.text)
+        response = HttpResponse(self.parse_response(response, request, eu.vng_endpoint.url))
         response['Content-Type'] = 'application/json'
         return response
 

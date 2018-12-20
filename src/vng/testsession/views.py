@@ -2,6 +2,7 @@ import json
 import os
 import random
 import re
+import logging
 import time
 
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -37,6 +38,8 @@ from ..utils.views import (
 )
 from .container_manager import K8S
 from .serializers import SessionSerializer, SessionTypesSerializer
+
+logger = logging.getLogger(__name__)
 
 
 class SessionListView(LoginRequiredMixin, ListAppendView):
@@ -79,7 +82,7 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
     def form_valid(self, form):
         form.instance.user = self.request.user
         form.instance.started = timezone.now()
-        form.instance.status = 'started'
+        form.instance.status = choices.StatusChoices.starting
         form.instance.name = "s{}{}".format(str(self.request.user.id), str(time.time()).replace('.', '-'))
 
         endpoint = VNGEndpoint.objects.filter(session_type=form.instance.session_type)
@@ -97,7 +100,8 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
                     bind_url.exposed_url = int(time.time()) * 100 + random.randint(0, 99)
                     bind_url.save()
 
-        except Exception:
+        except Exception as e:
+            logger.exception(e)
             session.delete()
             form.add_error('__all__', _('Something went wrong please try again later'))
             return self.form_invalid(form)
@@ -141,10 +145,11 @@ class StopSession(OwnerSingleObject, View):
             return HttpResponseRedirect(reverse('testsession:sessions'))
 
         endpoints = VNGEndpoint.objects.filter(session_type=session.session_type)
-        exposed_url = ExposedUrl.objects.filter(vng_enpoint=endpoints)
+        exposed_url = ExposedUrl.objects.filter(vng_endpoint=endpoints)
 
+        # stop the session for each exposed url, and eventually run the tests
         for eu in exposed_url:
-            t = eu.test_session
+            t = eu.vng_endpoint.test_session
             ep = eu.vng_endpoint
             newman = NewmanManager(t.test_file, ep.url)
             result = newman.execute_test()
@@ -160,6 +165,8 @@ class StopSession(OwnerSingleObject, View):
         session.save()
 
         endpoint = VNGEndpoint.objects.filter(session_type=session.session_type)
+
+        # if the endpoints is related to an online cluster image it is stopped
         for ep in endpoint:
             if ep.docker_image:
                 kuber = K8S()
@@ -276,6 +283,10 @@ class RunTest(View):
                     case.save()
 
     def get_http_header(self, request):
+        '''
+        Extracts the http header from the request and add the authorization header for
+        gemma platform
+        '''
         regex_http_ = re.compile(r'^HTTP_.+$')
         regex_content_type = re.compile(r'^CONTENT_TYPE$')
         regex_content_length = re.compile(r'^CONTENT_LENGTH$')
@@ -348,11 +359,11 @@ class SessionTestReport(OwnerSingleObject):
     model = TestSession
     template_name = 'testsession/session-test-report.html'
     pk_name = 'pk'
-    user_field = 'exposedurl__session__user'
+    user_field = 'vngendpoint__exposedurl__session__user'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        session = ExposedUrl.objects.filter(test_session=self.object).first().session
+        session = ExposedUrl.objects.filter(vng_endpoint__test_session=self.object).first().session
         context.update({
             'session': session
         })

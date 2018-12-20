@@ -18,7 +18,7 @@ class ExposedUrlInline(admin.TabularInline):
 
 @admin.register(model.ExposedUrl)
 class ExposedUrl(admin.ModelAdmin):
-    list_display = ['session', 'vng_endpoint', 'exposed_url', 'test_session', 'id']
+    list_display = ['session', 'vng_endpoint', 'exposed_url', 'id']
     list_filter = ['session']
     search_fields = ['session']
 
@@ -91,6 +91,7 @@ class VNGEndpointAdmin(admin.ModelAdmin):
         'name',
         'docker_image',
         'session_type',
-        'port'
+        'port',
+        'test_session',
     ]
     inlines = [ScenarioCaseInline]

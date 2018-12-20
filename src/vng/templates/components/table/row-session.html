@@ -31,7 +31,7 @@
                 {% for endpoint in cluster %}
                     <tr>
                         <td>
-                            <input type="button" class="button button--primary" value="{{endpoint.vng_endpoint.name}} Test report" onclick="location.href = '{% url 'testsession:session-test_report' endpoint.session.id endpoint.test_session.id %}';">
+                            <input type="button" class="button button--primary" value="{{endpoint.vng_endpoint.name}} Test report" onclick="location.href = '{% url 'testsession:session-test_report' endpoint.session.id endpoint.vng_endpoint.test_session.id %}';">
                         <td>
                     </tr>
                 {% endfor %}

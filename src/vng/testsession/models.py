@@ -25,6 +25,26 @@ class SessionType(models.Model):
         return self.name
 
 
+class TestSession(models.Model):
+    test_file = models.FileField(settings.MEDIA_FOLDER_FILES['test_session'])
+    test_result = models.FileField(settings.MEDIA_FOLDER_FILES['testsession_log'], blank=True, null=True, default=None)
+    json_result = models.TextField(blank=True, null=True, default=None)
+
+    def save_test(self, file):
+        name_file = str(uuid.uuid4())
+        django_file = File(file)
+        self.test_result.save(name_file, django_file)
+
+    def save_test_json(self, file):
+        text = file.read().replace('\n', '')
+        self.json_result = text
+
+    def display_test_result(self):
+        if self.test_result:
+            with open(self.test_result.path) as fp:
+                return fp.read().replace('\n', '<br>')
+
+
 class VNGEndpoint(models.Model):
 
     port = models.PositiveIntegerField(default=8080)
@@ -32,6 +52,7 @@ class VNGEndpoint(models.Model):
     name = models.CharField(max_length=200, unique=True)
     docker_image = models.CharField(max_length=200, blank=True, null=True, default=None)
     session_type = models.ForeignKey(SessionType)
+    test_session = models.ForeignKey(TestSession)
 
     def __str__(self):
         return self.name
@@ -83,32 +104,11 @@ class Session(models.Model):
         return self.status == choices.StatusChoices.starting
 
 
-class TestSession(models.Model):
-    test_file = models.FileField(settings.MEDIA_FOLDER_FILES['test_session'])
-    test_result = models.FileField(settings.MEDIA_FOLDER_FILES['testsession_log'], blank=True, null=True, default=None)
-    json_result = models.TextField(blank=True, null=True, default=None)
-
-    def save_test(self, file):
-        name_file = str(uuid.uuid4())
-        django_file = File(file)
-        self.test_result.save(name_file, django_file)
-
-    def save_test_json(self, file):
-        text = file.read().replace('\n', '')
-        self.json_result = text
-
-    def display_test_result(self):
-        if self.test_result:
-            with open(self.test_result.path) as fp:
-                return fp.read().replace('\n', '<br>')
-
-
 class ExposedUrl(models.Model):
 
     exposed_url = models.CharField(max_length=200, unique=True)
     session = models.ForeignKey(Session)
     vng_endpoint = models.ForeignKey(VNGEndpoint)
-    test_session = models.ForeignKey(TestSession)
 
     def __str__(self):
         return '{} {}'.format(self.session, self.vng_endpoint)

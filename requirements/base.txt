@@ -69,9 +69,6 @@ WeasyPrint==43
 typing==3.6.6
 PyYAML==3.13
 chardet==3.0.4
-certifi==2018.11.29
 urllib3==1.24.1
-idna==2.8
-requests==2.21.0
 PyJWT==1.7.1
 -e git+https://github.com/maykinmedia/gemma-zds-client-3.4.git@e826a2fa111100d33d7c164a7bdf95d07c3b916c#egg=gemma-zds-client

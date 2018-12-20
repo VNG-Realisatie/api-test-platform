@@ -49,7 +49,7 @@ class VNGEndpoint(models.Model):
 
     port = models.PositiveIntegerField(default=8080)
     url = models.URLField(max_length=200)
-    name = models.CharField(max_length=200, unique=True)
+    name = models.CharField(max_length=200)
     docker_image = models.CharField(max_length=200, blank=True, null=True, default=None)
     session_type = models.ForeignKey(SessionType)
     test_session = models.ForeignKey(TestSession, blank=True, null=True, default=None)
@@ -81,12 +81,11 @@ class ScenarioCase(OrderedModel):
 class Session(models.Model):
 
     name = models.CharField(max_length=20, unique=True, null=True)
-    session_type = models.ForeignKey(SessionType, on_delete=models.SET_NULL, null=True)
+    session_type = models.ForeignKey(SessionType)
     started = models.DateTimeField(default=timezone.now)
     stopped = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=10, choices=choices.StatusChoices.choices, default=choices.StatusChoices.starting)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    session_type = models.ForeignKey(SessionType, blank=True, null=True, default=None)
 
     def __str__(self):
         if self.user:

@@ -30,4 +30,5 @@ diff-match-patch==20121119
 redis>=2.10.0,<3
 django-background-tasks
 WeasyPrint
+typing
 -e git+https://github.com/maykinmedia/gemma-zds-client-3.4.git@e826a2fa111100d33d7c164a7bdf95d07c3b916c#egg=gemma-zds-client

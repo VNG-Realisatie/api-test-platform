@@ -89,10 +89,12 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
         endpoint = VNGEndpoint.objects.filter(session_type=form.instance.session_type)
 
         session = form.save()
+        starting_docker = False
 
         try:
             for ep in endpoint:
                 if ep.docker_image:
+                    starting_docker = True
                     status = self.start_app(session, ep)
                 else:
                     bind_url = ExposedUrl()
@@ -107,6 +109,9 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
             form.add_error('__all__', _('Something went wrong please try again later'))
             return self.form_invalid(form)
 
+        if not starting_docker:
+            session.status = choices.StatusChoices.running
+            session.save()
         return super().form_valid(form)
 
 
@@ -141,8 +146,8 @@ class StopSession(OwnerSingleObject, View):
     pk_name = 'session_id'
 
     def run_tests(self, session):
-        endpoints = VNGEndpoint.objects.filter(session_type=session.session_type)
-        exposed_url = ExposedUrl.objects.filter(session=session, vng_endpoint=endpoints)
+        exposed_url = ExposedUrl.objects.filter(session=session,
+                                                vng_endpoint__session_type=session.session_type)
  
         # stop the session for each exposed url, and eventually run the tests
         for eu in exposed_url:

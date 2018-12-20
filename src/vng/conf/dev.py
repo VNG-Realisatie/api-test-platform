@@ -99,6 +99,7 @@ warnings.filterwarnings(
 
 INSTALLED_APPS += [
     'django_extensions',
+    'debug_toolbar',
 ]
 
 # Override settings with local settings.

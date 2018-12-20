@@ -152,7 +152,7 @@ class StopSession(OwnerSingleObject, View):
         # stop the session for each exposed url, and eventually run the tests
         for eu in exposed_url:
             t = eu.vng_endpoint.test_session
-            if not t.test_file:
+            if not t or not t.test_file:
                 continue
             ep = eu.vng_endpoint
             newman = NewmanManager(t.test_file, ep.url)

@@ -318,6 +318,12 @@ class RunTest(CSRFExemptMixin, View):
                     case.save()
 
     def parse_response(self, response, request, base_url, endpoints):
+        """
+        Rewrites the VNG Reference responses to make use of ATV URL endpoints:
+        https://ref.tst.vng.cloud/zrc/api/v1/zaken/123
+        ->
+        https://testplatform/runtest/XXXX/api/v1/zaken/123
+        """
         parsed = response.text
         host = 'https://{}'.format(request.get_host())
         for ep in endpoints:
@@ -331,6 +337,27 @@ class RunTest(CSRFExemptMixin, View):
             parsed = re.sub(ep.vng_endpoint.url, sub, parsed)
         return parsed
 
+    def rewrite_request_body(self, request, endpoints):
+        """
+        Rewrites the request body's to replace the ATV URL endpoints to the VNG Reference endpoints
+        https://testplatform/runtest/XXXX/api/v1/zaken/123
+        ->
+        https://ref.tst.vng.cloud/zrc/api/v1/zaken/123
+        """
+        parsed = request.body
+        # FIXME: This doesn't work yet
+        # host = 'https://{}'.format(request.get_host())
+        # for ep in endpoints:
+        #     sub = '{}{}'.format(
+        #         host,
+        #         reverse('testsession:run_test', kwargs={
+        #             'exposed_url': ep.exposed_url,
+        #             'relative_url': ''
+        #         })
+        #     )
+        #     parsed = re.sub(sub, ep.vng_endpoint.url, parsed)
+        return parsed
+
     def build_method(self, name, request, body=False):
         request_header = self.get_http_header(request)
         session_log, session = self.build_session_log(request, request_header)
@@ -342,7 +369,8 @@ class RunTest(CSRFExemptMixin, View):
 
         method = getattr(requests, name)
         if body:
-            response = method(request_url, data=request.body, headers=request_header)
+            rewritten_body = self.rewrite_request_body(request, endpoints)
+            response = method(request_url, data=rewritten_body, headers=request_header)
         else:
             response = method(request_url, headers=request_header)
 

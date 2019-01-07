@@ -4,19 +4,6 @@ from django.urls import reverse
 from .models import *
 
 
-class SessionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Session
-        fields = [
-            'id',
-            'session_type',
-            'started',
-            'stopped',
-            'status',
-            'session_type',
-        ]
-
-
 class SessionTypesSerializer(serializers.ModelSerializer):
     class Meta:
         model = SessionType
@@ -24,14 +11,16 @@ class SessionTypesSerializer(serializers.ModelSerializer):
 
 
 class ExposedUrlSerializer(serializers.ModelSerializer):
+    vng_endpoint = serializers.StringRelatedField(read_only=True)
+
     class Meta:
         model = ExposedUrl
-        fields = ['id', 'exposed_url', 'session']
+        fields = ['id', 'exposed_url', 'session', 'vng_endpoint']
 
     def to_representation(self, value):
         v = super().to_representation(value)
         request = self.context['request']
-        host = 'https://{}'.format(request.get_host())
+        host = 'http://{}'.format(request.get_host())
         v['exposed_url'] = '{}{}'.format(
             host,
             reverse('testsession:run_test', kwargs={
@@ -41,7 +30,17 @@ class ExposedUrlSerializer(serializers.ModelSerializer):
         )
         return v
 
-# class VNGEndpointSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = VNGEndpoint
-#         fields = ['id', 'name', 'url', 'docker_image', 'sessio_type']
+
+class SessionSerializer(serializers.ModelSerializer):
+    exposedurl_set = ExposedUrlSerializer(read_only=True, many=True)
+
+    class Meta:
+        model = Session
+        fields = [
+            'id',
+            'session_type',
+            'started',
+            'stopped',
+            'status',
+            'exposedurl_set',
+        ]

@@ -44,6 +44,27 @@ from .serializers import SessionSerializer, SessionTypesSerializer, ExposedUrlSe
 logger = logging.getLogger(__name__)
 
 
+def bootstrap_session(session):
+
+    endpoint = VNGEndpoint.objects.filter(session_type=session.session_type)
+    starting_docker = False
+
+    for ep in endpoint:
+        if ep.docker_image:
+            starting_docker = True
+            status = self.start_app(session, ep)
+        else:
+            bind_url = ExposedUrl()
+            bind_url.session = session
+            bind_url.vng_endpoint = ep
+            bind_url.exposed_url = int(time.time()) * 100 + random.randint(0, 99)
+            bind_url.save()
+
+    if not starting_docker:
+        session.status = choices.StatusChoices.running
+        session.save()
+
+
 class SessionListView(LoginRequiredMixin, ListAppendView):
     template_name = 'testsession/sessions-list.html'
     context_object_name = 'sessions_list'
@@ -79,32 +100,15 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
         form.instance.status = choices.StatusChoices.starting
         form.instance.name = "s{}{}".format(str(self.request.user.id), str(time.time()).replace('.', '-'))
 
-        endpoint = VNGEndpoint.objects.filter(session_type=form.instance.session_type)
-
         session = form.save()
-        starting_docker = False
-
         try:
-            for ep in endpoint:
-                if ep.docker_image:
-                    starting_docker = True
-                    status = self.start_app(session, ep)
-                else:
-                    bind_url = ExposedUrl()
-                    bind_url.session = session
-                    bind_url.vng_endpoint = ep
-                    bind_url.exposed_url = int(time.time()) * 100 + random.randint(0, 99)
-                    bind_url.save()
-
+            bootstrap_session(session)
         except Exception as e:
             logger.exception(e)
             session.delete()
             form.add_error('__all__', _('Something went wrong please try again later'))
             return self.form_invalid(form)
 
-        if not starting_docker:
-            session.status = choices.StatusChoices.running
-            session.save()
         return super().form_valid(form)
 
 
@@ -190,14 +194,19 @@ class ExposedUrlView(generics.ListAPIView):
 
 class SessionViewSet(viewsets.ModelViewSet):
     serializer_class = SessionSerializer
-    authentication_classes = (TokenAuthentication, SessionAuthentication)
+    authentication_classes = (TokenAuthentication, )
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
-        return Session.objects.filter(user=self.request.user)
+        return Session.objects.filter(user=self.request.user).prefetch_related('exposedurl_set')
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user, pk=None)
+        session = serializer.save(user=self.request.user, pk=None)
+        try:
+            bootstrap_session(session)
+        except Exception as e:
+            logger.exception(e)
+            session.delete()
 
 
 class SessionTypesViewSet(generics.ListAPIView):
@@ -346,7 +355,10 @@ class RunTest(CSRFExemptMixin, View):
         https://testplatform/runtest/XXXX/api/v1/zaken/123
         """
         parsed = response.text
-        host = 'https://{}'.format(request.get_host())
+        if settings.DEBUG:
+            host = 'http://{}'.format(request.get_host())
+        else:
+            host = 'https://{}'.format(request.get_host())
         for ep in endpoints:
             sub = '{}{}'.format(
                 host,

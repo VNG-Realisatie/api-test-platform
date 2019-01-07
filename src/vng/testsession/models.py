@@ -62,20 +62,10 @@ class ScenarioCase(OrderedModel):
 
     url = models.CharField(max_length=200)
     http_method = models.CharField(max_length=20, choices=choices.HTTPMethodChoiches.choices, default=choices.HTTPMethodChoiches.GET)
-    result = models.CharField(max_length=20, choices=choices.HTTPCallChoiches.choices, default=choices.HTTPCallChoiches.not_called)
     vng_endpoint = models.ForeignKey(VNGEndpoint)
 
     def __str__(self):
-        return '{} - {}'.format(self.url, self.result)
-
-    def is_success(self):
-        return self.result == choices.HTTPCallChoiches.success
-
-    def is_failed(self):
-        return self.result == choices.HTTPCallChoiches.failed
-
-    def is_not_called(self):
-        return self.result == choices.HTTPCallChoiches.not_called
+        return '{} - {}'.format(self.http_method, self.url)
 
 
 class Session(models.Model):
@@ -123,3 +113,19 @@ class SessionLog(models.Model):
 
     def request_path(self):
         return json.loads(self.request)['request']['path']
+
+
+class Report(models.Model):
+
+    scenario_case = models.ForeignKey(ScenarioCase)
+    session_log = models.ForeignKey(SessionLog)
+    result = models.CharField(max_length=20, choices=choices.HTTPCallChoiches.choices, default=choices.HTTPCallChoiches.not_called)
+
+    def is_success(self):
+        return self.result == choices.HTTPCallChoiches.success
+
+    def is_failed(self):
+        return self.result == choices.HTTPCallChoiches.failed
+
+    def is_not_called(self):
+        return self.result == choices.HTTPCallChoiches.not_called

@@ -20,8 +20,8 @@
         {% if object_list %}
         <table class="table">
             {% include 'components/table/header-session-report.html' only %}
-            {% for scenarioCase in object_list %}
-                {% include 'components/table/row-session-report.html' with scenarioCase=scenarioCase only %}
+            {% for rp in object_list %}
+                {% include 'components/table/row-session-report.html' with report=rp only %}
             {% endfor %}
         </table>
         {% else %}

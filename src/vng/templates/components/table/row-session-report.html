@@ -3,13 +3,13 @@
 
 {% spaceless %}
 <tr>
-    <td class="table__cell" >{{ scenarioCase.url }}</td>
-    {% if scenarioCase.is_success %}
-        <td class="table__cell" {{ green }}>{{ scenarioCase.result }}</td>
-    {% elif scenarioCase.is_failed %}
-        <td class="table__cell" {{ red }} >{{ scenarioCase.result }}</td>
+    <td class="table__cell" >{{ report.scenario_case.url }}</td>
+    {% if report.is_success %}
+        <td class="table__cell" {{ green }}>{{ report.result }}</td>
+    {% elif report.is_failed %}
+        <td class="table__cell" {{ red }} >{{ report.result }}</td>
     {% else %}
-        <td class="table__cell">{{ scenarioCase.result }}</td>
+        <td class="table__cell">{{ report.result }}</td>
     {% endif %}
 </tr>
 {% endspaceless %}

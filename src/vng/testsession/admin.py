@@ -67,7 +67,6 @@ class ScenarioCaseAdmin(OrderedModelAdmin):
         'url',
         'move_up_down_links',
         'http_method',
-        'result',
         'vng_endpoint']
     list_filter = ['vng_endpoint']
     search_fields = ['vng_endpoint']
@@ -95,3 +94,11 @@ class VNGEndpointAdmin(admin.ModelAdmin):
         'test_session',
     ]
     inlines = [ScenarioCaseInline]
+
+
+@admin.register(model.Report)
+class ReportAdmin(admin.ModelAdmin):
+    list_display = [
+        'scenario_case',
+        'session_log'
+    ]

@@ -29,7 +29,7 @@ from weasyprint import HTML
 from zds_client import ClientAuth
 
 from vng.testsession.models import (
-    ScenarioCase, Session, SessionLog, SessionType, VNGEndpoint, ExposedUrl, TestSession
+    ScenarioCase, Session, SessionLog, SessionType, VNGEndpoint, ExposedUrl, TestSession, Report
 )
 
 from ..utils import choices
@@ -140,7 +140,7 @@ class StopSession(OwnerSingleObject, View):
     def run_tests(self, session):
         exposed_url = ExposedUrl.objects.filter(session=session,
                                                 vng_endpoint__session_type=session.session_type)
- 
+
         # stop the session for each exposed url, and eventually run the tests
         for eu in exposed_url:
             t = eu.vng_endpoint.test_session
@@ -209,14 +209,23 @@ class SessionReport(OwnerSingleObject):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         scenario_case = self.model.objects.filter(vng_endpoint__session_type=self.session.session_type)
+        report = list(Report.objects.filter(session_log__session=self.session))
+        for case in scenario_case:
+            is_in = False
+            for rp in report:
+                if rp.scenario_case == case:
+                    is_in = True
+                    break
+            if not is_in:
+                report.append(Report(scenario_case=case))
+
         context.update({
             'session': self.session,
-            'object_list': scenario_case
+            'object_list': report
         })
-        if len(scenario_case) > 0:
-            s_type = scenario_case.first().vng_endpoint.session_type
+        if len(report) > 0:
             context.update({
-                'session_type': s_type
+                'session_type': self.session.session_type
             })
 
         return context
@@ -298,7 +307,7 @@ class RunTest(CSRFExemptMixin, View):
 
         return request_headers
 
-    def save_call(self, request, url, relative_url, session, status_code):
+    def save_call(self, request, url, relative_url, session, status_code, session_log):
         '''
         Find the matching scenario case with the same url and method, if one match is found,
         the result of the call is overrided
@@ -307,15 +316,17 @@ class RunTest(CSRFExemptMixin, View):
         for case in scenario_cases:
             if case.http_method == request.method:
                 if self.match_url(request.build_absolute_uri(), case.url):
+                    report = Report(scenario_case=case, session_log=session_log)
                     is_failed = False
                     for a, b in self.error_codes:
                         if status_code > a and status_code < b:
-                            case.result = choices.HTTPCallChoiches.failed
+                            report.result = choices.HTTPCallChoiches.failed
                             is_failed = True
                             break
                     if not is_failed:
-                        case.result = choices.HTTPCallChoiches.success
+                        report.result = choices.HTTPCallChoiches.success
                     case.save()
+                    report.save()
 
     def parse_response(self, response, request, base_url, endpoints):
         """
@@ -376,7 +387,7 @@ class RunTest(CSRFExemptMixin, View):
 
         self.add_response(response, session_log, request_url, request)
 
-        self.save_call(request, self.kwargs['exposed_url'], self.kwargs['relative_url'], session, response.status_code)
+        self.save_call(request, self.kwargs['exposed_url'], self.kwargs['relative_url'], session, response.status_code, session_log)
 
         response = HttpResponse(self.parse_response(response, request, eu.vng_endpoint.url, endpoints))
         response['Content-Type'] = 'application/json'

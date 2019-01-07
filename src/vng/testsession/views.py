@@ -18,6 +18,7 @@ from django.views import View
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.list import ListView
 from django.views.generic import DetailView
+from django.conf import settings
 
 import requests
 from rest_framework import generics, permissions, viewsets
@@ -355,18 +356,21 @@ class RunTest(CSRFExemptMixin, View):
         ->
         https://ref.tst.vng.cloud/zrc/api/v1/zaken/123
         """
-        parsed = request.body
-        # FIXME: This doesn't work yet
-        # host = 'https://{}'.format(request.get_host())
-        # for ep in endpoints:
-        #     sub = '{}{}'.format(
-        #         host,
-        #         reverse('testsession:run_test', kwargs={
-        #             'exposed_url': ep.exposed_url,
-        #             'relative_url': ''
-        #         })
-        #     )
-        #     parsed = re.sub(sub, ep.vng_endpoint.url, parsed)
+        parsed = request.body.decode('utf-8')
+        if settings.DEBUG:
+            host = 'http://{}'.format(request.get_host())
+        else:
+            host = 'https://{}'.format(request.get_host())
+        for ep in endpoints:
+            sub = '{}{}'.format(
+                host,
+                reverse('testsession:run_test', kwargs={
+                    'exposed_url': ep.exposed_url,
+                    'relative_url': ''
+                })
+            )
+            parsed = re.sub(sub, ep.vng_endpoint.url, parsed)
+        print(parsed)
         return parsed
 
     def build_method(self, name, request, body=False):

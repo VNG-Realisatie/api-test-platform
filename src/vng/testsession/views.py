@@ -39,7 +39,7 @@ from ..utils.views import (
     ListAppendView, OwnerMultipleObjects, OwnerSingleObject, CSRFExemptMixin
 )
 from .container_manager import K8S
-from .serializers import SessionSerializer, SessionTypesSerializer
+from .serializers import SessionSerializer, SessionTypesSerializer, ExposedUrlSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -177,6 +177,15 @@ class StopSession(OwnerSingleObject, View):
         self.run_tests(session)
 
         return HttpResponseRedirect(reverse('testsession:sessions'))
+
+
+class ExposedUrlView(generics.ListAPIView):
+    authentication_classes = (TokenAuthentication, SessionAuthentication)
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = ExposedUrlSerializer
+
+    def get_queryset(self):
+        return ExposedUrl.objects.filter(session=self.kwargs['pk'])
 
 
 class SessionViewSet(viewsets.ModelViewSet):

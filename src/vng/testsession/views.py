@@ -370,7 +370,6 @@ class RunTest(CSRFExemptMixin, View):
                 })
             )
             parsed = re.sub(sub, ep.vng_endpoint.url, parsed)
-        print(parsed)
         return parsed
 
     def build_method(self, name, request, body=False):

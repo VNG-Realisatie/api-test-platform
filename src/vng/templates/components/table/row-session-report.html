@@ -3,6 +3,7 @@
 
 {% spaceless %}
 <tr>
+    <td class="table__cell" >{{ report.scenario_case.http_method }}</td>
     <td class="table__cell" >{{ report.scenario_case.url }}</td>
     {% if report.is_success %}
         <td class="table__cell" {{ green }}>{{ report.result }}</td>
@@ -11,6 +12,7 @@
     {% else %}
         <td class="table__cell">{{ report.result }}</td>
     {% endif %}
+    <td class="table__cell" >{{ report.session_log.response_status }}</td>
 </tr>
 {% endspaceless %}
 

@@ -40,16 +40,18 @@
         <h2>Scenario cases</h2>
         <table class='table-t'>
             <tbody>
-                {% for scenarioCase in object_list %}
+                {% for report in object_list %}
                 <tr>
-                    <td class='cell-name'>{{ scenarioCase.url }}</td>
-                    {% if scenarioCase.is_success %}
-                    <td class='cell-success cell-content-fix'>{{ scenarioCase.result }}</td>
-                    {% elif scenarioCase.is_failed %}
-                    <td class='cell-fail cell-content-fix'>{{ scenarioCase.result }}</td>
+                    <td class='cell-name'>{{ report.scenario_case.http_method }}</td>
+                    <td class='cell-name'>{{ report.scenario_case.url }}</td>
+                    {% if report.is_success %}
+                    <td class='cell-success cell-content-fix'>{{ report.result }}</td>
+                    {% elif report.is_failed %}
+                    <td class='cell-fail cell-content-fix'>{{ report.result }}</td>
                     {% else %}
-                    <td>{{ scenarioCase.result }}</td>
+                    <td>{{ report.result }}</td>
                     {% endif %}
+                    <td class="table__cell" >{{ report.session_log.response_status }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

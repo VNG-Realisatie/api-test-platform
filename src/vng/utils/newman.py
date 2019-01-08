@@ -41,10 +41,7 @@ class NewmanManager:
         return run_command_with_shell(command)
 
     def execute_test(self):
-        if self.api_endpoint is not None:
-            self.prepare_file()
-        else:
-            self.file_path = self.file.path
+        self.file_path = self.file.path
         filename = str(uuid.uuid4())
         output, error = self.run_command(self.RUN_HTML_REPORT, self.file_path, filename)
         if error:
@@ -55,7 +52,6 @@ class NewmanManager:
         return f
 
     def execute_test_json(self):
-
         self.file_path = self.file.path
         filename = str(uuid.uuid4())
         output, error = self.run_command(self.RUN_JSON_REPORT, self.file_path, filename)

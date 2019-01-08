@@ -44,7 +44,7 @@ from .serializers import SessionSerializer, SessionTypesSerializer, ExposedUrlSe
 logger = logging.getLogger(__name__)
 
 
-def bootstrap_session(session):
+def bootstrap_session(session, start_app):
     '''
     Create all the necessary endpoint and exposes it so they can be used as proxy
     In case there is one or multimple docker images linked, it starts all of them
@@ -55,7 +55,7 @@ def bootstrap_session(session):
     for ep in endpoint:
         if ep.docker_image:
             starting_docker = True
-            status = self.start_app(session, ep)
+            status = start_app(session, ep)
         else:
             bind_url = ExposedUrl()
             bind_url.session = session
@@ -105,7 +105,7 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
 
         session = form.save()
         try:
-            bootstrap_session(session)
+            bootstrap_session(session, start_app)
         except Exception as e:
             logger.exception(e)
             session.delete()
@@ -484,6 +484,9 @@ class SessionTestReportPDF(PDFGenerator, SessionTestReport):
     template_name = 'testsession/session-test-report-PDF.html'
 
     def parse_json(self, obj):
+        '''
+        CHECK: not sure if it is needed any more, see prepare_file in newman.py
+        '''
         parsed = json.loads(obj)
         for i, run in enumerate(parsed['run']['executions']):
             url = run['request']['url']

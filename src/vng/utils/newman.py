@@ -45,7 +45,10 @@ class NewmanManager:
         Substitute the url of the file with the api_endpoint provided
         '''
         self.file_path = self.file.path
-        # FIXME: something strange occurs with the url replace
+        '''
+        FIXME: It is meant to be used if the link points to localhost but since newman uses
+        the variables is not needed any more.
+        '''
         # filename = str(uuid.uuid4())
         # logger.debug('Preparing untokenizeing the file {} with the base {}, output file: {}'.format(self.file.path, self.api_endpoint, filename))
         # with open(self.file.path) as f:

@@ -44,10 +44,10 @@ from .serializers import SessionSerializer, SessionTypesSerializer, ExposedUrlSe
 logger = logging.getLogger(__name__)
 
 
-def bootstrap_session(session, start_app):
+def bootstrap_session(session, start_app=None):
     '''
     Create all the necessary endpoint and exposes it so they can be used as proxy
-    In case there is one or multimple docker images linked, it starts all of them
+    In case there is one or multiple docker images linked, it starts all of them
     '''
     endpoint = VNGEndpoint.objects.filter(session_type=session.session_type)
     starting_docker = False
@@ -105,7 +105,7 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
 
         session = form.save()
         try:
-            bootstrap_session(session, start_app)
+            bootstrap_session(session, self.start_app)
         except Exception as e:
             logger.exception(e)
             session.delete()

@@ -1,0 +1,354 @@
+{
+	"info": {
+		"_postman_id": "291f4f8e-49e3-4673-9673-a6a98d8ddc3d",
+		"name": "MOR test-client copy",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "0a6a7da4-1e47-44b4-a530-c5db398009de",
+						"exec": [
+							"",
+							"var jsonData = pm.response.json();",
+							"console.log(jsonData);",
+							"pm.globals.set(\"key\", jsonData.key);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"username\": \"alvise\",\n\t\"password\": \"administrator\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/auth/login/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"auth",
+						"login",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create session",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "61d8b58e-e703-4585-b052-bbf4c212c6a1",
+						"exec": [
+							"",
+							"var jsonData = pm.response.json();",
+							"console.log(jsonData);",
+							"for(var i in jsonData.exposedurl_set){",
+							"    var obj = jsonData.exposedurl_set[i]",
+							"    pm.globals.set(obj.vng_enpoint, obj.exposed_url);    ",
+							"}",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Token 0e57a149cc3508eecfc6053815e5e332b27ba07e",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"session_type\":{{session_type}}\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/v1/testsessions/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"testsessions",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "https://ref.tst.vng.cloud/zrc/api/v1/zaken",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "66370f51-4071-41e0-b3da-85b541a09af2",
+						"exec": [
+							"",
+							"var jsonData = pm.response.json();",
+							"pm.globals.set(\"zaaktype\", jsonData[0].zaaktype);",
+							"zaaktype = pm.variables.get(\"zaaktype\");",
+							"console.log(zaaktype);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept-Crs",
+						"value": "EPSG:4326",
+						"description": "Accept",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{key}}",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{ZRC}}api/v1/zaken",
+					"host": [
+						"{{ZRC}}api"
+					],
+					"path": [
+						"v1",
+						"zaken"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Aanmaken zaak",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "1f53055a-7f33-4717-a42b-fdc3ace4052d",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "261972a8-263c-43c9-ac38-9c4ae799bae7",
+						"exec": [
+							"",
+							"var jsonData = pm.response.json();",
+							"console.log(jsonData);",
+							"pm.globals.set(\"zaak\", jsonData.url);",
+							"zaak = pm.variables.get(\"zaak\");",
+							"console.log(zaak);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept-Crs",
+						"value": "EPSG:4326",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"bronorganisatie\": \"509381406\",\n \"registratiedatum\": \"2018-12-06\",\n \"startdatum\": \"2018-12-06\",\n \"toelichting\": \"Hier ben ik\",\n \"verantwoordelijkeOrganisatie\": \"245122461\",\n \"zaakgeometrie\": {\"coordinates\": [4.891362190246582, 52.3731887966551],\n                   \"type\": \"Point\"},\n \"zaaktype\": \"{{zaaktype}}\"}"
+				},
+				"url": {
+					"raw": "{{ZRC}}api/v1/zaken",
+					"host": [
+						"{{ZRC}}api"
+					],
+					"path": [
+						"v1",
+						"zaken"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get statustype",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f264a58e-5ce5-4dd6-bed9-30bc284ddd94",
+						"exec": [
+							"",
+							"var jsonData = pm.response.json();",
+							"pm.globals.set(\"zaaktypeurl\", jsonData[0].url);",
+							"zaaktype = pm.variables.get(\"zaaktypeurl\");",
+							"console.log(zaaktype);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:8000/runtest/154514703638/api/v1/catalogussen/f7afd156-c8f5-4666-b8b5-28a4a9b5dfc7/zaaktypen/0119dd4e-7be9-477e-bccf-75023b1453c1/statustypen",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"runtest",
+						"154514703638",
+						"api",
+						"v1",
+						"catalogussen",
+						"f7afd156-c8f5-4666-b8b5-28a4a9b5dfc7",
+						"zaaktypen",
+						"0119dd4e-7be9-477e-bccf-75023b1453c1",
+						"statustypen"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Status op aanmaken zetten",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept-Crs",
+						"type": "text",
+						"value": "EPSG:4326"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"datumStatusGezet\": \"2018-12-06T12:59:03.950556\",\n    \"statusType\": \"{{zaaktypeurl}}\",\n    \"statustoelichting\": \"Melding ontvangen\",\n    \"zaak\": \"{{zaak}}\"\n}"
+				},
+				"url": {
+					"raw": "{{ZRC}}api/v1/statussen",
+					"host": [
+						"{{ZRC}}api"
+					],
+					"path": [
+						"v1",
+						"statussen"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImNsaWVudF9pZGVudGlmaWVyIjoiQVRWIHRlc3RwbGF0Zm9ybS1JNGZHeVFGcmhDdFUifQ.eyJpc3MiOiJBVFYgdGVzdHBsYXRmb3JtLUk0Zkd5UUZyaEN0VSIsImlhdCI6MTU0NDA5OTQxNywiemRzIjp7InNjb3BlcyI6WyJ6ZHMuc2NvcGVzLnN0YXR1c3Nlbi50b2V2b2VnZW4iLCJ6ZHMuc2NvcGVzLnphYWt0eXBlcy5sZXplbiIsInpkcy5zY29wZXMuemFrZW4uYWFubWFrZW4iLCJ6ZHMuc2NvcGVzLnpha2VuLmxlemVuIl0sInphYWt0eXBlcyI6WyJodHRwczovL3JlZi50c3Qudm5nLmNsb3VkL3p0Yy9hcGkvdjEvY2F0YWxvZ3Vzc2VuLzhmZmIxMWYwLWM3Y2MtNGUzNS04YTY0LWEwNjM5YWViOGYxOC96YWFrdHlwZW4vYzJmOTUyY2EtMjk4ZS00ODhjLWIxYmUtYTg3ZjExYmQ1ZmEyIiwiaHR0cHM6Ly9yZWYudHN0LnZuZy5jbG91ZC96dGMvYXBpL3YxL2NhdGFsb2d1c3Nlbi84ZmZiMTFmMC1jN2NjLTRlMzUtOGE2NC1hMDYzOWFlYjhmMTgvemFha3R5cGVuLzBjMDFkNzNmLWRlNjUtNDE1OC1iYzBlLTNmMTc4ZjZmMWNiZSIsImh0dHBzOi8vcmVmLnRzdC52bmcuY2xvdWQvenRjL2FwaS92MS9jYXRhbG9ndXNzZW4vNjlhNzRlMDgtNzkxMS00ZGYxLTk0ZDAtZWU5YTNjZDA1NGFhL3phYWt0eXBlbi8wNTI2MTFhMy04MzIyLTRiZjktYWYzMi1mYjY5YWI4MzQwZWYiLCJodHRwczovL3JlZi50c3Qudm5nLmNsb3VkL3p0Yy9hcGkvdjEvY2F0YWxvZ3Vzc2VuLzY5YTc0ZTA4LTc5MTEtNGRmMS05NGQwLWVlOWEzY2QwNTRhYS96YWFrdHlwZW4vY2NiNmY1ODktMzU4NC00OTJhLWEzNjEtMTI4NDlhMjRiN2MxIiwiaHR0cHM6Ly9yZWYudHN0LnZuZy5jbG91ZC96dGMvYXBpL3YxL2NhdGFsb2d1c3Nlbi82OWE3NGUwOC03OTExLTRkZjEtOTRkMC1lZTlhM2NkMDU0YWEvemFha3R5cGVuLzQwMjg4YzI5LTNiMDItNDdlOC1iMmFiLTVlN2EwY2FhNDJiMCIsImh0dHBzOi8vcmVmLnRzdC52bmcuY2xvdWQvenRjL2FwaS92MS9jYXRhbG9ndXNzZW4vZjdhZmQxNTYtYzhmNS00NjY2LWI4YjUtMjhhNGE5YjVkZmM3L3phYWt0eXBlbi8wMTE5ZGQ0ZS03YmU5LTQ3N2UtYmNjZi03NTAyM2IxNDUzYzEiXX19.to5J9JTTzckAPC5HBTyKIB8LmQmXtM0L0RiMVfepJX8",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "fab5694c-c343-49ca-94c1-36565d7cafac",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "ed70ea49-3d69-4bef-a4ba-20a03a656e26",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "8feff6a0-fb93-45c2-807d-e668d26860fa",
+			"key": "session_type",
+			"value": "1",
+			"type": "string"
+		}
+	]
+}

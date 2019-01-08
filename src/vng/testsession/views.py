@@ -45,7 +45,10 @@ logger = logging.getLogger(__name__)
 
 
 def bootstrap_session(session):
-
+    '''
+    Create all the necessary endpoint and exposes it so they can be used as proxy
+    In case there is one or multimple docker images linked, it starts all of them
+    '''
     endpoint = VNGEndpoint.objects.filter(session_type=session.session_type)
     starting_docker = False
 
@@ -344,7 +347,6 @@ class RunTest(CSRFExemptMixin, View):
                             break
                     if not is_failed:
                         report.result = choices.HTTPCallChoiches.success
-                    case.save()
                     report.save()
 
     def parse_response(self, response, request, base_url, endpoints):

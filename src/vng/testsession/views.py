@@ -151,19 +151,20 @@ class StopSession(OwnerSingleObject, View):
 
         # stop the session for each exposed url, and eventually run the tests
         for eu in exposed_url:
-            t = eu.vng_endpoint.test_session
-            if not t or not t.test_file:
-                continue
             ep = eu.vng_endpoint
-            newman = NewmanManager(t.test_file, ep.url)
+            if not ep.test_file:
+                continue
+
+            newman = NewmanManager(ep.test_file, ep.url)
             result = newman.execute_test()
+            ts = TestSession()
+            ts.save_test(result)
+            with newman.execute_test_json() as result_json:
+                ts.save_test_json(result_json)
 
-            t.save_test(result)
-            result_json = newman.execute_test_json()
-            t.save_test_json(result_json)
-            result_json.close()
-
-            t.save()
+            ts.save()
+            eu.test_session = ts
+            eu.save()
 
         session.status = choices.StatusChoices.stopped
         session.save()
@@ -467,11 +468,11 @@ class SessionTestReport(OwnerSingleObject):
     model = TestSession
     template_name = 'testsession/session-test-report.html'
     pk_name = 'pk'
-    user_field = 'vngendpoint__exposedurl__session__user'
+    user_field = 'exposedurl__session__user'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        session = ExposedUrl.objects.filter(vng_endpoint__test_session=self.object).first().session
+        session = ExposedUrl.objects.filter(test_session=self.object).first().session
         context.update({
             'session': session
         })
@@ -485,15 +486,18 @@ class SessionTestReportPDF(PDFGenerator, SessionTestReport):
     def parse_json(self, obj):
         parsed = json.loads(obj)
         for i, run in enumerate(parsed['run']['executions']):
-            print(run)
             url = run['request']['url']
-            new_url = url['protocol'] + '://'
+            if 'protocol' in url:
+                new_url = url['protocol'] + '://'
+            else:
+                new_url = 'https://'
             for k in run['request']['header']:
                 if k['key'] == 'Host':
                     new_url += k['value']
             new_url += '/'
-            for p in url['path']:
-                new_url += p + '/'
+            if 'path' in url:
+                for p in url['path']:
+                    new_url += p + '/'
 
             run['request']['url'] = new_url
 

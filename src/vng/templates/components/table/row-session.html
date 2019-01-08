@@ -34,8 +34,8 @@
                 {% for endpoint in session.exposedurl_set.all %}
                     <tr>
                         <td>
-                            {% if endpoint.vng_endpoint.test_session %}
-                            <input type="button" class="button button--primary" value="{{endpoint.vng_endpoint.name}} Data test report" onclick="location.href = '{% url 'testsession:session-test_report' endpoint.session.id endpoint.vng_endpoint.test_session.id %}';">
+                            {% if endpoint.test_session %}
+                            <input type="button" class="button button--primary" value="{{endpoint.vng_endpoint.name}} Data test report" onclick="location.href = '{% url 'testsession:session-test_report' endpoint.session.id endpoint.test_session.id %}';">
                             {% endif %}
                         <td>
                     </tr>

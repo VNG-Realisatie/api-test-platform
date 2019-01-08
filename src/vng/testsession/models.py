@@ -26,7 +26,6 @@ class SessionType(models.Model):
 
 
 class TestSession(models.Model):
-    test_file = models.FileField(settings.MEDIA_FOLDER_FILES['test_session'])
     test_result = models.FileField(settings.MEDIA_FOLDER_FILES['testsession_log'], blank=True, null=True, default=None)
     json_result = models.TextField(blank=True, null=True, default=None)
 
@@ -52,7 +51,7 @@ class VNGEndpoint(models.Model):
     name = models.CharField(max_length=200)
     docker_image = models.CharField(max_length=200, blank=True, null=True, default=None)
     session_type = models.ForeignKey(SessionType)
-    test_session = models.ForeignKey(TestSession, blank=True, null=True, default=None)
+    test_file = models.FileField(settings.MEDIA_FOLDER_FILES['test_session'], blank=True, null=True, default=None)
 
     def __str__(self):
         return self.name
@@ -98,6 +97,7 @@ class ExposedUrl(models.Model):
     exposed_url = models.CharField(max_length=200, unique=True)
     session = models.ForeignKey(Session)
     vng_endpoint = models.ForeignKey(VNGEndpoint)
+    test_session = models.ForeignKey(TestSession, blank=True, null=True, default=None)
 
     def __str__(self):
         return '{} {}'.format(self.session, self.vng_endpoint)

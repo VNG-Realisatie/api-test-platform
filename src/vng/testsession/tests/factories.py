@@ -24,7 +24,8 @@ class TestSessionFactory(Dmf):
     class Meta:
         model = TestSession
 
-    test_file = factory.django.FileField(from_path=settings.MEDIA_ROOT + '/VNG.postman_collection.json')
+    test_result = factory.django.FileField(filename='testsession')
+    json_result = factory.django.FileField(filename='testsession')
 
 
 class VNGEndpointFactory(Dmf):
@@ -35,8 +36,7 @@ class VNGEndpointFactory(Dmf):
     name = factory.Sequence(lambda n: 'name%s' % n)
     url = 'http://ref.tst.vng.cloud/drc/api/v1'
     session_type = factory.SubFactory(SessionTypeFactory)
-
-    test_session = factory.SubFactory(TestSessionFactory)
+    test_file = factory.django.FileField(from_path=settings.MEDIA_ROOT + '/VNG.postman_collection.json')
 
 
 class UserFactory(Dmf):
@@ -77,6 +77,7 @@ class ExposedUrlFactory(Dmf):
         model = ExposedUrl
 
     exposed_url = factory.Sequence(lambda n: 'tst%s' % n)
+    test_session = factory.SubFactory(TestSessionFactory)
     session = factory.SubFactory(SessionFactory)
     vng_endpoint = factory.SubFactory(VNGEndpointFactory)
 

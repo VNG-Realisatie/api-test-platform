@@ -21,7 +21,7 @@ from django.views.generic import DetailView
 from django.conf import settings
 
 import requests
-from rest_framework import generics, permissions, viewsets
+from rest_framework import generics, permissions, viewsets, views
 from rest_framework.authentication import (
     SessionAuthentication, TokenAuthentication
 )
@@ -39,7 +39,9 @@ from ..utils.views import (
     ListAppendView, OwnerMultipleObjects, OwnerSingleObject, CSRFExemptMixin
 )
 from .container_manager import K8S
-from .serializers import SessionSerializer, SessionTypesSerializer, ExposedUrlSerializer
+from .serializers import (
+    SessionSerializer, SessionTypesSerializer, ExposedUrlSerializer, ScenarioCaseSerializer
+)
 
 logger = logging.getLogger(__name__)
 
@@ -145,7 +147,8 @@ class StopSession(OwnerSingleObject, View):
     model = Session
     pk_name = 'session_id'
 
-    def run_tests(self, session):
+    @staticmethod
+    def run_tests(session):
         exposed_url = ExposedUrl.objects.filter(session=session,
                                                 vng_endpoint__session_type=session.session_type)
 
@@ -182,12 +185,29 @@ class StopSession(OwnerSingleObject, View):
         if session.status == choices.StatusChoices.stopped:
             return HttpResponseRedirect(reverse('testsession:sessions'))
 
-        self.run_tests(session)
+        StopSession.run_tests(session)
 
         return HttpResponseRedirect(reverse('testsession:sessions'))
 
 
-class ExposedUrlView(generics.ListAPIView):
+class StopSessionView(generics.ListAPIView):
+    authentication_classes = (TokenAuthentication, SessionAuthentication)
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = ScenarioCaseSerializer
+
+    def perform_operations(self, session):
+        if session.status != choices.StatusChoices.stopped:
+            session.status = choices.StatusChoices.stopped
+            StopSession.run_tests(session)
+
+    def get_queryset(self):
+        scenarios = ScenarioCase.objects.filter(vng_endpoint__session_type__session=self.kwargs['pk'])
+        session = Session.objects.get(id=self.kwargs['pk'])
+        self.perform_operations(session)
+        return scenarios
+
+
+class ExposedUrlView(View):
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = ExposedUrlSerializer
@@ -218,6 +238,39 @@ class SessionTypesViewSet(generics.ListAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = SessionTypesSerializer
     queryset = SessionType.objects.all()
+
+
+class ResultSessionView(OwnerSingleObject):
+    model = Session
+
+    def get(self, request, pk, *args, **kwargs):
+        super().get(request, *args, **kwargs)
+        res = None
+        session = self.get_object()
+        scenario_cases = ScenarioCase.objects.filter(vng_endpoint__session_type=session.session_type)
+        report = Report.objects.filter(scenario_case__in=scenario_cases)
+
+        def check():
+            nonlocal res
+            for rp in report:
+                if rp.scenario_case == sc:
+                    if rp.result == choices.HTTPCallChoiches.success:
+                        return
+            res = {'result': 'failed'}
+
+        for sc in scenario_cases:
+            check()
+
+        if res is None:
+            res = {'result': 'success'}
+
+        response = HttpResponse(json.dumps(res))
+        response['Content-Type'] = 'application/json'
+        return response
+
+    def get_object(self):
+        self.session = get_object_or_404(Session, pk=self.kwargs['pk'])
+        return self.session
 
 
 class SessionReport(OwnerSingleObject):

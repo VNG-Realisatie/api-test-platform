@@ -404,7 +404,7 @@ class RunTest(CSRFExemptMixin, View):
         endpoints = ExposedUrl.objects.filter(vng_endpoint__session_type=eu.vng_endpoint.session_type)
 
         arguments = request.META['QUERY_STRING']
-        request_url = '{}/{}?{}'.format(eu.vng_endpoint.url, self.kwargs['relative_url'],arguments)
+        request_url = '{}/{}?{}'.format(eu.vng_endpoint.url, self.kwargs['relative_url'], arguments)
 
         method = getattr(requests, name)
         if body:
@@ -417,7 +417,7 @@ class RunTest(CSRFExemptMixin, View):
 
         self.save_call(request, self.kwargs['exposed_url'], self.kwargs['relative_url'], session, response.status_code, session_log)
 
-        response = HttpResponse(self.parse_response(response, request, eu.vng_endpoint.url, endpoints))
+        response = HttpResponse(self.parse_response(response, request, eu.vng_endpoint.url, endpoints), status=response.status_code)
         response['Content-Type'] = 'application/json'
         return response
 

@@ -406,7 +406,6 @@ class RunTest(CSRFExemptMixin, View):
         arguments = request.META['QUERY_STRING']
         request_url = '{}/{}?{}'.format(eu.vng_endpoint.url, self.kwargs['relative_url'],arguments)
 
-        import pdb; pdb.set_trace()
         method = getattr(requests, name)
         if body:
             rewritten_body = self.rewrite_request_body(request, endpoints)

@@ -202,12 +202,12 @@ class StopSessionView(generics.ListAPIView):
 
     def get_queryset(self):
         scenarios = ScenarioCase.objects.filter(vng_endpoint__session_type__session=self.kwargs['pk'])
-        session = Session.objects.get(id=self.kwargs['pk'])
+        session = get_object_or_404(Session, id=self.kwargs['pk'])
         self.perform_operations(session)
         return scenarios
 
 
-class ExposedUrlView(View):
+class ExposedUrlView(generics.ListAPIView):
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = ExposedUrlSerializer
@@ -237,18 +237,20 @@ class SessionTypesViewSet(generics.ListAPIView):
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = SessionTypesSerializer
-    queryset = SessionType.objects.all()
+
+    def get_queryset(self):
+        return SessionType.objects.all()
 
 
-class ResultSessionView(OwnerSingleObject):
-    model = Session
+class ResultSessionView(views.APIView):
+    authentication_classes = (TokenAuthentication, SessionAuthentication)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request, pk, *args, **kwargs):
-        super().get(request, *args, **kwargs)
         res = None
         session = self.get_object()
         scenario_cases = ScenarioCase.objects.filter(vng_endpoint__session_type=session.session_type)
-        report = Report.objects.filter(scenario_case__in=scenario_cases)
+        report = Report.objects.filter(session_log__session=session)
 
         def check():
             nonlocal res

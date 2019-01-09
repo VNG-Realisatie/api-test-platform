@@ -385,19 +385,19 @@ class RunTest(CSRFExemptMixin, View):
 
         return request_headers
 
-    def save_call(self, request, url, relative_url, session, status_code, session_log):
+    def save_call(self, request, request_method_name, url, relative_url, session, status_code, session_log):
         '''
         Find the matching scenario case with the same url and method, if one match is found,
         the result of the call is overrided
         '''
         logger.info("Saving call")
-        logger.info(request.method)
+        logger.info(request_method_name)
         logger.info(url)
         logger.info(relative_url)
         scenario_cases = ScenarioCase.objects.filter(vng_endpoint__session_type=session.session_type)
         for case in scenario_cases:
             logger.info(case)
-            if case.http_method == request.method:
+            if lower(case.http_method) == lower(request_method_name):
                 if self.match_url(request.build_absolute_uri(), case.url):
                     report = Report(scenario_case=case, session_log=session_log)
                     is_failed = False
@@ -457,7 +457,7 @@ class RunTest(CSRFExemptMixin, View):
             parsed = re.sub(sub, ep.vng_endpoint.url, parsed)
         return parsed
 
-    def build_method(self, name, request, body=False):
+    def build_method(self, request_method_name, request, body=False):
         request_header = self.get_http_header(request)
         session_log, session = self.build_session_log(request, request_header)
 
@@ -467,7 +467,7 @@ class RunTest(CSRFExemptMixin, View):
         arguments = request.META['QUERY_STRING']
         request_url = '{}/{}?{}'.format(eu.vng_endpoint.url, self.kwargs['relative_url'], arguments)
 
-        method = getattr(requests, name)
+        method = getattr(requests, request_method_name)
         if body:
             rewritten_body = self.rewrite_request_body(request, endpoints)
             response = method(request_url, data=rewritten_body, headers=request_header)
@@ -476,7 +476,8 @@ class RunTest(CSRFExemptMixin, View):
 
         self.add_response(response, session_log, request_url, request)
 
-        self.save_call(request, self.kwargs['exposed_url'], self.kwargs['relative_url'], session, response.status_code, session_log)
+        self.save_call(request, request_method_name, self.kwargs['exposed_url'],
+                       self.kwargs['relative_url'], session, response.status_code, session_log)
 
         response = HttpResponse(self.parse_response(response, request, eu.vng_endpoint.url, endpoints), status=response.status_code)
         response['Content-Type'] = 'application/json'

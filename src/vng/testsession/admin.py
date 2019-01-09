@@ -52,6 +52,7 @@ class SessionAdmin(admin.ModelAdmin):
 class SessionLogAdmin(admin.ModelAdmin):
     date_hierarchy = 'date'
     search_fields = ['session', 'date']
+    list_display = ['date', 'session', 'response_status']
 
 
 @admin.register(model.ScenarioCase)
@@ -90,5 +91,6 @@ class VNGEndpointAdmin(admin.ModelAdmin):
 class ReportAdmin(admin.ModelAdmin):
     list_display = [
         'scenario_case',
-        'session_log'
+        'session_log',
+        'result'
     ]

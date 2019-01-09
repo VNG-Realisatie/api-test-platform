@@ -1,12 +1,12 @@
 {
 	"info": {
-		"_postman_id": "291f4f8e-49e3-4673-9673-a6a98d8ddc3d",
-		"name": "MOR test-client copy",
+		"_postman_id": "203e3fe1-73d0-47f8-aa62-79d87ff25547",
+		"name": "MOR test-client vng-staging",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "Login",
+			"name": "Test-platform: Login",
 			"event": [
 				{
 					"listen": "test",
@@ -38,12 +38,13 @@
 					"raw": "{\n\t\"username\": \"alvise\",\n\t\"password\": \"administrator\"\n}"
 				},
 				"url": {
-					"raw": "http://localhost:8000/api/auth/login/",
-					"protocol": "http",
+					"raw": "https://vng-staging.maykin.nl/api/auth/login/",
+					"protocol": "https",
 					"host": [
-						"localhost"
+						"vng-staging",
+						"maykin",
+						"nl"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"auth",
@@ -55,7 +56,7 @@
 			"response": []
 		},
 		{
-			"name": "create session",
+			"name": "Test-platform: create session",
 			"event": [
 				{
 					"listen": "test",
@@ -66,9 +67,12 @@
 							"var jsonData = pm.response.json();",
 							"console.log(jsonData);",
 							"for(var i in jsonData.exposedurl_set){",
-							"    var obj = jsonData.exposedurl_set[i]",
-							"    pm.globals.set(obj.vng_enpoint, obj.exposed_url);    ",
+							"    var obj = jsonData.exposedurl_set[i];",
+							"    console.log(obj.vng_endpoint);",
+							"    console.log(obj.exposed_url);",
+							"    pm.globals.set(obj.vng_endpoint, obj.exposed_url);    ",
 							"}",
+							"pm.globals.set(\"test_session_id\", jsonData.id);",
 							"",
 							""
 						],
@@ -90,7 +94,7 @@
 					},
 					{
 						"key": "Authorization",
-						"value": "Token 0e57a149cc3508eecfc6053815e5e332b27ba07e",
+						"value": "Token b9a02bedf1111af02810af8d281c0374da1fe831",
 						"type": "text"
 					}
 				],
@@ -99,12 +103,13 @@
 					"raw": "{\n\t\"session_type\":{{session_type}}\n}"
 				},
 				"url": {
-					"raw": "http://localhost:8000/api/v1/testsessions/",
-					"protocol": "http",
+					"raw": "https://vng-staging.maykin.nl/api/v1/testsessions/",
+					"protocol": "https",
 					"host": [
-						"localhost"
+						"vng-staging",
+						"maykin",
+						"nl"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"v1",
@@ -116,7 +121,7 @@
 			"response": []
 		},
 		{
-			"name": "https://ref.tst.vng.cloud/zrc/api/v1/zaken",
+			"name": "ZRC: /api/v1/zaken",
 			"event": [
 				{
 					"listen": "test",
@@ -168,7 +173,7 @@
 			"response": []
 		},
 		{
-			"name": "Aanmaken zaak",
+			"name": "ZRC: Aanmaken zaak",
 			"event": [
 				{
 					"listen": "prerequest",
@@ -230,7 +235,7 @@
 			"response": []
 		},
 		{
-			"name": "get statustype",
+			"name": "ZTC: get statustype",
 			"event": [
 				{
 					"listen": "test",
@@ -277,7 +282,7 @@
 			"response": []
 		},
 		{
-			"name": "Status op aanmaken zetten",
+			"name": "ZRC: Status op aanmaken zetten",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -305,6 +310,45 @@
 					"path": [
 						"v1",
 						"statussen"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Test-platform: get report result",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f264a58e-5ce5-4dd6-bed9-30bc284ddd94",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https://vng-staging.maykin.nl/api/v1/result-session/{{test_session_id}}",
+					"protocol": "https",
+					"host": [
+						"vng-staging",
+						"maykin",
+						"nl"
+					],
+					"path": [
+						"api",
+						"v1",
+						"result-session",
+						"{{test_session_id}}"
 					]
 				}
 			},
@@ -345,9 +389,9 @@
 	],
 	"variable": [
 		{
-			"id": "8feff6a0-fb93-45c2-807d-e668d26860fa",
+			"id": "4478535a-8b38-44f7-96ee-06e483e43876",
 			"key": "session_type",
-			"value": "1",
+			"value": "2",
 			"type": "string"
 		}
 	]

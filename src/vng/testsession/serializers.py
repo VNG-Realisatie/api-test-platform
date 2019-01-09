@@ -44,3 +44,10 @@ class SessionSerializer(serializers.ModelSerializer):
             'status',
             'exposedurl_set',
         ]
+
+
+class ScenarioCaseSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ScenarioCase
+        fields = ['url', 'http_method', 'vng_endpoint']

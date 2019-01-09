@@ -390,8 +390,13 @@ class RunTest(CSRFExemptMixin, View):
         Find the matching scenario case with the same url and method, if one match is found,
         the result of the call is overrided
         '''
+        logger.info("Saving call")
+        logger.info(request.method)
+        logger.info(url)
+        logger.info(relative_url)
         scenario_cases = ScenarioCase.objects.filter(vng_endpoint__session_type=session.session_type)
         for case in scenario_cases:
+            logger.info(case)
             if case.http_method == request.method:
                 if self.match_url(request.build_absolute_uri(), case.url):
                     report = Report(scenario_case=case, session_log=session_log)
@@ -403,6 +408,7 @@ class RunTest(CSRFExemptMixin, View):
                             break
                     if not is_failed:
                         report.result = choices.HTTPCallChoiches.success
+                    logger.info("Saving report: {}".format(report.result))
                     report.save()
 
     def parse_response(self, response, request, base_url, endpoints):

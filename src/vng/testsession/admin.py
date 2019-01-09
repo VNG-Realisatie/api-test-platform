@@ -35,13 +35,12 @@ class SessionTypeAdmin(admin.ModelAdmin):
 @admin.register(model.Session)
 class SessionAdmin(admin.ModelAdmin):
     list_display = [
-        'name',
-        'session_type',
         'started',
         'stopped',
-        'status',
-        'user',
         'session_type',
+        'user',
+        'status',
+        'name',
         'id',
     ]
     list_filter = ['user']
@@ -51,14 +50,7 @@ class SessionAdmin(admin.ModelAdmin):
 
 @admin.register(model.SessionLog)
 class SessionLogAdmin(admin.ModelAdmin):
-    list_display = [
-        'date',
-        'session',
-        'request',
-        'response',
-        'response_status',
-    ]
-    list_filter = ['session', 'date']
+    date_hierarchy = 'date'
     search_fields = ['session', 'date']
 
 

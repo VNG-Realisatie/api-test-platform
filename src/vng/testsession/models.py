@@ -78,9 +78,9 @@ class Session(models.Model):
 
     def __str__(self):
         if self.user:
-            return "{} - {}".format(self.session_type, self.user.username)
+            return "{} - {} - {}".format(self.session_type, self.user.username, str(self.started))
         else:
-            return "{}".format(self.session_type)
+            return "{} - {}".format(self.session_type, str(self.started))
 
     def is_stopped(self):
         return self.status == choices.StatusChoices.stopped
@@ -111,6 +111,10 @@ class SessionLog(models.Model):
     response = models.TextField(blank=True, null=True, default=None)
     response_status = models.PositiveIntegerField(blank=True, null=True, default=None)
 
+    def __str__(self):
+        return '{} - {} - {}'.format(str(self.date), str(self.session),
+                                     str(self.response_status))
+
     def request_path(self):
         return json.loads(self.request)['request']['path']
 
@@ -129,3 +133,6 @@ class Report(models.Model):
 
     def is_not_called(self):
         return self.result == choices.HTTPCallChoiches.not_called
+
+    def __str__(self):
+        return 'Case: {} - Log: {} - Result: {}'.format(self.scenario_case, self.session_log, self.result)

@@ -403,8 +403,10 @@ class RunTest(CSRFExemptMixin, View):
         eu = get_object_or_404(ExposedUrl, session=session, exposed_url=self.kwargs['exposed_url'])  # ExposedUrl.objects.filter(session=session).filter(exposed_url=self.kwargs['exposed_url'])
         endpoints = ExposedUrl.objects.filter(vng_endpoint__session_type=eu.vng_endpoint.session_type)
 
-        request_url = '{}/{}'.format(eu.vng_endpoint.url, self.kwargs['relative_url'])
+        arguments = request.META['QUERY_STRING']
+        request_url = '{}/{}?{}'.format(eu.vng_endpoint.url, self.kwargs['relative_url'],arguments)
 
+        import pdb; pdb.set_trace()
         method = getattr(requests, name)
         if body:
             rewritten_body = self.rewrite_request_body(request, endpoints)

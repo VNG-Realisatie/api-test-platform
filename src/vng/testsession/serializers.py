@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.urls import reverse
+from django.conf import settings
 
 from .models import *
 
@@ -20,7 +21,11 @@ class ExposedUrlSerializer(serializers.ModelSerializer):
     def to_representation(self, value):
         v = super().to_representation(value)
         request = self.context['request']
-        host = 'http://{}'.format(request.get_host())
+        if settings.DEBUG:
+            host = 'http://{}'.format(request.get_host())
+        else:
+            host = 'https://{}'.format(request.get_host())
+
         v['exposed_url'] = '{}{}'.format(
             host,
             reverse('testsession:run_test', kwargs={

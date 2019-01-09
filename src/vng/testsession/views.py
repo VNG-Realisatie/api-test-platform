@@ -326,7 +326,7 @@ class PDFGenerator():
 
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs).render().content.decode('utf-8')
-        base_url = 'http://' + request.get_host()
+        base_url = 'http://' if settings.DEBUG else 'https://' + request.get_host()
         pdf = HTML(string=response, base_url=base_url).write_pdf()
         response = HttpResponse(pdf, content_type='application/pdf')
         return response

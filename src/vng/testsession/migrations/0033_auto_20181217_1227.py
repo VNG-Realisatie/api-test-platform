@@ -28,6 +28,10 @@ class Migration(migrations.Migration):
         ),
         migrations.RemoveField(
             model_name='sessiontype',
+            name='url',
+        ),
+        migrations.RemoveField(
+            model_name='sessiontype',
             name='docker_image',
         ),
         migrations.AddField(

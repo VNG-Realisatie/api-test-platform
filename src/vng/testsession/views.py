@@ -397,7 +397,7 @@ class RunTest(CSRFExemptMixin, View):
         scenario_cases = ScenarioCase.objects.filter(vng_endpoint__session_type=session.session_type)
         for case in scenario_cases:
             logger.info(case)
-            if lower(case.http_method) == lower(request_method_name):
+            if case.http_method.lower() == request_method_name.lower():
                 if self.match_url(request.build_absolute_uri(), case.url):
                     report = Report(scenario_case=case, session_log=session_log)
                     is_failed = False

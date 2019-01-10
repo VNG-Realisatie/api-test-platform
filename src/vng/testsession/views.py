@@ -353,7 +353,10 @@ class RunTest(CSRFExemptMixin, View):
         param_pattern = '{[^/]+}'
         any_c = '[^/]+'
         parsed_url = '( |/)*' + re.sub(param_pattern, any_c, compare)
-        return re.search(parsed_url, url) is not None
+        check_url = url.replace('/api/v1//', '/api/v1/')
+        logger.info("Parsed: {}".format(parsed_url))
+        logger.info("URL: {}".format(check_url))
+        return re.search(parsed_url, check_url) is not None
 
     def get_http_header(self, request):
         '''

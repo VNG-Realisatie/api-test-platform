@@ -362,9 +362,6 @@ class RunTest(CSRFExemptMixin, View):
 
     def get_exposed_url(self):
         exposed_url = '{}/{}'.format(self.kwargs['exposed_url'], self.kwargs['name'])
-        print(exposed_url)
-        print(self.kwargs)
-        print('####')
         return exposed_url
 
     def get_queryset(self):
@@ -495,8 +492,11 @@ class RunTest(CSRFExemptMixin, View):
         endpoints = ExposedUrl.objects.filter(vng_endpoint__session_type=eu.vng_endpoint.session_type)
 
         arguments = request.META['QUERY_STRING']
-        request_url = '{}/{}?{}'.format(eu.vng_endpoint.url, self.kwargs['relative_url'], arguments)
-
+        if eu.vng_endpoint.url.endswith('/'):
+            request_url = '{}{}?{}'.format(eu.vng_endpoint.url, self.kwargs['relative_url'], arguments)
+        else:
+            request_url = '{}/{}?{}'.format(eu.vng_endpoint.url, self.kwargs['relative_url'], arguments)
+        print(request_url)
         method = getattr(requests, request_method_name)
         if body:
             rewritten_body = self.rewrite_request_body(request, endpoints)

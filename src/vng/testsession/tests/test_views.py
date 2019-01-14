@@ -138,9 +138,11 @@ class TestLog(WebTest):
 
     def test_retrieve_no_entry(self):
         url = reverse('testsession:run_test', kwargs={
-            'exposed_url': self.exp_url.exposed_url,
-            'relative_url': self.exp_url.vng_endpoint.url
+            'exposed_url': self.exp_url.get_uuid_url(),
+            'name': self.exp_url.vng_endpoint.name,
+            'relative_url': 'schema'
         })
+        print(self.exp_url.vng_endpoint.url)
         call = self.app.get(url, user=self.session.user)
         call2 = self.app.get(reverse('testsession:session_log', kwargs={'session_id': self.session.id}), user=self.session.user)
         self.assertTrue(url in call2.text)

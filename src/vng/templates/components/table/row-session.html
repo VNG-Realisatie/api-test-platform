@@ -13,7 +13,7 @@
                     <tr>
                         <td>
                             {{endpoint.vng_endpoint.name}}
-                            <a href="{% url 'testsession:run_test' endpoint.exposed_url '' %}">
+                            <a href="{% url 'testsession:run_test' endpoint.get_uuid_url endpoint.vng_endpoint.name 'a' %}">
                                 {{endpoint.exposed_url}}
                             </a>
                         <td>

@@ -1,5 +1,6 @@
 import json
 import uuid
+import re
 
 from django.conf import settings
 from django.core.files import File
@@ -98,6 +99,9 @@ class ExposedUrl(models.Model):
     session = models.ForeignKey(Session)
     vng_endpoint = models.ForeignKey(VNGEndpoint)
     test_session = models.ForeignKey(TestSession, blank=True, null=True, default=None)
+
+    def get_uuid_url(self):
+        return re.search('([^/]+)', self.exposed_url).group(1)
 
     def __str__(self):
         return '{} {}'.format(self.session, self.vng_endpoint)

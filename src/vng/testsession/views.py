@@ -62,7 +62,7 @@ def bootstrap_session(session, start_app=None):
             bind_url = ExposedUrl()
             bind_url.session = session
             bind_url.vng_endpoint = ep
-            bind_url.exposed_url = int(time.time()) * 100 + random.randint(0, 99)
+            bind_url.exposed_url = '{}/{}'.format(int(time.time()) * 100 + random.randint(0, 99), ep.name)
             bind_url.save()
 
     if not starting_docker:
@@ -132,6 +132,7 @@ class SessionLogView(OwnerMultipleObjects):
     field_name = 'session__user'
 
     def get_queryset(self):
+        print(self.kwargs)
         return SessionLog.objects.filter(session__pk=self.kwargs['session_id']).order_by('-date')
 
     def get_context_data(self, **kwargs):
@@ -341,8 +342,15 @@ class RunTest(CSRFExemptMixin, View):
     """ Proxy-view between clients and servers """
     error_codes = [(400, 500)]
 
+    def get_exposed_url(self):
+        exposed_url = '{}/{}'.format(self.kwargs['exposed_url'], self.kwargs['name'])
+        print(exposed_url)
+        print(self.kwargs)
+        print('####')
+        return exposed_url
+
     def get_queryset(self):
-        return get_object_or_404(ExposedUrl, exposed_url=self.kwargs['exposed_url']).session
+        return get_object_or_404(ExposedUrl, exposed_url=self.get_exposed_url()).session
 
     def match_url(self, url, compare):
         '''
@@ -430,7 +438,8 @@ class RunTest(CSRFExemptMixin, View):
             sub = '{}{}'.format(
                 host,
                 reverse('testsession:run_test', kwargs={
-                    'exposed_url': ep.exposed_url,
+                    'exposed_url': ep.get_uuid_url(),
+                    'name': ep.vng_endpoint.name,
                     'relative_url': ''
                 })
             )
@@ -461,10 +470,10 @@ class RunTest(CSRFExemptMixin, View):
         return parsed
 
     def build_method(self, request_method_name, request, body=False):
+
         request_header = self.get_http_header(request)
         session_log, session = self.build_session_log(request, request_header)
-
-        eu = get_object_or_404(ExposedUrl, session=session, exposed_url=self.kwargs['exposed_url'])  # ExposedUrl.objects.filter(session=session).filter(exposed_url=self.kwargs['exposed_url'])
+        eu = get_object_or_404(ExposedUrl, session=session, exposed_url=self.get_exposed_url())
         endpoints = ExposedUrl.objects.filter(vng_endpoint__session_type=eu.vng_endpoint.session_type)
 
         arguments = request.META['QUERY_STRING']
@@ -479,7 +488,7 @@ class RunTest(CSRFExemptMixin, View):
 
         self.add_response(response, session_log, request_url, request)
 
-        self.save_call(request, request_method_name, self.kwargs['exposed_url'],
+        self.save_call(request, request_method_name, self.get_exposed_url(),
                        self.kwargs['relative_url'], session, response.status_code, session_log)
 
         response = HttpResponse(self.parse_response(response, request, eu.vng_endpoint.url, endpoints), status=response.status_code)

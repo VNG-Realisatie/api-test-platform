@@ -251,7 +251,7 @@ class ResultSessionView(views.APIView):
         res = None
         session = self.get_object()
         scenario_cases = ScenarioCase.objects.filter(vng_endpoint__session_type=session.session_type)
-        report = Report.objects.filter(session_log__session=session)
+        report = list(Report.objects.filter(session_log__session=session))
 
         def check():
             nonlocal res
@@ -266,6 +266,24 @@ class ResultSessionView(views.APIView):
 
         if res is None:
             res = {'result': 'success'}
+        res['report'] = []
+        for case in scenario_cases:
+            is_in = False
+            for rp in report:
+                if rp.scenario_case == case:
+                    is_in = True
+                    break
+            if not is_in:
+                report.append(Report(scenario_case=case))
+
+        for rp in report:
+            call = {
+                'scenario_case': ScenarioCaseSerializer(rp.scenario_case).data
+            }
+
+            call['result'] = rp.result
+
+            res['report'].append(call)
 
         response = HttpResponse(json.dumps(res))
         response['Content-Type'] = 'application/json'

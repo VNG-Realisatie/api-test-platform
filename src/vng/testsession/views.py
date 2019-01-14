@@ -132,7 +132,6 @@ class SessionLogView(OwnerMultipleObjects):
     field_name = 'session__user'
 
     def get_queryset(self):
-        print(self.kwargs)
         return SessionLog.objects.filter(session__pk=self.kwargs['session_id']).order_by('date')
 
     def get_context_data(self, **kwargs):
@@ -329,11 +328,9 @@ class SessionReport(OwnerSingleObject):
 
 
 def get_static_css(folder=None):
-    print(folder)
     res = []
     static = os.path.abspath(os.path.join(folder, os.pardir))
     for root, dirs, files in os.walk(folder):
-        print(root, dirs, files)
         for file in files:
             rp = os.path.relpath(root, static)
             res.append('{}/{}/{}'.format(static, rp, file))
@@ -485,19 +482,17 @@ class RunTest(CSRFExemptMixin, View):
         return parsed
 
     def build_method(self, request_method_name, request, body=False):
-
         request_header = self.get_http_header(request)
         session_log, session = self.build_session_log(request, request_header)
         eu = get_object_or_404(ExposedUrl, session=session, exposed_url=self.get_exposed_url())
         endpoints = ExposedUrl.objects.filter(vng_endpoint__session_type=eu.vng_endpoint.session_type)
-
         arguments = request.META['QUERY_STRING']
         if eu.vng_endpoint.url.endswith('/'):
             request_url = '{}{}?{}'.format(eu.vng_endpoint.url, self.kwargs['relative_url'], arguments)
         else:
             request_url = '{}/{}?{}'.format(eu.vng_endpoint.url, self.kwargs['relative_url'], arguments)
-        print(request_url)
         method = getattr(requests, request_method_name)
+
         if body:
             rewritten_body = self.rewrite_request_body(request, endpoints)
             response = method(request_url, data=rewritten_body, headers=request_header)

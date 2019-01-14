@@ -126,7 +126,9 @@ class TestLog(WebTest):
         self.exp_url = ExposedUrlFactory()
         self.session = self.exp_url.session
         self.exp_url.session = self.session
+        self.exp_url.exposed_url = f'{self.exp_url.exposed_url}/{self.exp_url.vng_endpoint.name}'
         self.scenarioCase.vng_endpoint = self.exp_url.vng_endpoint
+        self.exp_url.save()
         self.session_log = SessionLogFactory()
 
     def test_retrieve_no_logged(self):
@@ -140,9 +142,8 @@ class TestLog(WebTest):
         url = reverse('testsession:run_test', kwargs={
             'exposed_url': self.exp_url.get_uuid_url(),
             'name': self.exp_url.vng_endpoint.name,
-            'relative_url': 'schema'
+            'relative_url': ''
         })
-        print(self.exp_url.vng_endpoint.url)
         call = self.app.get(url, user=self.session.user)
         call2 = self.app.get(reverse('testsession:session_log', kwargs={'session_id': self.session.id}), user=self.session.user)
         self.assertTrue(url in call2.text)

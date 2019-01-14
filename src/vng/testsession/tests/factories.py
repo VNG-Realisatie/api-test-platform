@@ -76,14 +76,15 @@ class ExposedUrlFactory(Dmf):
     class Meta:
         model = ExposedUrl
 
-    exposed_url = factory.Sequence(lambda n: 'tst%s' % n)
     test_session = factory.SubFactory(TestSessionFactory)
     session = factory.SubFactory(SessionFactory)
     vng_endpoint = factory.SubFactory(VNGEndpointFactory)
+    exposed_url = factory.Sequence(lambda n: f'tst{n}')
 
     def __init___(self, **args):
         super().__init__(**args)
         self.vng_endpoint.session_type = self.session.session_type
+        self.exposed_url = f'{self.exposed_url}/{self.vng_endpoint.name}'
 
 
 class SessionLogFactory(Dmf):

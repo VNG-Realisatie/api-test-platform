@@ -157,7 +157,7 @@ class StopSession(OwnerSingleObject, View):
             ep = eu.vng_endpoint
             if not ep.test_file:
                 continue
-            assert False, ep.test_file
+            assert False, ep.test_file.path
             newman = NewmanManager(ep.test_file, ep.url)
             result = newman.execute_test()
             ts = TestSession()

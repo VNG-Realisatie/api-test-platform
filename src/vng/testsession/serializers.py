@@ -29,7 +29,8 @@ class ExposedUrlSerializer(serializers.ModelSerializer):
         v['exposed_url'] = '{}{}'.format(
             host,
             reverse('testsession:run_test', kwargs={
-                    'exposed_url': value.exposed_url,
+                    'exposed_url': value.get_uuid_url(),
+                    'name': value.vng_endpoint.name,
                     'relative_url': ''
                     })
         )

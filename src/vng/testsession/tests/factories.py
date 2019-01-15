@@ -12,7 +12,7 @@ class SessionTypeFactory(Dmf):
     class Meta:
         model = SessionType
 
-    name = factory.sequence(lambda n: 'testype %d' % n)
+    name = factory.sequence(lambda n: 'testype {}'.format(n))
     standard = 'Stardard'
     role = 'Role'
     application = 'Application'
@@ -33,10 +33,10 @@ class VNGEndpointFactory(Dmf):
     class Meta:
         model = VNGEndpoint
 
-    name = factory.Sequence(lambda n: 'name%s' % n)
+    name = factory.Sequence(lambda n: 'name{}'.format(n))
     url = 'http://ref.tst.vng.cloud/drc/api/v1'
     session_type = factory.SubFactory(SessionTypeFactory)
-    test_file = factory.django.FileField(from_path=settings.MEDIA_ROOT + '/VNG.postman_collection.json')
+    test_file = factory.django.FileField(from_path=settings.POSTMAN_ROOT + '/MOR_test-client.postman_collection-variable.json')
 
 
 class UserFactory(Dmf):
@@ -44,7 +44,7 @@ class UserFactory(Dmf):
     class Meta:
         model = User
 
-    username = factory.Sequence(lambda n: 'test%s' % n)
+    username = factory.Sequence(lambda n: 'test{}'.format(n))
     password = factory.PostGenerationMethodCall('set_password', 'password')
 
 
@@ -68,7 +68,7 @@ class SessionFactory(Dmf):
     status = choices.StatusChoices.starting
     user = factory.SubFactory(UserFactory)
     session_type = factory.SubFactory(SessionTypeFactory)
-    name = factory.Sequence(lambda n: 'name%s' % n)
+    name = factory.Sequence(lambda n: 'name{}'.format(n))
 
 
 class ExposedUrlFactory(Dmf):
@@ -76,14 +76,15 @@ class ExposedUrlFactory(Dmf):
     class Meta:
         model = ExposedUrl
 
-    exposed_url = factory.Sequence(lambda n: 'tst%s' % n)
     test_session = factory.SubFactory(TestSessionFactory)
     session = factory.SubFactory(SessionFactory)
     vng_endpoint = factory.SubFactory(VNGEndpointFactory)
+    exposed_url = factory.Sequence(lambda n: 'tst{}'.format(n))
 
     def __init___(self, **args):
         super().__init__(**args)
         self.vng_endpoint.session_type = self.session.session_type
+        self.exposed_url = '{}/{}'.format(self.exposed_url, self.vng_endpoint.name)
 
 
 class SessionLogFactory(Dmf):

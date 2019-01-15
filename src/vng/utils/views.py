@@ -6,6 +6,7 @@ from django.template import loader, TemplateDoesNotExist
 from django.shortcuts import get_object_or_404
 from django.views.defaults import ERROR_500_TEMPLATE_NAME
 from django.utils.decorators import method_decorator
+from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.csrf import csrf_exempt, requires_csrf_token
 from django.core.exceptions import PermissionDenied
 from django.views.generic.edit import ModelFormMixin, ProcessFormView

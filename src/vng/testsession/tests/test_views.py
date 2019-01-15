@@ -11,7 +11,7 @@ from vng.accounts.models import User
 
 from ..models import Session, SessionType, SessionLog
 from .factories import (
-    SessionFactory, SessionTypeFactory, UserFactory, ScenarioCaseFactory, ExposedUrlFactory, SessionLogFactory)
+    SessionFactory, SessionTypeFactory, UserFactory, ScenarioCaseFactory, ExposedUrlFactory, SessionLogFactory, VNGEndpointFactory)
 from ...utils import choices
 
 
@@ -20,6 +20,8 @@ def get_object(r):
 
 
 def get_username():
+    if len(User.objects.all()) == 0:
+        UserFactory()
     return User.objects.all().first().username
 
 
@@ -126,7 +128,10 @@ class TestLog(WebTest):
         self.exp_url = ExposedUrlFactory()
         self.session = self.exp_url.session
         self.exp_url.session = self.session
+        self.exp_url.exposed_url = '{}/{}'.format(self.exp_url.exposed_url, self.exp_url.vng_endpoint.name)
         self.scenarioCase.vng_endpoint = self.exp_url.vng_endpoint
+
+        self.exp_url.save()
         self.session_log = SessionLogFactory()
 
     def test_retrieve_no_logged(self):
@@ -140,9 +145,8 @@ class TestLog(WebTest):
         url = reverse('testsession:run_test', kwargs={
             'exposed_url': self.exp_url.get_uuid_url(),
             'name': self.exp_url.vng_endpoint.name,
-            'relative_url': 'schema'
+            'relative_url': ''
         })
-        print(self.exp_url.vng_endpoint.url)
         call = self.app.get(url, user=self.session.user)
         call2 = self.app.get(reverse('testsession:session_log', kwargs={'session_id': self.session.id}), user=self.session.user)
         self.assertTrue(url in call2.text)
@@ -170,3 +174,59 @@ class TestLog(WebTest):
                                         'session_id': sl.session.id,
                                         'pk': sl.id}),
                             status=[302, 401, 403, 404])
+
+    def test_api_session(self):
+        call = self.app.post('/api/auth/login/', params=collections.OrderedDict([
+            ('username', get_username()),
+            ('password', 'password')]))
+        key = get_object(call.body)['key']
+        head = {'Authorization': 'Token {}'.format(key)}
+        call = self.app.post(reverse("apiv1:test_session_list"), params=collections.OrderedDict([
+            ('session_type', SessionType.objects.first().pk),
+        ]), headers=head)
+        call = get_object(call.body)
+        url = call['exposedurl_set'][0]['exposed_url']
+        session_id = call['id']
+        call = self.app.get(url)
+
+        call = self.app.get(reverse('apiv1:stop_session', kwargs={'pk': session_id}))
+        call = get_object(call.body)
+        self.assertEqual(call, [])
+
+        call = self.app.get(reverse('apiv1:result_session', kwargs={'pk': session_id}))
+        call = get_object(call.body)
+        self.assertEqual(call['result'], 'No scenario cases available')
+
+
+class TestLogNewman(WebTest):
+
+    def setUp(self):
+        self.scenario_case = ScenarioCaseFactory()
+        self.scenario_case1 = ScenarioCaseFactory()
+        self.scenario_case1.vng_endpoint = self.scenario_case.vng_endpoint
+        self.scenario_case1.save()
+
+        call = self.app.post('/api/auth/login/', params=collections.OrderedDict([
+            ('username', get_username()),
+            ('password', 'password')]))
+        key = get_object(call.body)['key']
+        self.head = {'Authorization': 'Token {}'.format(key)}
+
+    def runTest(self):
+        call = self.app.post(reverse("apiv1:test_session_list"), params=collections.OrderedDict([
+            ('session_type', self.scenario_case.vng_endpoint.session_type.pk),
+        ]), headers=self.head)
+        call = get_object(call.body)
+        session_id = call['id']
+        url = call['exposedurl_set'][0]['exposed_url']
+
+        call = self.app.get(url)
+        call = get_object(call.body)
+
+        call = self.app.get(reverse('apiv1:stop_session', kwargs={'pk': session_id}))
+        call = get_object(call.body)
+        self.assertEqual(len(call), 2)
+
+        call = self.app.get(reverse('apiv1:result_session', kwargs={'pk': session_id}))
+        call = get_object(call.body)
+        self.assertEqual(call['result'], 'failed')

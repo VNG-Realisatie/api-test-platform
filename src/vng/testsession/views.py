@@ -157,7 +157,7 @@ class StopSession(OwnerSingleObject, View):
             ep = eu.vng_endpoint
             if not ep.test_file:
                 continue
-
+            print(ep.test_file, ep.url)
             newman = NewmanManager(ep.test_file, ep.url)
             result = newman.execute_test()
             ts = TestSession()

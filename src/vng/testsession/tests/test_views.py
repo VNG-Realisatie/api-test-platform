@@ -221,5 +221,4 @@ class TestLogNewman(WebTest):
 
         call = self.app.get(reverse('apiv1:stop_session', kwargs={'pk': session_id}))
         call = get_object(call.body)
-        print(call)
         self.assertEqual(len(call), 2)

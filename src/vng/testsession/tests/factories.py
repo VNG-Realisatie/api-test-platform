@@ -33,7 +33,7 @@ class VNGEndpointFactory(Dmf):
     class Meta:
         model = VNGEndpoint
 
-    name = factory.Sequence(lambda n: 'name'.format(n))
+    name = factory.Sequence(lambda n: 'name{}'.format(n))
     url = 'http://ref.tst.vng.cloud/drc/api/v1'
     session_type = factory.SubFactory(SessionTypeFactory)
     test_file = factory.django.FileField(from_path=settings.POSTMAN_ROOT + '/MOR_test-client.postman_collection-variable.json')

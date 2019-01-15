@@ -56,7 +56,7 @@ class NewmanManager:
     def execute_test_json(self):
         self.file_path = self.file.path
         filename = str(uuid.uuid4())
-        output, error = self.run_command(self.RUN_JSON_REPORT, self.file_path, filename)
+        output, error = self.run_command(self.RUN_JSON_REPORT, self.newman_path, self.file_path, filename)
         if error:
             logger.exception(error)
             raise DidNotRunException(error)

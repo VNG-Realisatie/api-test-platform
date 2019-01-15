@@ -126,7 +126,7 @@ class TestLog(WebTest):
         self.exp_url = ExposedUrlFactory()
         self.session = self.exp_url.session
         self.exp_url.session = self.session
-        self.exp_url.exposed_url = f'{self.exp_url.exposed_url}/{self.exp_url.vng_endpoint.name}'
+        self.exp_url.exposed_url = '{}/{}'.format(self.exp_url.exposed_url, self.exp_url.vng_endpoint.name)
         self.scenarioCase.vng_endpoint = self.exp_url.vng_endpoint
 
         self.exp_url.save()

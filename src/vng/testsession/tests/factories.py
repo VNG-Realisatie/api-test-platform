@@ -79,7 +79,7 @@ class ExposedUrlFactory(Dmf):
     test_session = factory.SubFactory(TestSessionFactory)
     session = factory.SubFactory(SessionFactory)
     vng_endpoint = factory.SubFactory(VNGEndpointFactory)
-    exposed_url = factory.Sequence(lambda n: f'tst{}'.format(n))
+    exposed_url = factory.Sequence(lambda n: 'tst{}'.format(n))
 
     def __init___(self, **args):
         super().__init__(**args)

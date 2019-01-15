@@ -222,3 +222,7 @@ class TestLogNewman(WebTest):
         call = self.app.get(reverse('apiv1:stop_session', kwargs={'pk': session_id}))
         call = get_object(call.body)
         self.assertEqual(len(call), 2)
+
+        call = self.app.get(reverse('apiv1:result_session', kwargs={'pk': session_id}))
+        call = get_object(call.body)
+        self.assertEqual(call['result'], 'failed')

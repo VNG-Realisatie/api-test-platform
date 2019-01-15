@@ -218,6 +218,10 @@ class TestLogNewman(WebTest):
         ]), headers=self.head)
         call = get_object(call.body)
         session_id = call['id']
+        url = call['exposedurl_set'][0]['exposed_url']
+
+        call = self.app.get(url)
+        call = get_object(call.body)
 
         call = self.app.get(reverse('apiv1:stop_session', kwargs={'pk': session_id}))
         call = get_object(call.body)

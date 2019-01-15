@@ -11,7 +11,7 @@ from vng.accounts.models import User
 
 from ..models import Session, SessionType, SessionLog
 from .factories import (
-    SessionFactory, SessionTypeFactory, UserFactory, ScenarioCaseFactory, ExposedUrlFactory, SessionLogFactory)
+    SessionFactory, SessionTypeFactory, UserFactory, ScenarioCaseFactory, ExposedUrlFactory, SessionLogFactory, VNGEndpointFactory)
 from ...utils import choices
 
 
@@ -20,6 +20,8 @@ def get_object(r):
 
 
 def get_username():
+    if len(User.objects.all()) == 0:
+        UserFactory()
     return User.objects.all().first().username
 
 
@@ -194,3 +196,30 @@ class TestLog(WebTest):
         call = self.app.get(reverse('apiv1:result_session', kwargs={'pk': session_id}))
         call = get_object(call.body)
         self.assertEqual(call['result'], 'No scenario cases available')
+
+
+class TestLogNewman(WebTest):
+
+    def setUp(self):
+        self.scenario_case = ScenarioCaseFactory()
+        self.scenario_case1 = ScenarioCaseFactory()
+        self.scenario_case1.vng_endpoint = self.scenario_case.vng_endpoint
+        self.scenario_case1.save()
+
+        call = self.app.post('/api/auth/login/', params=collections.OrderedDict([
+            ('username', get_username()),
+            ('password', 'password')]))
+        key = get_object(call.body)['key']
+        self.head = {'Authorization': 'Token {}'.format(key)}
+
+    def runTest(self):
+        call = self.app.post(reverse("apiv1:test_session_list"), params=collections.OrderedDict([
+            ('session_type', self.scenario_case.vng_endpoint.session_type.pk),
+        ]), headers=self.head)
+        call = get_object(call.body)
+        session_id = call['id']
+
+        call = self.app.get(reverse('apiv1:stop_session', kwargs={'pk': session_id}))
+        call = get_object(call.body)
+        print(call)
+        self.assertEqual(len(call), 2)

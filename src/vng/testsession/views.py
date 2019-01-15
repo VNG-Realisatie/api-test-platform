@@ -262,7 +262,8 @@ class ResultSessionView(views.APIView):
 
         for sc in scenario_cases:
             check()
-
+        if len(scenario_cases) == 0:
+            res = {'result': 'No scenario cases available'}
         if res is None:
             res = {'result': 'success'}
         res['report'] = []
@@ -487,6 +488,7 @@ class RunTest(CSRFExemptMixin, View):
         eu = get_object_or_404(ExposedUrl, session=session, exposed_url=self.get_exposed_url())
         endpoints = ExposedUrl.objects.filter(vng_endpoint__session_type=eu.vng_endpoint.session_type)
         arguments = request.META['QUERY_STRING']
+
         if eu.vng_endpoint.url.endswith('/'):
             request_url = '{}{}?{}'.format(eu.vng_endpoint.url, self.kwargs['relative_url'], arguments)
         else:

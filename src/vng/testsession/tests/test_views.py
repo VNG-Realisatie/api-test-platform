@@ -128,6 +128,7 @@ class TestLog(WebTest):
         self.exp_url.session = self.session
         self.exp_url.exposed_url = f'{self.exp_url.exposed_url}/{self.exp_url.vng_endpoint.name}'
         self.scenarioCase.vng_endpoint = self.exp_url.vng_endpoint
+
         self.exp_url.save()
         self.session_log = SessionLogFactory()
 
@@ -171,3 +172,25 @@ class TestLog(WebTest):
                                         'session_id': sl.session.id,
                                         'pk': sl.id}),
                             status=[302, 401, 403, 404])
+
+    def test_api_session(self):
+        call = self.app.post('/api/auth/login/', params=collections.OrderedDict([
+            ('username', get_username()),
+            ('password', 'password')]))
+        key = get_object(call.body)['key']
+        head = {'Authorization': 'Token {}'.format(key)}
+        call = self.app.post(reverse("apiv1:test_session_list"), params=collections.OrderedDict([
+            ('session_type', SessionType.objects.first().pk),
+        ]), headers=head)
+        call = get_object(call.body)
+        url = call['exposedurl_set'][0]['exposed_url']
+        session_id = call['id']
+        call = self.app.get(url)
+
+        call = self.app.get(reverse('apiv1:stop_session', kwargs={'pk': session_id}))
+        call = get_object(call.body)
+        self.assertEqual(call, [])
+
+        call = self.app.get(reverse('apiv1:result_session', kwargs={'pk': session_id}))
+        call = get_object(call.body)
+        self.assertEqual(call['result'], 'No scenario cases available')

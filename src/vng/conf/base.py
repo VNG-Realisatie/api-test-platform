@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     # 'django.contrib.sitemaps',
 
     # External applications.
-    #'axes',
+    # 'axes',
     'sniplates',
     'hijack',
     'compat',  # Part of hijack
@@ -194,6 +194,8 @@ STATICFILES_FINDERS = [
 ]
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+POSTMAN_ROOT = os.path.join(BASE_DIR, 'postman_collection')
 
 MEDIA_URL = '/media/'
 

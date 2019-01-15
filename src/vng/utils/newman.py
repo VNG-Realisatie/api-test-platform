@@ -45,6 +45,7 @@ class NewmanManager:
         filename = str(uuid.uuid4())
         output, error = self.run_command(self.RUN_HTML_REPORT, self.file_path, filename)
         if error:
+            assert False, error
             logger.exception(error)
             raise DidNotRunException()
         f = open('{}/{}.html'.format(self.REPORT_FOLDER, filename))

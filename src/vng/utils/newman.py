@@ -17,8 +17,9 @@ class DidNotRunException(Exception):
 
 class NewmanManager:
     REPORT_FOLDER = settings.MEDIA_ROOT + '/newman'
-    RUN_HTML_REPORT = 'newman run --reporters html {} --reporter-html-export ' + REPORT_FOLDER + '/{}.html'
-    RUN_JSON_REPORT = 'newman run  {} -r json --reporter-json-export ' + REPORT_FOLDER + '/{}.json'
+    newman_path = os.path.join(settings.BASE_DIR, 'node_modules', 'newman', 'bin', 'newman.js')
+    RUN_HTML_REPORT = '{} run --reporters html {} --reporter-html-export ' + REPORT_FOLDER + '/{}.html'
+    RUN_JSON_REPORT = '{} run  {} -r json --reporter-json-export ' + REPORT_FOLDER + '/{}.json'
     TOKEN = 'TOKEN'
 
     def __init__(self, file, api_endpoint):
@@ -43,9 +44,8 @@ class NewmanManager:
     def execute_test(self):
         self.file_path = self.file.path
         filename = str(uuid.uuid4())
-        output, error = self.run_command(self.RUN_HTML_REPORT, self.file_path, filename)
+        output, error = self.run_command(self.RUN_HTML_REPORT, self.newman_path, self.file_path, filename)
         if error:
-            assert False, error
             logger.exception(error)
             raise DidNotRunException()
         f = open('{}/{}.html'.format(self.REPORT_FOLDER, filename))

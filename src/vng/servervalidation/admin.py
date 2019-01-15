@@ -8,11 +8,24 @@ def get_all_fields(mo):
     return l
 
 
+class EndpointInline(admin.TabularInline):
+    model = model.Endpoint
+
+
+@admin.register(model.Endpoint)
+class EndpointAdmin(admin.ModelAdmin):
+    list_display = ['url', 'client_id', 'secret', 'server_run']
+    list_filter = ['url', 'server_run']
+    search_fields = ['url', 'server_run']
+
+
 @admin.register(model.ServerRun)
 class ServerRunAdmin(admin.ModelAdmin):
-    list_display = ['test_scenario', 'api_endpoint', 'started', 'stopped', 'user', 'status', 'log']
+    list_display = ['test_scenario', 'started', 'stopped', 'user', 'status', 'log']
     list_filter = ['user']
-    search_fields = ['user','api_endpoint']
+    search_fields = ['user']
+
+    inlines = [EndpointInline]
 
 
 @admin.register(model.TestScenario)

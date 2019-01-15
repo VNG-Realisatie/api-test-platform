@@ -18,7 +18,6 @@ class TestScenario(models.Model):
 class ServerRun(models.Model):
 
     test_scenario = models.ForeignKey(TestScenario, on_delete=models.SET_NULL, null=True)
-    api_endpoint = models.URLField(max_length=200, blank=True, null=True, default=None)
     started = models.DateTimeField(default=timezone.now)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     stopped = models.DateTimeField(null=True, default=None, blank=True)
@@ -48,3 +47,10 @@ class ServerRun(models.Model):
         if self.log:
             with open(self.log.path) as fp:
                 return fp.read().replace('\n', '<br>')
+
+
+class Endpoint(models.Model):
+    url = models.URLField(max_length=200)
+    client_id = models.TextField()
+    secret = models.TextField()
+    server_run = models.ForeignKey(ServerRun)

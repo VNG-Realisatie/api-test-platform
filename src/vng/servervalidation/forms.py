@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 class CreateServerRunForm(forms.ModelForm):
     class Meta:
         model = ServerRun
-        fields = ['test_scenario', 'api_endpoint']
+        fields = ['test_scenario']
 
     def clean(self):
         """

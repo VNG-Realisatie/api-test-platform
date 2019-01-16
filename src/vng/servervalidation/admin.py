@@ -12,9 +12,13 @@ class EndpointInline(admin.TabularInline):
     model = model.Endpoint
 
 
+class TestScenarioUrlInline(admin.TabularInline):
+    model = model.TestScenarioUrl
+
+
 @admin.register(model.Endpoint)
 class EndpointAdmin(admin.ModelAdmin):
-    list_display = ['url', 'client_id', 'secret', 'server_run']
+    list_display = ['url', 'server_run']
     list_filter = ['url', 'server_run']
     search_fields = ['url', 'server_run']
 
@@ -33,3 +37,12 @@ class TestScenarioAdmin(admin.ModelAdmin):
     list_display = ['name', 'validation_file']
     list_filter = ['name']
     search_fields = ['name']
+
+    inlines = [TestScenarioUrlInline]
+
+
+@admin.register(model.TestScenarioUrl)
+class TestScenarioUrlAdmin(admin.ModelAdmin):
+    list_display = ['url', 'name', 'test_scenario']
+    list_filter = ['url', 'name', 'test_scenario']
+    search_fields = ['url', 'name', 'test_scenario']

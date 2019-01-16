@@ -9,7 +9,17 @@
     {% endif %}
     <td class="table__cell">{{ server_run.stopped }}</td>
     <td class="table__cell">{{ server_run.user.username }}</td>
-    <td class="table__cell">{{ server_run.api_endpoint }}</td>
+    <td class="table__cell">
+        <table>
+        {% for ep in server_run.endpoint_set.all %}
+            <tr>
+                <td>
+                    {{ep.url}}
+                </td>
+            </tr>
+        {% endfor %}
+        </table>
+    </td>
     <td class="table__cell">{{ server_run.test_scenario.name }}</td>
     <td class="table__cell">
         {% if not server_run.is_stopped %}

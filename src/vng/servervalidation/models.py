@@ -8,11 +8,17 @@ from ..utils import choices
 
 
 class TestScenario(models.Model):
-    name = name = models.CharField(max_length=200, unique=True)
+    name = models.CharField(max_length=200, unique=True)
     validation_file = models.FileField(settings.MEDIA_FOLDER_FILES['test_scenario'])
 
     def __str__(self):
         return self.name
+
+
+class TestScenarioUrl(models.Model):
+    name = models.CharField(max_length=200, unique=True)
+    url = models.URLField(max_length=200, blank=True, default=None)
+    test_scenario = models.ForeignKey(TestScenario)
 
 
 class ServerRun(models.Model):
@@ -25,10 +31,7 @@ class ServerRun(models.Model):
     log = models.FileField(settings.MEDIA_FOLDER_FILES['servervalidation_log'], blank=True, null=True, default=None)
 
     def __str__(self):
-        if self.user and self.api_endpoint:
-            return "{} - {} - {}".format(self.api_endpoint, self.user.username, self.status)
-        else:
-            return "{} - {}".format(self.started, self.status)
+        return "{} - {}".format(self.started, self.status)
 
     def is_stopped(self):
         return self.status == choices.StatusChoices.stopped
@@ -50,7 +53,7 @@ class ServerRun(models.Model):
 
 
 class Endpoint(models.Model):
+    # test_scenario_url = models.ForeignKey(TestScenarioUrl)
     url = models.URLField(max_length=200)
-    client_id = models.TextField()
-    secret = models.TextField()
+    jwt = models.TextField(null=True, default=None)
     server_run = models.ForeignKey(ServerRun)

@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import re
 import uuid
 from urllib.parse import urlparse
 
@@ -18,14 +19,15 @@ class DidNotRunException(Exception):
 class NewmanManager:
     REPORT_FOLDER = settings.MEDIA_ROOT + '/newman'
     newman_path = os.path.join(settings.BASE_DIR, 'node_modules', 'newman', 'bin', 'newman.js')
-    RUN_HTML_REPORT = '{} run --reporters html {} --reporter-html-export ' + REPORT_FOLDER + '/{}.html'
-    RUN_JSON_REPORT = '{} run  {} -r json --reporter-json-export ' + REPORT_FOLDER + '/{}.json'
+    RUN_HTML_REPORT = '{} run --reporters html {} --reporter-html-export ' + REPORT_FOLDER + '/{}.html {}'
+    RUN_JSON_REPORT = '{} run  {} -r json --reporter-json-export ' + REPORT_FOLDER + '/{}.json {}'
+    GLOBAL_VAR_SYNTAX = '--global-var "{}={}"'
     TOKEN = 'TOKEN'
 
-    def __init__(self, file, api_endpoint):
+    def __init__(self, file, api_endpoint=None):
         self.file = file
         self.file_to_be_discarted = []
-
+        self.global_vars = ''
         self.api_endpoint = api_endpoint
         if not os.path.exists(self.REPORT_FOLDER):
             os.makedirs(self.REPORT_FOLDER)
@@ -38,8 +40,12 @@ class NewmanManager:
         #     os.remove(full_path)
 
     def run_command(self, command, *args):
-        command = command.format(*args)
+        command = command.format(*args, self.global_vars)
         return run_command_with_shell(command)
+
+    def replace_parameters(self, dict):
+        for k, v in dict.items():
+            self.global_vars += self.GLOBAL_VAR_SYNTAX.format(k, v)
 
     def execute_test(self):
         self.file_path = self.file.path

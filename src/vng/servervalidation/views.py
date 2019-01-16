@@ -70,22 +70,26 @@ class CreateEndpoint(CreateView):
         data['zipped'] = zip(data['form'], data['test_scenario'])
         return data
 
-    def execute_test(self):
+    def execute_test(self, endpoint):
         file_name = str(uuid.uuid4())
-        endpoints = Endpoint.objects.filter(server_run=self.server)
         try:
-            file = NewmanManager(form.instance.test_scenario.validation_file, form.instance.api_endpoint) \
-                .execute_test()
+            nm = NewmanManager(self.server.test_scenario.validation_file)
+            param = {}
+            for ep in self.endpoints:
+                param[ep.test_scenario_url.name] = ep.url
+            nm.replace_parameters(param)
+            file = nm.execute_test()
+            self.server.log.save(file_name, File(file))
+            self.server.status = choices.StatusChoices.stopped
+            self.server.stopped = timezone.now()
+            self.server.save()
         except DidNotRunException:
             return HttpResponse(status=500)
-        self.server.log.save(file_name, File(file))
-        self.server.status = choices.StatusChoices.stopped
-        self.server.stopped = timezone.now()
-        self.server.save()
 
     def form_valid(self, form):
         self.fetch_server()
         self.server.save()
+        self.endpoints = []
         tsu = list(TestScenarioUrl.objects.filter(test_scenario=self.server.test_scenario))
         for key, value in form.data.items():
             entry = list(filter(lambda x: x.name == key, tsu))
@@ -94,10 +98,11 @@ class CreateEndpoint(CreateView):
                 tsu.remove(entry)
                 ep = Endpoint(url=value, server_run=self.server, test_scenario_url=entry)
                 ep.save()
-                # self.execute_test()
+                self.endpoints.append(ep)
+                self.execute_test(ep)
         form.instance.server_run = self.server
         form.instance.test_scenario_url = tsu[0]
-        form.instance.save()
+        self.endpoints.append(form.instance.save())
         return HttpResponseRedirect(self.get_success_url())
 
 

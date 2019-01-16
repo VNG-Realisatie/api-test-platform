@@ -43,6 +43,6 @@ class TestScenarioAdmin(admin.ModelAdmin):
 
 @admin.register(model.TestScenarioUrl)
 class TestScenarioUrlAdmin(admin.ModelAdmin):
-    list_display = ['url', 'name', 'test_scenario']
-    list_filter = ['url', 'name', 'test_scenario']
-    search_fields = ['url', 'name', 'test_scenario']
+    list_display = ['name', 'test_scenario']
+    list_filter = ['name', 'test_scenario']
+    search_fields = ['name', 'test_scenario']

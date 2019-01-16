@@ -20,6 +20,12 @@ def get_username():
 
 class RetrieveCreationTest(WebTest):
 
+    server_run = {
+        'session_type': 1,
+        'client_id': 'client_id_field',
+        'secret': 'secret_field'
+    }
+
     def setUp(self):
         TestScenarioFactory()
         ServerRunFactory()
@@ -36,40 +42,23 @@ class RetrieveCreationTest(WebTest):
         call = self.app.get('/api/v1/sessiontypes', expect_errors=True)
 
     def test_creation_server_run(self):
-        server_run = {
-            'session_type': 1,
-            'started': str(timezone.now()),
-            'api_endpoint': 'http://google.com'
-        }
-        call = self.app.post('/api/v1/server-run/', server_run, headers=self.get_user_key())
+
+        call = self.app.post('/api/v1/server-run/', self.server_run, headers=self.get_user_key())
 
     def test_retrieve_server_run(self):
-        server_run = {
-            'session_type': 1,
-            'started': str(timezone.now()),
-            'api_endpoint': 'http://google.com'
-        }
+
         headers = self.get_user_key()
-        call = self.app.post('/api/v1/server-run/', server_run, headers=headers)
+        call = self.app.post('/api/v1/server-run/', self.server_run, headers=headers)
         parsed = get_object(call.body)
         call = self.app.get('/api/v1/server-run/{}'.format(parsed['id']), headers=headers)
 
     def test_data_integrity(self):
         fake_pk = 999
-        server_run = {
-            'pk': fake_pk,
-            'session_type': 1,
-            'started': str(timezone.now()),
-            'api_endpoint': 'http://google.com'
-        }
-        call = self.app.post('/api/v1/server-run/', server_run, headers=self.get_user_key())
+
+        call = self.app.post('/api/v1/server-run/', self.server_run, headers=self.get_user_key())
         parsed = get_object(call.body)
         self.assertNotEqual(parsed['id'], fake_pk)
 
     def test_creation_server_run_auth(self):
-        server_run = {
-            'session_type': 1,
-            'started': str(timezone.now()),
-            'api_endpoint': 'http://google.com'
-        }
-        call = self.app.post('/api/v1/server-run/', server_run, expect_errors=True)
+
+        call = self.app.post('/api/v1/server-run/', self.server_run, expect_errors=True)

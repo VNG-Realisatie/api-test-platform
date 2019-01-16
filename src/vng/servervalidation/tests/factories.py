@@ -23,6 +23,7 @@ class ServerRunFactory(Dmf):
         model = ServerRun
 
     test_scenario = factory.SubFactory(TestScenarioFactory)
-    api_endpoint = 'http://google.com'
     user = factory.SubFactory(UserFactory)
     started = timezone.now()
+    client_id = 'client_id_field'
+    secret = 'secret_field'

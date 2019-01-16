@@ -32,6 +32,8 @@ class ServerRun(models.Model):
     stopped = models.DateTimeField(null=True, default=None, blank=True)
     status = models.CharField(max_length=10, choices=choices.StatusChoices.choices, default=choices.StatusChoices.starting)
     log = models.FileField(settings.MEDIA_FOLDER_FILES['servervalidation_log'], blank=True, null=True, default=None)
+    client_id = models.TextField()
+    secret = models.TextField()
 
     def __str__(self):
         return "{} - {}".format(self.started, self.status)

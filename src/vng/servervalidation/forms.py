@@ -22,16 +22,6 @@ class CreateServerRunForm(forms.ModelForm):
         """
         test_scenario = self.cleaned_data.get('test_scenario')
 
-        try:
-            pass
-            # file = NewmanManager(test_scenario.validation_file, api_endpoint)
-            # file.prepare_file()
-        except Exception as e:  # Gotta catch 'em all
-            logger.exception(e)
-            self.add_error('test_scenario',
-                           ValidationError(_('No valid (Postman) JSON input provided in test scenario.')))
-        return self.cleaned_data
-
 
 class CreateEndpointForm(forms.ModelForm):
 
@@ -46,13 +36,14 @@ class CreateEndpointForm(forms.ModelForm):
         tmp = dict(self.fields)
         for k, new in zip(self.fields.keys(), labels):
             tmp[k].label = new
-            #tmp[new] = self.fields[k]
         self.fields = collections.OrderedDict(tmp)
 
-    def __init__(self, quantity=0, field_name='field', *args, **kwargs):
+    def __init__(self, quantity=0, field_name='field', text_area=[], *args, **kwargs):
         super().__init__(*args, **kwargs)
         for i in range(quantity):
             if isinstance(field_name, str):
                 self.fields['{}-{}'.format(field_name, i + 1)] = forms.URLField()
             else:
                 self.fields[field_name[i]] = forms.URLField()
+        for e in text_area:
+            self.fields[e] = forms.CharField(widget=forms.Textarea)

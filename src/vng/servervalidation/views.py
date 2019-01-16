@@ -1,3 +1,4 @@
+import itertools
 import uuid
 
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -65,9 +66,13 @@ class CreateEndpoint(CreateView):
         data['test_scenario'] = TestScenarioUrl.objects.filter(test_scenario=ts)
         test_scenario_url = TestScenarioUrl.objects.filter(test_scenario=self.server.test_scenario)
         url_names = [tsu.name for tsu in test_scenario_url]
-        data['form'] = CreateEndpointForm(quantity=len(data['test_scenario']) - 1, field_name=url_names[1:])
+        data['form'] = CreateEndpointForm(
+            quantity=len(data['test_scenario']) - 1,
+            field_name=url_names[1:],
+            text_area=['Client ID', 'Secret']
+        )
         data['form'].set_labels(url_names)
-        data['zipped'] = zip(data['form'], data['test_scenario'])
+        data['zipped'] = itertools.zip_longest(data['form'], data['test_scenario'])
         return data
 
     def execute_test(self, endpoint):
@@ -88,6 +93,8 @@ class CreateEndpoint(CreateView):
 
     def form_valid(self, form):
         self.fetch_server()
+        self.server.client_id = form.data['Client ID']
+        self.server.secret = form.data['Secret']
         self.server.save()
         self.endpoints = []
         tsu = list(TestScenarioUrl.objects.filter(test_scenario=self.server.test_scenario))

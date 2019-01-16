@@ -2,7 +2,7 @@ import uuid
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.files import File
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -49,7 +49,6 @@ class TestScenarioSelect(FormView, MultipleObjectMixin, MultipleObjectTemplateRe
 class CreateEndpoint(CreateView):
     template_name = 'servervalidation/server-run_create.html'
     form_class = CreateEndpointForm
-    url_field_name = 'Url'
 
     def get_success_url(self):
         return reverse('server_run:server-run_list')
@@ -64,23 +63,42 @@ class CreateEndpoint(CreateView):
         self.fetch_server()
 
         data['test_scenario'] = TestScenarioUrl.objects.filter(test_scenario=ts)
+        test_scenario_url = TestScenarioUrl.objects.filter(test_scenario=self.server.test_scenario)
+        url_names = [tsu.name for tsu in test_scenario_url]
+        data['form'] = CreateEndpointForm(quantity=len(data['test_scenario']) - 1, field_name=url_names[1:])
+        data['form'].set_labels(url_names)
         data['zipped'] = zip(data['form'], data['test_scenario'])
-        data['form'] = CreateEndpointForm(quantity=len(data['test_scenario']) - 1, field_name=self.url_field_name)
         return data
 
-    # def execute_test(self, )
+    def execute_test(self):
+        file_name = str(uuid.uuid4())
+        endpoints = Endpoint.objects.filter(server_run=self.server)
+        try:
+            file = NewmanManager(form.instance.test_scenario.validation_file, form.instance.api_endpoint) \
+                .execute_test()
+        except DidNotRunException:
+            return HttpResponse(status=500)
+        self.server.log.save(file_name, File(file))
+        self.server.status = choices.StatusChoices.stopped
+        self.server.stopped = timezone.now()
+        self.server.save()
 
     def form_valid(self, form):
         self.fetch_server()
         self.server.save()
+        tsu = list(TestScenarioUrl.objects.filter(test_scenario=self.server.test_scenario))
         for key, value in form.data.items():
-            if self.url_field_name in key:
-                ep = Endpoint(url=value, server_run=self.server)
+            entry = list(filter(lambda x: x.name == key, tsu))
+            if len(entry) == 1:
+                entry = entry[0]
+                tsu.remove(entry)
+                ep = Endpoint(url=value, server_run=self.server, test_scenario_url=entry)
                 ep.save()
-                # execute_test()
+                # self.execute_test()
         form.instance.server_run = self.server
-
-        return super().form_valid(form)
+        form.instance.test_scenario_url = tsu[0]
+        form.instance.save()
+        return HttpResponseRedirect(self.get_success_url())
 
 
 class ServerRunOutput(LoginRequiredMixin, DetailView):

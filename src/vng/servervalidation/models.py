@@ -53,7 +53,7 @@ class ServerRun(models.Model):
 
 
 class Endpoint(models.Model):
-    # test_scenario_url = models.ForeignKey(TestScenarioUrl)
+    test_scenario_url = models.ForeignKey(TestScenarioUrl)
     url = models.URLField(max_length=200)
     jwt = models.TextField(null=True, default=None)
     server_run = models.ForeignKey(ServerRun)

@@ -1,4 +1,5 @@
 import logging
+import collections
 
 from django import forms
 from django.core.exceptions import ValidationError
@@ -37,8 +38,21 @@ class CreateEndpointForm(forms.ModelForm):
     class Meta:
         model = Endpoint
         fields = ['url']
+        labels = {
+            'url': 'url'
+        }
+
+    def set_labels(self, labels):
+        tmp = dict(self.fields)
+        for k, new in zip(self.fields.keys(), labels):
+            tmp[k].label = new
+            #tmp[new] = self.fields[k]
+        self.fields = collections.OrderedDict(tmp)
 
     def __init__(self, quantity=0, field_name='field', *args, **kwargs):
         super().__init__(*args, **kwargs)
         for i in range(quantity):
-            self.fields['{}-{}'.format(field_name, i + 1)] = forms.URLField()
+            if isinstance(field_name, str):
+                self.fields['{}-{}'.format(field_name, i + 1)] = forms.URLField()
+            else:
+                self.fields[field_name[i]] = forms.URLField()

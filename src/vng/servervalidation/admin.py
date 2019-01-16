@@ -18,9 +18,9 @@ class TestScenarioUrlInline(admin.TabularInline):
 
 @admin.register(model.Endpoint)
 class EndpointAdmin(admin.ModelAdmin):
-    list_display = ['url', 'server_run']
-    list_filter = ['url', 'server_run']
-    search_fields = ['url', 'server_run']
+    list_display = ['test_scenario_url', 'jwt', 'server_run', 'url']
+    list_filter = ['test_scenario_url', 'server_run', 'url']
+    search_fields = ['test_scenario_url', 'server_run', 'url']
 
 
 @admin.register(model.ServerRun)

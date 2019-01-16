@@ -9,6 +9,7 @@ from django.utils import timezone
 from django.views import View
 from django.core.exceptions import PermissionDenied
 from django.views.generic import DetailView, CreateView, FormView
+from django.views.generic.list import MultipleObjectMixin, MultipleObjectTemplateResponseMixin, ListView
 
 from rest_framework import permissions, viewsets
 from rest_framework.authentication import (
@@ -18,15 +19,21 @@ from rest_framework.authentication import (
 from ..permissions.UserPermissions import *
 from ..utils import choices
 from ..utils.newman import DidNotRunException, NewmanManager
-from ..utils.views import ListAppendView, OwnerSingleObject
+from ..utils.views import OwnerSingleObject
 from .forms import CreateServerRunForm, CreateEndpointForm
 from .models import ServerRun, Endpoint, TestScenarioUrl, TestScenario
 from .serializers import ServerRunSerializer
 
 
-class TestScenarioSelect(FormView):
+class TestScenarioSelect(FormView, MultipleObjectMixin, MultipleObjectTemplateResponseMixin):
     template_name = 'servervalidation/server-run_list.html'
     form_class = CreateServerRunForm
+    context_object_name = 'server_run_list'
+    paginate_by = 10
+    model = ServerRun
+
+    def get_queryset(self):
+        return self.model.objects.filter(user=self.request.user).order_by('-started')
 
     def form_valid(self, form):
         ts_id = form.instance.test_scenario.id
@@ -34,42 +41,12 @@ class TestScenarioSelect(FormView):
             "test_id": ts_id
         }))
 
-
-class ServerRunView(LoginRequiredMixin, ListAppendView):
-    template_name = 'servervalidation/server-run_list.html'
-    context_object_name = 'server_run_list'
-    paginate_by = 10
-    model = ServerRun
-    form_class = CreateServerRunForm
-
-    def get_queryset(self):
-        return self.model.objects.filter(user=self.request.user).order_by('-started')
-
-    def get_success_url(self):
-        return reverse('server_run:server-run_create', kwargs={
-            "server_id": self.server.id
-        })
-
-    def form_valid(self, form):
-        form.instance.user = self.request.user
-        form.instance.started = timezone.now()
-        if form.is_valid():
-            file_name = str(uuid.uuid4())
-            try:
-                pass
-                # file = NewmanManager(form.instance.test_scenario.validation_file, form.instance.api_endpoint) \
-                #     .execute_test()
-            except DidNotRunException:
-                return HttpResponse(status=500)
-            #form.instance.log.save(file_name, File(file))
-            form.instance.status = choices.StatusChoices.stopped
-            form.instance.stopped = timezone.now()
-            self.server = form.save()
-        redirect = super().form_valid(form)
-        return redirect
+    def get(self, request, *args, **kwargs):
+        self.object_list = self.get_queryset()
+        return super().get(request, *args, **kwargs)
 
 
-class CreateEndpoint(ListAppendView, CreateView):
+class CreateEndpoint(CreateView):
     template_name = 'servervalidation/server-run_create.html'
     form_class = CreateEndpointForm
     url_field_name = 'Url'
@@ -91,6 +68,8 @@ class CreateEndpoint(ListAppendView, CreateView):
         data['form'] = CreateEndpointForm(quantity=len(data['test_scenario']) - 1, field_name=self.url_field_name)
         return data
 
+    # def execute_test(self, )
+
     def form_valid(self, form):
         self.fetch_server()
         self.server.save()
@@ -98,7 +77,9 @@ class CreateEndpoint(ListAppendView, CreateView):
             if self.url_field_name in key:
                 ep = Endpoint(url=value, server_run=self.server)
                 ep.save()
+                # execute_test()
         form.instance.server_run = self.server
+
         return super().form_valid(form)
 
 

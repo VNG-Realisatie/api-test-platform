@@ -25,7 +25,7 @@ class EndpointAdmin(admin.ModelAdmin):
 
 @admin.register(model.ServerRun)
 class ServerRunAdmin(admin.ModelAdmin):
-    list_display = ['test_scenario', 'started', 'stopped', 'user', 'status', 'log']
+    list_display = ['test_scenario', 'started', 'stopped', 'user', 'status', 'log', 'client_id', 'secret']
     list_filter = ['user']
     search_fields = ['user']
 

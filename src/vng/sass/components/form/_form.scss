@@ -18,12 +18,18 @@
   & &__help,
   & &__label,
   & &__input,
+  & &__textarea,
   & &__select {
     @include body;
     @include responsive(width, 100%, 50%, 50%, 50%);
     height: $form-margin-4;
     line-height: $form-margin-4;
   }
+
+  & &__textarea {
+    height: $grid-margin-10;
+  }
+
 
   & &__error-list,
   & &__error {
@@ -54,6 +60,7 @@
   }
 
   & &__input,
+  & &__textarea,
   & &__select,
   .button {
     appearance: none;
@@ -61,6 +68,7 @@
   }
 
   & &__input,
+  & &__textarea,
   & &__select {
     @include animate;
     appearance: none;
@@ -81,6 +89,7 @@
   }
 
   & &__input#{&}__input--error,
+  & &__textarea#{&}__input--error,
   & &__select#{&}__select--error {
     border-bottom-color: $form-color-error;
   }

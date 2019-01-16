@@ -26,6 +26,19 @@
     {% endwith %}
 {% endblock %}
 
+{% block Textarea %}
+    <div class="form__control" role="group">
+        {% reuse '_label' %}
+        <textarea name="{{ html_name }}" id="{{ id }}" class="form__textarea{{ css_classes }}{{ errors|yesno:" form__textarea--error," }}"
+            {{ widget.attrs|flatattrs }}
+            {{ required|yesno:"required," }}
+            {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
+        >{{ raw_value|default:'' }}</textarea>
+        {% reuse '_help' %}
+        {% reuse '_errors' %}
+    </div>
+{% endblock %}
+
 
 {% block _label %}
     {% if label %}<label class="form__label" for="{{ id_for_label }}">{{ label }}</label>{% endif %}

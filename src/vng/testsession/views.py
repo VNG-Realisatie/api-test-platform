@@ -265,6 +265,7 @@ class ResultSessionView(views.APIView):
             res = {'result': 'No scenario cases available'}
         if res is None:
             res = {'result': 'success'}
+
         res['report'] = []
         for case in scenario_cases:
             is_in = False
@@ -283,6 +284,8 @@ class ResultSessionView(views.APIView):
             call['result'] = rp.result
 
             res['report'].append(call)
+
+        res['test_session_url'] = session.get_absolute_request_url(request)
 
         response = HttpResponse(json.dumps(res))
         response['Content-Type'] = 'application/json'

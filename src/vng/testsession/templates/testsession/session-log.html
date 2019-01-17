@@ -12,7 +12,7 @@
     <div class="article__section">
         <input type="button" class="button button--primary" value="Terug" onclick="location.href = '{% url 'testsession:sessions'  %}';">
         <h2>Test client - {{ session }}</h2>
-        <h3>{{ session.started|date:"d/M/Y" }}</h3>
+        <h3>Gestart op: {{ session.started|date }}</h3>
         
         {% if log_list %}
             <input type="button" class="button button--primary" value="Rapport" onclick="location.href = '{% url 'testsession:session_report' log_list.0.session.id %}';">

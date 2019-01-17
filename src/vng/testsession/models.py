@@ -6,6 +6,7 @@ from django.conf import settings
 from django.core.files import File
 from django.db import models
 from django.utils import timezone
+from django.urls import reverse
 
 from ordered_model.models import OrderedModel
 
@@ -79,9 +80,14 @@ class Session(models.Model):
 
     def __str__(self):
         if self.user:
-            return "{} - {} - {}".format(self.session_type, self.user.username, str(self.started))
+            return "{} - {} - #{}".format(self.session_type, self.user.username, str(self.id))
         else:
-            return "{} - {}".format(self.session_type, str(self.started))
+            return "{} - #{}".format(self.session_type, str(self.id))
+
+    def get_absolute_request_url(self, request):
+        test_session_url = 'https://{}{}'.format(request.get_host(),
+                                                 reverse('testsession:session_log', args=[self.id]))
+        return test_session_url
 
     def is_stopped(self):
         return self.status == choices.StatusChoices.stopped
@@ -122,6 +128,8 @@ class SessionLog(models.Model):
     def request_path(self):
         return json.loads(self.request)['request']['path']
 
+    def request_headers(self):
+        return json.loads(self.request)['request']['header']
 
 class Report(models.Model):
 

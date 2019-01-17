@@ -46,6 +46,10 @@ class TestScenarioSelect(FormView, MultipleObjectMixin, MultipleObjectTemplateRe
         self.object_list = self.get_queryset()
         return super().get(request, *args, **kwargs)
 
+    def post(self, request, *args, **kwargs):
+        self.object_list = self.get_queryset()
+        return super().post(request, *args, **kwargs)
+
 
 class CreateEndpoint(CreateView):
     template_name = 'servervalidation/server-run_create.html'

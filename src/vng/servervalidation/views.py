@@ -67,6 +67,7 @@ class CreateEndpoint(CreateView):
         ts = get_object_or_404(TestScenario, pk=self.kwargs['test_id'])
         self.fetch_server()
 
+        data['ts'] = ts
         data['test_scenario'] = TestScenarioUrl.objects.filter(test_scenario=ts)
         test_scenario_url = TestScenarioUrl.objects.filter(test_scenario=self.server.test_scenario)
         url_names = [tsu.name for tsu in test_scenario_url]

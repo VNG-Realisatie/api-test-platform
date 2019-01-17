@@ -128,7 +128,7 @@ class SessionLogDetailView(OwnerSingleObject):
 class SessionLogView(OwnerMultipleObjects):
     template_name = 'testsession/session-log.html'
     context_object_name = 'log_list'
-    paginate_by = 20
+    paginate_by = 200
     field_name = 'session__user'
 
     def get_queryset(self):

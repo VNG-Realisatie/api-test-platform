@@ -131,6 +131,12 @@ class SessionLog(models.Model):
     def request_headers(self):
         return json.loads(self.request)['request']['header']
 
+    def response_body(self):
+        try:
+            return json.loads(self.response)['response']['body']
+        except:
+            return ""
+
 class Report(models.Model):
 
     scenario_case = models.ForeignKey(ScenarioCase)

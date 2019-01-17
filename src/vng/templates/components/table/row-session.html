@@ -1,9 +1,13 @@
 {% spaceless %}
     <tr>
         <td class="table__cell">
-            <a href="{% url 'testsession:session_log' session.id %}">{{ session.started }}</a>
+            <a href="{% url 'testsession:session_log' session.id %}">#{{ session.id }}</a>
+            Status: {{ session.get_status_display }}
+            <p style='padding: 4px;'><a class="button button--secondary" href="{% url 'testsession:session_log' session.id %}">Bekijk</a></p>
         </td>
-        <td class="table__cell">{{ session.status }}</td>
+        <td class="table__cell">
+            {{ session.started|date }}<br />{{ session.started|time }}
+        </td>
         <td class="table__cell">{{ session.session_type.name }}</td>
 
 
@@ -12,7 +16,6 @@
                 {% for endpoint in session.exposedurl_set.all %}
                     <tr>
                         <td>
-                            {{endpoint.vng_endpoint.name}}
                             <a href="{% url 'testsession:run_test' endpoint.get_uuid_url endpoint.vng_endpoint.name '' %}">
                                 {{endpoint.exposed_url}}
                             </a>

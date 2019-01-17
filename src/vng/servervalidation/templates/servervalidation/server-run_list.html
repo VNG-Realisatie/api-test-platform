@@ -9,7 +9,7 @@
     <article class="article">
         <div class="article__section">
             <h1>Server runs</h1>
-            <h2>Start a new server</h2>
+            <h2>Start a new server-testrun</h2>
 
             <form class="form" method="post">{% csrf_token %}
                 {% load_widgets form='forms.html' %}
@@ -18,7 +18,7 @@
                     {% form_field field %}
                 {% endfor %}
 
-                <input type="submit" class="button button--primary" value="Create Server-run">
+                <input type="submit" class="button button--primary" value="Continue">
                 <input type="button" class="button" value="Cancel"
                        onclick="location.href = '{% url 'server_run:server-run_list' %}';">
             </form>

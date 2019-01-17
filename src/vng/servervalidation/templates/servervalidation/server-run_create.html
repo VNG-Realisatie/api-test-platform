@@ -7,7 +7,7 @@
 {% block content %}
 <article class="article">
     <div class="article__section">
-        <h1>Fill the forms</h1>
+        <h1>Create server-testrun for scenario: {{ test_scenario }}</h1>
         <form class="form" method="post">
             {% csrf_token %}
             {% load_widgets form='forms.html' %}
@@ -15,7 +15,7 @@
             {% for field,tsr in zipped %}
                 {% form_field field %}
             {% endfor %}
-            <input type="submit" class="button button--primary" value="Create Server-run">
+            <input type="submit" class="button button--primary" value="Create Server-testrun">
             <input type="button" class="button" value="Cancel"
                        onclick="location.href = '{% url 'server_run:server-run_list' %}';">
 

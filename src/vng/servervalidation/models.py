@@ -17,7 +17,6 @@ class TestScenario(models.Model):
 
 class TestScenarioUrl(models.Model):
     name = models.CharField(max_length=200, unique=True)
-    # url = models.URLField(max_length=200, blank=True, default=None)
     test_scenario = models.ForeignKey(TestScenario)
 
     def __str__(self):

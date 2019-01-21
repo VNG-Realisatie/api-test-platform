@@ -81,6 +81,7 @@ class CreateEndpoint(CreateView):
         return data
 
     def execute_test(self, endpoint):
+
         file_name = str(uuid.uuid4())
         try:
             nm = NewmanManager(self.server.test_scenario.validation_file)
@@ -111,10 +112,14 @@ class CreateEndpoint(CreateView):
                 ep = Endpoint(url=value, server_run=self.server, test_scenario_url=entry)
                 ep.save()
                 self.endpoints.append(ep)
-                self.execute_test(ep)
+                # self.execute_test(ep)
         form.instance.server_run = self.server
-        form.instance.test_scenario_url = tsu[0]
-        self.endpoints.append(form.instance.save())
+        if len(tsu) > 0:
+            form.instance.test_scenario_url = tsu[0]
+        form.instance.save()
+        self.endpoints.append(form.instance)
+        for ep in self.endpoints:
+            self.execute_test(ep)
         return HttpResponseRedirect(self.get_success_url())
 
 

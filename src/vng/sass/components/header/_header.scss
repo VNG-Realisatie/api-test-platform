@@ -16,6 +16,7 @@ $header-margin-logo: $grid-margin-6;
   &__body {
     @include container;
     box-sizing: border-box;
+    position: relative;
 
     @include tablet {
       display: flex;
@@ -43,6 +44,7 @@ $header-margin-logo: $grid-margin-6;
 
   .navigation__link {
     margin-left: 11px;
+
     @include tablet {
       padding: $header-padding-v-link $header-padding-h-link;
     }
@@ -59,5 +61,10 @@ $header-margin-logo: $grid-margin-6;
 
   .navigation__link:hover {
     text-decoration: none;
+  }
+
+  .user {
+    position: absolute;
+    right: 0;
   }
 }

@@ -94,6 +94,6 @@ class SessionLogFactory(Dmf):
 
     date = timezone.now()
     session = factory.SubFactory(SessionFactory)
-    request = '{"request": {"path": "GET http://localhost:8000/runtest/154513515134/", "body": ""}}'
+    request = '{"request": {"path": "GET http://localhost:8000/runtest/154513515134/", "body": "", "header":"header"}}'
     response = '{"response": {"status_code": 404, "body": "{}", "path": "{} http://localhost:8000/runtest/tst/unknown/23"}}'
     response_status = 404

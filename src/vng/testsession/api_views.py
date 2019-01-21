@@ -274,6 +274,8 @@ class RunTest(CSRFExemptMixin, View):
     def build_method(self, request_method_name, request, body=False):
         request_header = self.get_http_header(request)
         session_log, session = self.build_session_log(request, request_header)
+        if session.is_stopped():
+            raise Http404
         eu = get_object_or_404(ExposedUrl, session=session, exposed_url=self.get_exposed_url())
         endpoints = ExposedUrl.objects.filter(vng_endpoint__session_type=eu.vng_endpoint.session_type)
         arguments = request.META['QUERY_STRING']

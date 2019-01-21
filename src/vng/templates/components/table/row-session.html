@@ -33,6 +33,7 @@
                 </form>
             {% else %}
                 <table>
+                {% comment '' %}
                 {% for endpoint in session.exposedurl_set.all %}
                     <tr>
                         <td>
@@ -42,6 +43,7 @@
                         <td>
                     </tr>
                 {% endfor %}
+                {% endcomment %}
                 </table>
             {% endif %}
         </td>

@@ -307,7 +307,7 @@ class SessionReport(OwnerSingleObject):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        scenario_case = self.model.objects.filter(vng_endpoint__session_type=self.session.session_type)
+        scenario_case = self.model.objects.filter(vng_endpoint__session_type=self.session.session_type).order_by('-date')
         report = list(Report.objects.filter(session_log__session=self.session))
         for case in scenario_case:
             is_in = False

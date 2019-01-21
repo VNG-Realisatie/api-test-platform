@@ -9,7 +9,7 @@ class SessionTypesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SessionType
-        fields = ['name', 'standard', 'role', 'application', 'version']
+        fields = ['id', 'name', 'standard', 'role', 'application', 'version']
 
 
 class ExposedUrlSerializer(serializers.ModelSerializer):

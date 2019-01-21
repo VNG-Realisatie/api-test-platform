@@ -210,7 +210,7 @@ class RunTest(CSRFExemptMixin, View):
                     report = Report(scenario_case=case, session_log=session_log)
                     is_failed = False
                     for a, b in self.error_codes:
-                        if status_code > a and status_code < b:
+                        if status_code >= a and status_code < b:
                             report.result = choices.HTTPCallChoiches.failed
                             is_failed = True
                             break

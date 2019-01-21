@@ -200,15 +200,16 @@ class SessionReport(OwnerSingleObject):
                     is_in = True
                     break
             if not is_in:
-                report.append(Report(scenario_case=case))
+                report.append(Report(scenario_case=case, result=choices.HTTPCallChoiches.not_called))
 
         context.update({
             'session': self.session,
             'object_list': report
         })
+
         if len(report) > 0:
             context.update({
-                'session_type': self.session.session_type
+                'session_type': self.session.session_type,
             })
 
         return context

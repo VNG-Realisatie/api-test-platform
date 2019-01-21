@@ -140,7 +140,7 @@ class ExposedUrlView(generics.ListAPIView):
 
 class RunTest(CSRFExemptMixin, View):
     """ Proxy-view between clients and servers """
-    error_codes = [(400, 500)]
+    error_codes = [(400, 599)]  # boundaries considered as errors
 
     def get_exposed_url(self):
         exposed_url = '{}/{}'.format(self.kwargs['exposed_url'], self.kwargs['name'])
@@ -207,14 +207,18 @@ class RunTest(CSRFExemptMixin, View):
             logger.info(case)
             if case.http_method.lower() == request_method_name.lower():
                 if self.match_url(request.build_absolute_uri(), case.url):
-                    report = Report(scenario_case=case, session_log=session_log)
+                    pre_exist = Report.objects.filter(scenario_case=case).filter(session_log=session_log)
+                    if len(pre_exist) == 0:
+                        report = Report(scenario_case=case, session_log=session_log)
+                    else:
+                        report = pre_exist[0]
                     is_failed = False
                     for a, b in self.error_codes:
-                        if status_code >= a and status_code < b:
+                        if status_code >= a and status_code <= b:
                             report.result = choices.HTTPCallChoiches.failed
                             is_failed = True
                             break
-                    if not is_failed:
+                    if not is_failed and not report.is_failed():
                         report.result = choices.HTTPCallChoiches.success
                     logger.info("Saving report: {}".format(report.result))
                     report.save()

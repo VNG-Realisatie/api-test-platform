@@ -1,0 +1,51 @@
+@import '../../lib/icon';
+@import '../../lib/animation';
+@import '../../lib/color';
+@import '../../lib/typography';
+
+.user {
+  @include body;
+  @include icon('user');
+
+  &__login,
+  &__logout,
+  &__name {
+    @include body;
+  }
+
+  &__login,
+  &__logout {
+    @include anchor;
+  }
+
+  &__dropdown {
+    @include animate;
+    @include icon(arrow-right);
+    background-color: #FFF;
+    border: 1px solid #CCC;
+    padding: 5px 5px 5px 20px;
+    opacity: 0;
+    position: absolute;
+    top: 80%;
+    right: 0;
+    visibility: hidden;
+
+    &:before {
+      left: 5px;
+    }
+  }
+
+  &:hover &__dropdown {
+    opacity: 1;
+    top: 100%;
+    visibility: visible
+  }
+
+  &__name {
+    margin: 0;
+  }
+
+  &__logout {
+    @include anchor();
+  }
+}

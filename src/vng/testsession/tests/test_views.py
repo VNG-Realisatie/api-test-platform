@@ -83,7 +83,7 @@ class CreationAndDeletion(WebTest):
 
     def test_session_creation(self):
         session = {
-            'session_type': self.session_type.id,
+            'session_type': self.session_type.name,
             'started': str(timezone.now()),
             'status': choices.StatusChoices.running,
             'api_endpoint': 'http://google.com'
@@ -98,7 +98,7 @@ class CreationAndDeletion(WebTest):
     def test_session_creation_permission(self):
         Session.objects.all().delete()
         session = {
-            'session_type': self.session_type.id,
+            'session_type': self.session_type.name,
             'started': str(timezone.now()),
             'status': choices.StatusChoices.running,
             'api_endpoint': 'http://google.com',
@@ -182,7 +182,7 @@ class TestLog(WebTest):
         key = get_object(call.body)['key']
         head = {'Authorization': 'Token {}'.format(key)}
         call = self.app.post(reverse("apiv1:test_session_list"), params=collections.OrderedDict([
-            ('session_type', SessionType.objects.first().pk),
+            ('session_type', SessionType.objects.first().name),
         ]), headers=head)
         call = get_object(call.body)
         url = call['exposedurl_set'][0]['exposed_url']
@@ -214,7 +214,7 @@ class TestLogNewman(WebTest):
 
     def runTest(self):
         call = self.app.post(reverse("apiv1:test_session_list"), params=collections.OrderedDict([
-            ('session_type', self.scenario_case.vng_endpoint.session_type.pk),
+            ('session_type', self.scenario_case.vng_endpoint.session_type.name),
         ]), headers=self.head)
         call = get_object(call.body)
         session_id = call['id']

@@ -156,7 +156,7 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGES = (('nl', 'Nederlands'),)
 
 
-LANGUAGE_CODE = 'nl'
+LANGUAGE_CODE = 'en'
 
 TIME_ZONE = 'Europe/Amsterdam'
 

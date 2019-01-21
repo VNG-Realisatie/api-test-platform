@@ -137,7 +137,10 @@ class SessionLog(models.Model):
         except:
             return ""
 
+
 class Report(models.Model):
+    class Meta:
+        unique_together = ('scenario_case', 'session_log')
 
     scenario_case = models.ForeignKey(ScenarioCase)
     session_log = models.ForeignKey(SessionLog)

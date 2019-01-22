@@ -75,6 +75,11 @@ class PostmanTestResult(models.Model):
             with open(self.log.path) as fp:
                 return fp.read().replace('\n', '<br>')
 
+    def display_log_json(self):
+        if self.log:
+            with open(self.log_json.path) as fp:
+                return fp.read()
+
     def get_outcome_html(self):
         with open(self.log.path) as f:
             for line in f:

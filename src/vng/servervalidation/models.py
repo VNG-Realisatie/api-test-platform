@@ -9,7 +9,6 @@ from ..utils import choices
 
 class TestScenario(models.Model):
     name = models.CharField(max_length=200, unique=True)
-    validation_file = models.FileField(settings.MEDIA_FOLDER_FILES['test_scenario'])
 
     def __str__(self):
         return self.name
@@ -23,6 +22,11 @@ class TestScenarioUrl(models.Model):
         return '{} {}'.format(self.name, self.test_scenario)
 
 
+class PostmanTest(models.Model):
+    test_scenario = models.ForeignKey(TestScenario)
+    validation_file = models.FileField(settings.MEDIA_FOLDER_FILES['test_scenario'])
+
+
 class ServerRun(models.Model):
 
     test_scenario = models.ForeignKey(TestScenario, on_delete=models.SET_NULL, null=True)
@@ -30,7 +34,6 @@ class ServerRun(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     stopped = models.DateTimeField(null=True, default=None, blank=True)
     status = models.CharField(max_length=10, choices=choices.StatusChoices.choices, default=choices.StatusChoices.starting)
-    log = models.FileField(settings.MEDIA_FOLDER_FILES['servervalidation_log'], blank=True, null=True, default=None)
     client_id = models.TextField()
     secret = models.TextField()
 
@@ -54,6 +57,12 @@ class ServerRun(models.Model):
         if self.log:
             with open(self.log.path) as fp:
                 return fp.read().replace('\n', '<br>')
+
+
+class PostmanTestResult(models.Model):
+    postman_test = models.ForeignKey(PostmanTest)
+    log = models.FileField(settings.MEDIA_FOLDER_FILES['servervalidation_log'], blank=True, null=True, default=None)
+    server_run = models.ForeignKey(ServerRun)
 
 
 class Endpoint(models.Model):

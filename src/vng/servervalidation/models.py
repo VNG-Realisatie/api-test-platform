@@ -2,12 +2,15 @@ from django.db import models
 from django.utils import timezone
 from django.conf import settings
 
+from ordered_model.models import OrderedModel
+
 from vng.accounts.models import User
 
 from ..utils import choices
 
 
 class TestScenario(models.Model):
+
     name = models.CharField(max_length=200, unique=True)
 
     def __str__(self):
@@ -15,6 +18,7 @@ class TestScenario(models.Model):
 
 
 class TestScenarioUrl(models.Model):
+
     name = models.CharField(max_length=200, unique=True)
     test_scenario = models.ForeignKey(TestScenario)
 
@@ -22,9 +26,13 @@ class TestScenarioUrl(models.Model):
         return '{} {}'.format(self.name, self.test_scenario)
 
 
-class PostmanTest(models.Model):
+class PostmanTest(OrderedModel):
+    order_with_respect_to = 'test_scenario'
     test_scenario = models.ForeignKey(TestScenario)
     validation_file = models.FileField(settings.MEDIA_FOLDER_FILES['test_scenario'])
+
+    def __str__(self):
+        return '{} {}'.format(self.test_scenario, self.validation_file)
 
 
 class ServerRun(models.Model):
@@ -55,6 +63,7 @@ class ServerRun(models.Model):
 
 
 class PostmanTestResult(models.Model):
+
     postman_test = models.ForeignKey(PostmanTest)
     log = models.FileField(settings.MEDIA_FOLDER_FILES['servervalidation_log'], blank=True, null=True, default=None)
     server_run = models.ForeignKey(ServerRun)
@@ -75,6 +84,7 @@ class PostmanTestResult(models.Model):
 
 
 class Endpoint(models.Model):
+
     test_scenario_url = models.ForeignKey(TestScenarioUrl)
     url = models.URLField(max_length=200)
     jwt = models.TextField(null=True, default=None)

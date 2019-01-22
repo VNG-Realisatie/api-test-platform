@@ -1,6 +1,8 @@
 from django.contrib import admin
 import vng.servervalidation.models as model
 
+from ordered_model.admin import OrderedModelAdmin
+
 
 def get_all_fields(mo):
     l = [field.name for field in mo._meta.fields]
@@ -21,8 +23,8 @@ class PostmanTestInline(admin.TabularInline):
 
 
 @admin.register(model.PostmanTest)
-class PostmanTestAdmin(admin.ModelAdmin):
-    list_display = ['test_scenario', 'validation_file']
+class PostmanTestAdmin(OrderedModelAdmin):
+    list_display = ['test_scenario', 'move_up_down_links', 'validation_file']
 
 
 @admin.register(model.PostmanTestResult)

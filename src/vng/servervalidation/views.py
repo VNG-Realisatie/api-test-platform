@@ -83,7 +83,7 @@ class CreateEndpoint(CreateView):
     def execute_test(self, endpoint):
         file_name = str(uuid.uuid4())
         try:
-            for postman_test in PostmanTest.objects.filter(test_scenario=endpoint.server_run.test_scenario):
+            for postman_test in PostmanTest.objects.filter(test_scenario=endpoint.server_run.test_scenario).order_by('order'):
                 nm = NewmanManager(postman_test.validation_file)
                 param = {}
                 for ep in self.endpoints:

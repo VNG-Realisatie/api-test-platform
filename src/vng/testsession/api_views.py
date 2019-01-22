@@ -23,6 +23,7 @@ from ..utils import choices
 from ..utils.views import (
     ListAppendView, OwnerMultipleObjects, OwnerSingleObject, CSRFExemptMixin
 )
+from .permission import IsOwner
 from .serializers import (
     SessionSerializer, SessionTypesSerializer, ExposedUrlSerializer, ScenarioCaseSerializer
 )
@@ -33,7 +34,7 @@ logger = logging.getLogger(__name__)
 
 class SessionViewSet(viewsets.ModelViewSet):
     serializer_class = SessionSerializer
-    authentication_classes = (TokenAuthentication, )
+    authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
@@ -277,7 +278,7 @@ class RunTest(CSRFExemptMixin, View):
         if session.is_stopped():
             raise Http404
         eu = get_object_or_404(ExposedUrl, session=session, exposed_url=self.get_exposed_url())
-        endpoints = ExposedUrl.objects.filter(vng_endpoint__session_type=eu.vng_endpoint.session_type)
+        endpoints = ExposedUrl.objects.filter(session=session)
         arguments = request.META['QUERY_STRING']
 
         if eu.vng_endpoint.url.endswith('/'):

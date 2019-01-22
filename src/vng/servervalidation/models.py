@@ -7,6 +7,11 @@ from vng.accounts.models import User
 from ..utils import choices
 
 
+class PostmanTest(models.Model):
+    validation_file = models.FileField(settings.MEDIA_FOLDER_FILES['test_scenario'])
+    log = models.FileField(settings.MEDIA_FOLDER_FILES['servervalidation_log'], blank=True, null=True, default=None)
+
+
 class TestScenario(models.Model):
     name = models.CharField(max_length=200, unique=True)
 

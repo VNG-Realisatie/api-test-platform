@@ -29,6 +29,7 @@
 <tr>
     <td class="table__cell">Log</td>
     {% for pr in postman_result %}
+    {{pr.get_outcome_html}}
         <td class="table__cell"><a href="{% url 'server_run:server-run_detail_log' pr.pk %}">Visualize the log</az> </td>
     {% endfor %}
 </tr>

@@ -58,11 +58,20 @@ class PostmanTestResult(models.Model):
     postman_test = models.ForeignKey(PostmanTest)
     log = models.FileField(settings.MEDIA_FOLDER_FILES['servervalidation_log'], blank=True, null=True, default=None)
     server_run = models.ForeignKey(ServerRun)
+    status = models.CharField(max_length=10, choices=choices.ResultChoices.choices, default=None, null=True)
 
     def display_log(self):
         if self.log:
             with open(self.log.path) as fp:
                 return fp.read().replace('\n', '<br>')
+
+    def get_outcome_html(self):
+        with open(self.log.path) as f:
+            for line in f:
+                if 'Total failed tests' in line:
+                    if '0' in line:
+                        return choices.ResultChoices.success
+        return choices.ResultChoices.failed
 
 
 class Endpoint(models.Model):

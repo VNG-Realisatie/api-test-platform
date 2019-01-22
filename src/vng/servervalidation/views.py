@@ -96,6 +96,7 @@ class CreateEndpoint(CreateView):
                         server_run=endpoint.server_run
                     )
                     ptr.log.save(file_name, File(file))
+                    ptr.status = ptr.get_outcome_html()
                     ptr.save()
             self.server.status = choices.StatusChoices.stopped
             self.server.stopped = timezone.now()
@@ -118,7 +119,6 @@ class CreateEndpoint(CreateView):
                 ep = Endpoint(url=value, server_run=self.server, test_scenario_url=entry)
                 ep.save()
                 self.endpoints.append(ep)
-                # self.execute_test(ep)
         form.instance.server_run = self.server
         if len(tsu) > 0:
             form.instance.test_scenario_url = tsu[0]

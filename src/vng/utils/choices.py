@@ -7,6 +7,11 @@ class StatusChoices(DjangoChoices):
     stopped = ChoiceItem("stopped")
 
 
+class ResultChoices(DjangoChoices):
+    success = ChoiceItem("Success")
+    failed = ChoiceItem("Failed")
+
+
 class HTTPCallChoiches(DjangoChoices):
     success = ChoiceItem("Succesvol")
     failed = ChoiceItem("Niet succesvol")

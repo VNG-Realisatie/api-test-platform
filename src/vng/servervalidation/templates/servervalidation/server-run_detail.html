@@ -7,7 +7,7 @@
 
 <article class="article">
     <div class="article__section">
-        <h1>View the log of a test session</h1>
+        <h1>View the detail of a test session</h1>
         <input type="button" class="button button--primary" value="Server-run list" onclick="location.href= '{% url 'server_run:server-run_list' %}';">
 
 
@@ -19,7 +19,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% include 'components/table/table-server-run.html' with server_run=object only %}
+                {% include 'components/table/table-server-run.html' with server_run=object postman_result=postman_result only %}
             </tbody>
         </table>
     </div>

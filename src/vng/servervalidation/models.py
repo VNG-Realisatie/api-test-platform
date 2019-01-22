@@ -7,11 +7,6 @@ from vng.accounts.models import User
 from ..utils import choices
 
 
-class PostmanTest(models.Model):
-    validation_file = models.FileField(settings.MEDIA_FOLDER_FILES['test_scenario'])
-    log = models.FileField(settings.MEDIA_FOLDER_FILES['servervalidation_log'], blank=True, null=True, default=None)
-
-
 class TestScenario(models.Model):
     name = models.CharField(max_length=200, unique=True)
 
@@ -58,16 +53,16 @@ class ServerRun(models.Model):
                 res.append((field.name, field.value_to_string(self)))
         return res
 
-    def display_log(self):
-        if self.log:
-            with open(self.log.path) as fp:
-                return fp.read().replace('\n', '<br>')
-
 
 class PostmanTestResult(models.Model):
     postman_test = models.ForeignKey(PostmanTest)
     log = models.FileField(settings.MEDIA_FOLDER_FILES['servervalidation_log'], blank=True, null=True, default=None)
     server_run = models.ForeignKey(ServerRun)
+
+    def display_log(self):
+        if self.log:
+            with open(self.log.path) as fp:
+                return fp.read().replace('\n', '<br>')
 
 
 class Endpoint(models.Model):

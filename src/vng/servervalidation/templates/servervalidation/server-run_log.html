@@ -8,8 +8,8 @@
 <article class="article">
     <div class="article__section">
         <h1>Log view</h1>
-        <input type="button" class="button button--primary" value="Back to the details" onclick="location.href = '{% url 'server_run:server-run_detail' server.pk %}';">
-        {{ server.display_log|safe }}
+        <input type="button" class="button button--primary" value="Back to the details" onclick="location.href = '{% url 'server_run:server-run_detail' object.server_run.pk %}';">
+        {{ object.display_log|safe }}
     </div>
 </article>
 {% endblock %}

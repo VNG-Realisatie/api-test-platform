@@ -90,12 +90,13 @@ class CreateEndpoint(CreateView):
                     param[ep.test_scenario_url.name] = ep.url
                     nm.replace_parameters(param)
                     file = nm.execute_test()
-
+                    file_json = nm.execute_test_json()
                     ptr = PostmanTestResult(
                         postman_test=postman_test,
                         server_run=endpoint.server_run
                     )
                     ptr.log.save(file_name, File(file))
+                    ptr.log_json.save(file_name, File(file_json))
                     ptr.status = ptr.get_outcome_html()
                     ptr.save()
             self.server.status = choices.StatusChoices.stopped

@@ -280,7 +280,7 @@ class RunTest(CSRFExemptMixin, View):
         session_log, session = self.build_session_log(request, request_header)
         if session.is_stopped():
             raise Http404
-        eu = get_object_or_404(ExposedUrl, session=session, exposed_url=self.kwargs['exposed_url'])
+        eu = get_object_or_404(ExposedUrl, session=session, exposed_url=self.get_exposed_url())
         endpoints = ExposedUrl.objects.filter(session=session)
         arguments = request.META['QUERY_STRING']
 

@@ -52,7 +52,7 @@ def bootstrap_session(session, start_app=None):
             bind_url = ExposedUrl()
             bind_url.session = session
             bind_url.vng_endpoint = ep
-            bind_url.exposed_url = '{}/{}'.format(int(time.time()) * 100 + random.randint(0, 99), ep.name)
+            bind_url.exposed_url = '{}/{}'.format(int(time.time()) * 100 + random.randint(0, 99))
             bind_url.save()
 
     if not starting_docker:

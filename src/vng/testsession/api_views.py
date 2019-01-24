@@ -267,8 +267,8 @@ class RunTest(CSRFExemptMixin, View):
             sub = '{}{}'.format(
                 host,
                 reverse('testsession:run_test', kwargs={
-                    'exposed_url': ep.exposed_url,
-                    'name': '',
+                    'exposed_url': ep.get_uuid_url(),
+                    'name': ep.vng_endpoint.name,
                     'relative_url': ''
                 })
             )

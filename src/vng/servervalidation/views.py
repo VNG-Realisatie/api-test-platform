@@ -20,7 +20,7 @@ from rest_framework.authentication import (
 from ..permissions.UserPermissions import *
 from ..utils import choices
 from ..utils.newman import DidNotRunException, NewmanManager
-from ..utils.views import OwnerSingleObject
+from ..utils.views import OwnerSingleObject, PDFGenerator
 from .forms import CreateServerRunForm, CreateEndpointForm
 from .models import ServerRun, Endpoint, TestScenarioUrl, TestScenario, PostmanTest, PostmanTestResult
 from .serializers import ServerRunSerializer
@@ -96,7 +96,7 @@ class CreateEndpoint(CreateView):
                         server_run=endpoint.server_run
                     )
                     ptr.log.save(file_name, File(file))
-                    ptr.log_json.save(file_name, File(file_json))
+                    ptr.save_json(file_name, File(file_json))
                     ptr.status = ptr.get_outcome_html()
                     ptr.save()
             self.server.status = choices.StatusChoices.stopped
@@ -169,3 +169,20 @@ class ServerRunViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
 class ServerRunLogView(LoginRequiredMixin, DetailView):
     model = PostmanTestResult
     template_name = 'servervalidation/server-run_log.html'
+
+
+class ServerRunLogJsonView(LoginRequiredMixin, DetailView):
+    model = PostmanTestResult
+    template_name = 'servervalidation/server-run_log_json.html'
+
+# class ServerRunPdfCreator(LoginRequiredMixin, DetailView):
+#     model = PostmanTestResult
+#     template_name = 'servervalidation/server-run_pdf.html'
+
+
+class ServerRunPdfView(LoginRequiredMixin, PDFGenerator, DetailView):
+    model = PostmanTestResult
+    template_name = 'servervalidation/server-run_log.html'
+
+    def get_queryset(self):
+        return self.model.objects.filter(user=self.request.user).order_by('-started')

@@ -1,8 +1,11 @@
+import json
+
 from django.db import models
 from django.utils import timezone
 from django.conf import settings
 
 from ordered_model.models import OrderedModel
+from django.core.files.base import ContentFile
 
 from vng.accounts.models import User
 
@@ -79,6 +82,15 @@ class PostmanTestResult(models.Model):
         if self.log:
             with open(self.log_json.path) as fp:
                 return fp.read()
+
+    def save_json(self, filename, file):
+        content = json.load(file)
+        try:
+            for execution in content['run']['executions']:
+                del execution['response']['stream']['data']
+        except:
+            pass
+        self.log_json.save(filename, ContentFile(json.dumps(content)))
 
     def get_outcome_html(self):
         with open(self.log.path) as f:

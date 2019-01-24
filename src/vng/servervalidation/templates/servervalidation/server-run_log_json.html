@@ -22,8 +22,12 @@
 <article class="article">
     <div class="article__section">
         <h1>Log view</h1>
+        <input type="button" class="button button--primary" value="Back to the details" onclick="location.href = '{% url 'server_run:server-run_detail' object.server_run.pk %}';">
+        <div id="translate"></div>
+        <textarea id="json-content" hidden="True">
+        {{ object.display_log_json|safe }}
+        </textarea>
 
-        {{ object.display_log|safe }}
 
     </div>
 </article>

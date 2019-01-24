@@ -175,14 +175,6 @@ class ServerRunLogJsonView(LoginRequiredMixin, DetailView):
     model = PostmanTestResult
     template_name = 'servervalidation/server-run_log_json.html'
 
-# class ServerRunPdfCreator(LoginRequiredMixin, DetailView):
-#     model = PostmanTestResult
-#     template_name = 'servervalidation/server-run_pdf.html'
 
-
-class ServerRunPdfView(LoginRequiredMixin, PDFGenerator, DetailView):
-    model = PostmanTestResult
-    template_name = 'servervalidation/server-run_log.html'
-
-    def get_queryset(self):
-        return self.model.objects.filter(user=self.request.user).order_by('-started')
+class ServerRunPdfView(PDFGenerator, ServerRunOutput):
+    template_name = 'servervalidation/server-run_pdf.html'

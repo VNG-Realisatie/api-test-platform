@@ -1,36 +1,106 @@
-{% extends 'master.html' %}
 
-{% block title %}Log view{% endblock%}
+{% load staticfiles %}
+{% load static %}
+{% with red="bgcolor='#FF0000' style='color:#ffffff' " %}
+{% with green="bgcolor='#1d8719' style='color:#ffffff'" %}
+<!DOCTYPE html>
+<html lang="en">
 
-{% block content %}
-<script src="https://code.jquery.com/jquery-1.11.1.min.js" crossorigin="anonymous"></script>
-<script type="text/javascript" src="https://www.jqueryscript.net/demo/Lightweight-jQuery-Plugin-For-JSON-Beautifier-Viewer-jjsonviewer/js/jjsonviewer.js"></script>
-<link href="https://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
-<link href="https://www.jqueryscript.net/demo/Lightweight-jQuery-Plugin-For-JSON-Beautifier-Viewer-jjsonviewer/css/jjsonviewer.css" rel="stylesheet" type="text/css">
+<head>
+    <meta charset="utf-8">
+    <title>Session Report</title>
+</head>
 
+<body>
+    <img src="/static/img/components/logo/logo.svg">
+    <div>
+        <h1>Session Report</h1>
 
- <script type="text/javascript">
-    $(document).ready(function(){
-        var jjson = $('#json-content').val();
-        $('#translate').jJsonViewer(jjson);
-    })
+        <h2>Scenario</h2>
+        <table class='table-t'>
+            <tbody>
+                <tr>
+                    <td class='cell-name'>Standard</td>
+                    <td>{{ session_type.standard }}</td>
+                </tr>
+                <tr>
+                    <td class='cell-name'>Role</td>
+                    <td>{{ session_type.role }}</td>
+                </tr>
+                <tr>
+                    <td class='cell-name'>Application</td>
+                    <td>{{ session_type.application }}</td>
+                </tr>
+                <tr>
+                    <td class='cell-name'>Version</td>
+                    <td>{{ session_type.version }}</td>
+                </tr>
 
-</script>
-
-
-
-<article class="article">
-    <div class="article__section">
-        <h1>Log view</h1>
-        <input type="button" class="button button--primary" value="Back to the details" onclick="location.href = '{% url 'server_run:server-run_detail' object.server_run.pk %}';">
-        <div id="translate"></div>
-        <textarea id="json-content" hidden="True">
-        {{ object.display_log_json|safe }}
-        </textarea>
-
-        <h3>Html report</h3>
-        {{ object.display_log|safe }}
-
+            </tbody>
+        </table>
+        <h2>Scenario cases</h2>
+        <table class='table-t'>
+            <tbody>
+                {% for report in object_list %}
+                <tr>
+                    <td class='cell-name'>{{ report.scenario_case.http_method }}</td>
+                    <td class='cell-name'>{{ report.scenario_case.url }}</td>
+                    {% if report.is_success %}
+                    <td class='cell-success cell-content-fix'>{{ report.result }}</td>
+                    {% elif report.is_failed %}
+                    <td class='cell-fail cell-content-fix'>{{ report.result }}</td>
+                    {% else %}
+                    <td>{{ report.result }}</td>
+                    {% endif %}
+                    <td class="table__cell" >{{ report.session_log.response_status }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
-</article>
-{% endblock %}
+</body>
+
+</html>
+
+<style>
+    .cell-success {
+        background-color: green;
+        color: white
+    }
+
+    .cell-fail {
+        background-color: red;
+        color: white
+    }
+
+    .table-t {
+        table-layout: auto;
+        border-collapse: collapse;
+        width: 100%
+    }
+
+    .cell-name {
+        width: 30%
+    }
+
+    .cell-content-fix {
+        max-width: 100%;
+        white-space: nowrap;
+    }
+
+    .cell-content {
+        width: 70%
+    }
+
+</style>
+
+{% endwith %}
+{% endwith %}
+
+
+
+
+
+
+        {{object}}
+        {{postman_result}}

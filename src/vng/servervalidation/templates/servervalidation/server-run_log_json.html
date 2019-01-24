@@ -3,30 +3,22 @@
 {% block title %}Log view{% endblock%}
 
 {% block content %}
-<script src="https://code.jquery.com/jquery-1.11.1.min.js" crossorigin="anonymous"></script>
-<script type="text/javascript" src="https://www.jqueryscript.net/demo/Lightweight-jQuery-Plugin-For-JSON-Beautifier-Viewer-jjsonviewer/js/jjsonviewer.js"></script>
-<link href="https://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
-<link href="https://www.jqueryscript.net/demo/Lightweight-jQuery-Plugin-For-JSON-Beautifier-Viewer-jjsonviewer/css/jjsonviewer.css" rel="stylesheet" type="text/css">
-
-
- <script type="text/javascript">
+<script type="text/javascript">
     $(document).ready(function(){
-        var jjson = $('#json-content').val();
+        var jjson = $('#json-content').text();
         $('#translate').jJsonViewer(jjson);
     })
 
 </script>
 
-
-
 <article class="article">
     <div class="article__section">
         <h1>Log view</h1>
         <input type="button" class="button button--primary" value="Back to the details" onclick="location.href = '{% url 'server_run:server-run_detail' object.server_run.pk %}';">
-        <div id="translate"></div>
-        <textarea id="json-content" hidden="True">
+        <p id="translate"></p>
+        <p id="json-content" hidden=>
         {{ object.display_log_json|safe }}
-        </textarea>
+        </p>
 
 
     </div>

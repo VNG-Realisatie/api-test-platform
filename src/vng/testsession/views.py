@@ -4,7 +4,6 @@ import random
 import logging
 import time
 
-from weasyprint import HTML
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import (
@@ -27,7 +26,7 @@ from vng.testsession.models import (
 from ..utils import choices
 from ..utils.newman import NewmanManager
 from ..utils.views import (
-    ListAppendView, OwnerMultipleObjects, OwnerSingleObject, CSRFExemptMixin
+    ListAppendView, OwnerMultipleObjects, OwnerSingleObject, CSRFExemptMixin, PDFGenerator
 )
 from .container_manager import K8S
 from .serializers import (
@@ -224,16 +223,6 @@ def get_static_css(folder=None):
             res.append('{}/{}/{}'.format(static, rp, file))
     res.append("https://getbootstrap.com/docs/4.1/dist/css/bootstrap.min.css")
     return res
-
-
-class PDFGenerator():
-
-    def get(self, request, *args, **kwargs):
-        response = super().get(request, *args, **kwargs).render().content.decode('utf-8')
-        base_url = 'http://' if settings.DEBUG else 'https://' + request.get_host()
-        pdf = HTML(string=response, base_url=base_url).write_pdf()
-        response = HttpResponse(pdf, content_type='application/pdf')
-        return response
 
 
 class SessionReportPdf(PDFGenerator, SessionReport):

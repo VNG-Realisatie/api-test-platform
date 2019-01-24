@@ -81,11 +81,6 @@ class ExposedUrlFactory(Dmf):
     vng_endpoint = factory.SubFactory(VNGEndpointFactory)
     exposed_url = factory.Sequence(lambda n: 'tst{}'.format(n))
 
-    def __init___(self, **args):
-        super().__init__(**args)
-        self.vng_endpoint.session_type = self.session.session_type
-        self.exposed_url = '{}/{}'.format(self.exposed_url, self.vng_endpoint.name)
-
 
 class SessionLogFactory(Dmf):
 

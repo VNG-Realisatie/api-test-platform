@@ -131,6 +131,12 @@ class SessionLog(models.Model):
     def request_headers(self):
         return json.loads(self.request)['request']['header']
 
+    def request_body(self):
+        try:
+            return json.loads(self.request)['request']['body']
+        except:
+            return ""
+
     def response_body(self):
         try:
             return json.loads(self.response)['response']['body']

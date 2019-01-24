@@ -22,7 +22,7 @@ class TestScenario(models.Model):
 
 class TestScenarioUrl(models.Model):
 
-    name = models.CharField(max_length=200, unique=True)
+    name = models.CharField(max_length=200)
     test_scenario = models.ForeignKey(TestScenario)
 
     def __str__(self):

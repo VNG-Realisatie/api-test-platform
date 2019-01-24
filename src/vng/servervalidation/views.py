@@ -181,8 +181,6 @@ class ServerRunPdfView(PDFGenerator, ServerRunOutput):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # ptr = get_object_or_404(PostmanTestResult, pk=self.kwargs['postman_res_id'])
-
         server_run = context['object']
         ptr = PostmanTestResult.objects.filter(server_run=server_run)
         context["postman_collections"] = ptr

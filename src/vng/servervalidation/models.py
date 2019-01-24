@@ -83,6 +83,20 @@ class PostmanTestResult(models.Model):
             with open(self.log_json.path) as fp:
                 return fp.read()
 
+    def get_json_obj(self):
+        with open(self.log_json.path) as jfile:
+            f = json.load(jfile)
+            res = f['run']['executions']
+            for execution in res:
+                req = execution['request']['url']
+                url = '.'.join(req['host'])
+                path = ''
+                if 'path' in req:
+                    path = '/'.join(req['path'])
+                req['url'] = '{}://{}/{}'.format(req['protocol'], url, path)
+
+        return res
+
     def save_json(self, filename, file):
         content = json.load(file)
         try:

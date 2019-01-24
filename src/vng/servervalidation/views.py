@@ -177,4 +177,10 @@ class ServerRunLogJsonView(LoginRequiredMixin, DetailView):
 
 
 class ServerRunPdfView(PDFGenerator, ServerRunOutput):
-    template_name = 'servervalidation/server-run_pdf.html'
+    template_name = 'servervalidation/server-run-PDF.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        ptr = get_object_or_404(PostmanTestResult, pk=self.kwargs['postman_res_id'])
+        context["postman_result"] = ptr
+        return context

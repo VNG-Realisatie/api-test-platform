@@ -29,9 +29,13 @@
 <tr>
     <td class="table__cell">Log</td>
         {% for pr in postman_result %}
-            <td class="table__cell"><a href="{% url 'server_run:server-run_detail_log' pr.pk %}">Visualize HTML log</az> </td>
-            <td class="table__cell"><a href="{% url 'server_run:server-run_detail_log_json' pr.pk %}">Visualize JSON log</az> </td>
-            <td class="table__cell"><a href="{% url 'server_run:server-run_detail_pdf' pr.server_run.pk pr.pk %}">Visualize PDF log</az> </td>
+            <td class="table__cell">
+                <ul>
+                    <li><a href="{% url 'server_run:server-run_detail_log' pr.pk %}">Visualize HTML log</a></li>
+                    <li><a href="{% url 'server_run:server-run_detail_log_json' pr.pk %}">Visualize JSON log</a></li>
+                    <li><a href="{% url 'server_run:server-run_detail_pdf' pr.server_run.pk pr.pk %}">Visualize PDF log</a></li>
+                </ul>
+            </td>
         {% endfor %}
 </tr>
 

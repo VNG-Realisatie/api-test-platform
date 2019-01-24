@@ -16,8 +16,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'vng-test',
-        'USER': 'vng',
-        'PASSWORD': 'vng',
+        'USER': 'vng-test',
+        'PASSWORD': 'myprojectpassDSJHSJ',
         'HOST': '',  # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
         'PORT': '',  # Set to empty string for default.
     }
@@ -26,7 +26,7 @@ DATABASES = {
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '-tu6q!6cvp@pe5!97e1i##lmp_%yxjj$k20*ul+ac^u(p2)clj'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['vng-test.maykin.nl']
 
 # Redis cache backend
 # NOTE: If you do not use a cache backend, do not use a session backend or
@@ -80,7 +80,7 @@ ENVIRONMENT = 'test'
 SESSION_COOKIE_SECURE = True
 SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_SECURE = True
-X_FRAME_OPTIONS = 'DENY'
+# X_FRAME_OPTIONS = 'DENY'
 # Only set this when we're behind Nginx as configured in our example-deployment
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_CONTENT_TYPE_NOSNIFF = True # Sets X-Content-Type-Options: nosniff
@@ -96,7 +96,8 @@ INSTALLED_APPS = INSTALLED_APPS + [
     'raven.contrib.django.raven_compat',
 ]
 RAVEN_CONFIG = {
-    'dsn': 'https://',
+    'dsn': 'https://e95a42127e6042c59d19376e566f027a:216cdab1ea4f40d0bd0dd8a74e2eef57@sentry.maykinmedia.nl/104',
+    'public_dsn': 'https://e95a42127e6042c59d19376e566f027a@sentry.maykinmedia.nl/104',
     'release': raven.fetch_git_sha(BASE_DIR),
 }
 LOGGING['handlers'].update({

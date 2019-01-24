@@ -35,10 +35,10 @@ logger = logging.getLogger(__name__)
 class SessionViewSet(viewsets.ModelViewSet):
     serializer_class = SessionSerializer
     authentication_classes = (TokenAuthentication, SessionAuthentication)
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated, IsOwner)
 
     def get_queryset(self):
-        return Session.objects.filter(user=self.request.user).prefetch_related('exposedurl_set')
+        return Session.objects.filter(id=self.kwargs['pk']).prefetch_related('exposedurl_set')
 
     def perform_create(self, serializer):
         session = serializer.save(user=self.request.user, pk=None)
@@ -51,7 +51,7 @@ class SessionViewSet(viewsets.ModelViewSet):
 
 class StopSessionView(generics.ListAPIView):
     authentication_classes = (TokenAuthentication, SessionAuthentication)
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated, IsOwner)
     serializer_class = ScenarioCaseSerializer
 
     def perform_operations(self, session):
@@ -123,7 +123,7 @@ class ResultSessionView(views.APIView):
 
 class SessionTypesViewSet(generics.ListAPIView):
     authentication_classes = (TokenAuthentication, SessionAuthentication)
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated, )
     serializer_class = SessionTypesSerializer
 
     def get_queryset(self):
@@ -132,11 +132,14 @@ class SessionTypesViewSet(generics.ListAPIView):
 
 class ExposedUrlView(generics.ListAPIView):
     authentication_classes = (TokenAuthentication, SessionAuthentication)
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated, IsOwner)
     serializer_class = ExposedUrlSerializer
+    user_path = ['session']
 
     def get_queryset(self):
-        return ExposedUrl.objects.filter(session=self.kwargs['pk'])
+        qs = ExposedUrl.objects.filter(session=self.kwargs['pk'])
+        self.check_object_permissions(self.request, qs)
+        return qs
 
 
 class RunTest(CSRFExemptMixin, View):

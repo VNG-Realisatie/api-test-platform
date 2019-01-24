@@ -20,9 +20,9 @@ from rest_framework.authentication import (
 from ..permissions.UserPermissions import *
 from ..utils import choices
 from ..utils.newman import DidNotRunException, NewmanManager
-from ..utils.views import OwnerSingleObject
+from ..utils.views import OwnerSingleObject, PDFGenerator
 from .forms import CreateServerRunForm, CreateEndpointForm
-from .models import ServerRun, Endpoint, TestScenarioUrl, TestScenario
+from .models import ServerRun, Endpoint, TestScenarioUrl, TestScenario, PostmanTest, PostmanTestResult
 from .serializers import ServerRunSerializer
 
 
@@ -81,16 +81,24 @@ class CreateEndpoint(CreateView):
         return data
 
     def execute_test(self, endpoint):
-
         file_name = str(uuid.uuid4())
         try:
-            nm = NewmanManager(self.server.test_scenario.validation_file)
-            param = {}
-            for ep in self.endpoints:
-                param[ep.test_scenario_url.name] = ep.url
-            nm.replace_parameters(param)
-            file = nm.execute_test()
-            self.server.log.save(file_name, File(file))
+            for postman_test in PostmanTest.objects.filter(test_scenario=endpoint.server_run.test_scenario).order_by('order'):
+                nm = NewmanManager(postman_test.validation_file)
+                param = {}
+                for ep in self.endpoints:
+                    param[ep.test_scenario_url.name] = ep.url
+                    nm.replace_parameters(param)
+                    file = nm.execute_test()
+                    file_json = nm.execute_test_json()
+                    ptr = PostmanTestResult(
+                        postman_test=postman_test,
+                        server_run=endpoint.server_run
+                    )
+                    ptr.log.save(file_name, File(file))
+                    ptr.save_json(file_name, File(file_json))
+                    ptr.status = ptr.get_outcome_html()
+                    ptr.save()
             self.server.status = choices.StatusChoices.stopped
             self.server.stopped = timezone.now()
             self.server.save()
@@ -112,7 +120,6 @@ class CreateEndpoint(CreateView):
                 ep = Endpoint(url=value, server_run=self.server, test_scenario_url=entry)
                 ep.save()
                 self.endpoints.append(ep)
-                # self.execute_test(ep)
         form.instance.server_run = self.server
         if len(tsu) > 0:
             form.instance.test_scenario_url = tsu[0]
@@ -126,6 +133,13 @@ class CreateEndpoint(CreateView):
 class ServerRunOutput(LoginRequiredMixin, DetailView):
     model = ServerRun
     template_name = 'servervalidation/server-run_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        server_run = context['object']
+        ptr = PostmanTestResult.objects.filter(server_run=server_run)
+        context["postman_result"] = ptr
+        return context
 
 
 class StopServer(OwnerSingleObject, View):
@@ -152,10 +166,22 @@ class ServerRunViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
         serializer.save(user=self.request.user, pk=None)
 
 
-class ServerRunLogView(LoginRequiredMixin, View):
-    def get(self, request, pk):
-        server_run = get_object_or_404(ServerRun, pk=pk)
-        if not isOwner(server_run, request.user):
-            return HttpResponseForbidden()
-        else:
-            return render(request, 'servervalidation/server-run_log.html', {'server': server_run})
+class ServerRunLogView(LoginRequiredMixin, DetailView):
+    model = PostmanTestResult
+    template_name = 'servervalidation/server-run_log.html'
+
+
+class ServerRunLogJsonView(LoginRequiredMixin, DetailView):
+    model = PostmanTestResult
+    template_name = 'servervalidation/server-run_log_json.html'
+
+
+class ServerRunPdfView(PDFGenerator, ServerRunOutput):
+    template_name = 'servervalidation/server-run-PDF.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        server_run = context['object']
+        ptr = PostmanTestResult.objects.filter(server_run=server_run)
+        context["postman_collections"] = ptr
+        return context

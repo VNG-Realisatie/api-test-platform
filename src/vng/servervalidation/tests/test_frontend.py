@@ -3,7 +3,7 @@ from django_webtest import WebTest
 from django.urls import reverse
 from factory.django import DjangoModelFactory as Dmf
 from vng.testsession.tests.factories import UserFactory
-from .factories import TestScenarioFactory, ServerRunFactory, TestScenarioUrlFactory
+from .factories import TestScenarioFactory, ServerRunFactory, TestScenarioUrlFactory, PostmanTestFactory
 from vng.servervalidation.models import ServerRun
 
 
@@ -11,6 +11,9 @@ class TestCreation(WebTest):
 
     def setUp(self):
         self.tsf = TestScenarioUrlFactory().test_scenario
+        self.pt = PostmanTestFactory()
+        self.test_scenario = self.tsf
+        self.pt.save()
         self.user = UserFactory()
 
     def test_creation_error_list(self):

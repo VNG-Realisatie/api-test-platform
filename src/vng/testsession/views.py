@@ -23,12 +23,12 @@ from vng.testsession.models import (
     ScenarioCase, Session, SessionLog, SessionType, VNGEndpoint, ExposedUrl, TestSession, Report
 )
 
+from .task import run_tests
 from ..utils import choices
 from ..utils.newman import NewmanManager
 from ..utils.views import (
     ListAppendView, OwnerMultipleObjects, OwnerSingleObject, CSRFExemptMixin, PDFGenerator
 )
-from .container_manager import K8S
 from .serializers import (
     SessionSerializer, SessionTypesSerializer, ExposedUrlSerializer, ScenarioCaseSerializer
 )
@@ -137,44 +137,12 @@ class StopSession(OwnerSingleObject, View):
     model = Session
     pk_name = 'session_id'
 
-    @staticmethod
-    def run_tests(session):
-        exposed_url = ExposedUrl.objects.filter(session=session,
-                                                vng_endpoint__session_type=session.session_type)
-
-        # stop the session for each exposed url, and eventually run the tests
-        for eu in exposed_url:
-            ep = eu.vng_endpoint
-            if not ep.test_file:
-                continue
-            newman = NewmanManager(ep.test_file, ep.url)
-            result = newman.execute_test()
-            ts = TestSession()
-            ts.save_test(result)
-            with newman.execute_test_json() as result_json:
-                ts.save_test_json(result_json)
-
-            ts.save()
-            eu.test_session = ts
-            eu.save()
-
-        session.status = choices.StatusChoices.stopped
-        session.save()
-
-        endpoint = VNGEndpoint.objects.filter(session_type=session.session_type)
-
-        # if the endpoints is related to an online cluster image it is stopped
-        for ep in endpoint:
-            if ep.docker_image:
-                kuber = K8S()
-                kuber.delete(session.name)
-
     def post(self, request, *args, **kwargs):
         session = self.get_object()
         if session.status == choices.StatusChoices.stopped:
             return HttpResponseRedirect(reverse('testsession:sessions'))
 
-        StopSession.run_tests(session)
+        run_tests.delay(session.pk)
 
         return HttpResponseRedirect(reverse('testsession:sessions'))
 

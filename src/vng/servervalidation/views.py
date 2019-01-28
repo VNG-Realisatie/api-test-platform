@@ -1,4 +1,3 @@
-import itertools
 import uuid
 
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -79,7 +78,6 @@ class CreateEndpoint(CreateView):
             text_area=['Client ID', 'Secret']
         )
         data['form'].set_labels(url_names)
-        data['zipped'] = itertools.zip_longest(data['form'], data['test_scenario'])
         return data
 
     def form_valid(self, form):

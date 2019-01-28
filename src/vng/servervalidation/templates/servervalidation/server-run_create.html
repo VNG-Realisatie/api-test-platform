@@ -12,7 +12,7 @@
             {% csrf_token %}
             {% load_widgets form='forms.html' %}
 
-            {% for field,tsr in zipped %}
+            {% for field in form %}
                 {% form_field field %}
             {% endfor %}
             <input type="submit" class="button button--primary" value="Create Server-testrun">

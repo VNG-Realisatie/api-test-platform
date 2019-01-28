@@ -24,6 +24,7 @@ class CreateServerRunForm(forms.ModelForm):
 
 
 class CreateEndpointForm(forms.ModelForm):
+    field_order = ['url']
 
     class Meta:
         model = Endpoint
@@ -42,8 +43,11 @@ class CreateEndpointForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         for i in range(quantity):
             if isinstance(field_name, str):
+                field_name.append(field_name)
                 self.fields['{}-{}'.format(field_name, i + 1)] = forms.URLField()
             else:
+                field_name.append(field_name[i])
                 self.fields[field_name[i]] = forms.URLField()
         for e in text_area:
+            field_name.append(e)
             self.fields[e] = forms.CharField(widget=forms.Textarea)

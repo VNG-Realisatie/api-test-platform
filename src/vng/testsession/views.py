@@ -23,7 +23,7 @@ from vng.testsession.models import (
     ScenarioCase, Session, SessionLog, SessionType, VNGEndpoint, ExposedUrl, TestSession, Report
 )
 
-from .task import run_tests
+from .task import run_tests, bootstrap_session
 from ..utils import choices
 from ..utils.newman import NewmanManager
 from ..utils.views import (
@@ -34,30 +34,6 @@ from .serializers import (
 )
 
 logger = logging.getLogger(__name__)
-
-
-def bootstrap_session(session, start_app=None):
-    '''
-    Create all the necessary endpoint and exposes it so they can be used as proxy
-    In case there is one or multiple docker images linked, it starts all of them
-    '''
-    endpoint = VNGEndpoint.objects.filter(session_type=session.session_type)
-    starting_docker = False
-
-    for ep in endpoint:
-        if ep.docker_image:
-            starting_docker = True
-            status = start_app(session, ep)
-        else:
-            bind_url = ExposedUrl()
-            bind_url.session = session
-            bind_url.vng_endpoint = ep
-            bind_url.exposed_url = '{}/{}'.format(int(time.time()) * 100 + random.randint(0, 99), ep.name)
-            bind_url.save()
-
-    if not starting_docker:
-        session.status = choices.StatusChoices.running
-        session.save()
 
 
 class SessionListView(LoginRequiredMixin, ListAppendView):
@@ -174,17 +150,6 @@ class SessionReport(OwnerSingleObject):
             })
 
         return context
-
-
-def get_static_css(folder=None):
-    res = []
-    static = os.path.abspath(os.path.join(folder, os.pardir))
-    for root, dirs, files in os.walk(folder):
-        for file in files:
-            rp = os.path.relpath(root, static)
-            res.append('{}/{}/{}'.format(static, rp, file))
-    res.append("https://getbootstrap.com/docs/4.1/dist/css/bootstrap.min.css")
-    return res
 
 
 class SessionReportPdf(PDFGenerator, SessionReport):

@@ -317,6 +317,7 @@ PROJECT_NAME = 'vng'
 ENVIRONMENT = None
 SHOW_ALERT = True
 
+CELERY_BROKER_URL = 'redis://localhost'
 RUN_KUBERNETES_CMD = False
 
 #

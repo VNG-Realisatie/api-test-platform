@@ -17,6 +17,7 @@ from rest_framework.authentication import (
     SessionAuthentication, TokenAuthentication
 )
 
+
 from ..permissions.UserPermissions import *
 from ..utils import choices
 from ..utils.newman import DidNotRunException, NewmanManager
@@ -24,6 +25,7 @@ from ..utils.views import OwnerSingleObject, PDFGenerator
 from .forms import CreateServerRunForm, CreateEndpointForm
 from .models import ServerRun, Endpoint, TestScenarioUrl, TestScenario, PostmanTest, PostmanTestResult
 from .serializers import ServerRunSerializer
+from .task import execute_test
 
 
 class TestScenarioSelect(FormView, MultipleObjectMixin, MultipleObjectTemplateResponseMixin):
@@ -80,32 +82,6 @@ class CreateEndpoint(CreateView):
         data['zipped'] = itertools.zip_longest(data['form'], data['test_scenario'])
         return data
 
-    def execute_test(self, endpoint):
-        file_name = str(uuid.uuid4())
-        try:
-            for postman_test in PostmanTest.objects.filter(test_scenario=endpoint.server_run.test_scenario).order_by('order'):
-
-                nm = NewmanManager(postman_test.validation_file)
-                param = {}
-                for ep in self.endpoints:
-                    param[ep.test_scenario_url.name] = ep.url
-                    nm.replace_parameters(param)
-                file = nm.execute_test()
-                file_json = nm.execute_test_json()
-                ptr = PostmanTestResult(
-                    postman_test=postman_test,
-                    server_run=endpoint.server_run
-                )
-                ptr.log.save(file_name, File(file))
-                ptr.save_json(file_name, File(file_json))
-                ptr.status = ptr.get_outcome_html()
-                ptr.save()
-            self.server.status = choices.StatusChoices.stopped
-            self.server.stopped = timezone.now()
-            self.server.save()
-        except DidNotRunException:
-            return HttpResponse(status=500)
-
     def form_valid(self, form):
         self.fetch_server()
         self.server.client_id = form.data['Client ID']
@@ -126,7 +102,7 @@ class CreateEndpoint(CreateView):
             form.instance.test_scenario_url = tsu[0]
         form.instance.save()
         self.endpoints.append(form.instance)
-        self.execute_test(ep)
+        execute_test.delay(self.server.pk)
         return HttpResponseRedirect(self.get_success_url())
 
 

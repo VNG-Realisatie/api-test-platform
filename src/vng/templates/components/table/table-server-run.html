@@ -8,10 +8,16 @@
     <td class="table__cell">Test Scenario</td>
     <td class="table__cell">{{ server_run.test_scenario }}</td>
 </tr>
-<tr>
-    <td class="table__cell">Api endpoint</td>
-    <td class="table__cell">{{ server_run.api_endpoint }}</td>
-</tr>
+{% for ep in server_run.endpoint_set.all %}
+    <tr>
+        <td class="table__cell">{{ ep.test_scenario_url.name }}</td>
+        <td class="table__cell">{{ ep.url }}</td>
+        <td>
+            {{ ep.test_scenario_url.name }} {{ep.url}}
+        </td>
+    </tr>
+{% endfor %}
+
 <tr>
     <td class="table__cell">Started</td>
     <td class="table__cell">{{ server_run.started }}</td>

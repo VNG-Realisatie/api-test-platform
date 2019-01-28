@@ -133,11 +133,11 @@ class StopSession(OwnerSingleObject, View):
 
     def post(self, request, *args, **kwargs):
         session = self.get_object()
-        if session.status == choices.StatusChoices.stopped:
+        if session.status == choices.StatusChoices.stopped or session.status == choices.StatusChoices.shutting_down:
             return HttpResponseRedirect(reverse('testsession:sessions'))
 
         run_tests.delay(session.pk)
-
+        session.status = choices.StatusChoices.shutting_down
         return HttpResponseRedirect(reverse('testsession:sessions'))
 
 

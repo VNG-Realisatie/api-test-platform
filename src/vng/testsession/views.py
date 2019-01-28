@@ -23,7 +23,7 @@ from vng.testsession.models import (
     ScenarioCase, Session, SessionLog, SessionType, VNGEndpoint, ExposedUrl, TestSession, Report
 )
 
-from .task import run_tests, bootstrap_session
+from .task import run_tests, bootstrap_session, start_app
 from ..utils import choices
 from ..utils.newman import NewmanManager
 from ..utils.views import (
@@ -67,7 +67,7 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
 
         session = form.save()
         try:
-            bootstrap_session(session, self.start_app)
+            bootstrap_session(session, start_app)
         except Exception as e:
             logger.exception(e)
             session.delete()

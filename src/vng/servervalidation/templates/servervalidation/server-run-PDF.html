@@ -44,7 +44,7 @@
             </tbody>
         </table>
         <h2>Postman collection</h2>
-        {% for postman_result in postman_collections %}
+        {% for postman in postman_result %}
             <table class='table-t'>
             <thead>
                 <tr>
@@ -54,7 +54,7 @@
                 </tr>
             </thead>
             <tbody>
-            {% for calls in postman_result.get_json_obj %}
+            {% for calls in postman.get_json_obj %}
                 <td class="table__cell" colspan="100%">{{calls.request.description.content}}</td>
                 <tr>
                     <td class="table__cell">{{calls.request.method}}</td>

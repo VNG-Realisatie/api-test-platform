@@ -156,6 +156,5 @@ class ServerRunPdfView(PDFGenerator, ServerRunOutput):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         server_run = context['object']
-        ptr = PostmanTestResult.objects.filter(server_run=server_run)
-        context["postman_collections"] = ptr
+        self.filename = 'Server run {} report.pdf'.format(server_run.pk)
         return context

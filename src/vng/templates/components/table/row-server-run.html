@@ -2,19 +2,23 @@
 <tr>
     {% if server_run.stopped %}
         <td class="table__cell">
-            <a href="{% url 'server_run:server-run_detail' server_run.pk %}">{{ server_run.started }}</a>
+            <a href="{% url 'server_run:server-run_detail' server_run.pk %}">#{{ server_run.id }}</a>
+            Status: {{ server_run.status }}
         </td>
+        <td class="table__cell">{{ server_run.stopped }}</td>
     {% else %}
-        <td class="table__cell">{{ server_run.started }}</td>
+        <td class="table__cell">
+            #{{ server_run.id }}
+            Status: {{ server_run.status }}
+        </td>
+        <td class="table__cell"></td>
     {% endif %}
-    <td class="table__cell">{{ server_run.stopped }}</td>
-    <td class="table__cell">{{ server_run.user.username }}</td>
     <td class="table__cell">
         <table>
         {% for ep in server_run.endpoint_set.all %}
             <tr>
                 <td>
-                    {{ep.url}}
+                    {{ ep.test_scenario_url.name }}_{{ep.url}}
                 </td>
             </tr>
         {% endfor %}

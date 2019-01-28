@@ -73,6 +73,7 @@ LOGGING['loggers'].update({
 # Custom settings
 #
 
+CELERY_BROKER_URL = "redis://127.0.0.1:6379/14"
 # Show active environment in admin.
 ENVIRONMENT = 'test'
 

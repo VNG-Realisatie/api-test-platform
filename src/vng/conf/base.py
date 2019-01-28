@@ -61,7 +61,7 @@ INSTALLED_APPS = [
     'vng.testsession',
     'vng.apiAuthentication',
     'vng.servervalidation',
-    'vng.slave',
+    'vng.celery',
 
     # Rest Framework
     'rest_framework',

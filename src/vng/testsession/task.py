@@ -6,7 +6,7 @@ from django.core.files import File
 from django.utils import timezone
 from celery.utils.log import get_task_logger
 
-from ..slave.celery import app
+from ..celery.celery import app
 from .models import ExposedUrl, Session, TestSession, VNGEndpoint
 from ..utils import choices
 from ..utils.newman import DidNotRunException, NewmanManager

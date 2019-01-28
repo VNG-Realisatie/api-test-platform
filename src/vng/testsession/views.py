@@ -67,7 +67,7 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
 
         session = form.save()
         try:
-            bootstrap_session(session, start_app)
+            bootstrap_session(session.pk, True)
         except Exception as e:
             logger.exception(e)
             session.delete()

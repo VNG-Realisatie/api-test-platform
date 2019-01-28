@@ -15,7 +15,7 @@ from .container_manager import K8S
 logger = get_task_logger(__name__)
 
 
-def start_app(session, endpoint):
+def start_app_b8s(session, endpoint):
     kuber = K8S()
     kuber.deploy(session.name, endpoint.docker_image, endpoint.port)
     time.sleep(55)                      # Waiting for the load balancer to be loaded
@@ -35,7 +35,7 @@ def bootstrap_session(session_pk, start_app=None):
     for ep in endpoint:
         if ep.docker_image:
             starting_docker = True
-            status = start_app(session, ep)
+            status = start_app_b8s(session, ep)
         else:
             bind_url = ExposedUrl()
             bind_url.session = session

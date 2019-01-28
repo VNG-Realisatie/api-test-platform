@@ -80,12 +80,6 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
         '''
         return Session.objects.filter(user=self.request.user).order_by('status', '-started')
 
-    def start_app(self, session, endpoint):
-        kuber = K8S()
-        kuber.deploy(session.name, endpoint.docker_image, endpoint.port)
-        time.sleep(55)                      # Waiting for the load balancer to be loaded
-        return kuber.status(session.name)
-
     def get_success_url(self):
         return reverse('testsession:sessions')
 

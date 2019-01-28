@@ -1,4 +1,6 @@
 import uuid
+import time
+import random
 
 from django.core.files import File
 from django.utils import timezone
@@ -11,6 +13,39 @@ from ..utils.newman import DidNotRunException, NewmanManager
 from .container_manager import K8S
 
 logger = get_task_logger(__name__)
+
+
+def start_app(session, endpoint):
+    kuber = K8S()
+    kuber.deploy(session.name, endpoint.docker_image, endpoint.port)
+    time.sleep(55)                      # Waiting for the load balancer to be loaded
+    return kuber.status(session.name)
+
+
+@app.task
+def bootstrap_session(session_pk, start_app=None):
+    '''
+    Create all the necessary endpoint and exposes it so they can be used as proxy
+    In case there is one or multiple docker images linked, it starts all of them
+    '''
+    session = Session.objects.get(pk=session_pk)
+    endpoint = VNGEndpoint.objects.filter(session_type=session.session_type)
+    starting_docker = False
+
+    for ep in endpoint:
+        if ep.docker_image:
+            starting_docker = True
+            status = start_app(session, ep)
+        else:
+            bind_url = ExposedUrl()
+            bind_url.session = session
+            bind_url.vng_endpoint = ep
+            bind_url.exposed_url = '{}/{}'.format(int(time.time()) * 100 + random.randint(0, 99), ep.name)
+            bind_url.save()
+
+    if not starting_docker:
+        session.status = choices.StatusChoices.running
+        session.save()
 
 
 @app.task

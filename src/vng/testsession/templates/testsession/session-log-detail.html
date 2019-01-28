@@ -7,7 +7,6 @@
     $(document).ready(function(){
         try{
         var jjson = $('#json-content').text();
-        console.log(jjson)
         $('#translate').jJsonViewer(jjson);
         }catch{
             console.log('JSON Syntax error')

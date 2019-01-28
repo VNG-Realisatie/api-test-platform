@@ -23,7 +23,7 @@ from vng.testsession.models import (
     ScenarioCase, Session, SessionLog, SessionType, VNGEndpoint, ExposedUrl, TestSession, Report
 )
 
-from .task import run_tests, bootstrap_session, start_app
+from .task import run_tests, bootstrap_session
 from ..utils import choices
 from ..utils.newman import NewmanManager
 from ..utils.views import (

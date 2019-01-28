@@ -18,7 +18,7 @@
         {% for ep in server_run.endpoint_set.all %}
             <tr>
                 <td>
-                    {{ ep.test_scenario_url.name }}_{{ep.url}}
+                    {{ ep.test_scenario_url.name }} {{ep.url}}
                 </td>
             </tr>
         {% endfor %}

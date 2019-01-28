@@ -1,4 +1,5 @@
 import logging
+import copy
 import collections
 
 from django import forms
@@ -24,7 +25,6 @@ class CreateServerRunForm(forms.ModelForm):
 
 
 class CreateEndpointForm(forms.ModelForm):
-    field_order = ['url']
 
     class Meta:
         model = Endpoint
@@ -34,20 +34,16 @@ class CreateEndpointForm(forms.ModelForm):
         }
 
     def set_labels(self, labels):
-        tmp = dict(self.fields)
+        tmp = collections.OrderedDict()
         for k, new in zip(self.fields.keys(), labels):
-            tmp[k].label = new
-        self.fields = collections.OrderedDict(tmp)
+            self.fields[k].label = new
 
     def __init__(self, quantity=0, field_name='field', text_area=[], *args, **kwargs):
         super().__init__(*args, **kwargs)
         for i in range(quantity):
             if isinstance(field_name, str):
-                field_name.append(field_name)
                 self.fields['{}-{}'.format(field_name, i + 1)] = forms.URLField()
             else:
-                field_name.append(field_name[i])
                 self.fields[field_name[i]] = forms.URLField()
         for e in text_area:
-            field_name.append(e)
             self.fields[e] = forms.CharField(widget=forms.Textarea)

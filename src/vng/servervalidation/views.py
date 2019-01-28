@@ -130,7 +130,7 @@ class CreateEndpoint(CreateView):
         return HttpResponseRedirect(self.get_success_url())
 
 
-class ServerRunOutput(LoginRequiredMixin, DetailView):
+class ServerRunOutput(OwnerSingleObject, DetailView):
     model = ServerRun
     template_name = 'servervalidation/server-run_detail.html'
 

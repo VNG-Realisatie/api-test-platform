@@ -84,21 +84,22 @@ class CreateEndpoint(CreateView):
         file_name = str(uuid.uuid4())
         try:
             for postman_test in PostmanTest.objects.filter(test_scenario=endpoint.server_run.test_scenario).order_by('order'):
+
                 nm = NewmanManager(postman_test.validation_file)
                 param = {}
                 for ep in self.endpoints:
                     param[ep.test_scenario_url.name] = ep.url
                     nm.replace_parameters(param)
-                    file = nm.execute_test()
-                    file_json = nm.execute_test_json()
-                    ptr = PostmanTestResult(
-                        postman_test=postman_test,
-                        server_run=endpoint.server_run
-                    )
-                    ptr.log.save(file_name, File(file))
-                    ptr.save_json(file_name, File(file_json))
-                    ptr.status = ptr.get_outcome_html()
-                    ptr.save()
+                file = nm.execute_test()
+                file_json = nm.execute_test_json()
+                ptr = PostmanTestResult(
+                    postman_test=postman_test,
+                    server_run=endpoint.server_run
+                )
+                ptr.log.save(file_name, File(file))
+                ptr.save_json(file_name, File(file_json))
+                ptr.status = ptr.get_outcome_html()
+                ptr.save()
             self.server.status = choices.StatusChoices.stopped
             self.server.stopped = timezone.now()
             self.server.save()
@@ -125,8 +126,7 @@ class CreateEndpoint(CreateView):
             form.instance.test_scenario_url = tsu[0]
         form.instance.save()
         self.endpoints.append(form.instance)
-        for ep in self.endpoints:
-            self.execute_test(ep)
+        self.execute_test(ep)
         return HttpResponseRedirect(self.get_success_url())
 
 

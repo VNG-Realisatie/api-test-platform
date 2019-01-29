@@ -12,7 +12,7 @@
 </head>
 
 <body>
-    <img src="/static/img/components/logo/logo.svg">
+    <img src="/img/components/logo/logo.svg">
     <div>
         <h1>Server Report</h1>
 
@@ -20,8 +20,8 @@
         <table class='table-t'>
             <tbody>
                 <tr>
-    <td class="table__cell">Id</td>
-    <td class="table__cell">{{ server_run.pk }}</td>
+        <td class="table__cell">Id</td>
+        <td class="table__cell">{{ server_run.pk }}</td>
         </tr>
 
         <tr>
@@ -77,6 +77,11 @@
 </html>
 
 <style>
+    body {
+        font-family:  Arial, Geneva, Helvetica;
+
+    }
+
     .cell-success {
         background-color: green;
         color: white

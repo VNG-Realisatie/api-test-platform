@@ -208,3 +208,14 @@ class SessionTestReportPDF(PDFGenerator, SessionTestReport):
             'report': self.parse_json(session.json_result)
         })
         return context
+
+
+class PostmanDownloadView(View):
+
+    def get(self, request, pk, *args, **kwargs):
+        eu = get_object_or_404(ExposedUrl, pk=pk)
+        with open(eu.vng_endpoint.test_file.path) as f:
+            response = HttpResponse(f, content_type='Application/json')
+            response['Content-Length'] = len(response.content)
+            response['Content-Disposition'] = 'attachment;filename=test{}.json'.format(eu.vng_endpoint.name)
+            return response

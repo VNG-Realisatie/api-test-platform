@@ -1,6 +1,5 @@
 
 {% load staticfiles %}
-{% load static %}
 {% with red="bgcolor='#FF0000' style='color:#ffffff' " %}
 {% with green="bgcolor='#1d8719' style='color:#ffffff'" %}
 <!DOCTYPE html>
@@ -12,7 +11,8 @@
 </head>
 
 <body>
-    <img src="/static/img/components/logo/logo.svg">
+
+    {% include 'components/logo/logo.html' %}
     <div>
         <h1>Server Report</h1>
 
@@ -20,8 +20,8 @@
         <table class='table-t'>
             <tbody>
                 <tr>
-    <td class="table__cell">Id</td>
-    <td class="table__cell">{{ server_run.pk }}</td>
+        <td class="table__cell">Id</td>
+        <td class="table__cell">{{ server_run.pk }}</td>
         </tr>
 
         <tr>
@@ -44,7 +44,7 @@
             </tbody>
         </table>
         <h2>Postman collection</h2>
-        {% for postman_result in postman_collections %}
+        {% for postman in postman_result %}
             <table class='table-t'>
             <thead>
                 <tr>
@@ -54,7 +54,7 @@
                 </tr>
             </thead>
             <tbody>
-            {% for calls in postman_result.get_json_obj %}
+            {% for calls in postman.get_json_obj %}
                 <td class="table__cell" colspan="100%">{{calls.request.description.content}}</td>
                 <tr>
                     <td class="table__cell">{{calls.request.method}}</td>
@@ -66,17 +66,20 @@
                     {% endif %}
                 </tr>
             {% endfor %}
-
             </tbody>
         </table>
         {% endfor %}
-
     </div>
 </body>
 
 </html>
 
 <style>
+    body {
+        font-family:  Arial, Geneva, Helvetica;
+
+    }
+
     .cell-success {
         background-color: green;
         color: white

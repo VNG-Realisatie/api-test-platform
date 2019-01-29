@@ -4,6 +4,7 @@ from djchoices import DjangoChoices, ChoiceItem
 class StatusChoices(DjangoChoices):
     starting = ChoiceItem("starting")
     running = ChoiceItem("running")
+    shutting_down = ChoiceItem("shutting down")
     stopped = ChoiceItem("stopped")
 
 

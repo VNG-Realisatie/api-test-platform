@@ -72,4 +72,5 @@ PyYAML==3.13
 chardet==3.0.4
 urllib3==1.24.1
 PyJWT==1.7.1
+celery==4.2.1
 git+https://github.com/maykinmedia/gemma-zds-client-3.4.git@e826a2fa111100d33d7c164a7bdf95d07c3b916c#egg=ZDSClient

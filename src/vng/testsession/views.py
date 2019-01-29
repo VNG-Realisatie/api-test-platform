@@ -23,41 +23,17 @@ from vng.testsession.models import (
     ScenarioCase, Session, SessionLog, SessionType, VNGEndpoint, ExposedUrl, TestSession, Report
 )
 
+from .task import run_tests, bootstrap_session
 from ..utils import choices
 from ..utils.newman import NewmanManager
 from ..utils.views import (
     ListAppendView, OwnerMultipleObjects, OwnerSingleObject, CSRFExemptMixin, PDFGenerator
 )
-from .container_manager import K8S
 from .serializers import (
     SessionSerializer, SessionTypesSerializer, ExposedUrlSerializer, ScenarioCaseSerializer
 )
 
 logger = logging.getLogger(__name__)
-
-
-def bootstrap_session(session, start_app=None):
-    '''
-    Create all the necessary endpoint and exposes it so they can be used as proxy
-    In case there is one or multiple docker images linked, it starts all of them
-    '''
-    endpoint = VNGEndpoint.objects.filter(session_type=session.session_type)
-    starting_docker = False
-
-    for ep in endpoint:
-        if ep.docker_image:
-            starting_docker = True
-            status = start_app(session, ep)
-        else:
-            bind_url = ExposedUrl()
-            bind_url.session = session
-            bind_url.vng_endpoint = ep
-            bind_url.exposed_url = '{}/{}'.format(int(time.time()) * 100 + random.randint(0, 99), ep.name)
-            bind_url.save()
-
-    if not starting_docker:
-        session.status = choices.StatusChoices.running
-        session.save()
 
 
 class SessionListView(LoginRequiredMixin, ListAppendView):
@@ -80,12 +56,6 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
         '''
         return Session.objects.filter(user=self.request.user).order_by('status', '-started')
 
-    def start_app(self, session, endpoint):
-        kuber = K8S()
-        kuber.deploy(session.name, endpoint.docker_image, endpoint.port)
-        time.sleep(55)                      # Waiting for the load balancer to be loaded
-        return kuber.status(session.name)
-
     def get_success_url(self):
         return reverse('testsession:sessions')
 
@@ -97,7 +67,7 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
 
         session = form.save()
         try:
-            bootstrap_session(session, self.start_app)
+            bootstrap_session(session.pk, True)
         except Exception as e:
             logger.exception(e)
             session.delete()
@@ -137,45 +107,13 @@ class StopSession(OwnerSingleObject, View):
     model = Session
     pk_name = 'session_id'
 
-    @staticmethod
-    def run_tests(session):
-        exposed_url = ExposedUrl.objects.filter(session=session,
-                                                vng_endpoint__session_type=session.session_type)
-
-        # stop the session for each exposed url, and eventually run the tests
-        for eu in exposed_url:
-            ep = eu.vng_endpoint
-            if not ep.test_file:
-                continue
-            newman = NewmanManager(ep.test_file, ep.url)
-            result = newman.execute_test()
-            ts = TestSession()
-            ts.save_test(result)
-            with newman.execute_test_json() as result_json:
-                ts.save_test_json(result_json)
-
-            ts.save()
-            eu.test_session = ts
-            eu.save()
-
-        session.status = choices.StatusChoices.stopped
-        session.save()
-
-        endpoint = VNGEndpoint.objects.filter(session_type=session.session_type)
-
-        # if the endpoints is related to an online cluster image it is stopped
-        for ep in endpoint:
-            if ep.docker_image:
-                kuber = K8S()
-                kuber.delete(session.name)
-
     def post(self, request, *args, **kwargs):
         session = self.get_object()
-        if session.status == choices.StatusChoices.stopped:
+        if session.status == choices.StatusChoices.stopped or session.status == choices.StatusChoices.shutting_down:
             return HttpResponseRedirect(reverse('testsession:sessions'))
 
-        StopSession.run_tests(session)
-
+        run_tests.delay(session.pk)
+        session.status = choices.StatusChoices.shutting_down
         return HttpResponseRedirect(reverse('testsession:sessions'))
 
 
@@ -212,17 +150,6 @@ class SessionReport(OwnerSingleObject):
             })
 
         return context
-
-
-def get_static_css(folder=None):
-    res = []
-    static = os.path.abspath(os.path.join(folder, os.pardir))
-    for root, dirs, files in os.walk(folder):
-        for file in files:
-            rp = os.path.relpath(root, static)
-            res.append('{}/{}/{}'.format(static, rp, file))
-    res.append("https://getbootstrap.com/docs/4.1/dist/css/bootstrap.min.css")
-    return res
 
 
 class SessionReportPdf(PDFGenerator, SessionReport):
@@ -281,3 +208,14 @@ class SessionTestReportPDF(PDFGenerator, SessionTestReport):
             'report': self.parse_json(session.json_result)
         })
         return context
+
+
+class PostmanDownloadView(View):
+
+    def get(self, request, pk, *args, **kwargs):
+        eu = get_object_or_404(ExposedUrl, pk=pk)
+        with open(eu.vng_endpoint.test_file.path) as f:
+            response = HttpResponse(f, content_type='Application/json')
+            response['Content-Length'] = len(response.content)
+            response['Content-Disposition'] = 'attachment;filename=test{}.json'.format(eu.vng_endpoint.name)
+            return response

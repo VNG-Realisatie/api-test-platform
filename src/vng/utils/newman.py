@@ -21,7 +21,7 @@ class NewmanManager:
     newman_path = os.path.join(settings.BASE_DIR, 'node_modules', 'newman', 'bin', 'newman.js')
     RUN_HTML_REPORT = '{} run --reporters html {} --reporter-html-export ' + REPORT_FOLDER + '/{}.html {}'
     RUN_JSON_REPORT = '{} run  {} -r json --reporter-json-export ' + REPORT_FOLDER + '/{}.json {}'
-    GLOBAL_VAR_SYNTAX = '--global-var "{}={}"'
+    GLOBAL_VAR_SYNTAX = ' --global-var {}={} '
     TOKEN = 'TOKEN'
 
     def __init__(self, file, api_endpoint=None):

@@ -98,6 +98,9 @@ class Session(models.Model):
     def is_starting(self):
         return self.status == choices.StatusChoices.starting
 
+    def is_shutting_down(self):
+        return self.status == choices.StatusChoices.shutting_down
+
 
 class ExposedUrl(models.Model):
 
@@ -130,6 +133,12 @@ class SessionLog(models.Model):
 
     def request_headers(self):
         return json.loads(self.request)['request']['header']
+
+    def request_body(self):
+        try:
+            return json.loads(self.request)['request']['body']
+        except:
+            return ""
 
     def response_body(self):
         try:

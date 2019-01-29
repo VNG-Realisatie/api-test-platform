@@ -8,7 +8,21 @@
             {{ session.started|date }}<br />{{ session.started|time }}
         </td>
         <td class="table__cell">{{ session.session_type.name }}</td>
-
+        <td class="table__cell">
+            <table>
+                {% for eu in session.exposedurl_set.all %}
+                    {% if eu.test_session %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'testsession:postman_download' eu.pk %}">
+                                    {{ eu.vng_endpoint.name }}
+                                </a>
+                            <td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            </table>
+        </td>
 
         <td class="table__cell">
             <table>

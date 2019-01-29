@@ -1,6 +1,5 @@
 
 {% load staticfiles %}
-{% load static %}
 {% with red="bgcolor='#FF0000' style='color:#ffffff' " %}
 {% with green="bgcolor='#1d8719' style='color:#ffffff'" %}
 <!DOCTYPE html>
@@ -12,7 +11,8 @@
 </head>
 
 <body>
-    <img src="/img/components/logo/logo.svg">
+
+    {% include 'components/logo/logo.html' %}
     <div>
         <h1>Server Report</h1>
 

@@ -158,3 +158,14 @@ class ServerRunPdfView(PDFGenerator, ServerRunOutput):
         server_run = context['object']
         self.filename = 'Server run {} report.pdf'.format(server_run.pk)
         return context
+
+
+class PostmanDownloadView(View):
+
+    def get(self, request, pk, *args, **kwargs):
+        pmt = get_object_or_404(PostmanTest, pk=pk)
+        with open(pmt.validation_file.path) as f:
+            response = HttpResponse(f, content_type='Application/json')
+            response['Content-Length'] = len(response.content)
+            response['Content-Disposition'] = 'attachment;filename={}.json'.format(pmt.test_scenario.name)
+            return response

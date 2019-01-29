@@ -6,15 +6,20 @@
 
 <tr>
     <td class="table__cell">Test Scenario</td>
-    <td class="table__cell">{{ server_run.test_scenario }}</td>
+    <td class="table__cell">
+        <ul>
+            {% for pc in server_run.test_scenario.postmantest_set.all %}
+            <li>
+                <a href="{% url 'server_run:postman_download' pc.pk %}">{{ server_run.test_scenario }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </td>
 </tr>
 {% for ep in server_run.endpoint_set.all %}
     <tr>
         <td class="table__cell">{{ ep.test_scenario_url.name }}</td>
         <td class="table__cell">{{ ep.url }}</td>
-        <td>
-            {{ ep.test_scenario_url.name }} {{ep.url}}
-        </td>
     </tr>
 {% endfor %}
 

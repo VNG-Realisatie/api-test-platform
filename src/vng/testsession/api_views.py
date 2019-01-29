@@ -43,7 +43,7 @@ class SessionViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         session = serializer.save(user=self.request.user, pk=None)
         try:
-            bootstrap_session(session)
+            bootstrap_session(session.id)
         except Exception as e:
             logger.exception(e)
             session.delete()

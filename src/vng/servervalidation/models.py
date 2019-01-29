@@ -39,13 +39,22 @@ class PostmanTest(OrderedModel):
         return '{} {}'.format(self.test_scenario, self.validation_file)
 
 
+class ExpectedPostmanResult(OrderedModel):
+    order_with_respect_to = 'postman_test'
+    postman_test = models.ForeignKey(PostmanTest)
+    expected_response = models.CharField(max_length=20, choices=choices.HTTPResponseStatus.choices)
+
+    def __str__(self):
+        return '{} {}'.format(self.postman_test, self.expected_response)
+
+
 class ServerRun(models.Model):
 
     test_scenario = models.ForeignKey(TestScenario, on_delete=models.SET_NULL, null=True)
     started = models.DateTimeField(default=timezone.now)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     stopped = models.DateTimeField(null=True, default=None, blank=True)
-    status = models.CharField(max_length=10, choices=choices.StatusChoices.choices, default=choices.StatusChoices.starting)
+    status = models.CharField(max_length=20, choices=choices.StatusChoices.choices, default=choices.StatusChoices.starting)
     client_id = models.TextField()
     secret = models.TextField()
 

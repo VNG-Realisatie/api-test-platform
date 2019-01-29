@@ -42,7 +42,7 @@ class PostmanTest(OrderedModel):
 class ExpectedPostmanResult(OrderedModel):
     order_with_respect_to = 'postman_test'
     postman_test = models.ForeignKey(PostmanTest)
-    expected_response = models.CharField(max_length=10, choices=choices.HTTPResponseStatus.choices)
+    expected_response = models.CharField(max_length=20, choices=choices.HTTPResponseStatus.choices)
 
     def __str__(self):
         return '{} {}'.format(self.postman_test, self.expected_response)

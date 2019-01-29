@@ -22,7 +22,9 @@ from ..utils import choices
 from ..utils.newman import DidNotRunException, NewmanManager
 from ..utils.views import OwnerSingleObject, PDFGenerator
 from .forms import CreateServerRunForm, CreateEndpointForm
-from .models import ServerRun, Endpoint, TestScenarioUrl, TestScenario, PostmanTest, PostmanTestResult
+from .models import (
+    ServerRun, Endpoint, TestScenarioUrl, TestScenario, PostmanTest, PostmanTestResult, ExpectedPostmanResult
+)
 from .serializers import ServerRunSerializer
 from .task import execute_test
 
@@ -156,6 +158,15 @@ class ServerRunPdfView(PDFGenerator, ServerRunOutput):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         server_run = context['object']
+        epr = ExpectedPostmanResult.objects.filter(postman_test__test_scenario=server_run.test_scenario)
+        for postman in context['postman_result']:
+            epr = ExpectedPostmanResult.objects.filter(postman_test=postman.postman_test).order_by('order')
+            postman.json = postman.get_json_obj()
+            for calls, ep in zip(postman.json, epr):
+                calls['ep'] = ep
+                calls['response']['code'] = str(calls['response']['code'])
+
+        context['expect_result'] = epr
         self.filename = 'Server run {} report.pdf'.format(server_run.pk)
         return context
 

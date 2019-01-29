@@ -1,4 +1,5 @@
 import json
+import array
 
 from django.db import models
 from django.utils import timezone
@@ -99,11 +100,13 @@ class PostmanTestResult(models.Model):
 
     def save_json(self, filename, file):
         content = json.load(file)
-        try:
-            for execution in content['run']['executions']:
-                del execution['response']['stream']['data']
-        except:
-            pass
+        for execution in content['run']['executions']:
+            try:
+                buffer = execution['response']['stream']['data']
+                del execution['response']['stream']
+                execution['response']['body'] = json.loads(array.array('B', buffer).tostring())
+            except:
+                pass
         self.log_json.save(filename, ContentFile(json.dumps(content)))
 
     def get_outcome_html(self):

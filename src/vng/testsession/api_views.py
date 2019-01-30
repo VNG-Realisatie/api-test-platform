@@ -230,7 +230,7 @@ class RunTest(CSRFExemptMixin, View):
                     logger.info("Saving report: {}".format(report.result))
                     report.save()
 
-    def sub_url(self, content, host, endpoint):
+    def sub_url_response(self, content, host, endpoint):
         sub = '{}{}'.format(
             host,
             reverse('testsession:run_test', kwargs={
@@ -240,6 +240,17 @@ class RunTest(CSRFExemptMixin, View):
             })
         )
         return re.sub(endpoint.vng_endpoint.url, sub, content)
+
+    def sub_url_request(self, content, host, endpoint):
+        sub = '{}{}'.format(
+            host,
+            reverse('testsession:run_test', kwargs={
+                'exposed_url': endpoint.get_uuid_url(),
+                'name': endpoint.vng_endpoint.name,
+                'relative_url': ''
+            })
+        )
+        return re.sub(sub, endpoint.vng_endpoint.url, content)
 
     def parse_response(self, response, request, base_url, endpoints):
         """
@@ -254,7 +265,7 @@ class RunTest(CSRFExemptMixin, View):
         else:
             host = 'https://{}'.format(request.get_host())
         for ep in endpoints:
-            parsed = self.sub_url(parsed, host, ep)
+            parsed = self.sub_url_response(parsed, host, ep)
         return parsed
 
     def rewrite_request_body(self, request, endpoints):
@@ -270,7 +281,8 @@ class RunTest(CSRFExemptMixin, View):
         else:
             host = 'https://{}'.format(request.get_host())
         for ep in endpoints:
-            parsed = self.sub_url(parsed, host, ep)
+            logger.info("Rewriting request body:")
+            parsed = self.sub_url_request(parsed, host, ep)
         return parsed
 
     def build_method(self, request_method_name, request, body=False):

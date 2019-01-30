@@ -178,6 +178,7 @@ class RunTest(CSRFExemptMixin, View):
             re.compile(r'^CONTENT_TYPE$'),
             re.compile(r'^CONTENT_LENGTH$'),
             re.compile(r'^Accept-Crs$'),
+            re.compile(r'^Content-Crs$'),
             re.compile(r'^Content-Type$'),
         ]
 
@@ -193,6 +194,8 @@ class RunTest(CSRFExemptMixin, View):
             request_headers['Authorization'] = request_headers.pop('HTTP_AUTHORIZATION')
         if 'HTTP_ACCEPT_CRS' in request_headers:
             request_headers['Accept-Crs'] = request_headers.pop('HTTP_ACCEPT_CRS')
+        if 'HTTP_CONTENT_CRS' in request_headers:
+            request_headers['Content-Crs'] = request_headers.pop('HTTP_CONTENT_CRS')
         if 'CONTENT_TYPE' in request_headers:
             request_headers['Content-Type'] = request_headers.pop('CONTENT_TYPE')
         if not settings.DEBUG:

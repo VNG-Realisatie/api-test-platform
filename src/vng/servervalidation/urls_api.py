@@ -1,15 +1,16 @@
 from django.conf.urls import url, include
 from rest_framework import routers, serializers, viewsets
 from django.conf.urls import url
-from . import views
+
+from . import views, api_views
 
 
-server_run_list = views.ServerRunViewSet.as_view({
+server_run_list = api_views.ServerRunViewSet.as_view({
     'get': 'list',
     'post': 'create',
 })
 
-server_run_create = views.ServerRunViewSet.as_view({
+server_run_create = api_views.ServerRunViewSet.as_view({
     'get': 'retrieve',
 })
 

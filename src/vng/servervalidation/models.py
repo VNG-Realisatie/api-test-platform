@@ -1,6 +1,8 @@
 import json
 import array
 
+from datetime import datetime
+
 from django.db import models
 from django.utils import timezone
 from django.conf import settings
@@ -93,6 +95,20 @@ class PostmanTestResult(models.Model):
             with open(self.log_json.path) as fp:
                 return fp.read()
 
+    def get_json_obj_info(self):
+        if hasattr(self, 'status_saved'):
+            return self.status_saved
+
+        with open(self.log_json.path) as jfile:
+            f = json.load(jfile)
+            del f['run']['executions']
+            a = int(f['run']['timings']['started'])
+            f['run']['timings']['started'] = (datetime.utcfromtimestamp(int(f['run']['timings']['started']) / 1000)
+                                              .strftime('%I:%M %p'))
+
+            self.status_saved = f
+            return f
+
     def get_json_obj(self):
         with open(self.log_json.path) as jfile:
             f = json.load(jfile)
@@ -103,7 +119,10 @@ class PostmanTestResult(models.Model):
                 path = ''
                 if 'path' in req:
                     path = '/'.join(req['path'])
-                req['url'] = '{}://{}/{}'.format(req['protocol'], url, path)
+                if 'protocol' in req:
+                    req['url'] = '{}://{}/{}'.format(req['protocol'], url, path)
+                else:
+                    req['url'] = '{}/{}'.format(url, path)
 
         return res
 

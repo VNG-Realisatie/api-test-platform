@@ -31,11 +31,12 @@ class ServerRunViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
     @transaction.atomic
     def perform_create(self, serializer):
         server = serializer.save(user=self.request.user, pk=None, started=timezone.now())
-        for ep in serializer._kwargs['data']['endpoints']:
-            name = ep['name']
-            url = ep['url']
-            try:
-                tsu = TestScenarioUrl.objects.get(name=name, test_scenario=server.test_scenario)
-                Endpoint.objects.create(test_scenario_url=tsu, url=url, server_run=server)
-            except Exception as e:
-                raise Error400("The urls' names provided do not match")
+        if 'endpoints' in serializer._kwargs['data']:
+            for ep in serializer._kwargs['data']['endpoints']:
+                name = ep['name']
+                url = ep['url']
+                try:
+                    tsu = TestScenarioUrl.objects.get(name=name, test_scenario=server.test_scenario)
+                    Endpoint.objects.create(test_scenario_url=tsu, url=url, server_run=server)
+                except Exception as e:
+                    raise Error400("The urls' names provided do not match")

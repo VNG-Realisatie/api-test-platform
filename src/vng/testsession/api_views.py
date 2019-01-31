@@ -28,6 +28,7 @@ from .serializers import (
     SessionSerializer, SessionTypesSerializer, ExposedUrlSerializer, ScenarioCaseSerializer
 )
 from .views import bootstrap_session, StopSession
+from .task import run_tests
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +58,7 @@ class StopSessionView(generics.ListAPIView):
     def perform_operations(self, session):
         if session.status != choices.StatusChoices.stopped:
             session.status = choices.StatusChoices.stopped
-            StopSession.run_tests(session)
+            run_tests(session.pk)
 
     def get_queryset(self):
         scenarios = ScenarioCase.objects.filter(vng_endpoint__session_type__session=self.kwargs['pk'])

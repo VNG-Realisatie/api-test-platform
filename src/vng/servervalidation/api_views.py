@@ -1,4 +1,6 @@
 
+import json
+
 from django.utils import timezone
 from django.db import transaction
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -39,4 +41,4 @@ class ServerRunViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
                     tsu = TestScenarioUrl.objects.get(name=name, test_scenario=server.test_scenario)
                     Endpoint.objects.create(test_scenario_url=tsu, url=url, server_run=server)
                 except Exception as e:
-                    raise Error400("The urls' names provided do not match")
+                    raise Error400("The urls names provided do not match")

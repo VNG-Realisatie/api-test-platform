@@ -119,7 +119,10 @@ class PostmanTestResult(models.Model):
                 path = ''
                 if 'path' in req:
                     path = '/'.join(req['path'])
-                req['url'] = '{}://{}/{}'.format(req['protocol'], url, path)
+                if 'protocol' in req:
+                    req['url'] = '{}://{}/{}'.format(req['protocol'], url, path)
+                else:
+                    req['url'] = '{}/{}'.format(url, path)
 
         return res
 

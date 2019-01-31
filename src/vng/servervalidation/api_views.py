@@ -1,4 +1,5 @@
 
+from django.utils import timezone
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Prefetch
 
@@ -20,7 +21,9 @@ class ServerRunViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
     serializer_class = ServerRunSerializer
 
     def get_queryset(self):
-        return ServerRun.objects.filter(user=self.request.user).prefetch_related(Prefetch('endpoint_set', to_attr='endpoints'))
+        return ServerRun.objects.filter(user=self.request.user).prefetch_related(
+            Prefetch('endpoint_set', to_attr='endpoints'),
+            Prefetch('endpoint_set__test_scenario_url'))
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user, pk=None)
+        serializer.save(user=self.request.user, pk=None, started=timezone.now())

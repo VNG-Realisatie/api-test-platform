@@ -11,11 +11,6 @@ from django.core.exceptions import PermissionDenied
 from django.views.generic import DetailView, CreateView, FormView
 from django.views.generic.list import MultipleObjectMixin, MultipleObjectTemplateResponseMixin, ListView
 
-from rest_framework import permissions, viewsets
-from rest_framework.authentication import (
-    SessionAuthentication, TokenAuthentication
-)
-
 
 from ..permissions.UserPermissions import *
 from ..utils import choices
@@ -25,7 +20,6 @@ from .forms import CreateServerRunForm, CreateEndpointForm
 from .models import (
     ServerRun, Endpoint, TestScenarioUrl, TestScenario, PostmanTest, PostmanTestResult, ExpectedPostmanResult
 )
-from .serializers import ServerRunSerializer
 from .task import execute_test
 
 
@@ -132,18 +126,6 @@ class StopServer(OwnerSingleObject, View):
         server.status = choices.StatusChoices.stopped
         server.save()
         return redirect(reverse('server_run:server-run_list'))
-
-
-class ServerRunViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
-    authentication_classes = (TokenAuthentication, SessionAuthentication)
-    permission_classes = (permissions.IsAuthenticated,)
-    serializer_class = ServerRunSerializer
-
-    def get_queryset(self):
-        return ServerRun.objects.filter(user=self.request.user)
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user, pk=None)
 
 
 class ServerRunLogView(LoginRequiredMixin, DetailView):

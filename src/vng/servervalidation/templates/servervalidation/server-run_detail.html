@@ -22,6 +22,32 @@
                 {% include 'components/table/table-server-run.html' with server_run=object postman_result=postman_result only %}
             </tbody>
         </table>
+
+
+
+        {% for postman in postman_result %}
+            <h3>Postman Collection
+            <a href="{% url 'server_run:postman_download' postman.postman_test.pk %}">#{{ forloop.counter }}</a>
+            </h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="table__heading">Tijd</th>
+                        <th class="table__heading">Request</th>
+                        <th class="table__heading">Response status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for calls in postman.get_json_obj %}
+                        <tr>
+                            <td class="table__cell">{{ postman.get_json_obj_info.run.timings.started }}</td>
+                            <td class="table__cell">{{ calls.request.method }} {{ calls.request.url.url }}</td>
+                            <td class="table__cell">{{ calls.response.code }} {{ calls.response.status }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endfor %}
     </div>
 </article>
 

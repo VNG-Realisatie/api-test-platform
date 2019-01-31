@@ -11,15 +11,9 @@ class EndpointSerializer(serializers.ModelSerializer):
         fields = ['url', 'name']
 
 
-class TestScenarioSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TestScenario
-        fields = ['name', 'validation_file']
-
-
 class ServerRunSerializer(serializers.ModelSerializer):
     # endpoint_queryset = Endpoint.obejcts.filter()
-    endpoints = EndpointSerializer(many=True)
+    endpoints = EndpointSerializer(many=True, read_only=True)
     # TODO: output of the test_scenario of its name, not the foreign key
 
     class Meta:

@@ -26,4 +26,16 @@ class ServerRunViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
             Prefetch('endpoint_set__test_scenario_url'))
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user, pk=None, started=timezone.now())
+        server = serializer.save(user=self.request.user, pk=None, started=timezone.now())
+        for ep in serializer._kwargs['data']['endpoints']:
+            name = ep['name']
+            url = ep['url']
+            # import pdb
+            # pdb.set_trace()
+            print(name, url)
+            try:
+
+                tsu = TestScenarioUrl.objects.get(name=name, test_scenario=server.test_scenario)
+                Endpoint.objects.create(test_scenario_url=tsu, url=url, server_run=server)
+            except Exception as e:
+                print(e, name, url)

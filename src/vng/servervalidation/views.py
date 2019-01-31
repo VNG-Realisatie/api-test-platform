@@ -118,6 +118,10 @@ class ServerRunOutput(OwnerSingleObject, DetailView):
         return context
 
 
+class ServerRunCalls(ServerRunOutput):
+    template_name = 'servervalidation/server-run_calls.html'
+
+
 class StopServer(OwnerSingleObject, View):
     model = ServerRun
     pk_name = 'server_id'

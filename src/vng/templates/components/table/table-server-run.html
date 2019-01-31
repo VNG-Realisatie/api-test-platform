@@ -49,5 +49,15 @@
             </td>
         {% endfor %}
 </tr>
+{% for pr in postman_result %}
+    <tr>
+        <td class="table__cell">Postman Collection {{ forloop.counter }}</a>
+        </td>
+        <td class="table__cell">
+        <a href="{% url 'server_run:server-run_calls' server_run.pk %}">Analyze the calls</a>
+        </td>
+    </tr>
+{% endfor %}
+
 
 {% endspaceless %}

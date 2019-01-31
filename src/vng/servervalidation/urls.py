@@ -10,6 +10,7 @@ urlpatterns = [
     url('(?P<pk>[0-9]+)/log_json', views.ServerRunLogJsonView.as_view(), name='server-run_detail_log_json'),
     url('(?P<pk>[0-9]+)/log', views.ServerRunLogView.as_view(), name='server-run_detail_log'),
     url('(?P<pk>[0-9]+)/pdf/(?P<postman_res_id>[0-9]+)', views.ServerRunPdfView.as_view(), name='server-run_detail_pdf'),
+    url('(?P<pk>[0-9]+)/calls', views.ServerRunCalls.as_view(), name='server-run_calls'),
     url('(?P<pk>[0-9]+)', views.ServerRunOutput.as_view(), name='server-run_detail'),
     url('$', views.TestScenarioSelect.as_view(), name='server-run_list'),
 ]

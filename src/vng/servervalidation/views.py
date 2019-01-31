@@ -37,7 +37,7 @@ class TestScenarioSelect(FormView, MultipleObjectMixin, MultipleObjectTemplateRe
     model = ServerRun
 
     def get_queryset(self):
-        return self.model.objects.filter(user=self.request.user).order_by('status', '-started')
+        return self.model.objects.filter(user=self.request.user).order_by('-started')
 
     def form_valid(self, form):
         ts_id = form.instance.test_scenario.id

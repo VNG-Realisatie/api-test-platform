@@ -54,7 +54,7 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
         '''
         Group all the exposed url by the session in order to display later all related url together
         '''
-        return Session.objects.filter(user=self.request.user).order_by('status', '-started')
+        return Session.objects.filter(user=self.request.user).order_by('-started')
 
     def get_success_url(self):
         return reverse('testsession:sessions')

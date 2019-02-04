@@ -168,36 +168,28 @@ class RunTest(CSRFExemptMixin, View):
         logger.info("URL: {}".format(check_url))
         return re.search(parsed_url, check_url) is not None
 
+    def rewrite_http_header(self, header):
+        def upper_repl(match):
+            return '-{}'.format(match.group(1).upper())
+        header = header.lower()
+        header = header.replace('HTTP_', '')
+        header = header.replace('_', '-')
+        header = re.sub('-(.)', upper_repl, header)
+        header = '{}{}'.format(header[0].upper(), header[1:])
+        return header
+
     def get_http_header(self, request):
         '''
         Extracts the http header from the request and add the authorization header for
         gemma platform
         '''
-        regex = [
-            re.compile(r'^HTTP_.+$'),
-            re.compile(r'^CONTENT_TYPE$'),
-            re.compile(r'^CONTENT_LENGTH$'),
-            re.compile(r'^Accept-Crs$'),
-            re.compile(r'^Content-Crs$'),
-            re.compile(r'^Content-Type$'),
-        ]
-
+        whitelist = []
         request_headers = {}
-        for header in request.META:
-            cond = False
-            for reg in regex:
-                cond = cond or reg.match(header)
-            if cond:
-                request_headers[header] = request.META[header]
-
-        if 'HTTP_AUTHORIZATION' in request_headers:
-            request_headers['Authorization'] = request_headers.pop('HTTP_AUTHORIZATION')
-        if 'HTTP_ACCEPT_CRS' in request_headers:
-            request_headers['Accept-Crs'] = request_headers.pop('HTTP_ACCEPT_CRS')
-        if 'HTTP_CONTENT_CRS' in request_headers:
-            request_headers['Content-Crs'] = request_headers.pop('HTTP_CONTENT_CRS')
-        if 'CONTENT_TYPE' in request_headers:
-            request_headers['Content-Type'] = request_headers.pop('CONTENT_TYPE')
+        for header, value in request.META.items():
+            if type(value) == str:
+                new_header = self.rewrite_http_header(header)
+                if header not in whitelist:
+                    request_headers[new_header] = value
 
         return request_headers
 

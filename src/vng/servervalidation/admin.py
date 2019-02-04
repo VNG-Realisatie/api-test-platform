@@ -22,9 +22,20 @@ class PostmanTestInline(admin.TabularInline):
     model = model.PostmanTest
 
 
+class ExpectedPostmanResultInline(admin.TabularInline):
+    model = model.ExpectedPostmanResult
+
+
 @admin.register(model.PostmanTest)
 class PostmanTestAdmin(OrderedModelAdmin):
     list_display = ['test_scenario', 'move_up_down_links', 'validation_file']
+
+    inlines = [ExpectedPostmanResultInline]
+
+
+@admin.register(model.ExpectedPostmanResult)
+class ExpectedPostmanResult(OrderedModelAdmin):
+    list_display = ['postman_test', 'move_up_down_links', 'expected_response']
 
 
 @admin.register(model.PostmanTestResult)

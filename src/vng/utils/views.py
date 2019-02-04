@@ -142,8 +142,7 @@ class PDFGenerator():
 
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs).render().content.decode('utf-8')
-        base_url = 'http://' if settings.DEBUG else 'https://' + request.get_host()
-        pdf = HTML(string=response, base_url=base_url).write_pdf()
+        pdf = HTML(string=response, base_url=request.build_absolute_uri('/')).write_pdf()
         response = HttpResponse(pdf, content_type='application/pdf')
         if hasattr(self, 'filename'):
             response['Content-Disposition'] = 'attachment; filename="{}"'.format(self.filename)

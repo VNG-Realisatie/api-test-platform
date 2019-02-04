@@ -3,7 +3,17 @@
 {% block title %}Test client - Detailweergave test-sessie{% endblock%}
 
 {% block content %}
-
+<script type="text/javascript">
+    $(document).ready(function(){
+        try{
+        var jjson = $('#json-content').text();
+        $('#translate').jJsonViewer(jjson);
+        }catch{
+            console.log('JSON Syntax error')
+            $('#json-content').removeAttr('hidden')
+        }
+    })
+</script>
 
 
 
@@ -33,7 +43,11 @@
             <strong>Response status: {{ object.response_status }}</strong>
         </p>
         <p>
-            Response Body:<br />{{ object.response_body }}
+            <strong>Response status: {{ object.response_status }}</strong>
+        </p>
+        <p id="translate"></p>
+        <p id="json-content" hidden="True">
+            {{ object.response_body|safe  }}
         </p>
     </div>
 

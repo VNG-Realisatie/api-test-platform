@@ -1,6 +1,5 @@
 
 {% load staticfiles %}
-{% load static %}
 {% with red="bgcolor='#FF0000' style='color:#ffffff' " %}
 {% with green="bgcolor='#1d8719' style='color:#ffffff'" %}
 <!DOCTYPE html>
@@ -12,7 +11,8 @@
 </head>
 
 <body>
-    <img src="/static/img/components/logo/logo.svg">
+
+    {% include 'components/logo/logo.html' %}
     <div>
         <h1>Server Report</h1>
 
@@ -20,13 +20,14 @@
         <table class='table-t'>
             <tbody>
                 <tr>
-    <td class="table__cell">Id</td>
-    <td class="table__cell">{{ server_run.pk }}</td>
+        <td class="table__cell">Id</td>
+        <td class="table__cell">{{ server_run.pk }}</td>
         </tr>
 
         <tr>
             <td class="table__cell">Test Scenario</td>
-            <td class="table__cell">{{ object.test_scenario }}</td>
+            <td class="tabl
+        self.filename = 'Server run {} report.pdf'.foe__cell">{{ object.test_scenario }}</td>
         </tr>
         <tr>
             <td class="table__cell">Started</td>
@@ -51,32 +52,38 @@
                     <th>HTTP method</th>
                     <th>HTTP url</th>
                     <th>Response</th>
+                    <th>Expected</th>
                 </tr>
             </thead>
             <tbody>
-            {% for calls in postman.get_json_obj %}
+            {% for calls in postman.json %}
+
                 <td class="table__cell" colspan="100%">{{calls.request.description.content}}</td>
                 <tr>
                     <td class="table__cell">{{calls.request.method}}</td>
                     <td class="table__cell">{{calls.request.url.url}}</td>
-                    {% if calls.response.code >= 400 and calls.response.code <= 500 %}
-                        <td class='cell-fail cell-content-fix'>{{calls.response.code}} {{calls.response.status}}</td>
-                    {% else %}
+                    {% if calls.response.code in calls.ep.expected_response %}
                         <td class='cell-success cell-content-fix'>{{calls.response.code}} {{calls.response.status}}</td>
+                    {% else %}
+                        <td class='cell-fail cell-content-fix'>{{calls.response.code}} {{calls.response.status}}</td>
                     {% endif %}
+                    <td class="table__cell">{{ calls.ep.expected_response }}</td>
                 </tr>
             {% endfor %}
-
             </tbody>
         </table>
         {% endfor %}
-
     </div>
 </body>
 
 </html>
 
 <style>
+    body {
+        font-family:  Arial, Geneva, Helvetica;
+
+    }
+
     .cell-success {
         background-color: green;
         color: white

@@ -98,6 +98,9 @@ class Session(models.Model):
     def is_starting(self):
         return self.status == choices.StatusChoices.starting
 
+    def is_shutting_down(self):
+        return self.status == choices.StatusChoices.shutting_down
+
 
 class ExposedUrl(models.Model):
 

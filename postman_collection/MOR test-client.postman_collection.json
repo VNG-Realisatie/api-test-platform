@@ -1,12 +1,172 @@
 {
 	"info": {
-		"_postman_id": "e1f9fba6-dba3-463c-a7ef-65399bf121cc",
-		"name": "MOR test-client",
+		"_postman_id": "291f4f8e-49e3-4673-9673-a6a98d8ddc3d",
+		"name": "MOR test-client copy",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "0a6a7da4-1e47-44b4-a530-c5db398009de",
+						"exec": [
+							"",
+							"var jsonData = pm.response.json();",
+							"console.log(jsonData);",
+							"pm.globals.set(\"key\", jsonData.key);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"username\": \"test\",\n\t\"password\": \"test1234\"\n}"
+				},
+				"url": {
+					"raw": "https://vng-staging.maykin.nl/api/auth/login/",
+					"protocol": "https",
+					"host": [
+						"vng-staging",
+						"maykin",
+						"nl"
+					],
+					"path": [
+						"api",
+						"auth",
+						"login",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Session types",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https://vng-staging.maykin.nl/api/v1/sessiontypes/",
+					"protocol": "https",
+					"host": [
+						"vng-staging",
+						"maykin",
+						"nl"
+					],
+					"path": [
+						"api",
+						"v1",
+						"sessiontypes",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create session",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "61d8b58e-e703-4585-b052-bbf4c212c6a1",
+						"exec": [
+							"",
+							"var jsonData = pm.response.json();",
+							"console.log(jsonData);",
+							"for(var i in jsonData.exposedurl_set){",
+							"    var obj = jsonData.exposedurl_set[i];",
+							"    pm.globals.set(obj.vng_endpoint, obj.exposed_url);    ",
+							"    console.log(Object.keys(obj));",
+							"    console.log(obj.vng_endpoint+\" \"+obj.exposed_url+\" \"+obj.id);",
+							"}",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Token {{key}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"session_type\": \"{{session_type}}\"\n}"
+				},
+				"url": {
+					"raw": "https://vng-staging.maykin.nl/api/v1/testsessions/",
+					"protocol": "https",
+					"host": [
+						"vng-staging",
+						"maykin",
+						"nl"
+					],
+					"path": [
+						"api",
+						"v1",
+						"testsessions",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "https://ref.tst.vng.cloud/zrc/api/v1/zaken",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "66370f51-4071-41e0-b3da-85b541a09af2",
+						"exec": [
+							"",
+							"var jsonData = pm.response.json();",
+							"pm.globals.set(\"zaaktype\", jsonData[0].zaaktype);",
+							"zaaktype = pm.variables.get(\"zaaktype\");",
+							"console.log(zaaktype);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [
@@ -15,6 +175,12 @@
 						"value": "EPSG:4326",
 						"description": "Accept",
 						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{key}}",
+						"type": "text",
+						"disabled": true
 					}
 				],
 				"body": {
@@ -22,17 +188,11 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "https://ref.tst.vng.cloud/zrc/api/v1/zaken",
-					"protocol": "https",
+					"raw": "{{ZRC}}api/v1/zaken",
 					"host": [
-						"ref",
-						"tst",
-						"vng",
-						"cloud"
+						"{{ZRC}}api"
 					],
 					"path": [
-						"zrc",
-						"api",
 						"v1",
 						"zaken"
 					]
@@ -83,26 +243,63 @@
 						"name": "Content-Type",
 						"value": "application/json",
 						"type": "text"
+					},
+					{
+						"key": "Content-Crs",
+						"value": "EPSG:4326",
+						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\"bronorganisatie\": \"509381406\",\n \"registratiedatum\": \"2018-12-06\",\n \"startdatum\": \"2018-12-06\",\n \"toelichting\": \"Hier ben ik\",\n \"verantwoordelijkeOrganisatie\": \"245122461\",\n \"zaakgeometrie\": {\"coordinates\": [4.891362190246582, 52.3731887966551],\n                   \"type\": \"Point\"},\n \"zaaktype\": \"https://ref.tst.vng.cloud/ztc/api/v1/catalogussen/f7afd156-c8f5-4666-b8b5-28a4a9b5dfc7/zaaktypen/0119dd4e-7be9-477e-bccf-75023b1453c1\"}"
+					"raw": "{\"bronorganisatie\": \"509381406\",\n \"registratiedatum\": \"2018-12-06\",\n \"startdatum\": \"2018-12-06\",\n \"toelichting\": \"Hier ben ik\",\n \"verantwoordelijkeOrganisatie\": \"245122461\",\n \"zaakgeometrie\": {\"coordinates\": [4.891362190246582, 52.3731887966551],\n                   \"type\": \"Point\"},\n \"zaaktype\": \"{{zaaktype}}\"}"
 				},
 				"url": {
-					"raw": "https://ref.tst.vng.cloud/zrc/api/v1/zaken",
-					"protocol": "https",
+					"raw": "{{ZRC}}api/v1/zaken",
 					"host": [
-						"ref",
-						"tst",
-						"vng",
-						"cloud"
+						"{{ZRC}}api"
 					],
 					"path": [
-						"zrc",
-						"api",
 						"v1",
 						"zaken"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get statustype",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f264a58e-5ce5-4dd6-bed9-30bc284ddd94",
+						"exec": [
+							"",
+							"var jsonData = pm.response.json();",
+							"pm.globals.set(\"zaaktypeurl\", jsonData[0].url);",
+							"zaaktype = pm.variables.get(\"zaaktypeurl\");",
+							"console.log(zaaktype);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{zaaktype}}/statustypen",
+					"host": [
+						"{{zaaktype}}"
+					],
+					"path": [
+						"statustypen"
 					]
 				}
 			},
@@ -127,20 +324,14 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\"datumStatusGezet\": \"2018-12-06T12:59:03.950556\",\n \"statusType\": \"https://ref.tst.vng.cloud/ztc/api/v1/catalogussen/f7afd156-c8f5-4666-b8b5-28a4a9b5dfc7/zaaktypen/0119dd4e-7be9-477e-bccf-75023b1453c1/statustypen/e53becac-cb4f-4dc7-911b-7d2ca066c041\",\n \"statustoelichting\": \"Melding ontvangen\",\n \"zaak\": \"{{zaak}}\"\n}"
+					"raw": "{\n    \"datumStatusGezet\": \"2018-12-06T12:59:03.950556\",\n    \"statusType\": \"{{zaaktypeurl}}\",\n    \"statustoelichting\": \"Melding ontvangen\",\n    \"zaak\": \"{{zaak}}\"\n}"
 				},
 				"url": {
-					"raw": "https://ref.tst.vng.cloud/zrc/api/v1/statussen",
-					"protocol": "https",
+					"raw": "{{ZRC}}api/v1/statussen",
 					"host": [
-						"ref",
-						"tst",
-						"vng",
-						"cloud"
+						"{{ZRC}}api"
 					],
 					"path": [
-						"zrc",
-						"api",
 						"v1",
 						"statussen"
 					]
@@ -179,6 +370,14 @@
 					""
 				]
 			}
+		}
+	],
+	"variable": [
+		{
+			"id": "f12537f7-107b-4616-9680-fd15b2a1c3dd",
+			"key": "session_type",
+			"value": "MOR sessie",
+			"type": "string"
 		}
 	]
 }

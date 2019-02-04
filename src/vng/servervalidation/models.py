@@ -1,4 +1,7 @@
 import json
+import array
+
+from datetime import datetime
 
 from django.db import models
 from django.utils import timezone
@@ -38,13 +41,22 @@ class PostmanTest(OrderedModel):
         return '{} {}'.format(self.test_scenario, self.validation_file)
 
 
+class ExpectedPostmanResult(OrderedModel):
+    order_with_respect_to = 'postman_test'
+    postman_test = models.ForeignKey(PostmanTest)
+    expected_response = models.CharField(max_length=20, choices=choices.HTTPResponseStatus.choices)
+
+    def __str__(self):
+        return '{} {}'.format(self.postman_test, self.expected_response)
+
+
 class ServerRun(models.Model):
 
     test_scenario = models.ForeignKey(TestScenario, on_delete=models.SET_NULL, null=True)
     started = models.DateTimeField(default=timezone.now)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     stopped = models.DateTimeField(null=True, default=None, blank=True)
-    status = models.CharField(max_length=10, choices=choices.StatusChoices.choices, default=choices.StatusChoices.starting)
+    status = models.CharField(max_length=20, choices=choices.StatusChoices.choices, default=choices.StatusChoices.starting)
     client_id = models.TextField()
     secret = models.TextField()
 
@@ -83,6 +95,20 @@ class PostmanTestResult(models.Model):
             with open(self.log_json.path) as fp:
                 return fp.read()
 
+    def get_json_obj_info(self):
+        if hasattr(self, 'status_saved'):
+            return self.status_saved
+
+        with open(self.log_json.path) as jfile:
+            f = json.load(jfile)
+            del f['run']['executions']
+            a = int(f['run']['timings']['started'])
+            f['run']['timings']['started'] = (datetime.utcfromtimestamp(int(f['run']['timings']['started']) / 1000)
+                                              .strftime('%I:%M %p'))
+
+            self.status_saved = f
+            return f
+
     def get_json_obj(self):
         with open(self.log_json.path) as jfile:
             f = json.load(jfile)
@@ -93,17 +119,22 @@ class PostmanTestResult(models.Model):
                 path = ''
                 if 'path' in req:
                     path = '/'.join(req['path'])
-                req['url'] = '{}://{}/{}'.format(req['protocol'], url, path)
+                if 'protocol' in req:
+                    req['url'] = '{}://{}/{}'.format(req['protocol'], url, path)
+                else:
+                    req['url'] = '{}/{}'.format(url, path)
 
         return res
 
     def save_json(self, filename, file):
         content = json.load(file)
-        try:
-            for execution in content['run']['executions']:
-                del execution['response']['stream']['data']
-        except:
-            pass
+        for execution in content['run']['executions']:
+            try:
+                buffer = execution['response']['stream']['data']
+                del execution['response']['stream']
+                execution['response']['body'] = json.loads(array.array('B', buffer).tostring())
+            except:
+                pass
         self.log_json.save(filename, ContentFile(json.dumps(content)))
 
     def get_outcome_html(self):

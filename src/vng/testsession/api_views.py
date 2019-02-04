@@ -28,6 +28,7 @@ from .serializers import (
     SessionSerializer, SessionTypesSerializer, ExposedUrlSerializer, ScenarioCaseSerializer
 )
 from .views import bootstrap_session, StopSession
+from .task import run_tests
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +44,7 @@ class SessionViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         session = serializer.save(user=self.request.user, pk=None)
         try:
-            bootstrap_session(session)
+            bootstrap_session(session.id)
         except Exception as e:
             logger.exception(e)
             session.delete()
@@ -57,7 +58,7 @@ class StopSessionView(generics.ListAPIView):
     def perform_operations(self, session):
         if session.status != choices.StatusChoices.stopped:
             session.status = choices.StatusChoices.stopped
-            StopSession.run_tests(session)
+            run_tests(session.pk)
 
     def get_queryset(self):
         scenarios = ScenarioCase.objects.filter(vng_endpoint__session_type__session=self.kwargs['pk'])
@@ -177,6 +178,7 @@ class RunTest(CSRFExemptMixin, View):
             re.compile(r'^CONTENT_TYPE$'),
             re.compile(r'^CONTENT_LENGTH$'),
             re.compile(r'^Accept-Crs$'),
+            re.compile(r'^Content-Crs$'),
             re.compile(r'^Content-Type$'),
         ]
 
@@ -192,6 +194,8 @@ class RunTest(CSRFExemptMixin, View):
             request_headers['Authorization'] = request_headers.pop('HTTP_AUTHORIZATION')
         if 'HTTP_ACCEPT_CRS' in request_headers:
             request_headers['Accept-Crs'] = request_headers.pop('HTTP_ACCEPT_CRS')
+        if 'HTTP_CONTENT_CRS' in request_headers:
+            request_headers['Content-Crs'] = request_headers.pop('HTTP_CONTENT_CRS')
         if 'CONTENT_TYPE' in request_headers:
             request_headers['Content-Type'] = request_headers.pop('CONTENT_TYPE')
 
@@ -227,6 +231,28 @@ class RunTest(CSRFExemptMixin, View):
                     logger.info("Saving report: {}".format(report.result))
                     report.save()
 
+    def sub_url_response(self, content, host, endpoint):
+        sub = '{}{}'.format(
+            host,
+            reverse('testsession:run_test', kwargs={
+                'exposed_url': endpoint.get_uuid_url(),
+                'name': endpoint.vng_endpoint.name,
+                'relative_url': ''
+            })
+        )
+        return re.sub(endpoint.vng_endpoint.url, sub, content)
+
+    def sub_url_request(self, content, host, endpoint):
+        sub = '{}{}'.format(
+            host,
+            reverse('testsession:run_test', kwargs={
+                'exposed_url': endpoint.get_uuid_url(),
+                'name': endpoint.vng_endpoint.name,
+                'relative_url': ''
+            })
+        )
+        return re.sub(sub, endpoint.vng_endpoint.url, content)
+
     def parse_response(self, response, request, base_url, endpoints):
         """
         Rewrites the VNG Reference responses to make use of ATV URL endpoints:
@@ -240,15 +266,7 @@ class RunTest(CSRFExemptMixin, View):
         else:
             host = 'https://{}'.format(request.get_host())
         for ep in endpoints:
-            sub = '{}{}'.format(
-                host,
-                reverse('testsession:run_test', kwargs={
-                    'exposed_url': ep.get_uuid_url(),
-                    'name': ep.vng_endpoint.name,
-                    'relative_url': ''
-                })
-            )
-            parsed = re.sub(ep.vng_endpoint.url, sub, parsed)
+            parsed = self.sub_url_response(parsed, host, ep)
         return parsed
 
     def rewrite_request_body(self, request, endpoints):
@@ -264,15 +282,8 @@ class RunTest(CSRFExemptMixin, View):
         else:
             host = 'https://{}'.format(request.get_host())
         for ep in endpoints:
-            sub = '{}{}'.format(
-                host,
-                reverse('testsession:run_test', kwargs={
-                    'exposed_url': ep.exposed_url,
-                    'name': ep.vng_endpoint.name,
-                    'relative_url': ''
-                })
-            )
-            parsed = re.sub(sub, ep.vng_endpoint.url, parsed)
+            logger.info("Rewriting request body:")
+            parsed = self.sub_url_request(parsed, host, ep)
         return parsed
 
     def build_method(self, request_method_name, request, body=False):

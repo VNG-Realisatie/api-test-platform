@@ -11,19 +11,15 @@ from django.core.exceptions import PermissionDenied
 from django.views.generic import DetailView, CreateView, FormView
 from django.views.generic.list import MultipleObjectMixin, MultipleObjectTemplateResponseMixin, ListView
 
-from rest_framework import permissions, viewsets
-from rest_framework.authentication import (
-    SessionAuthentication, TokenAuthentication
-)
-
 
 from ..permissions.UserPermissions import *
 from ..utils import choices
 from ..utils.newman import DidNotRunException, NewmanManager
 from ..utils.views import OwnerSingleObject, PDFGenerator
 from .forms import CreateServerRunForm, CreateEndpointForm
-from .models import ServerRun, Endpoint, TestScenarioUrl, TestScenario, PostmanTest, PostmanTestResult
-from .serializers import ServerRunSerializer
+from .models import (
+    ServerRun, Endpoint, TestScenarioUrl, TestScenario, PostmanTest, PostmanTestResult, ExpectedPostmanResult
+)
 from .task import execute_test
 
 
@@ -35,7 +31,7 @@ class TestScenarioSelect(FormView, MultipleObjectMixin, MultipleObjectTemplateRe
     model = ServerRun
 
     def get_queryset(self):
-        return self.model.objects.filter(user=self.request.user).order_by('status', '-started')
+        return self.model.objects.filter(user=self.request.user).order_by('-started')
 
     def form_valid(self, form):
         ts_id = form.instance.test_scenario.id
@@ -128,18 +124,6 @@ class StopServer(OwnerSingleObject, View):
         return redirect(reverse('server_run:server-run_list'))
 
 
-class ServerRunViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
-    authentication_classes = (TokenAuthentication, SessionAuthentication)
-    permission_classes = (permissions.IsAuthenticated,)
-    serializer_class = ServerRunSerializer
-
-    def get_queryset(self):
-        return ServerRun.objects.filter(user=self.request.user)
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user, pk=None)
-
-
 class ServerRunLogView(LoginRequiredMixin, DetailView):
     model = PostmanTestResult
     template_name = 'servervalidation/server-run_log.html'
@@ -156,5 +140,25 @@ class ServerRunPdfView(PDFGenerator, ServerRunOutput):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         server_run = context['object']
+        epr = ExpectedPostmanResult.objects.filter(postman_test__test_scenario=server_run.test_scenario)
+        for postman in context['postman_result']:
+            epr = ExpectedPostmanResult.objects.filter(postman_test=postman.postman_test).order_by('order')
+            postman.json = postman.get_json_obj()
+            for calls, ep in zip(postman.json, epr):
+                calls['ep'] = ep
+                calls['response']['code'] = str(calls['response']['code'])
+
+        context['expect_result'] = epr
         self.filename = 'Server run {} report.pdf'.format(server_run.pk)
         return context
+
+
+class PostmanDownloadView(View):
+
+    def get(self, request, pk, *args, **kwargs):
+        pmt = get_object_or_404(PostmanTest, pk=pk)
+        with open(pmt.validation_file.path) as f:
+            response = HttpResponse(f, content_type='Application/json')
+            response['Content-Length'] = len(response.content)
+            response['Content-Disposition'] = 'attachment;filename={}.json'.format(pmt.test_scenario.name)
+            return response

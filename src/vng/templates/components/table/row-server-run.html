@@ -16,11 +16,14 @@
 
     <td class="table__cell">{{ server_run.test_scenario.name }}</td>
     <td class="table__cell">
-        {% if not server_run.is_stopped and not server_run.is_shutting_down %}
+        {% if not server_run.is_stopped and not server_run.is_running %}
         <form method="POST" action="{% url 'server_run:server-run_stop' server_run.id %}">
             {% csrf_token %}
             <input type="submit" type="button" class="button button--primary" value="Stop">
         </form>
+        {% endif %}
+        {% if not server_run.is_stopped  %}
+            {{ server_run.percentage_exec }}% {{ server_run.status_exec }}
         {% endif %}
     </td>
 </tr>

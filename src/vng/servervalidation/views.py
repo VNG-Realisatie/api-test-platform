@@ -94,9 +94,11 @@ class CreateEndpoint(CreateView):
         form.instance.server_run = self.server
         if len(tsu) > 0:
             form.instance.test_scenario_url = tsu[0]
-        form.instance.save()
         self.endpoints.append(form.instance)
+        self.server.status = choices.StatusChoices.running
+        self.server.save()
         execute_test.delay(self.server.pk)
+
         return HttpResponseRedirect(self.get_success_url())
 
 

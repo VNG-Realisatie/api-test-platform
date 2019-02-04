@@ -59,12 +59,17 @@ class ServerRun(models.Model):
     status = models.CharField(max_length=20, choices=choices.StatusChoices.choices, default=choices.StatusChoices.starting)
     client_id = models.TextField()
     secret = models.TextField()
+    percentage_exec = models.IntegerField(default=None, null=True, blank=True)
+    status_exec = models.TextField(default=None, null=True, blank=True)
 
     def __str__(self):
         return "{} - {}".format(self.started, self.status)
 
     def is_stopped(self):
         return self.status == choices.StatusChoices.stopped
+
+    def is_running(self):
+        return self.status == choices.StatusChoices.running
 
     def get_fields_no_file(self):
         '''

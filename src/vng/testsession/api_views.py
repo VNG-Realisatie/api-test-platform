@@ -169,6 +169,16 @@ class RunTest(CSRFExemptMixin, View):
         return re.search(parsed_url, check_url) is not None
 
     def rewrite_http_header(self, header):
+        '''
+        Rewrite the header key value, from HTTP_XXX of Django to the HTTP standard
+
+        Arguments:
+            header String -- the key of the header
+
+        Returns:
+            String -- the modified url
+        '''
+
         def upper_repl(match):
             return '-{}'.format(match.group(1).upper())
         header = header.lower()

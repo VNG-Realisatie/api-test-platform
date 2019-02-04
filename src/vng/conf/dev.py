@@ -106,7 +106,6 @@ INSTALLED_APPS += [
     'debug_toolbar',
 ]
 CELERY_BROKER_URL = "redis://localhost"
-
 # Override settings with local settings.
 try:
     from .local import *  # noqa

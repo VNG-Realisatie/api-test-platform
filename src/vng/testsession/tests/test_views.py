@@ -9,7 +9,7 @@ from django_webtest import WebTest
 
 from vng.accounts.models import User
 
-from ..models import Session, SessionType, SessionLog
+from ..models import Session, SessionType, SessionLog, Report
 from .factories import (
     SessionFactory, SessionTypeFactory, UserFactory, ScenarioCaseFactory, ExposedUrlFactory, SessionLogFactory, VNGEndpointFactory)
 from ...utils import choices
@@ -125,12 +125,18 @@ class TestLog(WebTest):
 
     def setUp(self):
         self.scenarioCase = ScenarioCaseFactory()
+        self.scenarioCase_hard = ScenarioCaseFactory()
+        self.scenarioCase_hard.url = 'test/{uuid}/t'
         self.exp_url = ExposedUrlFactory()
+        self.exp_url_hard = ExposedUrlFactory()
         self.session = self.exp_url.session
         self.exp_url.session = self.session
         self.exp_url.exposed_url = '{}/{}'.format(self.exp_url.exposed_url, self.exp_url.vng_endpoint.name)
         self.scenarioCase.vng_endpoint = self.exp_url.vng_endpoint
+        self.scenarioCase_hard.vng_endpoint = self.exp_url.vng_endpoint
 
+        self.scenarioCase_hard.save()
+        self.scenarioCase.save()
         self.exp_url.save()
         self.session_log = SessionLogFactory()
 
@@ -196,6 +202,16 @@ class TestLog(WebTest):
         call = self.app.get(reverse('apiv1:result_session', kwargs={'pk': session_id}))
         call = get_object(call.body)
         self.assertEqual(call['result'], 'No scenario cases available')
+
+    def test_hard_matching(self):
+        url = reverse('testsession:run_test', kwargs={
+            'exposed_url': self.exp_url.get_uuid_url(),
+            'name': self.exp_url.vng_endpoint.name,
+            'relative_url': 'test/xxx/t'
+        })
+        call = self.app.get(url, user=self.session.user)
+        rp = Report.objects.filter(scenario_case=self.scenarioCase_hard)
+        self.assertTrue(len(rp) != 0)
 
 
 class TestLogNewman(WebTest):

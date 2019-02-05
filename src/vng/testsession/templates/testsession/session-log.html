@@ -13,11 +13,10 @@
         <h2>Test client - {{ session }}</h2>
         <input type="button" class="button button--primary" value="Terug" onclick="location.href = '{% url 'testsession:sessions'  %}';">
         <h3>Gestart op: {{ session.started|date }}</h3>
-        
-        {% if log_list %}
-            <input type="button" class="button button--primary" value="Rapport" onclick="location.href = '{% url 'testsession:session_report' log_list.0.session.id %}';">
-            <input type="button" class="button button--primary" value="Rapport (PDF)" onclick="location.href = '{% url 'testsession:session_report-pdf' log_list.0.session.id %}';">
-        {% endif %}
+
+        <input type="button" class="button button--primary" value="Rapport" onclick="location.href = '{% url 'testsession:session_report' session.id %}';">
+        <input type="button" class="button button--primary" value="Rapport (PDF)" onclick="location.href = '{% url 'testsession:session_report-pdf' session.id %}';">
+
         {% if log_list %}
         <table class="table">
             {% include 'components/table/header-session-log.html' only %}

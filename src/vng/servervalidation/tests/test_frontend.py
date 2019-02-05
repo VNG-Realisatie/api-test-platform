@@ -42,7 +42,7 @@ class TestCreation(WebTest):
 
     def test_postman_outcome(self):
         server = ServerRun.objects.filter(user=self.user).order_by('-date')[0]
-        url = reverse('server_run:server-run_detail' kwargs={
+        url = reverse('server_run:server-run_detail', kwargs={
             'exposed_url': server.pk
         })
         call = self.app.get(url, user=self.user)

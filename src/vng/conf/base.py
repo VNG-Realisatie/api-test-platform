@@ -52,7 +52,6 @@ INSTALLED_APPS = [
     'compat',  # Part of hijack
     'hijack_admin',
     'easy_thumbnails',
-    'mptt',
 
     # Project applications.
     'vng.accounts',

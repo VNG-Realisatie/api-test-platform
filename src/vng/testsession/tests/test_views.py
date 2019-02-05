@@ -209,7 +209,7 @@ class TestLog(WebTest):
             'name': self.exp_url.vng_endpoint.name,
             'relative_url': 'test/xxx/t'
         })
-        call = self.app.get(url, user=self.session.user)
+        call = self.app.get(url, user=self.session.user, status=[404])
         rp = Report.objects.filter(scenario_case=self.scenarioCase_hard)
         self.assertTrue(len(rp) != 0)
 

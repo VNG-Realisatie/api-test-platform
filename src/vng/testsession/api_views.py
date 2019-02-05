@@ -319,8 +319,7 @@ class RunTest(CSRFExemptMixin, View):
             response = method(request_url, data=rewritten_body, headers=request_header)
         else:
             response = method(request_url, headers=request_header)
-        print(request_url)
-        print(request_header)
+
         self.add_response(response, session_log, request_url, request)
 
         self.save_call(request, request_method_name, self.get_exposed_url(),

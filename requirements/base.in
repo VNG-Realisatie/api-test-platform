@@ -4,7 +4,7 @@ Pillow
 pytz
 raven
 
-Django
+Django==2.2a1
 # django-admin-tools
 django-hijack
 django-hijack-admin
@@ -19,7 +19,6 @@ django-countries
 djangorestframework-filters
 django-solo
 django-dynamic-raw-id
-django-filer
 djangorestframework
 google-api-python-client
 oauth2client

@@ -2,8 +2,9 @@ from django.conf.urls import url, include
 from rest_framework import routers, serializers, viewsets
 from django.conf.urls import url
 
-from . import views, api_views
+from . import views, api_views, apps
 
+app_name = apps.AppConfig.__name__
 
 server_run_list = api_views.ServerRunViewSet.as_view({
     'get': 'list',

@@ -197,8 +197,8 @@ class RunTest(CSRFExemptMixin, View):
         request_headers = {}
         for header, value in request.META.items():
             if type(value) == str:
-                new_header = self.rewrite_http_header(header)
                 if header not in whitelist:
+                    new_header = self.rewrite_http_header(header)
                     request_headers[new_header] = value
 
         return request_headers
@@ -306,7 +306,8 @@ class RunTest(CSRFExemptMixin, View):
         if body:
             logger.info("Request body before rewrite: {}".format(request.body))
             rewritten_body = self.rewrite_request_body(request, endpoints)
-            logger.info("Request body after rewrite: {}".format(rewritten_body))
+            # TODO:
+            logger.info("Request body after rewrite: %s", rewritten_body)
             response = method(request_url, data=rewritten_body, headers=request_header)
         else:
             response = method(request_url, headers=request_header)

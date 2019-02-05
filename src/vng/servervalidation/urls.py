@@ -1,7 +1,9 @@
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 
-from . import views
+from . import views, apps
+
+app_name = apps.AppConfig.__name__
 
 urlpatterns = [
     url('postman/(?P<pk>[0-9]+)', views.PostmanDownloadView.as_view(), name='postman_download'),

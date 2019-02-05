@@ -26,7 +26,7 @@ class TestScenario(models.Model):
 class TestScenarioUrl(models.Model):
 
     name = models.CharField(max_length=200)
-    test_scenario = models.ForeignKey(TestScenario)
+    test_scenario = models.ForeignKey(TestScenario, on_delete=models.CASCADE)
 
     def __str__(self):
         return '{} {}'.format(self.name, self.test_scenario)
@@ -34,7 +34,7 @@ class TestScenarioUrl(models.Model):
 
 class PostmanTest(OrderedModel):
     order_with_respect_to = 'test_scenario'
-    test_scenario = models.ForeignKey(TestScenario)
+    test_scenario = models.ForeignKey(TestScenario, on_delete=models.CASCADE)
     validation_file = models.FileField(settings.MEDIA_FOLDER_FILES['test_scenario'])
 
     def __str__(self):
@@ -43,7 +43,7 @@ class PostmanTest(OrderedModel):
 
 class ExpectedPostmanResult(OrderedModel):
     order_with_respect_to = 'postman_test'
-    postman_test = models.ForeignKey(PostmanTest)
+    postman_test = models.ForeignKey(PostmanTest, on_delete=models.CASCADE)
     expected_response = models.CharField(max_length=20, choices=choices.HTTPResponseStatus.choices)
 
     def __str__(self):
@@ -84,10 +84,10 @@ class ServerRun(models.Model):
 
 class PostmanTestResult(models.Model):
 
-    postman_test = models.ForeignKey(PostmanTest)
+    postman_test = models.ForeignKey(PostmanTest, on_delete=models.CASCADE)
     log = models.FileField(settings.MEDIA_FOLDER_FILES['servervalidation_log'], blank=True, null=True, default=None)
     log_json = models.FileField(settings.MEDIA_FOLDER_FILES['servervalidation_log'], blank=True, null=True, default=None)
-    server_run = models.ForeignKey(ServerRun)
+    server_run = models.ForeignKey(ServerRun, on_delete=models.CASCADE)
     status = models.CharField(max_length=10, choices=choices.ResultChoices.choices, default=None, null=True)
 
     def display_log(self):
@@ -153,7 +153,7 @@ class PostmanTestResult(models.Model):
 
 class Endpoint(models.Model):
 
-    test_scenario_url = models.ForeignKey(TestScenarioUrl)
+    test_scenario_url = models.ForeignKey(TestScenarioUrl, on_delete=models.CASCADE)
     url = models.URLField(max_length=200)
     jwt = models.TextField(null=True, default=None)
-    server_run = models.ForeignKey(ServerRun)
+    server_run = models.ForeignKey(ServerRun, on_delete=models.CASCADE)

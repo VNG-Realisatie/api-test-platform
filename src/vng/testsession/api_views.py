@@ -3,6 +3,7 @@ import re
 import logging
 import requests
 
+from urllib import parse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views import View
@@ -188,18 +189,24 @@ class RunTest(CSRFExemptMixin, View):
         header = '{}{}'.format(header[0].upper(), header[1:])
         return header
 
-    def get_http_header(self, request):
+    def get_http_header(self, request, endpoint):
         '''
         Extracts the http header from the request and add the authorization header for
         gemma platform
         '''
-        whitelist = []
+        whitelist = ['host', 'cookie', 'content-length']
         request_headers = {}
-        for header, value in request.META.items():
-            if type(value) == str:
-                if header not in whitelist:
-                    new_header = self.rewrite_http_header(header)
-                    request_headers[new_header] = value
+        for header, value in request.headers.items():
+            if header.lower() not in whitelist:
+                request_headers[header] = value
+        if 'Content-Length' in request.headers:
+            try:
+                length = request.headers['Content-Length']
+                request.headers['Content-Length'] = length
+            except:
+                pass
+
+        request_headers['host'] = parse.urlparse(endpoint.url).netloc
 
         return request_headers
 
@@ -289,11 +296,12 @@ class RunTest(CSRFExemptMixin, View):
         return parsed
 
     def build_method(self, request_method_name, request, body=False):
-        request_header = self.get_http_header(request)
+        self.session = self.get_queryset()
+        eu = get_object_or_404(ExposedUrl, session=self.session, exposed_url=self.get_exposed_url())
+        request_header = self.get_http_header(request, eu.vng_endpoint)
         session_log, session = self.build_session_log(request, request_header)
         if session.is_stopped():
             raise Http404
-        eu = get_object_or_404(ExposedUrl, session=session, exposed_url=self.get_exposed_url())
         endpoints = ExposedUrl.objects.filter(session=session)
         arguments = request.META['QUERY_STRING']
 
@@ -311,7 +319,8 @@ class RunTest(CSRFExemptMixin, View):
             response = method(request_url, data=rewritten_body, headers=request_header)
         else:
             response = method(request_url, headers=request_header)
-
+        print(request_url)
+        print(request_header)
         self.add_response(response, session_log, request_url, request)
 
         self.save_call(request, request_method_name, self.get_exposed_url(),
@@ -337,7 +346,7 @@ class RunTest(CSRFExemptMixin, View):
         return self.build_method('patch', request)
 
     def build_session_log(self, request, header):
-        session = self.get_queryset()
+        session = self.session
         session_log = SessionLog(session=session)
 
         request_dict = {

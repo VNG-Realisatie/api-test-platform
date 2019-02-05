@@ -77,6 +77,7 @@ class Session(models.Model):
     stopped = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=10, choices=choices.StatusChoices.choices, default=choices.StatusChoices.starting)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    build_version = models.TextField(blank=True, null=True, default=None)
 
     def __str__(self):
         if self.user:

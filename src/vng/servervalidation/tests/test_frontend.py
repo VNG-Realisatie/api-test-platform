@@ -40,6 +40,14 @@ class TestCreation(WebTest):
         call = self.app.get(reverse('server_run:server-run_list'), user=self.user)
         self.assertIn(self.user.username, call.text)
 
+    def test_postman_outcome(self):
+        server = ServerRun.objects.filter(user=self.user).order_by('-date')[0]
+        url = reverse('server_run:server-run_detail' kwargs={
+            'exposed_url': server.pk
+        })
+        call = self.app.get(url, user=self.user)
+        self.assertIn(server.name, call.text)
+
 
 class TestList(WebTest):
 

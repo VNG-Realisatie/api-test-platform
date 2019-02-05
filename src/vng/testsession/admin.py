@@ -42,6 +42,7 @@ class SessionAdmin(admin.ModelAdmin):
         'status',
         'name',
         'id',
+        'build_version',
     ]
     list_filter = ['user']
     search_fields = ['user', 'api_endpoint']

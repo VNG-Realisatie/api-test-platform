@@ -40,6 +40,7 @@ class ExposedUrlSerializer(serializers.ModelSerializer):
 
 class SessionSerializer(serializers.ModelSerializer):
     exposedurl_set = ExposedUrlSerializer(read_only=True, many=True)
+    build_version = serializers.CharField(required=False)
 
     session_type = serializers.SlugRelatedField(
         slug_field='name',
@@ -55,6 +56,7 @@ class SessionSerializer(serializers.ModelSerializer):
             'stopped',
             'status',
             'exposedurl_set',
+            'build_version'
         ]
 
 

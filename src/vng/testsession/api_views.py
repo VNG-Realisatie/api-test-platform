@@ -170,8 +170,8 @@ class RunTest(CSRFExemptMixin, View):
         any_c = '[^/]+'
         parsed_url = '( |/)*' + re.sub(param_pattern, any_c, compare)
         check_url = url.replace('/api/v1//', '/api/v1/')
-        logger.info("Parsed: {}".format(parsed_url))
-        logger.info("URL: {}".format(check_url))
+        logger.info("Parsed: %s", parsed_url)
+        logger.info("URL: %s", check_url)
         return re.search(parsed_url, check_url) is not None
 
     def rewrite_http_header(self, header):
@@ -184,7 +184,6 @@ class RunTest(CSRFExemptMixin, View):
         Returns:
             String -- the modified url
         '''
-
         def upper_repl(match):
             return '-{}'.format(match.group(1).upper())
         header = header.lower()
@@ -242,7 +241,7 @@ class RunTest(CSRFExemptMixin, View):
                             break
                     if not is_failed and not report.is_failed():
                         report.result = choices.HTTPCallChoiches.success
-                    logger.info("Saving report: {}".format(report.result))
+                    logger.info("Saving report: %s", report.result)
                     report.save()
 
     def sub_url_response(self, content, host, endpoint):
@@ -317,7 +316,7 @@ class RunTest(CSRFExemptMixin, View):
         method = getattr(requests, request_method_name)
 
         if body:
-            logger.info("Request body before rewrite: {}".format(request.body))
+            logger.info("Request body before rewrite: %s", rewritten_body)
             rewritten_body = self.rewrite_request_body(request, endpoints)
             # TODO:
             logger.info("Request body after rewrite: %s", rewritten_body)

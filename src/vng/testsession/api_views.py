@@ -8,6 +8,8 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views import View
 from django.conf import settings
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
 from django.http import (
     Http404, HttpResponse, HttpResponseRedirect, HttpResponseServerError
 )
@@ -22,7 +24,7 @@ from vng.testsession.models import (
 
 from ..utils import choices
 from ..utils.views import (
-    ListAppendView, OwnerMultipleObjects, OwnerSingleObject, CSRFExemptMixin
+    ListAppendView, OwnerMultipleObjects, OwnerSingleObject, CSRFExemptMixin, SingleObjectMixin
 )
 from .permission import IsOwner
 from .serializers import (
@@ -68,13 +70,16 @@ class StopSessionView(generics.ListAPIView):
         return scenarios
 
 
-class ResultSessionView(views.APIView):
+class ResultSessionView(LoginRequiredMixin, views.APIView):
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request, pk, *args, **kwargs):
         res = None
         session = self.get_object()
+        print(request.user)
+        if session.user != request.user:
+            raise PermissionDenied
         scenario_cases = ScenarioCase.objects.filter(vng_endpoint__session_type=session.session_type)
         report = list(Report.objects.filter(session_log__session=session))
 
@@ -224,7 +229,7 @@ class RunTest(CSRFExemptMixin, View):
             logger.info(case)
             if case.http_method.lower() == request_method_name.lower():
                 if self.match_url(request.build_absolute_uri(), case.url):
-                    pre_exist = Report.objects.filter(scenario_case=case)
+                    pre_exist = Report.objects.filter(scenario_case=case).filter(session_log__session=session)
                     if len(pre_exist) == 0:
                         report = Report(scenario_case=case, session_log=session_log)
                     else:

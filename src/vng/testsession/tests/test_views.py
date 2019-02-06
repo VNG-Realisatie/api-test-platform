@@ -1,5 +1,6 @@
 import collections
 import json
+import copy
 
 from django.urls import reverse
 from django.utils import timezone
@@ -125,15 +126,13 @@ class TestLog(WebTest):
 
     def setUp(self):
         self.scenarioCase = ScenarioCaseFactory()
-        self.scenarioCase_hard = ScenarioCaseFactory()
-        self.scenarioCase_hard.url = 'test/{uuid}/t'
         self.exp_url = ExposedUrlFactory()
-        self.exp_url_hard = ExposedUrlFactory()
         self.session = self.exp_url.session
-        self.exp_url.session = self.session
+        self.exp_url.vng_endpoint.session_type = self.session.session_type
         self.exp_url.exposed_url = '{}/{}'.format(self.exp_url.exposed_url, self.exp_url.vng_endpoint.name)
         self.scenarioCase.vng_endpoint = self.exp_url.vng_endpoint
-        self.scenarioCase_hard.vng_endpoint = self.exp_url.vng_endpoint
+        self.scenarioCase_hard = copy.copy(self.scenarioCase)
+        self.scenarioCase_hard.url = 'test/{uuid}/t'
 
         self.scenarioCase_hard.save()
         self.scenarioCase.save()
@@ -205,12 +204,14 @@ class TestLog(WebTest):
 
     def test_hard_matching(self):
         url = reverse('testsession:run_test', kwargs={
-            'exposed_url': self.exp_url.get_uuid_url(),
+            'exposed_url': self.exp_url.get_exposed_url(),
             'name': self.exp_url.vng_endpoint.name,
             'relative_url': 'test/xxx/t'
         })
         call = self.app.get(url, user=self.session.user, status=[404])
         rp = Report.objects.filter(scenario_case=self.scenarioCase_hard)
+        import pdb
+        pdb.set_trace()
         self.assertTrue(len(rp) != 0)
 
 

@@ -316,9 +316,7 @@ class RunTest(CSRFExemptMixin, View):
         method = getattr(requests, request_method_name)
 
         if body:
-            logger.info("Request body before rewrite: %s", rewritten_body)
             rewritten_body = self.rewrite_request_body(request, endpoints)
-            # TODO:
             logger.info("Request body after rewrite: %s", rewritten_body)
             response = method(request_url, data=rewritten_body, headers=request_header)
         else:

@@ -133,9 +133,11 @@ class TestLog(WebTest):
         self.scenarioCase.vng_endpoint = self.exp_url.vng_endpoint
         self.scenarioCase_hard = copy.copy(self.scenarioCase)
         self.scenarioCase_hard.url = 'test/{uuid}/t'
+        self.scenarioCase_hard.pk += 1
 
         self.scenarioCase_hard.save()
         self.scenarioCase.save()
+        self.exp_url.vng_endpoint.save()
         self.exp_url.save()
         self.session_log = SessionLogFactory()
 
@@ -204,14 +206,12 @@ class TestLog(WebTest):
 
     def test_hard_matching(self):
         url = reverse('testsession:run_test', kwargs={
-            'exposed_url': self.exp_url.get_exposed_url(),
+            'exposed_url': self.exp_url.get_uuid_url(),
             'name': self.exp_url.vng_endpoint.name,
             'relative_url': 'test/xxx/t'
         })
         call = self.app.get(url, user=self.session.user, status=[404])
         rp = Report.objects.filter(scenario_case=self.scenarioCase_hard)
-        import pdb
-        pdb.set_trace()
         self.assertTrue(len(rp) != 0)
 
 

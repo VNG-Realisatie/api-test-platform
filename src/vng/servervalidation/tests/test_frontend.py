@@ -14,7 +14,10 @@ class TestCreation(WebTest):
         self.pt = PostmanTestFactory()
         self.test_scenario = self.tsf
         self.pt.save()
+        self.server = ServerRunFactory()
         self.user = UserFactory()
+        self.server.user = self.user
+        self.server.save()
 
     def test_creation_error_list(self):
         call = self.app.get(reverse('server_run:server-run_list'), user='test')
@@ -41,12 +44,12 @@ class TestCreation(WebTest):
         self.assertIn(self.user.username, call.text)
 
     def test_postman_outcome(self):
-        server = ServerRun.objects.filter(user=self.user).order_by('-date')[0]
+        server = ServerRun.objects.filter(user=self.user).order_by('-started')[0]
         url = reverse('server_run:server-run_detail', kwargs={
-            'exposed_url': server.pk
+            'pk': server.pk
         })
         call = self.app.get(url, user=self.user)
-        self.assertIn(server.name, call.text)
+        self.assertIn(str(server.pk), call.text)
 
 
 class TestList(WebTest):

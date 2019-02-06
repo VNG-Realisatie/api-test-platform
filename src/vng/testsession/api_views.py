@@ -59,7 +59,7 @@ class StopSessionView(generics.ListAPIView):
     def perform_operations(self, session):
         if session.status != choices.StatusChoices.stopped:
             session.status = choices.StatusChoices.stopped
-            run_tests(session.pk)
+            run_tests.delay(session.pk)
 
     def get_queryset(self):
         scenarios = ScenarioCase.objects.filter(vng_endpoint__session_type__session=self.kwargs['pk'])

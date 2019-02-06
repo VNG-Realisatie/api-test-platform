@@ -217,6 +217,45 @@ class TestLog(WebTest):
         self.assertTrue(len(rp) != 0)
 
 
+class TestAllProcedure(WebTest):
+    csrf_checks = False
+
+    def setUp(self):
+        self.user = UserFactory()
+        self.session_type = SessionTypeFactory()
+
+    def _test_create_session(self):
+        call = self.app.get(reverse('testsession:sessions'), user=self.user)
+        form = call.forms[0]
+        form['session_type'].select('1')
+        form.submit()
+
+        call = self.app.get(reverse('testsession:sessions'), user=self.user)
+        self.assertIn(self.session_type.name, call.text)
+
+    def _test_stop_session(self):
+        self._test_create_session()
+        self.session = Session.objects.filter(user=self.user).filter(status=choices.StatusChoices.running)[0]
+        url = reverse('testsession:stop_session', kwargs={
+            'session_id': self.session.pk,
+        })
+        call = self.app.post(url, user=self.session.user).follow()
+        self.assertIn('stopped', call.text)
+
+    def test_report(self):
+        self._test_stop_session()
+        session = Session.objects.get(pk=self.session.pk)
+        url = reverse('testsession:session_report', kwargs={
+            'session_id': self.session.pk,
+        })
+        call = self.app.get(url, user=self.session.user)
+
+        url = reverse('testsession:session_report-pdf', kwargs={
+            'session_id': self.session.pk,
+        })
+        call = self.app.get(url, user=self.session.user)
+
+
 class TestLogNewman(WebTest):
 
     def setUp(self):
@@ -231,7 +270,7 @@ class TestLogNewman(WebTest):
         key = get_object(call.body)['key']
         self.head = {'Authorization': 'Token {}'.format(key)}
 
-    def runTest(self):
+    def test_run(self):
         call = self.app.post(reverse("apiv1:test_session_list"), params=collections.OrderedDict([
             ('session_type', self.scenario_case.vng_endpoint.session_type.name),
         ]), headers=self.head)

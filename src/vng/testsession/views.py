@@ -66,15 +66,8 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
         form.instance.name = "s{}{}".format(str(self.request.user.id), str(time.time()).replace('.', '-'))
 
         session = form.save()
-        try:
-            bootstrap_session(session.pk, True)
-            session.status = choices.StatusChoices.running
-
-        except Exception as e:
-            logger.exception(e)
-            session.delete()
-            form.add_error('__all__', _('Something went wrong please try again later'))
-            return self.form_invalid(form)
+        bootstrap_session(session.pk, True)
+        session.status = choices.StatusChoices.running
 
         return super().form_valid(form)
 

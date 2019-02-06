@@ -75,7 +75,7 @@ class Session(models.Model):
     session_type = models.ForeignKey(SessionType, on_delete=models.CASCADE)
     started = models.DateTimeField(default=timezone.now)
     stopped = models.DateTimeField(null=True, blank=True)
-    status = models.CharField(max_length=10, choices=choices.StatusChoices.choices, default=choices.StatusChoices.starting)
+    status = models.CharField(max_length=20, choices=choices.StatusChoices.choices, default=choices.StatusChoices.starting)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     build_version = models.TextField(blank=True, null=True, default=None)
 

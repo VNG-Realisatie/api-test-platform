@@ -199,6 +199,8 @@ class TestLog(WebTest):
         call = self.app.get(reverse('apiv1:stop_session', kwargs={'pk': session_id}))
         call = get_object(call.body)
         self.assertEqual(call, [])
+        session = Session.objects.get(pk=session_id)
+        self.assertEqual(session.status, choices.StatusChoices.stopped)
 
         call = self.app.get(reverse('apiv1:result_session', kwargs={'pk': session_id}))
         call = get_object(call.body)

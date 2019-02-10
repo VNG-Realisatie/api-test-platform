@@ -68,6 +68,8 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
         session = form.save()
         try:
             bootstrap_session(session.pk, True)
+            session.status = choices.StatusChoices.running
+
         except Exception as e:
             logger.exception(e)
             session.delete()
@@ -114,6 +116,7 @@ class StopSession(OwnerSingleObject, View):
 
         run_tests.delay(session.pk)
         session.status = choices.StatusChoices.shutting_down
+        session.save()
         return HttpResponseRedirect(reverse('testsession:sessions'))
 
 

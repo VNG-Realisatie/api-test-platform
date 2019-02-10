@@ -215,7 +215,7 @@ class RunTest(CSRFExemptMixin, View):
             logger.info(case)
             if case.http_method.lower() == request_method_name.lower():
                 if self.match_url(request.build_absolute_uri(), case.url):
-                    pre_exist = Report.objects.filter(scenario_case=case).filter(session_log=session_log)
+                    pre_exist = Report.objects.filter(scenario_case=case)
                     if len(pre_exist) == 0:
                         report = Report(scenario_case=case, session_log=session_log)
                     else:

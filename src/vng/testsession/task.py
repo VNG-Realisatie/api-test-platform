@@ -43,10 +43,6 @@ def bootstrap_session(session_pk, start_app=None):
             bind_url.exposed_url = '{}/{}'.format(int(time.time()) * 100 + random.randint(0, 99), ep.name)
             bind_url.save()
 
-    if not starting_docker:
-        session.status = choices.StatusChoices.running
-        session.save()
-
 
 @app.task
 def run_tests(session_pk):

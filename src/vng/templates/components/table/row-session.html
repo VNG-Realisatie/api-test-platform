@@ -8,21 +8,6 @@
             {{ session.started|date }}<br />{{ session.started|time }}
         </td>
         <td class="table__cell">{{ session.session_type.name }}</td>
-        <td class="table__cell">
-            <table>
-                {% for eu in session.exposedurl_set.all %}
-                    {% if eu.test_session %}
-                        <tr>
-                            <td>
-                                <a href="{% url 'testsession:postman_download' eu.pk %}">
-                                    {{ eu.vng_endpoint.name }}
-                                </a>
-                            <td>
-                        </tr>
-                    {% endif %}
-                {% endfor %}
-            </table>
-        </td>
 
         <td class="table__cell">
             <table>
@@ -40,7 +25,7 @@
 
 
         <td class="table__cell">
-            {% if not session.is_stopped %}
+            {% if not session.is_stopped or session.is_shutting_down %}
                 <form method="POST" action="{% url 'testsession:stop_session' session.id %}">
                     {% csrf_token %}
                     <input type="submit" type="button" class="button button--primary" value="Stop">

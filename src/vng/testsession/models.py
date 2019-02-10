@@ -52,7 +52,7 @@ class VNGEndpoint(models.Model):
     url = models.URLField(max_length=200)
     name = models.CharField(max_length=200)
     docker_image = models.CharField(max_length=200, blank=True, null=True, default=None)
-    session_type = models.ForeignKey(SessionType)
+    session_type = models.ForeignKey(SessionType, on_delete=models.CASCADE)
     test_file = models.FileField(settings.MEDIA_FOLDER_FILES['test_session'], blank=True, null=True, default=None)
 
     def __str__(self):
@@ -63,7 +63,7 @@ class ScenarioCase(OrderedModel):
 
     url = models.CharField(max_length=200)
     http_method = models.CharField(max_length=20, choices=choices.HTTPMethodChoiches.choices, default=choices.HTTPMethodChoiches.GET)
-    vng_endpoint = models.ForeignKey(VNGEndpoint)
+    vng_endpoint = models.ForeignKey(VNGEndpoint, on_delete=models.CASCADE)
 
     def __str__(self):
         return '{} - {}'.format(self.http_method, self.url)
@@ -72,7 +72,7 @@ class ScenarioCase(OrderedModel):
 class Session(models.Model):
 
     name = models.CharField(max_length=20, unique=True, null=True)
-    session_type = models.ForeignKey(SessionType)
+    session_type = models.ForeignKey(SessionType, on_delete=models.CASCADE)
     started = models.DateTimeField(default=timezone.now)
     stopped = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=10, choices=choices.StatusChoices.choices, default=choices.StatusChoices.starting)
@@ -105,9 +105,9 @@ class Session(models.Model):
 class ExposedUrl(models.Model):
 
     exposed_url = models.CharField(max_length=200, unique=True)
-    session = models.ForeignKey(Session)
-    vng_endpoint = models.ForeignKey(VNGEndpoint)
-    test_session = models.ForeignKey(TestSession, blank=True, null=True, default=None)
+    session = models.ForeignKey(Session, on_delete=models.CASCADE)
+    vng_endpoint = models.ForeignKey(VNGEndpoint, on_delete=models.CASCADE)
+    test_session = models.ForeignKey(TestSession, blank=True, null=True, default=None, on_delete=models.CASCADE)
 
     def get_uuid_url(self):
         return re.search('([^/]+)', self.exposed_url).group(1)
@@ -151,8 +151,8 @@ class Report(models.Model):
     class Meta:
         unique_together = ('scenario_case', 'session_log')
 
-    scenario_case = models.ForeignKey(ScenarioCase)
-    session_log = models.ForeignKey(SessionLog)
+    scenario_case = models.ForeignKey(ScenarioCase, on_delete=models.CASCADE)
+    session_log = models.ForeignKey(SessionLog, on_delete=models.CASCADE)
     result = models.CharField(max_length=20, choices=choices.HTTPCallChoiches.choices, default=choices.HTTPCallChoiches.not_called)
 
     def is_success(self):

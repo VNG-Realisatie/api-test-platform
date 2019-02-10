@@ -2,7 +2,9 @@ from django.conf.urls import url, include
 from rest_framework import routers, serializers, viewsets
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
-from . import api_views
+from . import api_views, apps
+
+app_name = apps.AppConfig.__name__
 
 session_detail = api_views.SessionViewSet.as_view({
     'get': 'retrieve',

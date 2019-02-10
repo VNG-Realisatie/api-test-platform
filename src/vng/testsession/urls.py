@@ -4,7 +4,9 @@ from django.contrib.auth.decorators import login_required
 from rest_framework import routers, serializers, viewsets
 
 from . import views
-from . import api_views
+from . import api_views, apps
+
+app_name = apps.AppConfig.__name__
 
 urlpatterns = [
     url('^$', views.SessionListView.as_view(), name='sessions'),

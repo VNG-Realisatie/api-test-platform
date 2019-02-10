@@ -3,6 +3,7 @@ import re
 import logging
 import requests
 
+from urllib import parse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views import View
@@ -168,36 +169,44 @@ class RunTest(CSRFExemptMixin, View):
         logger.info("URL: {}".format(check_url))
         return re.search(parsed_url, check_url) is not None
 
-    def get_http_header(self, request):
+    def rewrite_http_header(self, header):
+        '''
+        Rewrite the header key value, from HTTP_XXX of Django to the HTTP standard
+
+        Arguments:
+            header String -- the key of the header
+
+        Returns:
+            String -- the modified url
+        '''
+
+        def upper_repl(match):
+            return '-{}'.format(match.group(1).upper())
+        header = header.lower()
+        header = header.replace('HTTP_', '')
+        header = header.replace('_', '-')
+        header = re.sub('-(.)', upper_repl, header)
+        header = '{}{}'.format(header[0].upper(), header[1:])
+        return header
+
+    def get_http_header(self, request, endpoint):
         '''
         Extracts the http header from the request and add the authorization header for
         gemma platform
         '''
-        regex = [
-            re.compile(r'^HTTP_.+$'),
-            re.compile(r'^CONTENT_TYPE$'),
-            re.compile(r'^CONTENT_LENGTH$'),
-            re.compile(r'^Accept-Crs$'),
-            re.compile(r'^Content-Crs$'),
-            re.compile(r'^Content-Type$'),
-        ]
-
+        whitelist = ['host', 'cookie', 'content-length']
         request_headers = {}
-        for header in request.META:
-            cond = False
-            for reg in regex:
-                cond = cond or reg.match(header)
-            if cond:
-                request_headers[header] = request.META[header]
+        for header, value in request.headers.items():
+            if header.lower() not in whitelist:
+                request_headers[header] = value
+        if 'Content-Length' in request.headers:
+            try:
+                length = request.headers['Content-Length']
+                request.headers['Content-Length'] = length
+            except:
+                pass
 
-        if 'HTTP_AUTHORIZATION' in request_headers:
-            request_headers['Authorization'] = request_headers.pop('HTTP_AUTHORIZATION')
-        if 'HTTP_ACCEPT_CRS' in request_headers:
-            request_headers['Accept-Crs'] = request_headers.pop('HTTP_ACCEPT_CRS')
-        if 'HTTP_CONTENT_CRS' in request_headers:
-            request_headers['Content-Crs'] = request_headers.pop('HTTP_CONTENT_CRS')
-        if 'CONTENT_TYPE' in request_headers:
-            request_headers['Content-Type'] = request_headers.pop('CONTENT_TYPE')
+        request_headers['host'] = parse.urlparse(endpoint.url).netloc
 
         return request_headers
 
@@ -287,11 +296,12 @@ class RunTest(CSRFExemptMixin, View):
         return parsed
 
     def build_method(self, request_method_name, request, body=False):
-        request_header = self.get_http_header(request)
+        self.session = self.get_queryset()
+        eu = get_object_or_404(ExposedUrl, session=self.session, exposed_url=self.get_exposed_url())
+        request_header = self.get_http_header(request, eu.vng_endpoint)
         session_log, session = self.build_session_log(request, request_header)
         if session.is_stopped():
             raise Http404
-        eu = get_object_or_404(ExposedUrl, session=session, exposed_url=self.get_exposed_url())
         endpoints = ExposedUrl.objects.filter(session=session)
         arguments = request.META['QUERY_STRING']
 
@@ -304,7 +314,8 @@ class RunTest(CSRFExemptMixin, View):
         if body:
             logger.info("Request body before rewrite: {}".format(request.body))
             rewritten_body = self.rewrite_request_body(request, endpoints)
-            logger.info("Request body after rewrite: {}".format(rewritten_body))
+            # TODO:
+            logger.info("Request body after rewrite: %s", rewritten_body)
             response = method(request_url, data=rewritten_body, headers=request_header)
         else:
             response = method(request_url, headers=request_header)
@@ -334,7 +345,7 @@ class RunTest(CSRFExemptMixin, View):
         return self.build_method('patch', request)
 
     def build_session_log(self, request, header):
-        session = self.get_queryset()
+        session = self.session
         session_log = SessionLog(session=session)
 
         request_dict = {

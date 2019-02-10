@@ -36,7 +36,7 @@ class VNGEndpointFactory(Dmf):
     name = factory.Sequence(lambda n: 'name{}'.format(n))
     url = 'http://ref.tst.vng.cloud/drc/api/v1'
     session_type = factory.SubFactory(SessionTypeFactory)
-    test_file = factory.django.FileField(from_path=settings.POSTMAN_ROOT + '/MOR_test-client.postman_collection-variable.json')
+    test_file = factory.django.FileField(from_path=settings.POSTMAN_ROOT + '/google.postman_collection.json')
 
 
 class UserFactory(Dmf):

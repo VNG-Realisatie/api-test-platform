@@ -8,6 +8,8 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views import View
 from django.conf import settings
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
 from django.http import (
     Http404, HttpResponse, HttpResponseRedirect, HttpResponseServerError
 )
@@ -22,7 +24,7 @@ from vng.testsession.models import (
 
 from ..utils import choices
 from ..utils.views import (
-    ListAppendView, OwnerMultipleObjects, OwnerSingleObject, CSRFExemptMixin
+    ListAppendView, OwnerMultipleObjects, OwnerSingleObject, CSRFExemptMixin, SingleObjectMixin
 )
 from .permission import IsOwner
 from .serializers import (
@@ -59,7 +61,7 @@ class StopSessionView(generics.ListAPIView):
     def perform_operations(self, session):
         if session.status != choices.StatusChoices.stopped:
             session.status = choices.StatusChoices.stopped
-            run_tests(session.pk)
+            run_tests.delay(session.pk)
 
     def get_queryset(self):
         scenarios = ScenarioCase.objects.filter(vng_endpoint__session_type__session=self.kwargs['pk'])
@@ -68,13 +70,16 @@ class StopSessionView(generics.ListAPIView):
         return scenarios
 
 
-class ResultSessionView(views.APIView):
+class ResultSessionView(LoginRequiredMixin, views.APIView):
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request, pk, *args, **kwargs):
         res = None
         session = self.get_object()
+        print(request.user)
+        if session.user != request.user:
+            raise PermissionDenied
         scenario_cases = ScenarioCase.objects.filter(vng_endpoint__session_type=session.session_type)
         report = list(Report.objects.filter(session_log__session=session))
 
@@ -165,8 +170,8 @@ class RunTest(CSRFExemptMixin, View):
         any_c = '[^/]+'
         parsed_url = '( |/)*' + re.sub(param_pattern, any_c, compare)
         check_url = url.replace('/api/v1//', '/api/v1/')
-        logger.info("Parsed: {}".format(parsed_url))
-        logger.info("URL: {}".format(check_url))
+        logger.info("Parsed: %s", parsed_url)
+        logger.info("URL: %s", check_url)
         return re.search(parsed_url, check_url) is not None
 
     def rewrite_http_header(self, header):
@@ -179,7 +184,6 @@ class RunTest(CSRFExemptMixin, View):
         Returns:
             String -- the modified url
         '''
-
         def upper_repl(match):
             return '-{}'.format(match.group(1).upper())
         header = header.lower()
@@ -224,7 +228,7 @@ class RunTest(CSRFExemptMixin, View):
             logger.info(case)
             if case.http_method.lower() == request_method_name.lower():
                 if self.match_url(request.build_absolute_uri(), case.url):
-                    pre_exist = Report.objects.filter(scenario_case=case)
+                    pre_exist = Report.objects.filter(scenario_case=case).filter(session_log__session=session)
                     if len(pre_exist) == 0:
                         report = Report(scenario_case=case, session_log=session_log)
                     else:
@@ -237,7 +241,7 @@ class RunTest(CSRFExemptMixin, View):
                             break
                     if not is_failed and not report.is_failed():
                         report.result = choices.HTTPCallChoiches.success
-                    logger.info("Saving report: {}".format(report.result))
+                    logger.info("Saving report: %s", report.result)
                     report.save()
 
     def sub_url_response(self, content, host, endpoint):
@@ -312,9 +316,7 @@ class RunTest(CSRFExemptMixin, View):
         method = getattr(requests, request_method_name)
 
         if body:
-            logger.info("Request body before rewrite: {}".format(request.body))
             rewritten_body = self.rewrite_request_body(request, endpoints)
-            # TODO:
             logger.info("Request body after rewrite: %s", rewritten_body)
             response = method(request_url, data=rewritten_body, headers=request_header)
         else:

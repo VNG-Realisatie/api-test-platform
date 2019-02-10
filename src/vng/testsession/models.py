@@ -71,12 +71,13 @@ class ScenarioCase(OrderedModel):
 
 class Session(models.Model):
 
-    name = models.CharField(max_length=20, unique=True, null=True)
+    name = models.CharField(max_length=30, unique=True, null=True)
     session_type = models.ForeignKey(SessionType, on_delete=models.CASCADE)
     started = models.DateTimeField(default=timezone.now)
     stopped = models.DateTimeField(null=True, blank=True)
-    status = models.CharField(max_length=10, choices=choices.StatusChoices.choices, default=choices.StatusChoices.starting)
+    status = models.CharField(max_length=20, choices=choices.StatusChoices.choices, default=choices.StatusChoices.starting)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    build_version = models.TextField(blank=True, null=True, default=None)
 
     def __str__(self):
         if self.user:

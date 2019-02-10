@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 
 def run_command(command):
-    logger.debug('running the COMMAND: {}'.format(command))
+    logger.debug('running the COMMAND: %s', command)
     my_env = os.environ.copy()
     my_env["CLOUDSDK_PYTHON"] = "/usr/bin/python2"
 
@@ -22,7 +22,7 @@ def run_command(command):
 
 
 def run_command_with_shell(command):
-    logger.debug('running the COMMAND: {}'.format(command))
+    logger.debug('running the COMMAND: %s', command)
     subp = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     res = subp.communicate('n\n')
     if res is not None:

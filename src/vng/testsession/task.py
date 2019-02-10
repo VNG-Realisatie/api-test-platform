@@ -30,18 +30,22 @@ def bootstrap_session(session_pk, start_app=None):
     '''
     session = Session.objects.get(pk=session_pk)
     endpoint = VNGEndpoint.objects.filter(session_type=session.session_type)
-    starting_docker = False
+    try:
+        starting_docker = False
 
-    for ep in endpoint:
-        if ep.docker_image:
-            starting_docker = True
-            status = start_app_b8s(session, ep)
-        else:
-            bind_url = ExposedUrl()
-            bind_url.session = session
-            bind_url.vng_endpoint = ep
-            bind_url.exposed_url = '{}/{}'.format(int(time.time()) * 100 + random.randint(0, 99), ep.name)
-            bind_url.save()
+        for ep in endpoint:
+            if ep.docker_image:
+                starting_docker = True
+                status = start_app_b8s(session, ep)
+            else:
+                bind_url = ExposedUrl()
+                bind_url.session = session
+                bind_url.vng_endpoint = ep
+                bind_url.exposed_url = '{}/{}'.format(int(time.time()) * 100 + random.randint(0, 99), ep.name)
+                bind_url.save()
+    except Exception as e:
+        logger.exception(e)
+        session.delete()
 
 
 @app.task

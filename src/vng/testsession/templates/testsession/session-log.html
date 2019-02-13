@@ -17,7 +17,7 @@
         {% render_breadcrumbs 'components/breadcrumbs/breadcrumbs.html' %}
 
         <h2>Test client - {{ session }}</h2>
-        <input type="button" class="button button--primary" value="Terug" onclick="location.href = '{% url 'testsession:sessions'  %}';">
+
         <h3>Gestart op: {{ session.started|date }}</h3>
 
         <input type="button" class="button button--primary" value="Rapport" onclick="location.href = '{% url 'testsession:session_report' session.id %}';">

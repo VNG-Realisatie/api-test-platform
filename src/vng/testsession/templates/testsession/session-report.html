@@ -17,7 +17,7 @@
 
         <h1>Scenario</h1>
         <table class="table">
-        <input type="button" class="button button--primary" value="Back" onclick="location.href = '{% url 'testsession:session_log' session.id %}';">
+
             {% include 'components/table/header-scenario-report.html' with scenario=session_type only %}
         </table>
     </div>

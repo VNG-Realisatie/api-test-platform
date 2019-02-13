@@ -14,7 +14,7 @@
 
         {% breadcrumb "Home" "testsession:sessions" %}
         {% breadcrumb "test client" "" %}
-        {% render_breadcrumbs %}
+        {% render_breadcrumbs 'components/breadcrumbs/breadcrumbs.html' %}
 
         <h2>Test client - {{ session }}</h2>
         <input type="button" class="button button--primary" value="Terug" onclick="location.href = '{% url 'testsession:sessions'  %}';">

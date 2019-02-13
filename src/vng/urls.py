@@ -29,7 +29,7 @@ urlpatterns = [
     # redirect the request to the testession
     url(r'^api/auth/', include(('vng.apiAuthentication.urls', 'api_auth'), namespace='apiv1_auth')),
     url(r'^api/v1/', include('vng.testsession.urls_api', namespace='apiv1')),
-    url(r'^api/v1/', include('vng.servervalidation.urls_api')),
+    url(r'^api/v1/', include('vng.servervalidation.urls_api', namespace='apiv1')),
     url(r'^server/', include('vng.servervalidation.urls', namespace='server_run')),
     url(r'^', include('vng.testsession.urls', namespace='testsession')),
 ]

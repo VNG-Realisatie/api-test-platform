@@ -42,7 +42,7 @@ class SessionViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticated, IsOwner)
 
     def get_queryset(self):
-        return Session.objects.filter(id=self.kwargs['pk']).prefetch_related('exposedurl_set')
+        return Session.objects.all().prefetch_related('exposedurl_set')
 
     def perform_create(self, serializer):
         session = serializer.save(user=self.request.user, pk=None)
@@ -53,9 +53,14 @@ class SessionViewSet(viewsets.ModelViewSet):
             session.delete()
 
 
-class StopSessionView(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class StopSessionView(generics.ListAPIView):
+    """
+    Stop Session
+
+    stop the session
+    """
     authentication_classes = (TokenAuthentication, SessionAuthentication)
-    permission_classes = (permissions.IsAuthenticated, IsOwner)
+    permission_classes = (permissions.IsAuthenticated,)
     serializer_class = ScenarioCaseSerializer
 
     def perform_operations(self, session):
@@ -65,12 +70,20 @@ class StopSessionView(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
     def get_queryset(self):
         scenarios = ScenarioCase.objects.filter(vng_endpoint__session_type__session=self.kwargs['pk'])
+
         session = get_object_or_404(Session, id=self.kwargs['pk'])
+        if session.user != self.request.user:
+            raise PermissionDenied
         self.perform_operations(session)
         return scenarios
 
 
 class ResultSessionView(LoginRequiredMixin, views.APIView):
+    """
+    Session result
+
+    Return
+    """
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -129,9 +142,9 @@ class ResultSessionView(LoginRequiredMixin, views.APIView):
 
 class SessionTypesViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """
-    Return all the session types
+    Session types
 
-    Write a snippet
+    Return all the session types
     """
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (permissions.IsAuthenticated, )

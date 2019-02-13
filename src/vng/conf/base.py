@@ -48,10 +48,12 @@ INSTALLED_APPS = [
     # External applications.
     # 'axes',
     'sniplates',
+    'drf_yasg',
     'hijack',
     'compat',  # Part of hijack
     'hijack_admin',
     'easy_thumbnails',
+    'django_bootstrap_breadcrumbs',
 
     # Project applications.
     'vng.accounts',
@@ -339,3 +341,8 @@ HIJACK_REGISTER_ADMIN = False
 # This is a CSRF-security risk.
 # See: http://django-hijack.readthedocs.io/en/latest/configuration/#allowing-get-method-for-hijack-views
 HIJACK_ALLOW_GET_REQUESTS = True
+
+# API Documentation configuration
+SWAGGER_SETTINGS = {
+    'DEFAULT_AUTO_SCHEMA_CLASS': 'vng.utils.schema.CompoundTagsSchema',
+}

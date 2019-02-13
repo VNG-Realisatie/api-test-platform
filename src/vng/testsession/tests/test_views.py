@@ -32,13 +32,13 @@ class RetrieveSessionType(WebTest):
         SessionTypeFactory()
 
     def test_retrieve_single_session_types(self):
-        call = self.app.get('/api/v1/sessiontypes/', user='admin')
+        call = self.app.get(reverse('apiv1:session_types-list'), user='admin')
         t = get_object(call.body)
         self.assertTrue(t[0]['id'] > 0)
 
     def test_retrieve_multiple_session_types(self):
         SessionTypeFactory.create_batch(size=10)
-        call = self.app.get('/api/v1/sessiontypes/', user='admin')
+        call = self.app.get(reverse('apiv1:session_types-list'), user='admin')
         t = json.loads(call.text)
         self.assertTrue(t[9]['id'] > 0)
 
@@ -73,7 +73,7 @@ class AuthorizationTests(WebTest):
             'status': choices.StatusChoices.running,
             'api_endpoint': 'http://google.com',
         }
-        call = self.app.post('/api/v1/testsessions/', session, status=401)
+        call = self.app.post(reverse('apiv1:test_session-list'), session, status=401)
 
 
 class CreationAndDeletion(WebTest):
@@ -94,7 +94,7 @@ class CreationAndDeletion(WebTest):
             ('password', 'password')]))
         key = get_object(call.body)['key']
         head = {'Authorization': 'Token {}'.format(key)}
-        call = self.app.post(reverse('apiv1:test_session_list'), session, headers=head)
+        call = self.app.post(reverse('apiv1:test_session-list'), session, headers=head)
 
     def test_session_creation_permission(self):
         Session.objects.all().delete()
@@ -111,7 +111,7 @@ class CreationAndDeletion(WebTest):
             ('password', 'password')]))
         key = get_object(call.body)['key']
         head = {'Authorization': 'Token {}'.format(key)}
-        call = self.app.post(reverse('apiv1:test_session_list'), session, headers=head)
+        call = self.app.post(reverse('apiv1:test_session-list'), session, headers=head)
         response_parsed = get_object(call.body)
         session = Session.objects.filter(pk=response_parsed['id'])[0]
         user = User.objects.all().first()
@@ -188,15 +188,14 @@ class TestLog(WebTest):
             ('password', 'password')]))
         key = get_object(call.body)['key']
         head = {'Authorization': 'Token {}'.format(key)}
-        call = self.app.post(reverse("apiv1:test_session_list"), params=collections.OrderedDict([
+        call = self.app.post(reverse("apiv1:test_session-list"), params=collections.OrderedDict([
             ('session_type', SessionType.objects.first().name),
         ]), headers=head)
         call = get_object(call.body)
         url = call['exposedurl_set'][0]['exposed_url']
         session_id = call['id']
         call = self.app.get(url)
-
-        call = self.app.get(reverse('apiv1:stop_session', kwargs={'pk': session_id}))
+        call = self.app.get(reverse('apiv1:stop_session-detail', kwargs={'pk': session_id}))
         call = get_object(call.body)
         self.assertEqual(call, [])
         session = Session.objects.get(pk=session_id)
@@ -271,7 +270,7 @@ class TestLogNewman(WebTest):
         self.head = {'Authorization': 'Token {}'.format(key)}
 
     def test_run(self):
-        call = self.app.post(reverse("apiv1:test_session_list"), params=collections.OrderedDict([
+        call = self.app.post(reverse("apiv1:test_session-list"), params=collections.OrderedDict([
             ('session_type', self.scenario_case.vng_endpoint.session_type.name),
         ]), headers=self.head)
         call = get_object(call.body)
@@ -281,7 +280,7 @@ class TestLogNewman(WebTest):
         call = self.app.get(url)
         call = get_object(call.body)
 
-        call = self.app.get(reverse('apiv1:stop_session', kwargs={'pk': session_id}))
+        call = self.app.get(reverse('apiv1:stop_session-detail', kwargs={'pk': session_id}))
         call = get_object(call.body)
         self.assertEqual(len(call), 2)
 

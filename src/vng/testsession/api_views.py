@@ -14,7 +14,7 @@ from django.http import (
     Http404, HttpResponse, HttpResponseRedirect, HttpResponseServerError
 )
 
-from rest_framework import generics, permissions, viewsets, views
+from rest_framework import generics, permissions, viewsets, views, mixins
 from rest_framework.authentication import (
     SessionAuthentication, TokenAuthentication
 )
@@ -36,13 +36,34 @@ from .task import run_tests
 logger = logging.getLogger(__name__)
 
 
-class SessionViewSet(viewsets.ModelViewSet):
+class SessionViewSet(
+        LoginRequiredMixin,
+        mixins.CreateModelMixin,
+        mixins.ListModelMixin,
+        mixins.RetrieveModelMixin,
+        viewsets.GenericViewSet):
+    """
+    retrieve:
+    Return the given session.
+
+    Session detail.
+
+    list:
+    Return a list of all the existing session.
+
+    Ssession list.
+
+    create:
+    Create a new session instance.
+
+    Create a session.
+    """
     serializer_class = SessionSerializer
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (permissions.IsAuthenticated, IsOwner)
 
     def get_queryset(self):
-        return Session.objects.filter(id=self.kwargs['pk']).prefetch_related('exposedurl_set')
+        return Session.objects.all().prefetch_related('exposedurl_set')
 
     def perform_create(self, serializer):
         session = serializer.save(user=self.request.user, pk=None)
@@ -54,8 +75,13 @@ class SessionViewSet(viewsets.ModelViewSet):
 
 
 class StopSessionView(generics.ListAPIView):
+    """
+    Stop Session
+
+    Stop the session and retrieve all the scenario cases related to it.
+    """
     authentication_classes = (TokenAuthentication, SessionAuthentication)
-    permission_classes = (permissions.IsAuthenticated, IsOwner)
+    permission_classes = (permissions.IsAuthenticated,)
     serializer_class = ScenarioCaseSerializer
 
     def perform_operations(self, session):
@@ -65,19 +91,26 @@ class StopSessionView(generics.ListAPIView):
 
     def get_queryset(self):
         scenarios = ScenarioCase.objects.filter(vng_endpoint__session_type__session=self.kwargs['pk'])
+
         session = get_object_or_404(Session, id=self.kwargs['pk'])
+        if session.user != self.request.user:
+            raise PermissionDenied
         self.perform_operations(session)
         return scenarios
 
 
 class ResultSessionView(LoginRequiredMixin, views.APIView):
+    """
+    Result of a Session
+
+    Return for each scenario case related to the session, if that call has been performed and the global outcome.
+    """
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request, pk, *args, **kwargs):
         res = None
         session = self.get_object()
-        print(request.user)
         if session.user != request.user:
             raise PermissionDenied
         scenario_cases = ScenarioCase.objects.filter(vng_endpoint__session_type=session.session_type)
@@ -128,7 +161,12 @@ class ResultSessionView(LoginRequiredMixin, views.APIView):
         return self.session
 
 
-class SessionTypesViewSet(generics.ListAPIView):
+class SessionTypesViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """
+    Session types
+
+    Return all the session types
+    """
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (permissions.IsAuthenticated, )
     serializer_class = SessionTypesSerializer
@@ -137,7 +175,12 @@ class SessionTypesViewSet(generics.ListAPIView):
         return SessionType.objects.all()
 
 
-class ExposedUrlView(generics.ListAPIView):
+class ExposedUrlView(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """
+    Exposed url
+
+    Return a list of all the exposed url of a certain session.
+    """
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (permissions.IsAuthenticated, IsOwner)
     serializer_class = ExposedUrlSerializer
@@ -253,6 +296,10 @@ class RunTest(CSRFExemptMixin, View):
                 'relative_url': ''
             })
         )
+
+        if not endpoint.vng_endpoint.url.endswith('/'):
+            if sub.endswith('/'):
+                sub = sub[:-1]
         return re.sub(endpoint.vng_endpoint.url, sub, content)
 
     def sub_url_request(self, content, host, endpoint):

@@ -23,7 +23,7 @@ from .models import (
 from .task import execute_test
 
 
-class TestScenarioSelect(FormView, MultipleObjectMixin, MultipleObjectTemplateResponseMixin):
+class TestScenarioSelect(LoginRequiredMixin, FormView, MultipleObjectMixin, MultipleObjectTemplateResponseMixin):
     template_name = 'servervalidation/server-run_list.html'
     form_class = CreateServerRunForm
     context_object_name = 'server_run_list'
@@ -48,7 +48,7 @@ class TestScenarioSelect(FormView, MultipleObjectMixin, MultipleObjectTemplateRe
         return super().post(request, *args, **kwargs)
 
 
-class CreateEndpoint(CreateView):
+class CreateEndpoint(LoginRequiredMixin, CreateView):
     template_name = 'servervalidation/server-run_create.html'
     form_class = CreateEndpointForm
 

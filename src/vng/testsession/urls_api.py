@@ -1,28 +1,29 @@
-from django.conf.urls import url, include
 from rest_framework import routers, serializers, viewsets
+from rest_framework.documentation import include_docs_urls
+
+from django.conf.urls import url, include
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
+
 from . import api_views, apps
+from ..utils.schema import schema_view
 
 app_name = apps.AppConfig.__name__
 
-session_detail = api_views.SessionViewSet.as_view({
-    'get': 'retrieve',
-    'put': 'update',
-    'delete': 'destroy'
-})
 
-session_list = api_views.SessionViewSet.as_view({
-    'get': 'list',
-    'post': 'create'
-})
+router = routers.SimpleRouter()
+router.register('testsessions', api_views.SessionViewSet, 'test_session')
+# router.register('stop-session', api_views.StopSessionView, 'stop_session')
+router.register('sessiontypes', api_views.SessionTypesViewSet, 'session_types')
+router.register('exposed_url', api_views.ExposedUrlView, 'sessionTypes')
 
-urlpatterns = [
-    url(r'testsessions/(?P<pk>[0-9]+)', session_detail, name='api_sessions'),
-    url(r'stop-session/(?P<pk>[0-9]+)', api_views.StopSessionView.as_view(), name='stop_session'),
+
+urlpatterns = router.urls
+
+
+urlpatterns += [
+    url(r'stop_session/(?P<pk>[0-9]+)', api_views.StopSessionView.as_view(), name='stop_session-detail'),
     url(r'result-session/(?P<pk>[0-9]+)', api_views.ResultSessionView.as_view(), name='result_session'),
-    url(r'testsessions/', session_list, name='test_session_list'),
-    url(r'sessiontypes/', api_views.SessionTypesViewSet.as_view(), name='sessionTypes'),
-    url(r'exposed_url/(?P<pk>[0-9]+)', api_views.ExposedUrlView.as_view(), name='sessionTypes'),
     url(r'runtest/(?P<url>([^/])+)/$', login_required(api_views.RunTest.as_view()), name='sessionTypes'),
+    url(r'^schema/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ]

@@ -1,21 +1,19 @@
+
 from django.conf.urls import url, include
 from rest_framework import routers, serializers, viewsets
 from django.conf.urls import url
 
 from . import views, api_views, apps
+from ..utils.schema import schema_view
 
 app_name = apps.AppConfig.__name__
 
-server_run_list = api_views.ServerRunViewSet.as_view({
-    'get': 'list',
-    'post': 'create',
-})
 
-server_run_create = api_views.ServerRunViewSet.as_view({
-    'get': 'retrieve',
-})
+router = routers.DefaultRouter()
+router.register('server-run', api_views.ServerRunViewSet, base_name='api_server-run')
+
 
 urlpatterns = [
-    url(r'server-run/(?P<pk>[0-9]+)', server_run_create, name='api_server-run'),
-    url(r'server-run', server_run_list, name='api_server-run_list'),
+    url('schema', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+    url('', include((router.urls, 'session-api'), namespace='session')),
 ]

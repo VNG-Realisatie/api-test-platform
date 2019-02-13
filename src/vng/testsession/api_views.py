@@ -14,7 +14,7 @@ from django.http import (
     Http404, HttpResponse, HttpResponseRedirect, HttpResponseServerError
 )
 
-from rest_framework import generics, permissions, viewsets, views
+from rest_framework import generics, permissions, viewsets, views, mixins
 from rest_framework.authentication import (
     SessionAuthentication, TokenAuthentication
 )
@@ -53,7 +53,7 @@ class SessionViewSet(viewsets.ModelViewSet):
             session.delete()
 
 
-class StopSessionView(generics.ListAPIView):
+class StopSessionView(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (permissions.IsAuthenticated, IsOwner)
     serializer_class = ScenarioCaseSerializer
@@ -77,7 +77,6 @@ class ResultSessionView(LoginRequiredMixin, views.APIView):
     def get(self, request, pk, *args, **kwargs):
         res = None
         session = self.get_object()
-        print(request.user)
         if session.user != request.user:
             raise PermissionDenied
         scenario_cases = ScenarioCase.objects.filter(vng_endpoint__session_type=session.session_type)
@@ -128,7 +127,12 @@ class ResultSessionView(LoginRequiredMixin, views.APIView):
         return self.session
 
 
-class SessionTypesViewSet(generics.ListAPIView):
+class SessionTypesViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """
+    Return all the session types
+
+    Write a snippet
+    """
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (permissions.IsAuthenticated, )
     serializer_class = SessionTypesSerializer
@@ -137,7 +141,7 @@ class SessionTypesViewSet(generics.ListAPIView):
         return SessionType.objects.all()
 
 
-class ExposedUrlView(generics.ListAPIView):
+class ExposedUrlView(mixins.ListModelMixin, viewsets.GenericViewSet):
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (permissions.IsAuthenticated, IsOwner)
     serializer_class = ExposedUrlSerializer
@@ -253,6 +257,10 @@ class RunTest(CSRFExemptMixin, View):
                 'relative_url': ''
             })
         )
+
+        if not endpoint.vng_endpoint.url.endswith('/'):
+            if sub.endswith('/'):
+                sub = sub[:-1]
         return re.sub(endpoint.vng_endpoint.url, sub, content)
 
     def sub_url_request(self, content, host, endpoint):

@@ -6,7 +6,7 @@ from django.db import transaction
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Prefetch
 
-from rest_framework import permissions, viewsets
+from rest_framework import permissions, viewsets, mixins
 from rest_framework.exceptions import bad_request
 from rest_framework.authentication import (
     SessionAuthentication, TokenAuthentication
@@ -20,7 +20,28 @@ from .models import (
 )
 
 
-class ServerRunViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
+class ServerRunViewSet(
+        LoginRequiredMixin,
+        mixins.CreateModelMixin,
+        mixins.ListModelMixin,
+        mixins.RetrieveModelMixin,
+        viewsets.GenericViewSet):
+    """
+    retrieve:
+    Return the given provider-run.
+
+    Provider-run detail.
+
+    list:
+    Return a list of all the existing provider-run.
+
+    Provider-run list.
+
+    create:
+    Create a new provider-run instance.
+
+    Create a provider-run.
+    """
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = ServerRunSerializer

@@ -36,7 +36,28 @@ from .task import run_tests
 logger = logging.getLogger(__name__)
 
 
-class SessionViewSet(viewsets.ModelViewSet):
+class SessionViewSet(
+        LoginRequiredMixin,
+        mixins.CreateModelMixin,
+        mixins.ListModelMixin,
+        mixins.RetrieveModelMixin,
+        viewsets.GenericViewSet):
+    """
+    retrieve:
+    Return the given session.
+
+    Session detail.
+
+    list:
+    Return a list of all the existing session.
+
+    Ssession list.
+
+    create:
+    Create a new session instance.
+
+    Create a session.
+    """
     serializer_class = SessionSerializer
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (permissions.IsAuthenticated, IsOwner)
@@ -57,7 +78,7 @@ class StopSessionView(generics.ListAPIView):
     """
     Stop Session
 
-    stop the session
+    Stop the session and retrieve all the scenario cases related to it.
     """
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (permissions.IsAuthenticated,)
@@ -80,9 +101,9 @@ class StopSessionView(generics.ListAPIView):
 
 class ResultSessionView(LoginRequiredMixin, views.APIView):
     """
-    Session result
+    Result of a Session
 
-    Return
+    Return for each scenario case related to the session, if that call has been performed and the global outcome.
     """
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (permissions.IsAuthenticated,)
@@ -155,6 +176,11 @@ class SessionTypesViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
 
 class ExposedUrlView(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """
+    Exposed url
+
+    Return a list of all the exposed url of a certain session.
+    """
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (permissions.IsAuthenticated, IsOwner)
     serializer_class = ExposedUrlSerializer

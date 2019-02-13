@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'compat',  # Part of hijack
     'hijack_admin',
     'easy_thumbnails',
+    'django_bootstrap_breadcrumbs',
 
     # Project applications.
     'vng.accounts',

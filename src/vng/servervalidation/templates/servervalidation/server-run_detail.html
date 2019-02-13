@@ -1,4 +1,5 @@
 {% extends 'master.html' %}
+{% load django_bootstrap_breadcrumbs %}
 
 {% block title %}Server-run detail{% endblock%}
 
@@ -7,6 +8,9 @@
 
 <article class="article">
     <div class="article__section">
+        {% breadcrumb "Home" 'server_run:server-run_list' %}
+        {% breadcrumb 'Detail' 'testsession:sessions' %}
+        {% render_breadcrumbs %}
         <h1>View the detail of a test session</h1>
         <input type="button" class="button button--primary" value="Server-run list" onclick="location.href= '{% url 'server_run:server-run_list' %}';">
 

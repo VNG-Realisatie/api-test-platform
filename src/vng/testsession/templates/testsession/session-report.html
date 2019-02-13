@@ -1,4 +1,5 @@
 {% extends 'master.html' %}
+{% load django_bootstrap_breadcrumbs %}
 
 {% block title %}Session Report{% endblock%}
 
@@ -7,6 +8,12 @@
 
 <article class="article">
     <div class="article__section">
+
+        {% breadcrumb "Home" "/" %}
+        {% breadcrumb 'Log' 'testsession:session_log' session.pk %}
+        {% breadcrumb 'back' '' %}
+
+        {% render_breadcrumbs %}
 
         <h1>Scenario</h1>
         <table class="table">

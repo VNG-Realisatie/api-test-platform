@@ -1,0 +1,35 @@
+{% extends 'master.html' %}
+
+{% block title %}Test client - Detailweergave test-sessie{% endblock%}
+
+{% block content %}
+
+
+
+
+
+<article class="article">
+    <div class="article__section">
+        <input type="button" class="button button--primary" value="Terug" onclick="location.href = '{% url 'testsession:session_log' object.session.pk %}';">
+        <h2>Test client - {{ object.session }}</h2>
+
+    </div>
+    <div class="article__section">
+        <table class="table">
+            <tr>
+                <td class="table__cell">Request</td>
+                <td class="table__cell">{{ object.request }}</td>
+            </tr>
+            <tr>
+                <td class="table__cell">Response Status</td>
+                <td class="table__cell">{{ object.response_status }}</td>
+            </tr>
+            <tr>
+                <td class="table__cell">Response</td>
+                <td class="table__cell">{{ object.response }}</td>
+            </tr>
+        </table>
+    </div>
+
+</article>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% load i18n %}
+{% spaceless %}
+
+    {% comment %}
+
+        Requires eiter target or value to be set.
+
+        - target should be a node id (prefixed with '#').
+        - value should be string.
+
+        If no target is provided, an id is generated using value.
+        If no value is provided target should point to a node containg the value.
+
+        Note:
+
+        Target cannot be set to 'display: none' or 'visibility: hidden', please see _copy.scss for alternative approach.
+
+    {% endcomment %}
+
+    {% with value|slugify as value_slug %}
+        {% with auto_target='#copy_'|add:value_slug %}
+            {% firstof target auto_target as clipboard_target %}
+            <div class="copy">
+                <button class="copy__button button icon icon-copy" data-clipboard-target="{{ clipboard_target }}"
+                        title="{{ _('Copy to clipboard') }}"></button>
+
+                {% if value %}
+                    <span class="copy-target" id="{{ clipboard_target|slice:'1:' }}">{{ value }}</span>
+                {% endif %}
+            </div>
+        {% endwith %}
+    {% endwith %}
+{% endspaceless %}

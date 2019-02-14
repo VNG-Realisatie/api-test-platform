@@ -1,0 +1,31 @@
+---
+
+- hosts: localhost
+  vars_files:
+    - vars/development.yml
+    - vars/packages.yml
+  become: yes
+
+  tasks:
+  - include: maykin-deployment/ansible/tasks/startdeploy.yml
+  - block:
+#    - include: maykin-deployment/ansible/tasks/create_maykin_user.yml
+#    - include: maykin-deployment/ansible/tasks/staff_pub_keys.yml
+    - include: maykin-deployment/ansible/tasks/setup.yml
+#    - include: maykin-deployment/ansible/tasks/exim4.yml
+#    - include: maykin-deployment/ansible/tasks/newrelic.yml
+    - include: maykin-deployment/ansible/tasks/firewall.yml
+    - include: maykin-deployment/ansible/tasks/logrotate.yml
+    - include: maykin-deployment/ansible/tasks/postgresql-9.4.yml
+    - include: maykin-deployment/ansible/tasks/npm.yml
+    - include: maykin-deployment/ansible/tasks/django-project-1.7.yml
+    - include: maykin-deployment/ansible/tasks/nginx-per-target.yml
+    - include: maykin-deployment/ansible/tasks/cronjobs.yml
+#    - include: maykin-deployment/ansible/tasks/rsnapshot.yml
+    - include: maykin-deployment/ansible/tasks/supervisor-per-group.yml
+    - include: maykin-deployment/ansible/tasks/stopdeploy.yml
+    rescue:
+    - include: maykin-deployment/ansible/tasks/errordeploy.yml
+
+  handlers:
+  - include: maykin-deployment/ansible/handlers/main.yml

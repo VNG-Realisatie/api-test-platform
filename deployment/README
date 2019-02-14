@@ -1,0 +1,124 @@
+Installation & Setup
+====================
+
+Note that the 'maykin-deployment' directory is a git submodule. Therefore you
+need to update the submodule after a fresh clone:
+
+    $ git submodule update --init
+
+To update the submodule contents from the maykin-deployment repository:
+
+    $ git submodule foreach git pull
+
+For use of ansible on Debian wheezy, installing the wheezy-backports
+repository is required.
+
+
+Development
+===========
+
+Emulate a production-like environment using Vagrant::
+
+    $ vagrant up
+
+The above should download, install and launch the virtual machine with the
+project installed in ``/srv/sites/``
+
+NOTE: modify vars.yml for now to determine the target, we'll switch to
+separate var files in the future.
+
+You can SSH into your box with::
+
+    $ vagrant ssh
+
+
+Windows users
+-------------
+
+Provisioning with Ansible is slightly different on Windows. Ansbible is
+installed on the virtual machine and run from there. This causes output to be
+hidden until it's done. To get more insights in whats going on, do::
+
+    $ vagrant ssh
+
+    vagrant:~$ cp /vagrant/maykin-deployment/hosts /tmp/ansible_hosts && chmod -x /tmp/ansible_hosts
+    vagrant:~$ ansible-playbook /vagrant/vagrant.yml --inventory-file=/tmp/ansible_hosts --extra-vars "is_windows=true" --connection=local
+
+
+Initial provisioning (Staging and Production)
+=============================================
+
+Prep the remote server:
+
+ 1. Ensure you have logged into the server to accept the server's SSH host key.
+
+ 2. To be sure Python is available for Ansible: `apt-get update` and `apt-get install python`
+
+ 3. (optional) Configure the hostname in /etc/hostname and /etc/hosts
+
+ 4. (optional) Certain images don't have the correct locales pre-installed: `dpkg-reconfigure locales`
+
+ 5. (optional) Certain images don't have a Debian-generated /etc/sudoers file or its overwritten. Ensure it has the following,
+ to allow members of the group 'sudo' to sudo:
+
+ Defaults	env_reset
+ Defaults	secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+ %sudo	ALL=(ALL:ALL) ALL
+
+Prep the deployment:
+
+ 1. Add the host to the hosts file in maykin-deployment/hosts.
+
+ 2. Create an ansible vault in group_vars/*host*/sudo_vars.yml with at a minimum the following variables defined:
+
+  hashed_sudo_pass: mypasswordhash
+  ansible_sudo_pass: mypassword
+
+ Use `ansible-vault create sudo_vars.yml` to do so.
+ To genenerate the hashed password use: `mkpasswd --method=SHA-512`
+
+ 3. Ensure you've updated staging.yml and vars/staging.yml for your project.
+
+ 4. Then do the initial provisioning as root and with a SSH password:
+
+    $ ansible-playbook staging.yml -u root -k
+
+This will create the 'maykin' user with the vaulted sudo password and with the public keys as stated under 'pub_key_users' in vars/staging.yml.
+
+
+Staging and production
+======================
+
+For deployment, assuming you log in using the maykin-user and have vault-access:
+
+(the default htaccess username/password for test & staging is: maykin / nogniet)
+
+    $ ansible-playbook test.yml
+
+    $ ansible-playbook staging.yml
+
+    $ ansible-playbook production.yml
+
+
+Reuse in other projects
+-----------------------
+
+The 'maykin-deployment' directory is a git submodule containing all the
+generic Ansible tasks / includes. So after copying over the `/deployment`
+files, in the top-level directory, do:
+
+    $ git submodule add git@bitbucket.org:maykinmedia/maykin-deployment.git ./deployment/maykin-deployment
+    $ git submodule update --init
+    $ git commit ./deployment/maykin-deployment -m "Added maykin-deployment submodule"
+
+
+Problems
+--------
+
+If you have the error that you can not execute files that are stored in the /tmp/ folder. Add this before you install your python dependencies.
+
+```
+os.environ['TMPDIR'] = '/var/tmp/'
+call(os.path.join(virtualenv, 'bin', 'pip') + ' install -r requirements/%s.txt' % args.target, shell=True)
+```

@@ -1,0 +1,97 @@
+{% load staticfiles %}
+{% load static %}
+{% with red="bgcolor='#FF0000' style='color:#ffffff' " %}
+{% with green="bgcolor='#1d8719' style='color:#ffffff'" %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Session Report</title>
+</head>
+
+<body>
+    <img src="/static/img/components/logo/logo.svg">
+    <div>
+        <h1>Session Report</h1>
+
+        <h2>Scenario</h2>
+        <table class='table-t'>
+            <tbody>
+                <tr>
+                    <td class='cell-name'>Standard</td>
+                    <td>{{ session_type.standard }}</td>
+                </tr>
+                <tr>
+                    <td class='cell-name'>Role</td>
+                    <td>{{ session_type.role }}</td>
+                </tr>
+                <tr>
+                    <td class='cell-name'>Application</td>
+                    <td>{{ session_type.application }}</td>
+                </tr>
+                <tr>
+                    <td class='cell-name'>Version</td>
+                    <td>{{ session_type.version }}</td>
+                </tr>
+
+            </tbody>
+        </table>
+        <h2>Scenario cases</h2>
+        <table class='table-t'>
+            <tbody>
+                {% for report in object_list %}
+                <tr>
+                    <td class='cell-name'>{{ report.scenario_case.http_method }}</td>
+                    <td class='cell-name'>{{ report.scenario_case.url }}</td>
+                    {% if report.is_success %}
+                    <td class='cell-success cell-content-fix'>{{ report.result }}</td>
+                    {% elif report.is_failed %}
+                    <td class='cell-fail cell-content-fix'>{{ report.result }}</td>
+                    {% else %}
+                    <td>{{ report.result }}</td>
+                    {% endif %}
+                    <td class="table__cell" >{{ report.session_log.response_status }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html>
+
+<style>
+    .cell-success {
+        background-color: green;
+        color: white
+    }
+
+    .cell-fail {
+        background-color: red;
+        color: white
+    }
+
+    .table-t {
+        table-layout: auto;
+        border-collapse: collapse;
+        width: 100%
+    }
+
+    .cell-name {
+        width: 30%
+    }
+
+    .cell-content-fix {
+        max-width: 100%;
+        white-space: nowrap;
+    }
+
+    .cell-content {
+        width: 70%
+    }
+
+</style>
+
+{% endwith %}
+{% endwith %}

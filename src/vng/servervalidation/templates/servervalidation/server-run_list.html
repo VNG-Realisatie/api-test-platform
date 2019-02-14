@@ -1,0 +1,40 @@
+{% extends 'master.html' %}
+{% load sniplates %}
+
+
+{% block title %}Session List{% endblock %}
+
+
+{% block content %}
+    <article class="article">
+        <div class="article__section">
+            <h1>Server runs</h1>
+            <h2>Start a new server-testrun</h2>
+
+            <form class="form" method="post">{% csrf_token %}
+                {% load_widgets form='forms.html' %}
+
+                {% for field in form %}
+                    {% form_field field %}
+                {% endfor %}
+
+                <input type="submit" class="button button--primary" value="Continue">
+                <input type="button" class="button" value="Cancel"
+                       onclick="location.href = '{% url 'server_run:server-run_list' %}';">
+            </form>
+
+            {% if object_list %}
+                <h2>Server list</h2>
+                <table class="table">
+                    {% include 'components/table/header-server-run.html' only %}
+                    {% for server_run in object_list %}
+                        {% include 'components/table/row-server-run.html' with server_run=server_run %}
+                    {% endfor %}
+                </table>
+
+                {% include 'components/pagination/pagination.html' %}
+            {% endif %}
+        </div>
+
+    </article>
+{% endblock %}

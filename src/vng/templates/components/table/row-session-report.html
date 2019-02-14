@@ -1,0 +1,21 @@
+{% with red="bgcolor='#FF0000' style='color:#ffffff' " %}
+    {% with green="bgcolor='#1d8719' style='color:#ffffff'" %}
+
+{% spaceless %}
+<tr>
+    <td class="table__cell" >{{ report.scenario_case.http_method }}</td>
+    <td class="table__cell" >{{ report.scenario_case.url }}</td>
+    {% if report.is_success %}
+        <td class="table__cell" {{ green }}>{{ report.result }}</td>
+    {% elif report.is_failed %}
+        <td class="table__cell" {{ red }} >{{ report.result }}</td>
+    {% else %}
+        <td class="table__cell">{{ report.result }}</td>
+    {% endif %}
+    <td class="table__cell" >{{ report.session_log.response_status }}</td>
+</tr>
+{% endspaceless %}
+
+
+    {% endwith %}
+{% endwith %}

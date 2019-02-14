@@ -1,0 +1,34 @@
+# Developers
+.hg
+.git
+.svn
+.idea/
+.sass-cache/
+*.db
+*.pyc
+__pycache__
+*~
+
+# Javascript libraries
+/node_modules/
+
+# Coverage reports
+/reports/
+/htmlcov/
+
+# Environment
+local.py
+/env/
+/media/
+/static/
+/src/vng/static/css
+/src/vng/static/js
+/mail/
+/log/*.log*
+/log/nginx/*.log*
+
+/src/vng/static/css/admin/admin_overrides.css
+.vscode/settings.json
+.vscode/settings.json
+.vscode/launch.json
+.vscode/launch.json

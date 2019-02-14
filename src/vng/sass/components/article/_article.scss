@@ -1,0 +1,39 @@
+@import '../../lib/color';
+@import '../../lib/grid';
+@import '../../lib/typography';
+
+$article-color-border: $color-gray;
+$article-color-section-background: $color-white;
+$article-color-subsection-background: lighten($color-blue, 60);
+
+.article {
+  @include columns-responsive(12, 8, 8, 8);
+  position: relative;
+
+  &:last-child {
+    @include responsive(width, 100%, 100%, 100%, 100%);
+  }
+
+  &__section {
+    @include gutter(padding);
+    @include gutter(margin-bottom);
+    @include wysiwyg;
+    background-color: $article-color-section-background;
+
+    &:last-child {
+      @include omega(true, margin-bottom);
+    }
+
+    .container {
+      width: 100%;
+    }
+  }
+
+  .definition-list,
+  .form,
+  .table {
+    &:not(:last-child) {
+      @include gutter(margin-bottom, 2);
+    }
+  }
+}

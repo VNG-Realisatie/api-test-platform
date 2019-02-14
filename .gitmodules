@@ -1,0 +1,3 @@
+[submodule "deployment/maykin-deployment"]
+	path = deployment/maykin-deployment
+	url = git@bitbucket.org:maykinmedia/maykin-deployment.git

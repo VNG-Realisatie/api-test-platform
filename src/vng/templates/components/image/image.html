@@ -1,0 +1,13 @@
+{% spaceless %}
+    <figure class="image" role="img">
+        <picture class="image__picture">
+            {% if mobile_src %}
+                <source media="(max-width: 767px)" srcset="{{ mobile_src }}">{% endif %}
+            {% if tablet_src %}
+                <source media="(max-width: 991px)" srcset="{{ tablet_src }}">{% endif %}
+            {% if laptop_src %}
+                <source media="(max-width: 1199pxpx)" srcset="{{ laptop_src }}">{% endif %}
+            <img class="image__image" src="{{ src }}" alt="{{ alt }}">
+        </picture>
+    </figure>
+{% endspaceless %}

@@ -1,0 +1,32 @@
+{% extends 'master.html' %}
+
+{% block title %}Session Report{% endblock%}
+
+{% block content %}
+
+
+<article class="article">
+    <div class="article__section">
+
+        <h1>Scenario</h1>
+        <table class="table">
+        <input type="button" class="button button--primary" value="Back" onclick="location.href = '{% url 'testsession:session_log' session.id %}';">
+            {% include 'components/table/header-scenario-report.html' with scenario=session_type only %}
+        </table>
+    </div>
+    <div class="article__section">
+        <h2>Scenario case</h2>
+
+        {% if object_list %}
+        <table class="table">
+            {% include 'components/table/header-session-report.html' only %}
+            {% for rp in object_list %}
+                {% include 'components/table/row-session-report.html' with report=rp only %}
+            {% endfor %}
+        </table>
+        {% else %}
+        <p>There are no log in the library.</p>
+        {% endif %}
+    </div>
+</article>
+{% endblock %}

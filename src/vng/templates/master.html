@@ -1,0 +1,36 @@
+{% load staticfiles %}
+{% load static %}
+{% spaceless %}
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>{% block title %}Token Issuer{% endblock %}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <link href="{{ get_media_prefix }}{% static 'css/screen.css' %}" media="screen" rel="stylesheet"/>
+        {% block extra_css %}{% endblock %}
+        <link rel="shortcut icon" href="{% static 'ico/favicon.png' %}">
+    </head>
+
+    <body class="view {% block body-class %}{% endblock %}">
+
+    <main>
+        {% include 'components/header/header.html' %}
+{#        {% include 'components/hero/hero.html' %}#}
+
+        <div class="content">
+        {% block content %}
+            Override <code>{% verbatim %}{% block content %}{% endverbatim %}</code>
+            to get some actual content.
+        {% endblock %}
+        </div>
+    </main>
+
+
+    <script src="{% static 'js/token_issuer.js' %}"></script>
+    </body>
+    </html>
+{% endspaceless %}

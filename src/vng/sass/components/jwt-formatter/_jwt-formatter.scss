@@ -1,0 +1,16 @@
+// These colors should match the scheme on: https://jwt.io/.
+$jwt-formatter-color-header: #fb015b;
+$jwt-formatter-color-payload: #d63aff;
+$jwt-formatter-color-signature: #00b9f1;
+
+.jwt-formatter {
+  &__part--header {
+    color: $jwt-formatter-color-header;
+  }
+  &__part--payload {
+    color: $jwt-formatter-color-payload;
+  }
+  &__part--signature {
+    color: $jwt-formatter-color-signature;
+  }
+}

@@ -16,6 +16,11 @@ schema_view = get_schema_view(
 
 class CompoundTagsSchema(SwaggerAutoSchema):
 
+    mapping = {
+        'result': 'actions',
+        'stop': 'actions'
+    }
+
     def get_tags(self, operation_keys):
         '''
         Function that enwraps each entity's api methods in the same bunch
@@ -24,7 +29,6 @@ class CompoundTagsSchema(SwaggerAutoSchema):
                 POST session
                 GET session
         '''
-
         if 'auth' in operation_keys:
             return super().get_tags(operation_keys)
         if 'v1' in operation_keys:
@@ -33,4 +37,8 @@ class CompoundTagsSchema(SwaggerAutoSchema):
         if '' in operation_keys:
             i = operation_keys.index('')
             del operation_keys[i]
+        for k, v in self.mapping.items():
+            if k in operation_keys:
+                i = operation_keys.index(k)
+                operation_keys[i] = v
         return [' > '.join(operation_keys[:-1])]

@@ -22,8 +22,8 @@ urlpatterns = router.urls
 
 
 urlpatterns += [
-    url(r'stop_session/(?P<pk>[0-9]+)', api_views.StopSessionView.as_view(), name='stop_session-detail'),
-    url(r'result-session/(?P<pk>[0-9]+)', api_views.ResultSessionView.as_view(), name='result_session'),
+    url(r'testsessions/(?P<pk>[0-9]+)/stop$', api_views.StopSessionView.as_view(), name='stop_session'),
+    url(r'testsessions/(?P<pk>[0-9]+)/result$', api_views.ResultSessionView.as_view(), name='result_session'),
     url(r'runtest/(?P<url>([^/])+)/$', login_required(api_views.RunTest.as_view()), name='sessionTypes'),
     url(r'^schema/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ]

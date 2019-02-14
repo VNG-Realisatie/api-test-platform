@@ -195,7 +195,7 @@ class TestLog(WebTest):
         url = call['exposedurl_set'][0]['exposed_url']
         session_id = call['id']
         call = self.app.get(url)
-        call = self.app.get(reverse('apiv1session:stop_session-detail', kwargs={'pk': session_id}))
+        call = self.app.get(reverse('apiv1session:stop_session', kwargs={'pk': session_id}))
         call = get_object(call.body)
         self.assertEqual(call, [])
         session = Session.objects.get(pk=session_id)
@@ -280,7 +280,7 @@ class TestLogNewman(WebTest):
         call = self.app.get(url)
         call = get_object(call.body)
 
-        call = self.app.get(reverse('apiv1session:stop_session-detail', kwargs={'pk': session_id}))
+        call = self.app.get(reverse('apiv1session:stop_session', kwargs={'pk': session_id}))
         call = get_object(call.body)
         self.assertEqual(len(call), 2)
 

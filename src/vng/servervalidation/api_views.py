@@ -28,19 +28,19 @@ class ServerRunViewSet(
         viewsets.GenericViewSet):
     """
     retrieve:
-    Return the given provider-run.
-
     Provider-run detail.
 
-    list:
-    Return a list of all the existing provider-run.
+    Return the given provider-run.
 
+    list:
     Provider-run list.
 
-    create:
-    Create a new provider-run instance.
+    Return a list of all the existing provider-run.
 
+    create:
     Create a provider-run.
+
+    Create a new provider-run instance.
     """
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (permissions.IsAuthenticated,)

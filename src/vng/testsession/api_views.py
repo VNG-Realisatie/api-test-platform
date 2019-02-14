@@ -24,7 +24,7 @@ from vng.testsession.models import (
 
 from ..utils import choices
 from ..utils.views import (
-    ListAppendView, OwnerMultipleObjects, OwnerSingleObject, CSRFExemptMixin, SingleObjectMixin
+    ListAppendView, OwnerMultipleObjects, OwnerSingleObject, CSRFExemptMixin, SingleObjectMixin, ObjectOwner
 )
 from .permission import IsOwner
 from .serializers import (
@@ -44,19 +44,19 @@ class SessionViewSet(
         viewsets.GenericViewSet):
     """
     retrieve:
-    Return the given session.
-
     Session detail.
 
-    list:
-    Return a list of all the existing session.
+    Return the given session's detail.
 
-    Ssession list.
+    list:
+    Session list
+
+    Return the list of all the sessions created by the user.
 
     create:
-    Create a new session instance.
+    Session create.
 
-    Create a session.
+    Create a new session instance.
     """
     serializer_class = SessionSerializer
     authentication_classes = (TokenAuthentication, SessionAuthentication)
@@ -74,7 +74,7 @@ class SessionViewSet(
             session.delete()
 
 
-class StopSessionView(generics.ListAPIView):
+class StopSessionView(generics.ListAPIView, ObjectOwner):
     """
     Stop Session
 
@@ -93,8 +93,7 @@ class StopSessionView(generics.ListAPIView):
         scenarios = ScenarioCase.objects.filter(vng_endpoint__session_type__session=self.kwargs['pk'])
 
         session = get_object_or_404(Session, id=self.kwargs['pk'])
-        if session.user != self.request.user:
-            raise PermissionDenied
+        self.check_ownership(session)
         self.perform_operations(session)
         return scenarios
 

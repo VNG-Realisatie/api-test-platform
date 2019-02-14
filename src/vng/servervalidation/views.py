@@ -150,7 +150,10 @@ class ServerRunPdfView(PDFGenerator, ServerRunOutput):
             postman.json = postman.get_json_obj()
             for calls, ep in zip(postman.json, epr):
                 calls['ep'] = ep
-                calls['response']['code'] = str(calls['response']['code'])
+                if 'response' in calls:
+                    calls['response']['code'] = str(calls['response']['code'])
+                else:
+                    calls['response'] = 'Error occurred call the resource'
 
         context['expect_result'] = epr
         self.filename = 'Server run {} report.pdf'.format(server_run.pk)

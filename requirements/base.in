@@ -4,7 +4,7 @@ Pillow
 pytz
 raven
 
-Django
+Django==2.2a1
 # django-admin-tools
 django-hijack
 django-hijack-admin
@@ -19,7 +19,6 @@ django-countries
 djangorestframework-filters
 django-solo
 django-dynamic-raw-id
-django-filer
 djangorestframework
 google-api-python-client
 oauth2client
@@ -38,4 +37,8 @@ urllib3
 idna
 requests
 pyjwt
+celery
+coreapi
+django-bootstrap-breadcrumbs
+drf-yasg
 -e git+https://github.com/maykinmedia/gemma-zds-client-3.4.git@e826a2fa111100d33d7c164a7bdf95d07c3b916c#egg=gemma-zds-client

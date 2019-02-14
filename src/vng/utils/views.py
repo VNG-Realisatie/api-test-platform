@@ -1,6 +1,9 @@
 import collections
 
+from weasyprint import HTML
+
 from django import http
+from django.conf import settings
 from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.template import loader, TemplateDoesNotExist
 from django.shortcuts import get_object_or_404
@@ -133,3 +136,14 @@ class OwnerMultipleObjects(ObjectOwner, ListView):
                 })
         context = self.get_context_data()
         return self.render_to_response(context)
+
+
+class PDFGenerator():
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs).render().content.decode('utf-8')
+        pdf = HTML(string=response, base_url=request.build_absolute_uri('/')).write_pdf()
+        response = HttpResponse(pdf, content_type='application/pdf')
+        if hasattr(self, 'filename'):
+            response['Content-Disposition'] = 'attachment; filename="{}"'.format(self.filename)
+        return response

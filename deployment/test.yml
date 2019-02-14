@@ -1,6 +1,6 @@
 ---
 
-- hosts: localhost.localdomain
+- hosts: rachel
   vars_files:
     - vars/test.yml
     - vars/packages.yml
@@ -17,8 +17,8 @@
     - include: maykin-deployment/ansible/tasks/newrelic.yml
     - include: maykin-deployment/ansible/tasks/firewall.yml
     - include: maykin-deployment/ansible/tasks/logrotate.yml
-    - include: maykin-deployment/ansible/tasks/postgresql-9.4.yml
-    - include: maykin-deployment/ansible/tasks/npm.ym
+    - include: maykin-deployment/ansible/tasks/postgresql-9.6.yml
+    - include: maykin-deployment/ansible/tasks/npm.yml
     - include: maykin-deployment/ansible/tasks/set-maintenance-mode.yml
     - include: maykin-deployment/ansible/tasks/django-project-1.7.yml
     - include: maykin-deployment/ansible/tasks/nginx-per-target.yml

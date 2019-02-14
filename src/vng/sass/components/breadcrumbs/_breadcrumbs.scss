@@ -1,0 +1,19 @@
+ul {
+
+  &.breadcrumb {
+    padding: 10px 16px;
+    list-style: none;
+    background-color: #eee;
+  }
+
+  &.breadcrumb li {
+    display: inline;
+  }
+
+  &.breadcrumb li+li:before {
+    padding: 8px;
+    color: black;
+    content: "/\00a0";
+  }
+
+}

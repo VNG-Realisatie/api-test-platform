@@ -1,5 +1,6 @@
 import collections
 import json
+import copy
 
 from django.urls import reverse
 from django.utils import timezone
@@ -9,7 +10,7 @@ from django_webtest import WebTest
 
 from vng.accounts.models import User
 
-from ..models import Session, SessionType, SessionLog
+from ..models import Session, SessionType, SessionLog, Report
 from .factories import (
     SessionFactory, SessionTypeFactory, UserFactory, ScenarioCaseFactory, ExposedUrlFactory, SessionLogFactory, VNGEndpointFactory)
 from ...utils import choices
@@ -31,13 +32,13 @@ class RetrieveSessionType(WebTest):
         SessionTypeFactory()
 
     def test_retrieve_single_session_types(self):
-        call = self.app.get('/api/v1/sessiontypes/', user='admin')
+        call = self.app.get(reverse('apiv1session:session_types-list'), user='admin')
         t = get_object(call.body)
         self.assertTrue(t[0]['id'] > 0)
 
     def test_retrieve_multiple_session_types(self):
         SessionTypeFactory.create_batch(size=10)
-        call = self.app.get('/api/v1/sessiontypes/', user='admin')
+        call = self.app.get(reverse('apiv1session:session_types-list'), user='admin')
         t = json.loads(call.text)
         self.assertTrue(t[9]['id'] > 0)
 
@@ -48,7 +49,7 @@ class AuthorizationTests(WebTest):
         UserFactory()
 
     def test_check_unauthenticated_testsessions(self):
-        self.app.get('/session/v1/testsessions/', expect_errors=True)
+        self.app.get(reverse('apiv1session:session_types-list'), expect_errors=True)
 
     def test_right_login(self):
         call = self.app.post('/api/auth/login/', params=collections.OrderedDict([
@@ -72,7 +73,7 @@ class AuthorizationTests(WebTest):
             'status': choices.StatusChoices.running,
             'api_endpoint': 'http://google.com',
         }
-        call = self.app.post('/api/v1/testsessions/', session, status=401)
+        call = self.app.post(reverse('apiv1session:test_session-list'), session, status=[401, 302])
 
 
 class CreationAndDeletion(WebTest):
@@ -83,7 +84,7 @@ class CreationAndDeletion(WebTest):
 
     def test_session_creation(self):
         session = {
-            'session_type': self.session_type.id,
+            'session_type': self.session_type.name,
             'started': str(timezone.now()),
             'status': choices.StatusChoices.running,
             'api_endpoint': 'http://google.com'
@@ -93,12 +94,12 @@ class CreationAndDeletion(WebTest):
             ('password', 'password')]))
         key = get_object(call.body)['key']
         head = {'Authorization': 'Token {}'.format(key)}
-        call = self.app.post(reverse('apiv1:test_session_list'), session, headers=head)
+        call = self.app.post(reverse('apiv1session:test_session-list'), session, headers=head)
 
     def test_session_creation_permission(self):
         Session.objects.all().delete()
         session = {
-            'session_type': self.session_type.id,
+            'session_type': self.session_type.name,
             'started': str(timezone.now()),
             'status': choices.StatusChoices.running,
             'api_endpoint': 'http://google.com',
@@ -110,7 +111,7 @@ class CreationAndDeletion(WebTest):
             ('password', 'password')]))
         key = get_object(call.body)['key']
         head = {'Authorization': 'Token {}'.format(key)}
-        call = self.app.post(reverse('apiv1:test_session_list'), session, headers=head)
+        call = self.app.post(reverse('apiv1session:test_session-list'), session, headers=head)
         response_parsed = get_object(call.body)
         session = Session.objects.filter(pk=response_parsed['id'])[0]
         user = User.objects.all().first()
@@ -127,10 +128,16 @@ class TestLog(WebTest):
         self.scenarioCase = ScenarioCaseFactory()
         self.exp_url = ExposedUrlFactory()
         self.session = self.exp_url.session
-        self.exp_url.session = self.session
+        self.exp_url.vng_endpoint.session_type = self.session.session_type
         self.exp_url.exposed_url = '{}/{}'.format(self.exp_url.exposed_url, self.exp_url.vng_endpoint.name)
         self.scenarioCase.vng_endpoint = self.exp_url.vng_endpoint
+        self.scenarioCase_hard = copy.copy(self.scenarioCase)
+        self.scenarioCase_hard.url = 'test/{uuid}/t'
+        self.scenarioCase_hard.pk += 1
 
+        self.scenarioCase_hard.save()
+        self.scenarioCase.save()
+        self.exp_url.vng_endpoint.save()
         self.exp_url.save()
         self.session_log = SessionLogFactory()
 
@@ -181,21 +188,71 @@ class TestLog(WebTest):
             ('password', 'password')]))
         key = get_object(call.body)['key']
         head = {'Authorization': 'Token {}'.format(key)}
-        call = self.app.post(reverse("apiv1:test_session_list"), params=collections.OrderedDict([
-            ('session_type', SessionType.objects.first().pk),
+        call = self.app.post(reverse("apiv1session:test_session-list"), params=collections.OrderedDict([
+            ('session_type', SessionType.objects.first().name),
         ]), headers=head)
         call = get_object(call.body)
         url = call['exposedurl_set'][0]['exposed_url']
         session_id = call['id']
         call = self.app.get(url)
-
-        call = self.app.get(reverse('apiv1:stop_session', kwargs={'pk': session_id}))
+        call = self.app.get(reverse('apiv1session:stop_session', kwargs={'pk': session_id}))
         call = get_object(call.body)
         self.assertEqual(call, [])
+        session = Session.objects.get(pk=session_id)
+        self.assertEqual(session.status, choices.StatusChoices.stopped)
 
-        call = self.app.get(reverse('apiv1:result_session', kwargs={'pk': session_id}))
+        call = self.app.get(reverse('apiv1session:result_session', kwargs={'pk': session_id}))
         call = get_object(call.body)
         self.assertEqual(call['result'], 'No scenario cases available')
+
+    def test_hard_matching(self):
+        url = reverse('testsession:run_test', kwargs={
+            'exposed_url': self.exp_url.get_uuid_url(),
+            'name': self.exp_url.vng_endpoint.name,
+            'relative_url': 'test/xxx/t'
+        })
+        call = self.app.get(url, user=self.session.user, status=[404])
+        rp = Report.objects.filter(scenario_case=self.scenarioCase_hard)
+        self.assertTrue(len(rp) != 0)
+
+
+class TestAllProcedure(WebTest):
+    csrf_checks = False
+
+    def setUp(self):
+        self.user = UserFactory()
+        self.session_type = SessionTypeFactory()
+
+    def _test_create_session(self):
+        call = self.app.get(reverse('testsession:sessions'), user=self.user)
+        form = call.forms[0]
+        form['session_type'].select('1')
+        form.submit()
+
+        call = self.app.get(reverse('testsession:sessions'), user=self.user)
+        self.assertIn(self.session_type.name, call.text)
+
+    def _test_stop_session(self):
+        self._test_create_session()
+        self.session = Session.objects.filter(user=self.user).filter(status=choices.StatusChoices.running)[0]
+        url = reverse('testsession:stop_session', kwargs={
+            'session_id': self.session.pk,
+        })
+        call = self.app.post(url, user=self.session.user).follow()
+        self.assertIn('stopped', call.text)
+
+    def test_report(self):
+        self._test_stop_session()
+        session = Session.objects.get(pk=self.session.pk)
+        url = reverse('testsession:session_report', kwargs={
+            'session_id': self.session.pk,
+        })
+        call = self.app.get(url, user=self.session.user)
+
+        url = reverse('testsession:session_report-pdf', kwargs={
+            'session_id': self.session.pk,
+        })
+        call = self.app.get(url, user=self.session.user)
 
 
 class TestLogNewman(WebTest):
@@ -212,9 +269,9 @@ class TestLogNewman(WebTest):
         key = get_object(call.body)['key']
         self.head = {'Authorization': 'Token {}'.format(key)}
 
-    def runTest(self):
-        call = self.app.post(reverse("apiv1:test_session_list"), params=collections.OrderedDict([
-            ('session_type', self.scenario_case.vng_endpoint.session_type.pk),
+    def test_run(self):
+        call = self.app.post(reverse("apiv1session:test_session-list"), params=collections.OrderedDict([
+            ('session_type', self.scenario_case.vng_endpoint.session_type.name),
         ]), headers=self.head)
         call = get_object(call.body)
         session_id = call['id']
@@ -223,10 +280,10 @@ class TestLogNewman(WebTest):
         call = self.app.get(url)
         call = get_object(call.body)
 
-        call = self.app.get(reverse('apiv1:stop_session', kwargs={'pk': session_id}))
+        call = self.app.get(reverse('apiv1session:stop_session', kwargs={'pk': session_id}))
         call = get_object(call.body)
         self.assertEqual(len(call), 2)
 
-        call = self.app.get(reverse('apiv1:result_session', kwargs={'pk': session_id}))
+        call = self.app.get(reverse('apiv1session:result_session', kwargs={'pk': session_id}))
         call = get_object(call.body)
         self.assertEqual(call['result'], 'failed')

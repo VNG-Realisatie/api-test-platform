@@ -6,6 +6,7 @@ from .models import *
 
 
 class SessionTypesSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = SessionType
         fields = ['id', 'name', 'standard', 'role', 'application', 'version']
@@ -39,6 +40,12 @@ class ExposedUrlSerializer(serializers.ModelSerializer):
 
 class SessionSerializer(serializers.ModelSerializer):
     exposedurl_set = ExposedUrlSerializer(read_only=True, many=True)
+    build_version = serializers.CharField(required=False)
+
+    session_type = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=SessionType.objects.all(),
+    )
 
     class Meta:
         model = Session
@@ -49,6 +56,7 @@ class SessionSerializer(serializers.ModelSerializer):
             'stopped',
             'status',
             'exposedurl_set',
+            'build_version'
         ]
 
 

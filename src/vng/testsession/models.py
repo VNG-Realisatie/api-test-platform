@@ -6,6 +6,7 @@ from django.conf import settings
 from django.core.files import File
 from django.db import models
 from django.utils import timezone
+from django.urls import reverse
 
 from ordered_model.models import OrderedModel
 
@@ -51,7 +52,7 @@ class VNGEndpoint(models.Model):
     url = models.URLField(max_length=200)
     name = models.CharField(max_length=200)
     docker_image = models.CharField(max_length=200, blank=True, null=True, default=None)
-    session_type = models.ForeignKey(SessionType)
+    session_type = models.ForeignKey(SessionType, on_delete=models.CASCADE)
     test_file = models.FileField(settings.MEDIA_FOLDER_FILES['test_session'], blank=True, null=True, default=None)
 
     def __str__(self):
@@ -62,7 +63,7 @@ class ScenarioCase(OrderedModel):
 
     url = models.CharField(max_length=200)
     http_method = models.CharField(max_length=20, choices=choices.HTTPMethodChoiches.choices, default=choices.HTTPMethodChoiches.GET)
-    vng_endpoint = models.ForeignKey(VNGEndpoint)
+    vng_endpoint = models.ForeignKey(VNGEndpoint, on_delete=models.CASCADE)
 
     def __str__(self):
         return '{} - {}'.format(self.http_method, self.url)
@@ -70,18 +71,24 @@ class ScenarioCase(OrderedModel):
 
 class Session(models.Model):
 
-    name = models.CharField(max_length=20, unique=True, null=True)
-    session_type = models.ForeignKey(SessionType)
+    name = models.CharField(max_length=30, unique=True, null=True)
+    session_type = models.ForeignKey(SessionType, on_delete=models.CASCADE)
     started = models.DateTimeField(default=timezone.now)
     stopped = models.DateTimeField(null=True, blank=True)
-    status = models.CharField(max_length=10, choices=choices.StatusChoices.choices, default=choices.StatusChoices.starting)
+    status = models.CharField(max_length=20, choices=choices.StatusChoices.choices, default=choices.StatusChoices.starting)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    build_version = models.TextField(blank=True, null=True, default=None)
 
     def __str__(self):
         if self.user:
-            return "{} - {} - {}".format(self.session_type, self.user.username, str(self.started))
+            return "{} - {} - #{}".format(self.session_type, self.user.username, str(self.id))
         else:
-            return "{} - {}".format(self.session_type, str(self.started))
+            return "{} - #{}".format(self.session_type, str(self.id))
+
+    def get_absolute_request_url(self, request):
+        test_session_url = 'https://{}{}'.format(request.get_host(),
+                                                 reverse('testsession:session_log', args=[self.id]))
+        return test_session_url
 
     def is_stopped(self):
         return self.status == choices.StatusChoices.stopped
@@ -92,13 +99,16 @@ class Session(models.Model):
     def is_starting(self):
         return self.status == choices.StatusChoices.starting
 
+    def is_shutting_down(self):
+        return self.status == choices.StatusChoices.shutting_down
+
 
 class ExposedUrl(models.Model):
 
     exposed_url = models.CharField(max_length=200, unique=True)
-    session = models.ForeignKey(Session)
-    vng_endpoint = models.ForeignKey(VNGEndpoint)
-    test_session = models.ForeignKey(TestSession, blank=True, null=True, default=None)
+    session = models.ForeignKey(Session, on_delete=models.CASCADE)
+    vng_endpoint = models.ForeignKey(VNGEndpoint, on_delete=models.CASCADE)
+    test_session = models.ForeignKey(TestSession, blank=True, null=True, default=None, on_delete=models.CASCADE)
 
     def get_uuid_url(self):
         return re.search('([^/]+)', self.exposed_url).group(1)
@@ -122,11 +132,28 @@ class SessionLog(models.Model):
     def request_path(self):
         return json.loads(self.request)['request']['path']
 
+    def request_headers(self):
+        return json.loads(self.request)['request']['header']
+
+    def request_body(self):
+        try:
+            return json.loads(self.request)['request']['body']
+        except:
+            return ""
+
+    def response_body(self):
+        try:
+            return json.loads(self.response)['response']['body']
+        except:
+            return ""
+
 
 class Report(models.Model):
+    class Meta:
+        unique_together = ('scenario_case', 'session_log')
 
-    scenario_case = models.ForeignKey(ScenarioCase)
-    session_log = models.ForeignKey(SessionLog)
+    scenario_case = models.ForeignKey(ScenarioCase, on_delete=models.CASCADE)
+    session_log = models.ForeignKey(SessionLog, on_delete=models.CASCADE)
     result = models.CharField(max_length=20, choices=choices.HTTPCallChoiches.choices, default=choices.HTTPCallChoiches.not_called)
 
     def is_success(self):

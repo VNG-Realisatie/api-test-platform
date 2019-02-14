@@ -3,7 +3,8 @@
     <nav class="navigation" role="navigation">
         <ul class="navigation__list">
             {% include './navigation-list-item.html' with view_name='testsession:sessions' label=_('Test client') request=request only %}
-            {% include './navigation-list-item.html' with view_name='server_run:server-run_list' label=_('Test server') request=request only %}
+            {% include './navigation-list-item.html' with view_name='server_run:server-run_list' label=_('Test Provider') request=request only %}
+
         </ul>
     </nav>
 {% endspaceless %}

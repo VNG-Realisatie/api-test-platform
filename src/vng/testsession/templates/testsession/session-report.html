@@ -1,4 +1,5 @@
 {% extends 'master.html' %}
+{% load django_bootstrap_breadcrumbs %}
 
 {% block title %}Session Report{% endblock%}
 
@@ -8,9 +9,15 @@
 <article class="article">
     <div class="article__section">
 
+        {% breadcrumb "Home" "/" %}
+        {% breadcrumb 'Log' 'testsession:session_log' session.pk %}
+        {% breadcrumb 'back' '' %}
+
+        {% render_breadcrumbs 'components/breadcrumbs/breadcrumbs.html' %}
+
         <h1>Scenario</h1>
         <table class="table">
-        <input type="button" class="button button--primary" value="Back" onclick="location.href = '{% url 'testsession:session_log' session.id %}';">
+
             {% include 'components/table/header-scenario-report.html' with scenario=session_type only %}
         </table>
     </div>
@@ -25,7 +32,7 @@
             {% endfor %}
         </table>
         {% else %}
-        <p>There are no log in the library.</p>
+        <p>Er zijn geen verzoeken binnengekomen.</p>
         {% endif %}
     </div>
 </article>

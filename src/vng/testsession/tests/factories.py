@@ -36,7 +36,7 @@ class VNGEndpointFactory(Dmf):
     name = factory.Sequence(lambda n: 'name{}'.format(n))
     url = 'http://ref.tst.vng.cloud/drc/api/v1'
     session_type = factory.SubFactory(SessionTypeFactory)
-    test_file = factory.django.FileField(from_path=settings.POSTMAN_ROOT + '/MOR_test-client.postman_collection-variable.json')
+    test_file = factory.django.FileField(from_path=settings.POSTMAN_ROOT + '/google.postman_collection.json')
 
 
 class UserFactory(Dmf):
@@ -81,11 +81,6 @@ class ExposedUrlFactory(Dmf):
     vng_endpoint = factory.SubFactory(VNGEndpointFactory)
     exposed_url = factory.Sequence(lambda n: 'tst{}'.format(n))
 
-    def __init___(self, **args):
-        super().__init__(**args)
-        self.vng_endpoint.session_type = self.session.session_type
-        self.exposed_url = '{}/{}'.format(self.exposed_url, self.vng_endpoint.name)
-
 
 class SessionLogFactory(Dmf):
 
@@ -94,6 +89,6 @@ class SessionLogFactory(Dmf):
 
     date = timezone.now()
     session = factory.SubFactory(SessionFactory)
-    request = '{"request": {"path": "GET http://localhost:8000/runtest/154513515134/", "body": ""}}'
+    request = '{"request": {"path": "GET http://localhost:8000/runtest/154513515134/", "body": "", "header":"header"}}'
     response = '{"response": {"status_code": 404, "body": "{}", "path": "{} http://localhost:8000/runtest/tst/unknown/23"}}'
     response_status = 404

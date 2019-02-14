@@ -1,0 +1,12 @@
+<div class="user">
+    <p class="user__name">
+    {% if user.is_authenticated %}
+        {{ request.user.username }}</p>
+    {% else %}
+        <a class="user__login" href={% url 'login' %}>Login</a>
+    {% endif %}
+
+    {% if user.is_authenticated %}
+        <div class="user__dropdown"><a class="user__logout" href={% url 'logout' %}>Logout</a></div>
+    {% endif %}
+</div>

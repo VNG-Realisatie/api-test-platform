@@ -1,6 +1,8 @@
 from django.contrib import admin
 import vng.servervalidation.models as model
 
+from ordered_model.admin import OrderedModelAdmin
+
 
 def get_all_fields(mo):
     l = [field.name for field in mo._meta.fields]
@@ -16,6 +18,31 @@ class TestScenarioUrlInline(admin.TabularInline):
     model = model.TestScenarioUrl
 
 
+class PostmanTestInline(admin.TabularInline):
+    model = model.PostmanTest
+
+
+class ExpectedPostmanResultInline(admin.TabularInline):
+    model = model.ExpectedPostmanResult
+
+
+@admin.register(model.PostmanTest)
+class PostmanTestAdmin(OrderedModelAdmin):
+    list_display = ['test_scenario', 'move_up_down_links', 'validation_file']
+
+    inlines = [ExpectedPostmanResultInline]
+
+
+@admin.register(model.ExpectedPostmanResult)
+class ExpectedPostmanResult(OrderedModelAdmin):
+    list_display = ['postman_test', 'move_up_down_links', 'expected_response']
+
+
+@admin.register(model.PostmanTestResult)
+class PostmanTestResultAdmin(admin.ModelAdmin):
+    list_display = ['postman_test', 'log', 'server_run']
+
+
 @admin.register(model.Endpoint)
 class EndpointAdmin(admin.ModelAdmin):
     list_display = ['test_scenario_url', 'jwt', 'server_run', 'url']
@@ -25,7 +52,7 @@ class EndpointAdmin(admin.ModelAdmin):
 
 @admin.register(model.ServerRun)
 class ServerRunAdmin(admin.ModelAdmin):
-    list_display = ['test_scenario', 'started', 'stopped', 'user', 'status', 'log', 'client_id', 'secret']
+    list_display = ['test_scenario', 'started', 'stopped', 'user', 'status', 'client_id', 'secret', 'percentage_exec', 'status_exec']
     list_filter = ['user']
     search_fields = ['user']
 
@@ -34,11 +61,11 @@ class ServerRunAdmin(admin.ModelAdmin):
 
 @admin.register(model.TestScenario)
 class TestScenarioAdmin(admin.ModelAdmin):
-    list_display = ['name', 'validation_file']
+    list_display = ['name']
     list_filter = ['name']
     search_fields = ['name']
 
-    inlines = [TestScenarioUrlInline]
+    inlines = [TestScenarioUrlInline, PostmanTestInline]
 
 
 @admin.register(model.TestScenarioUrl)

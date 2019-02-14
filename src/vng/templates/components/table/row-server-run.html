@@ -1,5 +1,12 @@
 {% spaceless %}
 <tr>
+    <td class="table__cell">
+
+    {% for postman in server_run.pts %}
+
+        {{ postman.status }}
+    {% endfor %}
+    </td>
     {% if server_run.stopped %}
         <td class="table__cell">
             <a href="{% url 'server_run:server-run_detail' server_run.pk %}">#{{ server_run.id }}</a>

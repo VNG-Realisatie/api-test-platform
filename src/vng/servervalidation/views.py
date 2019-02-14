@@ -39,6 +39,14 @@ class TestScenarioSelect(LoginRequiredMixin, FormView, MultipleObjectMixin, Mult
             "test_id": ts_id
         }))
 
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        print(data)
+        server_list = self.get_queryset()
+        for server in data['object_list']:
+            server.pts = PostmanTestResult.objects.filter(server_run=server)
+        return data
+
     def get(self, request, *args, **kwargs):
         self.object_list = self.get_queryset()
         return super().get(request, *args, **kwargs)

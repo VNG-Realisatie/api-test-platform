@@ -52,7 +52,7 @@ class ExpectedPostmanResult(OrderedModel):
 
 class ServerRun(models.Model):
 
-    test_scenario = models.ForeignKey(TestScenario, on_delete=models.SET_NULL, null=True)
+    test_scenario = models.ForeignKey(TestScenario, on_delete=models.CASCADE)
     started = models.DateTimeField(default=timezone.now)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     stopped = models.DateTimeField(null=True, default=None, blank=True)

@@ -45,6 +45,7 @@ class ServerRunSerializer(serializers.ModelSerializer):
     class Meta:
         model = ServerRun
         fields = ['id', 'test_scenario', 'started', 'stopped', 'client_id', 'secret', 'endpoints']
+        read_only_fields = ['started', 'stopped']
 
     def create(self, validated_data):
         endpoint_created = []

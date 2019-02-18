@@ -33,7 +33,9 @@
         </form>
         {% endif %}
         {% if not server_run.is_stopped  %}
-            {{ server_run.percentage_exec }}% {{ server_run.status_exec }}
+            {% if server_run.percentage_exec and server_run.status_exec %}
+                {{ server_run.percentage_exec }}% {{ server_run.status_exec }}
+            {% endif %}
         {% endif %}
     </td>
 </tr>

@@ -41,6 +41,8 @@ def execute_test(server_run_pk):
             ptr.status = ptr.get_outcome_json()
             ptr.save()
 
+        server_run.status_exec = 'Completed'
+        server_run.percentage_exec = 100
         server_run.status = choices.StatusChoices.stopped
         server_run.stopped = timezone.now()
         server_run.save()

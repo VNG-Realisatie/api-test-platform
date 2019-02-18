@@ -1,7 +1,7 @@
 {% extends 'master.html' %}
 {% load django_bootstrap_breadcrumbs %}
 
-{% block title %}Test client - Detailweergave test-sessie{% endblock%}
+{% block title %}Test consumer - Detailweergave test-sessie{% endblock%}
 
 {% block content %}
 
@@ -13,10 +13,10 @@
     <div class="article__section">
 
         {% breadcrumb "Home" "testsession:sessions" %}
-        {% breadcrumb "test client" "" %}
+        {% breadcrumb "test consumer" "" %}
         {% render_breadcrumbs 'components/breadcrumbs/breadcrumbs.html' %}
 
-        <h2>Test client - {{ session }}</h2>
+        <h2>Test consumer - {{ session }}</h2>
 
         <h3>Gestart op: {{ session.started|date }}</h3>
 

@@ -39,6 +39,11 @@ class TestScenarioSelect(LoginRequiredMixin, FormView, MultipleObjectMixin, Mult
             "test_id": ts_id
         }))
 
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        server_list = self.get_queryset()
+        return data
+
     def get(self, request, *args, **kwargs):
         self.object_list = self.get_queryset()
         return super().get(request, *args, **kwargs)

@@ -52,7 +52,7 @@ class ExpectedPostmanResult(OrderedModel):
 
 class ServerRun(models.Model):
 
-    test_scenario = models.ForeignKey(TestScenario, on_delete=models.SET_NULL, null=True)
+    test_scenario = models.ForeignKey(TestScenario, on_delete=models.CASCADE)
     started = models.DateTimeField(default=timezone.now)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     stopped = models.DateTimeField(null=True, default=None, blank=True)
@@ -89,6 +89,20 @@ class PostmanTestResult(models.Model):
     log_json = models.FileField(settings.MEDIA_FOLDER_FILES['servervalidation_log'], blank=True, null=True, default=None)
     server_run = models.ForeignKey(ServerRun, on_delete=models.CASCADE)
     status = models.CharField(max_length=10, choices=choices.ResultChoices.choices, default=None, null=True)
+
+    def __str__(self):
+        if self.status is None:
+            return '{}'.format(self.pk)
+        else:
+            return '{} - {}'.format(self.pk, self.status)
+
+    def is_success(self):
+        if self.status is None:
+            return 0
+        if self.status == choices.ResultChoices.success:
+            return 1
+        else:
+            return -1
 
     def display_log(self):
         if self.log:
@@ -149,6 +163,17 @@ class PostmanTestResult(models.Model):
                     if '0' in line:
                         return choices.ResultChoices.success
         return choices.ResultChoices.failed
+
+    def get_outcome_json(self):
+        with open(self.log_json.path) as jfile:
+            json_obj = json.load(jfile)
+            if json_obj['run']['failures'] != []:
+                return choices.ResultChoices.failed
+            epr = ExpectedPostmanResult.objects.filter(postman_test=self.postman_test).order_by('order')
+            for call, expected in zip(json_obj['run']['executions'], epr):
+                if call['response']['code'] not in epr.expected_response:
+                    return choices.ResultChoices.failed
+            return choices.ResultChoices.success
 
 
 class Endpoint(models.Model):

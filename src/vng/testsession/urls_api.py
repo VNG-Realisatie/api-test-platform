@@ -13,7 +13,6 @@ app_name = apps.AppConfig.__name__
 
 router = routers.SimpleRouter()
 router.register('testsessions', api_views.SessionViewSet, 'test_session')
-# router.register('stop-session', api_views.StopSessionView, 'stop_session')
 router.register('sessiontypes', api_views.SessionTypesViewSet, 'session_types')
 router.register('exposed_url', api_views.ExposedUrlView, 'sessionTypes')
 

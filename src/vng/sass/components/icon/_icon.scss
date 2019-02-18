@@ -1,0 +1,11 @@
+@import '../../lib/icon';
+
+.icon {
+  &--cross {
+    @include icon(cross, false);
+  }
+
+  &--checkmark2 {
+    @include icon(checkmark2, false);
+  }
+}

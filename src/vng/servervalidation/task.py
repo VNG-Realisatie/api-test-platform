@@ -38,7 +38,7 @@ def execute_test(server_run_pk):
             )
             ptr.log.save(file_name, File(file))
             ptr.save_json(file_name, File(file_json))
-            ptr.status = ptr.get_outcome_html()
+            ptr.status = ptr.get_outcome_json()
             ptr.save()
 
         server_run.status = choices.StatusChoices.stopped

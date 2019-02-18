@@ -52,12 +52,14 @@ class ServerRunSerializer(serializers.ModelSerializer):
             validated_data.pop('endpoints')
             instance = ServerRun.objects.create(**validated_data)
             for ep in endpoints:
-                ep_serializer = EndpointSerializer()
-                endpoint_created.append(ep_serializer.create({
-                    'name': ep['test_scenario_url']['name'],
-                    'url': ep['url'],
-                    'server': instance
-                }))
+                if 'test_scenario_url' in ep and 'url' in ep:
+                    if 'name' in ep['test_scenario_url']:
+                        ep_serializer = EndpointSerializer()
+                        endpoint_created.append(ep_serializer.create({
+                            'name': ep['test_scenario_url']['name'],
+                            'url': ep['url'],
+                            'server': instance
+                        }))
         else:
             instance = ServerRun.objects.create(**validated_data)
         instance.endpoints = endpoint_created

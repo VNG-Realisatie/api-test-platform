@@ -90,6 +90,10 @@ class PostmanTestResult(models.Model):
     server_run = models.ForeignKey(ServerRun, on_delete=models.CASCADE)
     status = models.CharField(max_length=10, choices=choices.ResultChoices.choices, default=None, null=True)
 
+    def is_success(self):
+        if self.status is not None:
+            return self.status == choices.ResultChoices.success
+
     def display_log(self):
         if self.log:
             with open(self.log.path) as fp:

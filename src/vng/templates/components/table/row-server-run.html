@@ -3,7 +3,11 @@
     <td class="table__cell">
 
     {% for postman in server_run.postmantestresult_set.all %}
-        {{ postman.status }}
+    {% if postman.is_success %}
+        <p class='icon-checkmark2'></p>
+    {% else %}
+        <p class='icon-cross'></p>
+    {% endif %}
     {% endfor %}
     </td>
     {% if server_run.stopped %}

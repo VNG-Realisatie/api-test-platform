@@ -5,6 +5,7 @@ from rest_framework import serializers
 
 from .models import *
 from .exceptions import Error400
+from .task import execute_test
 
 
 class TestScenarioUrlSerializer(serializers.ModelSerializer):
@@ -63,4 +64,5 @@ class ServerRunSerializer(serializers.ModelSerializer):
         else:
             instance = ServerRun.objects.create(**validated_data)
         instance.endpoints = endpoint_created
+        execute_test.delay(instance.pk)
         return instance

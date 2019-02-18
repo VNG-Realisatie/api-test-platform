@@ -10,7 +10,7 @@ app_name = apps.AppConfig.__name__
 
 
 router = routers.DefaultRouter()
-router.register('server-run', api_views.ServerRunViewSet, base_name='api_server-run')
+router.register('provider-run', api_views.ServerRunViewSet, base_name='api_server-run')
 
 
 urlpatterns = [

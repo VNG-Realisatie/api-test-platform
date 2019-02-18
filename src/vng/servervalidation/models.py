@@ -154,6 +154,21 @@ class PostmanTestResult(models.Model):
                         return choices.ResultChoices.success
         return choices.ResultChoices.failed
 
+    def get_outcome_json(self):
+        with open(self.log_json.path) as jfile:
+            json_obj = json.load(jfile)
+            import pdb
+            pdb.set_trace()
+            if json_obj['run']['failures'] != []:
+                self.status = choices.ResultChoices.failed
+                return
+            epr = ExpectedPostmanResult.objects.filter(postman_test=self.postman_test).order_by('order')
+            for call, expected in zip(json_obj['run']['executions'], epr):
+                if call['response']['code'] not in epr.expected_response:
+                    self.status = choices.ResultChoices.failed
+                    return
+            self.status = choices.ResultChoices.success
+
 
 class Endpoint(models.Model):
 

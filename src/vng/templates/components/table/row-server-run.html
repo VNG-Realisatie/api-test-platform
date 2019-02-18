@@ -19,9 +19,9 @@
     <td class="table__cell">
         {% for postman in server_run.postmantestresult_set.all %}
             {% if postman.is_success == 1 %}
-                <p class='icon-checkmark2'></p>
+                <p class='icon icon-checkmark2'></p>
             {% elif postman.is_success == -1 %}
-                <p class='icon-cross'></p>
+                <p class='icon icon--cross'></p>
             {% endif %}
         {% endfor %}
     </td>

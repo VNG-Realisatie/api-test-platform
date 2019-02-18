@@ -40,7 +40,7 @@ class ExpectedPostmanResult(OrderedModelAdmin):
 
 @admin.register(model.PostmanTestResult)
 class PostmanTestResultAdmin(admin.ModelAdmin):
-    list_display = ['postman_test', 'log', 'server_run', 'log_json']
+    list_display = ['id', 'postman_test', 'log', 'server_run', 'log_json']
 
 
 @admin.register(model.Endpoint)

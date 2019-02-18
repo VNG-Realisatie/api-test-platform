@@ -90,9 +90,19 @@ class PostmanTestResult(models.Model):
     server_run = models.ForeignKey(ServerRun, on_delete=models.CASCADE)
     status = models.CharField(max_length=10, choices=choices.ResultChoices.choices, default=None, null=True)
 
+    def __str__(self):
+        if self.status is None:
+            return '{}'.format(self.pk)
+        else:
+            return '{} - {}'.format(self.pk, self.status)
+
     def is_success(self):
-        if self.status is not None:
-            return self.status == choices.ResultChoices.success
+        if self.status is None:
+            return 0
+        if self.status == choices.ResultChoices.success:
+            return 1
+        else:
+            return -1
 
     def display_log(self):
         if self.log:
@@ -157,17 +167,13 @@ class PostmanTestResult(models.Model):
     def get_outcome_json(self):
         with open(self.log_json.path) as jfile:
             json_obj = json.load(jfile)
-            import pdb
-            pdb.set_trace()
             if json_obj['run']['failures'] != []:
-                self.status = choices.ResultChoices.failed
-                return
+                return choices.ResultChoices.failed
             epr = ExpectedPostmanResult.objects.filter(postman_test=self.postman_test).order_by('order')
             for call, expected in zip(json_obj['run']['executions'], epr):
                 if call['response']['code'] not in epr.expected_response:
-                    self.status = choices.ResultChoices.failed
-                    return
-            self.status = choices.ResultChoices.success
+                    return choices.ResultChoices.failed
+            return choices.ResultChoices.success
 
 
 class Endpoint(models.Model):

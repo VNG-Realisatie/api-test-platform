@@ -1,20 +1,30 @@
+from django.utils.encoding import smart_text
+from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
+
 from rest_framework import serializers
 
 from .models import *
 from .exceptions import Error400
 
 
+class TestScenarioUrlSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TestScenarioUrl
+        fields = ['name']
+
+
 class EndpointSerializer(serializers.ModelSerializer):
 
-    name = serializers.StringRelatedField(source='test_scenario_url.name')
+    test_scenario_url = TestScenarioUrlSerializer()
+    # name = serializers.StringRelatedField(source='test_scenario_url.name')
 
     class Meta:
         model = Endpoint
-        fields = ['url', 'name']
+        fields = ['url', 'test_scenario_url']
 
     def create(self, validated_data):
         try:
-            name = validated_data['name']
+            name = validated_data.pop('name')
             url = validated_data['url']
             tsu = TestScenarioUrl.objects.get(name=name, test_scenario=validated_data['server'].test_scenario)
             ep = Endpoint.objects.create(test_scenario_url=tsu, url=url, server_run=validated_data['server'])
@@ -25,9 +35,10 @@ class EndpointSerializer(serializers.ModelSerializer):
 
 class ServerRunSerializer(serializers.ModelSerializer):
     endpoints = EndpointSerializer(many=True)
+
     test_scenario = serializers.SlugRelatedField(
         queryset=TestScenario.objects.all(),
-        slug_field='name'
+        slug_field='name',
     )
 
     class Meta:
@@ -43,7 +54,7 @@ class ServerRunSerializer(serializers.ModelSerializer):
             for ep in endpoints:
                 ep_serializer = EndpointSerializer()
                 endpoint_created.append(ep_serializer.create({
-                    'name': ep['name'],
+                    'name': ep['test_scenario_url']['name'],
                     'url': ep['url'],
                     'server': instance
                 }))
@@ -51,9 +62,3 @@ class ServerRunSerializer(serializers.ModelSerializer):
             instance = ServerRun.objects.create(**validated_data)
         instance.endpoints = endpoint_created
         return instance
-
-
-class TestScenarioUrlSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TestScenarioUrl
-        fields = ['name', 'test_scenario']

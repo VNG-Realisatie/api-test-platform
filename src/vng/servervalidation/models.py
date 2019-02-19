@@ -171,7 +171,7 @@ class PostmanTestResult(models.Model):
                 return choices.ResultChoices.failed
             epr = ExpectedPostmanResult.objects.filter(postman_test=self.postman_test).order_by('order')
             for call, expected in zip(json_obj['run']['executions'], epr):
-                if call['response']['code'] not in epr.expected_response:
+                if call['response']['code'] not in expected.expected_response:
                     return choices.ResultChoices.failed
             return choices.ResultChoices.success
 

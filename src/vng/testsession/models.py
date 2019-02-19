@@ -49,7 +49,7 @@ class TestSession(models.Model):
 class VNGEndpoint(models.Model):
 
     port = models.PositiveIntegerField(default=8080)
-    url = models.URLField(max_length=200)
+    url = models.URLField(max_length=200, blank=True, null=True, default=None)
     name = models.CharField(max_length=200)
     docker_image = models.CharField(max_length=200, blank=True, null=True, default=None)
     session_type = models.ForeignKey(SessionType, on_delete=models.CASCADE)
@@ -109,6 +109,7 @@ class ExposedUrl(models.Model):
     session = models.ForeignKey(Session, on_delete=models.CASCADE)
     vng_endpoint = models.ForeignKey(VNGEndpoint, on_delete=models.CASCADE)
     test_session = models.ForeignKey(TestSession, blank=True, null=True, default=None, on_delete=models.CASCADE)
+    docker_url = models.CharField(max_length=200, blank=True, null=True, default=None)
 
     def get_uuid_url(self):
         return re.search('([^/]+)', self.exposed_url).group(1)

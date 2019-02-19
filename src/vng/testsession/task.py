@@ -15,11 +15,15 @@ from .container_manager import K8S
 logger = get_task_logger(__name__)
 
 
-def start_app_b8s(session, endpoint):
+@app.task
+def start_app_b8s(session_pk, bind_url_pk):
     kuber = K8S()
+    session = Session.objects.get(pk=session_pk)
+    bind_url = ExposedUrl.objects.get(pk=bind_url_pk)
+    endpoint = bind_url.vng_endpoint
     kuber.deploy(session.name, endpoint.docker_image, endpoint.port)
-    time.sleep(55)                      # Waiting for the load balancer to be loaded
-    return kuber.status(session.name)
+    # time.sleep(55)                      # Waiting for the load balancer to be loaded
+    status = kuber.status(session.name)
 
 
 @app.task
@@ -34,13 +38,14 @@ def bootstrap_session(session_pk, start_app=None):
         starting_docker = False
 
         for ep in endpoint:
+            bind_url = ExposedUrl()
+            bind_url.session = session
+            bind_url.vng_endpoint = ep
+            bind_url.save()
             if ep.docker_image:
                 starting_docker = True
-                status = start_app_b8s(session, ep)
+                status = start_app_b8s(session, bind_url.pk)
             else:
-                bind_url = ExposedUrl()
-                bind_url.session = session
-                bind_url.vng_endpoint = ep
                 bind_url.exposed_url = '{}/{}'.format(int(time.time()) * 100 + random.randint(0, 99), ep.name)
                 bind_url.save()
     except Exception as e:

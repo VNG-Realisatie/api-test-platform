@@ -45,7 +45,7 @@ def execute_test(server_run_pk):
         server_run.status_exec = 'Completed'
     except Exception as e:
         logger.info(e)
-        server_run.status_exec = 'An error occurred'
+        server_run.status_exec = 'An error occurred {}'.format(str(e))
     server_run.percentage_exec = 100
     server_run.status = choices.StatusChoices.stopped
     server_run.stopped = timezone.now()

@@ -3,9 +3,11 @@
 .icon {
   &--cross {
     @include icon(cross, false);
+    color: red;
   }
 
   &--checkmark2 {
     @include icon(checkmark2, false);
+    color: green;
   }
 }

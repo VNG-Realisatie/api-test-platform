@@ -6,8 +6,8 @@
     color: red;
   }
 
-  &--checkmark2 {
-    @include icon(checkmark2, false);
+  &--checkmark {
+    @include icon(checkmark, false);
     color: green;
   }
 }

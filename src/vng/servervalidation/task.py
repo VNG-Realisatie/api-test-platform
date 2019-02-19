@@ -19,8 +19,9 @@ def execute_test(server_run_pk):
     endpoints = Endpoint.objects.filter(server_run=server_run)
 
     file_name = str(uuid.uuid4())
+
+    postman_tests = PostmanTest.objects.filter(test_scenario=server_run.test_scenario).order_by('order')
     try:
-        postman_tests = PostmanTest.objects.filter(test_scenario=server_run.test_scenario).order_by('order')
         for counter, postman_test in enumerate(postman_tests):
             server_run.status_exec = 'Running the test {}'.format(postman_test.validation_file)
             server_run.percentage_exec = int((counter + 1 / (len(postman_tests) + 1)) * 100)
@@ -42,9 +43,10 @@ def execute_test(server_run_pk):
             ptr.save()
 
         server_run.status_exec = 'Completed'
-        server_run.percentage_exec = 100
-        server_run.status = choices.StatusChoices.stopped
-        server_run.stopped = timezone.now()
-        server_run.save()
     except Exception as e:
         logger.info(e)
+        server_run.status_exec = 'An error occurred'
+    server_run.percentage_exec = 100
+    server_run.status = choices.StatusChoices.stopped
+    server_run.stopped = timezone.now()
+    server_run.save()

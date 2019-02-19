@@ -17,15 +17,36 @@ from .container_manager import K8S
 logger = get_task_logger(__name__)
 
 
+def get_app_name(session, bind_url):
+    return '{}{}'.format(session.name, str(bind_url.pk))
+
+
+@app.task
+def stop_session(session_pk):
+    session = Session.objects.get(pk=session_pk)
+    if session.status == choices.StatusChoices.stopped:
+        return
+    run_tests.delay(session.pk)
+    eu = ExposedUrl.objects.filter(session=session)
+    for e_url in eu:
+        if e_url.vng_endpoint.url is None:
+            kuber = K8S()
+            app_name = get_app_name(session, e_url)
+            kuber.delete(app_name)
+    session.status = choices.StatusChoices.stopped
+    session.save()
+
+
 def start_app_b8s(session, bind_url):
     kuber = K8S()
     endpoint = bind_url.vng_endpoint
-    kuber.deploy(session.name, endpoint.docker_image, endpoint.port)
+    app_name = get_app_name(session, bind_url)
+    kuber.deploy(app_name, endpoint.docker_image, endpoint.port)
     N_TRIALS = 10
     for trial in range(N_TRIALS):
         try:
             time.sleep(10)                      # Waiting for the load balancer to be loaded
-            ip = kuber.status(session.name)
+            ip = kuber.status(get_app_name(session, bind_url))
             return ip
         except Exception as e:
             if trial >= N_TRIALS - 1:
@@ -56,6 +77,8 @@ def bootstrap_session(session_pk, start_app=None):
 
                 bind_url.exposed_url = '{}/{}'.format(int(time.time()) * 100 + random.randint(0, 99), ep.name)
                 bind_url.save()
+        session.status = choices.StatusChoices.running
+        session.save()
     except Exception as e:
         logger.exception(e)
         session.delete()

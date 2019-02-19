@@ -12,7 +12,7 @@ from rest_framework.authentication import (
     SessionAuthentication, TokenAuthentication
 )
 
-from .exceptions import Error400
+from ..utils.exceptions import Error400
 from ..permissions.UserPermissions import *
 from .serializers import ServerRunSerializer
 from .models import (

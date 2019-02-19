@@ -4,8 +4,9 @@ from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from rest_framework import serializers
 
 from .models import *
-from .exceptions import Error400
 from .task import execute_test
+
+from ..utils.exceptions import Error400
 
 
 class TestScenarioUrlSerializer(serializers.ModelSerializer):

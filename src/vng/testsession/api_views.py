@@ -75,7 +75,7 @@ class SessionViewSet(
             session.delete()
 
 
-class StopSessionView(generics.ListAPIView, ObjectOwner):
+class StopSessionView(OwnerSingleObject, generics.ListAPIView):
     """
     Stop Session
 

@@ -12,7 +12,7 @@ from ordered_model.models import OrderedModel
 
 from vng.accounts.models import User
 
-from ..utils import choices
+from ..utils import choices, postman
 
 
 class SessionType(models.Model):
@@ -44,6 +44,10 @@ class TestSession(models.Model):
         if self.test_result:
             with open(self.test_result.path) as fp:
                 return fp.read().replace('\n', '<br>')
+
+    def is_success_test(self):
+        if self.json_result is not None:
+            return postman.get_outcome_json(self.json_result)
 
 
 class VNGEndpoint(models.Model):

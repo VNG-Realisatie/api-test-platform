@@ -1,19 +1,18 @@
-ul {
+@import '../../lib/typography';
 
-  &.breadcrumb {
-    padding: 10px 16px;
-    list-style: none;
-    background-color: #eee;
-  }
+.breadcrumb {
+  padding: 10px 16px;
+  list-style: none;
+  background-color: #eee;
 
-  &.breadcrumb li {
+  &__list-item {
+    @include body;
     display: inline;
   }
 
-  &.breadcrumb li+li:before {
+  &__list-item+&__list-item:before {
     padding: 8px;
     color: black;
     content: "/\00a0";
   }
-
 }

@@ -1,4 +1,5 @@
 import uuid
+from zds_client import ClientAuth
 
 from django.core.files import File
 from django.utils import timezone
@@ -13,13 +14,20 @@ from ..utils.newman import DidNotRunException, NewmanManager
 logger = get_task_logger(__name__)
 
 
+def get_jwt(server_run):
+    return ClientAuth(
+        client_id=server_run.client_id,
+        secret=server_run.secret
+    )
+
+
 @app.task
 def execute_test(server_run_pk):
     server_run = ServerRun.objects.get(pk=server_run_pk)
     endpoints = Endpoint.objects.filter(server_run=server_run)
 
     file_name = str(uuid.uuid4())
-
+    jwt_auth = get_jwt(server_run).credentials()
     postman_tests = PostmanTest.objects.filter(test_scenario=server_run.test_scenario).order_by('order')
     try:
         for counter, postman_test in enumerate(postman_tests):
@@ -27,6 +35,7 @@ def execute_test(server_run_pk):
             server_run.percentage_exec = int((counter + 1 / (len(postman_tests) + 1)) * 100)
             server_run.save()
             nm = NewmanManager(postman_test.validation_file)
+            nm.add_auth(jwt_auth)
             param = {}
             for ep in endpoints:
                 param[ep.test_scenario_url.name] = ep.url

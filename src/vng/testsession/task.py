@@ -49,8 +49,8 @@ def start_app_b8s(session, bind_url):
             ip = kuber.status(get_app_name(session, bind_url))
             return ip
         except Exception as e:
-            if trial >= N_TRIALS - 1:
-                raise(e)
+            pass
+    raise(e)
 
 
 @app.task

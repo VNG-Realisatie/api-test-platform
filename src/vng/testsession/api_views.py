@@ -382,10 +382,10 @@ class RunTest(CSRFExemptMixin, View):
 
         self.save_call(request, request_method_name, self.get_exposed_url(),
                        self.kwargs['relative_url'], session, response.status_code, session_log)
-
-        response = HttpResponse(self.parse_response(response, request, eu.vng_endpoint.url, endpoints), status=response.status_code)
-        response['Content-Type'] = 'application/json'
-        return response
+        reply = HttpResponse(self.parse_response(response, request, eu.vng_endpoint.url, endpoints), status=response.status_code)
+        if 'Content-type' in response.headers:
+            reply['Content-type'] = response.headers['Content-type']
+        return reply
 
     def get(self, request, *args, **kwargs):
         return self.build_method('get', request)
@@ -406,7 +406,8 @@ class RunTest(CSRFExemptMixin, View):
         session = self.session
         session_log = SessionLog(session=session)
         if 'host' in header:
-            header['host'] = header['host'].decode('utf-8')
+            if type(header['host']) != str:
+                header['host'] = header['host'].decode('utf-8')
 
         request_dict = {
             "request": {

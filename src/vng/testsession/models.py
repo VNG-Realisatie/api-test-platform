@@ -12,7 +12,7 @@ from ordered_model.models import OrderedModel
 
 from vng.accounts.models import User
 
-from ..utils import choices
+from ..utils import choices, postman
 
 
 class SessionType(models.Model):
@@ -45,11 +45,15 @@ class TestSession(models.Model):
             with open(self.test_result.path) as fp:
                 return fp.read().replace('\n', '<br>')
 
+    def is_success_test(self):
+        if self.json_result is not None:
+            return postman.get_outcome_json(self.json_result)
+
 
 class VNGEndpoint(models.Model):
 
     port = models.PositiveIntegerField(default=8080)
-    url = models.URLField(max_length=200)
+    url = models.URLField(max_length=200, blank=True, null=True, default=None)
     name = models.CharField(max_length=200)
     docker_image = models.CharField(max_length=200, blank=True, null=True, default=None)
     session_type = models.ForeignKey(SessionType, on_delete=models.CASCADE)
@@ -60,8 +64,13 @@ class VNGEndpoint(models.Model):
 
 
 class ScenarioCase(OrderedModel):
-
-    url = models.CharField(max_length=200)
+    url = models.CharField(max_length=200, help_text='''
+                                                        General URL patter that will be compared
+                                                        with the request and eventually matched.
+                                                        Matching flag can be added, e.g. /test/{uuid}/stop
+                                                        will match every url with text instead of {uuid}.
+                                                        '''
+                           )
     http_method = models.CharField(max_length=20, choices=choices.HTTPMethodChoiches.choices, default=choices.HTTPMethodChoiches.GET)
     vng_endpoint = models.ForeignKey(VNGEndpoint, on_delete=models.CASCADE)
 
@@ -109,6 +118,7 @@ class ExposedUrl(models.Model):
     session = models.ForeignKey(Session, on_delete=models.CASCADE)
     vng_endpoint = models.ForeignKey(VNGEndpoint, on_delete=models.CASCADE)
     test_session = models.ForeignKey(TestSession, blank=True, null=True, default=None, on_delete=models.CASCADE)
+    docker_url = models.CharField(max_length=200, blank=True, null=True, default=None)
 
     def get_uuid_url(self):
         return re.search('([^/]+)', self.exposed_url).group(1)

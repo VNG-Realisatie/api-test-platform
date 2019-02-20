@@ -89,13 +89,13 @@ class K8S():
 
     def status(self, app_name):
         NAMES = ['type', 'cluster_ip', 'external_ip', 'port', 'age']
-        staus_command = [
+        status_command = [
             'kubectl',
             'get',
             'service',
             '--output=json'
         ]
-        res1 = run_command(staus_command).decode('utf-8')
+        res1 = run_command(status_command).decode('utf-8')
         services = json.loads(res1)
         items = services.get('items')
         for item in items:

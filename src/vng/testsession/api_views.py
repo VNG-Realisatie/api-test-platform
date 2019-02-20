@@ -23,6 +23,7 @@ from vng.testsession.models import (
 )
 
 from ..utils import choices
+from ..utils.exceptions import Error400
 from ..utils.views import (
     ListAppendView, OwnerMultipleObjects, OwnerSingleObject, CSRFExemptMixin, SingleObjectMixin, ObjectOwner
 )
@@ -31,7 +32,7 @@ from .serializers import (
     SessionSerializer, SessionTypesSerializer, ExposedUrlSerializer, ScenarioCaseSerializer
 )
 from .views import bootstrap_session, StopSession
-from .task import run_tests
+from .task import run_tests, stop_session
 
 logger = logging.getLogger(__name__)
 
@@ -74,7 +75,7 @@ class SessionViewSet(
             session.delete()
 
 
-class StopSessionView(generics.ListAPIView, ObjectOwner):
+class StopSessionView(OwnerSingleObject, generics.ListAPIView):
     """
     Stop Session
 
@@ -85,9 +86,12 @@ class StopSessionView(generics.ListAPIView, ObjectOwner):
     serializer_class = ScenarioCaseSerializer
 
     def perform_operations(self, session):
-        if session.status != choices.StatusChoices.stopped:
-            session.status = choices.StatusChoices.stopped
-            run_tests.delay(session.pk)
+        if session.status == choices.StatusChoices.stopped or session.status == choices.StatusChoices.shutting_down:
+            return
+        stop_session.delay(session.pk)
+        session.status = choices.StatusChoices.shutting_down
+        session.save()
+        run_tests.delay(session.pk)
 
     def get_queryset(self):
         scenarios = ScenarioCase.objects.filter(vng_endpoint__session_type__session=self.kwargs['pk'])
@@ -245,12 +249,12 @@ class RunTest(CSRFExemptMixin, View):
         for header, value in request.headers.items():
             if header.lower() not in whitelist:
                 request_headers[header] = value
-        if 'Content-Length' in request.headers:
-            try:
-                length = request.headers['Content-Length']
-                request.headers['Content-Length'] = length
-            except:
-                pass
+        # if 'Content-Length' in request.headers:
+        #     try:
+        #         length = request.headers['Content-Length']
+        #         request.headers['Content-Length'] = length
+        #     except:
+        #         pass
 
         request_headers['host'] = parse.urlparse(endpoint.url).netloc
 
@@ -355,27 +359,33 @@ class RunTest(CSRFExemptMixin, View):
         endpoints = ExposedUrl.objects.filter(session=session)
         arguments = request.META['QUERY_STRING']
 
-        if eu.vng_endpoint.url.endswith('/'):
-            request_url = '{}{}?{}'.format(eu.vng_endpoint.url, self.kwargs['relative_url'], arguments)
+        if eu.vng_endpoint.url is not None:
+            if eu.vng_endpoint.url.endswith('/'):
+                request_url = '{}{}?{}'.format(eu.vng_endpoint.url, self.kwargs['relative_url'], arguments)
+            else:
+                request_url = '{}/{}?{}'.format(eu.vng_endpoint.url, self.kwargs['relative_url'], arguments)
         else:
-            request_url = '{}/{}?{}'.format(eu.vng_endpoint.url, self.kwargs['relative_url'], arguments)
+            request_url = 'http://{}:{}/{}?{}'.format(eu.docker_url, eu.vng_endpoint.port, self.kwargs['relative_url'], arguments)
         method = getattr(requests, request_method_name)
 
-        if body:
-            rewritten_body = self.rewrite_request_body(request, endpoints)
-            logger.info("Request body after rewrite: %s", rewritten_body)
-            response = method(request_url, data=rewritten_body, headers=request_header)
-        else:
-            response = method(request_url, headers=request_header)
+        try:
+            if body:
+                rewritten_body = self.rewrite_request_body(request, endpoints)
+                logger.info("Request body after rewrite: %s", rewritten_body)
+                response = method(request_url, data=rewritten_body, headers=request_header)
+            else:
+                response = method(request_url, headers=request_header)
+        except Exception as e:
+            raise Error400("The endpoint is not responding")
 
         self.add_response(response, session_log, request_url, request)
 
         self.save_call(request, request_method_name, self.get_exposed_url(),
                        self.kwargs['relative_url'], session, response.status_code, session_log)
-
-        response = HttpResponse(self.parse_response(response, request, eu.vng_endpoint.url, endpoints), status=response.status_code)
-        response['Content-Type'] = 'application/json'
-        return response
+        reply = HttpResponse(self.parse_response(response, request, eu.vng_endpoint.url, endpoints), status=response.status_code)
+        if 'Content-type' in response.headers:
+            reply['Content-type'] = response.headers['Content-type']
+        return reply
 
     def get(self, request, *args, **kwargs):
         return self.build_method('get', request)
@@ -395,6 +405,9 @@ class RunTest(CSRFExemptMixin, View):
     def build_session_log(self, request, header):
         session = self.session
         session_log = SessionLog(session=session)
+        if 'host' in header:
+            if type(header['host']) != str:
+                header['host'] = header['host'].decode('utf-8')
 
         request_dict = {
             "request": {

@@ -23,7 +23,7 @@ from vng.testsession.models import (
     ScenarioCase, Session, SessionLog, SessionType, VNGEndpoint, ExposedUrl, TestSession, Report
 )
 
-from .task import run_tests, bootstrap_session
+from .task import run_tests, bootstrap_session, stop_session
 from ..utils import choices
 from ..utils.newman import NewmanManager
 from ..utils.views import (
@@ -65,10 +65,9 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
         form.instance.status = choices.StatusChoices.starting
         form.instance.name = "s{}{}".format(str(self.request.user.id), str(time.time()).replace('.', '-'))
 
+        form.instance.status = choices.StatusChoices.starting
         session = form.save()
-        bootstrap_session(session.pk, True)
-        session.status = choices.StatusChoices.running
-
+        bootstrap_session.delay(session.pk, True)
         return super().form_valid(form)
 
 
@@ -107,6 +106,7 @@ class StopSession(OwnerSingleObject, View):
         if session.status == choices.StatusChoices.stopped or session.status == choices.StatusChoices.shutting_down:
             return HttpResponseRedirect(reverse('testsession:sessions'))
 
+        stop_session.delay(session.pk)
         session.status = choices.StatusChoices.shutting_down
         session.save()
         run_tests.delay(session.pk)

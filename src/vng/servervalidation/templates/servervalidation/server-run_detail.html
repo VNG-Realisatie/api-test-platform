@@ -52,11 +52,12 @@
                     {% endfor %}
                 </tbody>
             </table>
+            {% if postman.get_json_obj_info.run.failures %}
             <h4>Failures</h4>
             <table class="table">
                 <thead>
                     <tr>
-                        <th class="table__heading">Error</th>
+                        <th class="table__heading">Name</th>
                         <th class="table__heading">Error</th>
                         <th class="table__heading">Test</th>
                         <th class="table__heading">Message</th>
@@ -73,6 +74,7 @@
                     {% endfor %}
                 </tbody>
             </table>
+            {% endif %}
         {% endfor %}
     </div>
 </article>

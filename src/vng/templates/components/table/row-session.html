@@ -23,7 +23,17 @@
             </table>
         </td>
 
-
+        <td class="table__cell">
+            {% for eu in session.exposedurl_set.all %}
+                {% if eu.test_session %}
+                    {% if eu.test_session.is_success_test %}
+                        <p class='icon icon--checkmark'></p>
+                    {% else %}
+                        <p class='icon icon--cross'></p>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        </td>
         <td class="table__cell">
             {% if not session.is_stopped and not session.is_shutting_down %}
                 <form method="POST" action="{% url 'testsession:stop_session' session.id %}">

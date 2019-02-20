@@ -43,9 +43,30 @@ class NewmanManager:
         command = command.format(*args, self.global_vars)
         return run_command_with_shell(command)
 
-    def replace_parameters(self, dict):
-        for k, v in dict.items():
+    def replace_parameters(self, _dict):
+        for k, v in _dict.items():
             self.global_vars += self.GLOBAL_VAR_SYNTAX.format(k, v)
+
+    def add_auth(self, auth):
+        with open(self.file.path) as file:
+            parsed = json.load(file)
+
+            header = {
+                'key': list(auth.keys())[0],
+                'value': list(auth.values())[0],
+                'type': 'text'
+            }
+            for item in parsed['item']:
+                if 'header' in item['request']:
+                    item['request']['header'].append(header)
+                else:
+                    item['request']['header'] = [header]
+            filename = str(uuid.uuid4())
+            outfile_path = os.path.join(os.path.dirname(self.file.path), filename)
+            with open(outfile_path, 'w') as outfile:
+                json.dump(parsed, outfile)
+            self.file = open(outfile_path, 'r')
+            self.file.path = outfile_path
 
     def execute_test(self):
         self.file_path = self.file.path

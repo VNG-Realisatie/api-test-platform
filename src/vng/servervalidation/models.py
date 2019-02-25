@@ -23,6 +23,15 @@ class TestScenario(models.Model):
     def __str__(self):
         return self.name
 
+    def jwt_enabled(self):
+        return self.authorization == choices.AuthenticationChoices.jwt
+
+    def no_auth(self):
+        return self.authorization == choices.AuthenticationChoices.no_auth
+
+    def custom_header(self):
+        return self.authorization == choices.AuthenticationChoices.header
+
 
 class TestScenarioUrl(models.Model):
 

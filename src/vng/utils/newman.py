@@ -47,13 +47,13 @@ class NewmanManager:
         for k, v in _dict.items():
             self.global_vars += self.GLOBAL_VAR_SYNTAX.format(k, v)
 
-    def add_auth(self, auth):
+    def add_header(self, key, value, type='text'):
         with open(self.file.path) as file:
             parsed = json.load(file)
 
             header = {
-                'key': list(auth.keys())[0],
-                'value': list(auth.values())[0],
+                'key': key,
+                'value': value,
                 'type': 'text'
             }
             for item in parsed['item']:
@@ -67,6 +67,9 @@ class NewmanManager:
                 json.dump(parsed, outfile)
             self.file = open(outfile_path, 'r')
             self.file.path = outfile_path
+
+    def add_auth(self, auth):
+        self.add_header(list(auth.keys())[0], list(auth.values())[0])
 
     def execute_test(self):
         self.file_path = self.file.path

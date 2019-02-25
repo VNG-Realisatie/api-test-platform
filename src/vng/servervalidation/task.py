@@ -6,7 +6,7 @@ from django.utils import timezone
 from celery.utils.log import get_task_logger
 
 from ..celery.celery import app
-from .models import PostmanTest, PostmanTestResult, Endpoint, ServerRun
+from .models import PostmanTest, PostmanTestResult, Endpoint, ServerRun, ServerHeader
 from ..utils import choices
 from ..utils.newman import DidNotRunException, NewmanManager
 
@@ -28,18 +28,22 @@ def execute_test(server_run_pk):
 
     file_name = str(uuid.uuid4())
     postman_tests = PostmanTest.objects.filter(test_scenario=server_run.test_scenario).order_by('order')
+    auth_choice = postman_test.test_scenario.authorization
     try:
-        jwt_auth = get_jwt(server_run).credentials()
+        if auth_choice == choices.AuthenticationChoices.header:
+            jwt_auth = get_jwt(server_run).credentials()
         for counter, postman_test in enumerate(postman_tests):
             server_run.status_exec = 'Running the test {}'.format(postman_test.validation_file)
             server_run.percentage_exec = int((counter + 1 / (len(postman_tests) + 1)) * 100)
             server_run.save()
             nm = NewmanManager(postman_test.validation_file)
-            auth_choice = postman_test.test_scenario.authorization
+
             if auth_choice == choices.AuthenticationChoices.jwt:
                 nm.add_auth(jwt_auth)
             elif auth_choice == choices.AuthenticationChoices.header:
-                pass
+                se = ServerHeader.objects.filter(server_run=server_run)
+                for header in se:
+                    nm.add_header(header.header_key, header.header_value)
             elif auth_choice == choices.AuthenticationChoices.no_auth:
                 pass
             param = {}

@@ -7,7 +7,7 @@
 {% block content %}
 <article class="article">
     <div class="article__section">
-        <h1>Create server-testrun for scenario: {{ ts }}</h1>
+        <h1>Create provider-testrun for scenario: {{ ts }}</h1>
         <form class="form" method="post">
             {% csrf_token %}
             {% load_widgets form='forms.html' %}
@@ -17,7 +17,9 @@
             {% endfor %}
             <input type="submit" class="button button--primary" value="Create Server-testrun">
             <input type="button" class="button" value="Cancel"
-                       onclick="location.href = '{% url 'server_run:server-run_list' %}';">
+                    onclick="location.href = '{% url 'server_run:server-run_list' %}';">
+
+
 
         </form>
     </div>

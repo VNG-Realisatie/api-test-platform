@@ -63,7 +63,7 @@ class ScenarioCaseAdmin(OrderedModelAdmin):
         'move_up_down_links',
         'http_method',
         'vng_endpoint']
-    list_filter = ['vng_endpoint']
+    list_filter = ['vng_endpoint__session_type']
     search_fields = ['vng_endpoint']
 
 

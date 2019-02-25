@@ -43,6 +43,11 @@ class TestScenarioSelect(LoginRequiredMixin, FormView, MultipleObjectMixin, Mult
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         server_list = self.get_queryset()
+        data['running'] = False
+        for server in server_list:
+            if server.is_running():
+                data['running'] = True
+                break
         return data
 
     def get(self, request, *args, **kwargs):

@@ -18,7 +18,8 @@ from ..utils.newman import DidNotRunException, NewmanManager
 from ..utils.views import OwnerSingleObject, PDFGenerator
 from .forms import CreateServerRunForm, CreateEndpointForm
 from .models import (
-    ServerRun, Endpoint, TestScenarioUrl, TestScenario, PostmanTest, PostmanTestResult, ExpectedPostmanResult
+    ServerRun, Endpoint, TestScenarioUrl, TestScenario, PostmanTest, PostmanTestResult, ExpectedPostmanResult,
+    ServerHeader
 )
 from .task import execute_test
 
@@ -42,6 +43,11 @@ class TestScenarioSelect(LoginRequiredMixin, FormView, MultipleObjectMixin, Mult
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         server_list = self.get_queryset()
+        data['running'] = False
+        for server in server_list:
+            if server.is_running():
+                data['running'] = True
+                break
         return data
 
     def get(self, request, *args, **kwargs):
@@ -75,17 +81,26 @@ class CreateEndpoint(LoginRequiredMixin, CreateView):
         url_names = [tsu.name for tsu in test_scenario_url]
         data['form'] = CreateEndpointForm(
             quantity=len(data['test_scenario']) - 1,
-            field_name=url_names[1:],
-            text_area=['Client ID', 'Secret']
+            field_name=url_names[1:]
         )
+        if ts.jwt_enabled():
+            data['form'].add_text_area(['Client ID', 'Secret'])
+        elif ts.custom_header():
+            data['form'].add_text_area(['Authorization header'])
+        else:
+            pass
         data['form'].set_labels(url_names)
         return data
 
     def form_valid(self, form):
         self.fetch_server()
-        self.server.client_id = form.data['Client ID']
-        self.server.secret = form.data['Secret']
-        self.server.save()
+        if self.server.test_scenario.jwt_enabled():
+            self.server.client_id = form.data['Client ID']
+            self.server.secret = form.data['Secret']
+            self.server.save()
+        elif self.server.test_scenario.custom_header():
+            self.server.save()
+            server_header = ServerHeader(server_run=self.server, header_key='Authorization', header_value=form.data['Authorization header'])
         self.endpoints = []
         tsu = list(TestScenarioUrl.objects.filter(test_scenario=self.server.test_scenario))
         for key, value in form.data.items():

@@ -6,7 +6,7 @@ from django.utils import timezone
 from celery.utils.log import get_task_logger
 
 from ..celery.celery import app
-from .models import PostmanTest, PostmanTestResult, Endpoint, ServerRun
+from .models import PostmanTest, PostmanTestResult, Endpoint, ServerRun, ServerHeader
 from ..utils import choices
 from ..utils.newman import DidNotRunException, NewmanManager
 
@@ -15,9 +15,16 @@ logger = get_task_logger(__name__)
 
 
 def get_jwt(server_run):
+
     return ClientAuth(
         client_id=server_run.client_id,
-        secret=server_run.secret
+        secret=server_run.secret,
+        scopes=['zds.scopes.zaken.lezen',
+                'zds.scopes.zaaktypes.lezen',
+                'zds.scopes.zaken.aanmaken',
+                'zds.scopes.statussen.toevoegen',
+                'zds.scopes.zaken.bijwerken'],
+        zaaktypes=['*']
     )
 
 
@@ -27,15 +34,25 @@ def execute_test(server_run_pk):
     endpoints = Endpoint.objects.filter(server_run=server_run)
 
     file_name = str(uuid.uuid4())
-    jwt_auth = get_jwt(server_run).credentials()
     postman_tests = PostmanTest.objects.filter(test_scenario=server_run.test_scenario).order_by('order')
     try:
         for counter, postman_test in enumerate(postman_tests):
+            auth_choice = postman_test.test_scenario.authorization
+            if auth_choice == choices.AuthenticationChoices.jwt:
+                jwt_auth = get_jwt(server_run).credentials()
             server_run.status_exec = 'Running the test {}'.format(postman_test.validation_file)
             server_run.percentage_exec = int((counter + 1 / (len(postman_tests) + 1)) * 100)
             server_run.save()
             nm = NewmanManager(postman_test.validation_file)
-            nm.add_auth(jwt_auth)
+
+            if auth_choice == choices.AuthenticationChoices.jwt:
+                nm.add_auth(jwt_auth)
+            elif auth_choice == choices.AuthenticationChoices.header:
+                se = ServerHeader.objects.filter(server_run=server_run)
+                for header in se:
+                    nm.add_header(header.header_key, header.header_value)
+            elif auth_choice == choices.AuthenticationChoices.no_auth:
+                pass
             param = {}
             for ep in endpoints:
                 param[ep.test_scenario_url.name] = ep.url

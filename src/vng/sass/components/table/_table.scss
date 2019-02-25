@@ -11,6 +11,10 @@ $table-color-border: $color-gray;
   table-layout: fixed;
   width: 100%;
 
+  &--auto {
+    table-layout: auto;
+  }
+
   &__heading,
   &__cell {
     @include body;
@@ -27,6 +31,11 @@ $table-color-border: $color-gray;
     &:last-of-type {
       border-bottom: 2px solid $table-color-border;
     }
+  }
+
+  &--auto &__heading,
+  &--auto &__cell {
+    width: auto;
   }
 
   &__cell {

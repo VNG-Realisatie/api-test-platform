@@ -47,13 +47,13 @@ class NewmanManager:
         for k, v in _dict.items():
             self.global_vars += self.GLOBAL_VAR_SYNTAX.format(k, v)
 
-    def add_auth(self, auth):
+    def add_header(self, key, value, type='text'):
         with open(self.file.path) as file:
             parsed = json.load(file)
 
             header = {
-                'key': list(auth.keys())[0],
-                'value': list(auth.values())[0],
+                'key': key,
+                'value': value,
                 'type': 'text'
             }
             for item in parsed['item']:
@@ -61,6 +61,29 @@ class NewmanManager:
                     item['request']['header'].append(header)
                 else:
                     item['request']['header'] = [header]
+            filename = str(uuid.uuid4())
+            outfile_path = os.path.join(os.path.dirname(self.file.path), filename)
+            with open(outfile_path, 'w') as outfile:
+                json.dump(parsed, outfile)
+            self.file = open(outfile_path, 'r')
+            self.file.path = outfile_path
+
+    def add_auth(self, auth, auth_type='bearer'):
+        # self.add_header(list(auth.keys())[0], list(auth.values())[0])
+        with open(self.file.path) as file:
+            parsed = json.load(file)
+            if auth_type == 'bearer':
+                header = {
+                    'type': auth_type,
+                    'bearer': [{
+                        'key': 'token',
+                        'value': list(auth.values())[0].split()[1],
+                        'type': 'string'
+                    }]
+                }
+            for item in parsed['item']:
+                item['request']['auth'] = header
+
             filename = str(uuid.uuid4())
             outfile_path = os.path.join(os.path.dirname(self.file.path), filename)
             with open(outfile_path, 'w') as outfile:

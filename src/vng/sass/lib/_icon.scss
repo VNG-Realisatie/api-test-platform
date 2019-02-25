@@ -11,7 +11,7 @@ $icon-margin-3: $grid-margin-3;
     @include body;
     @extend .icon;
     @extend .icon-#{$icon};
-    font-size: 11px;
+    font-size: 20px;
     position: absolute;
     left: 0;
   }

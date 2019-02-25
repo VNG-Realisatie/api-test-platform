@@ -77,6 +77,13 @@ class ResultServerView(LoginRequiredMixin, views.APIView):
 
     def get(self, request, pk, *args, **kwargs):
         server_run = self.get_object()
+        if not server_run.is_stopped():
+            res = {
+                'Information': 'The tests against the provider-run is undergoing.'
+            }
+            response = HttpResponse(json.dumps(res))
+            response['Content-Type'] = 'application/json'
+            return response
         epr = ExpectedPostmanResult.objects.filter(postman_test__test_scenario=server_run.test_scenario)
         postman_res = PostmanTestResult.objects.filter(server_run=server_run)
         response = []

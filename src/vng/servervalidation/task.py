@@ -15,9 +15,16 @@ logger = get_task_logger(__name__)
 
 
 def get_jwt(server_run):
+
     return ClientAuth(
         client_id=server_run.client_id,
-        secret=server_run.secret
+        secret=server_run.secret,
+        scopes=['zds.scopes.zaken.lezen',
+                'zds.scopes.zaaktypes.lezen',
+                'zds.scopes.zaken.aanmaken',
+                'zds.scopes.statussen.toevoegen',
+                'zds.scopes.zaken.bijwerken'],
+        zaaktypes=['*']
     )
 
 
@@ -28,11 +35,11 @@ def execute_test(server_run_pk):
 
     file_name = str(uuid.uuid4())
     postman_tests = PostmanTest.objects.filter(test_scenario=server_run.test_scenario).order_by('order')
-    auth_choice = postman_tests.test_scenario.authorization
     try:
-        if auth_choice == choices.AuthenticationChoices.header:
-            jwt_auth = get_jwt(server_run).credentials()
         for counter, postman_test in enumerate(postman_tests):
+            auth_choice = postman_test.test_scenario.authorization
+            if auth_choice == choices.AuthenticationChoices.jwt:
+                jwt_auth = get_jwt(server_run).credentials()
             server_run.status_exec = 'Running the test {}'.format(postman_test.validation_file)
             server_run.percentage_exec = int((counter + 1 / (len(postman_tests) + 1)) * 100)
             server_run.save()

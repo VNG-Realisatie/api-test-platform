@@ -27,15 +27,21 @@ def execute_test(server_run_pk):
     endpoints = Endpoint.objects.filter(server_run=server_run)
 
     file_name = str(uuid.uuid4())
-    jwt_auth = get_jwt(server_run).credentials()
     postman_tests = PostmanTest.objects.filter(test_scenario=server_run.test_scenario).order_by('order')
     try:
+        jwt_auth = get_jwt(server_run).credentials()
         for counter, postman_test in enumerate(postman_tests):
             server_run.status_exec = 'Running the test {}'.format(postman_test.validation_file)
             server_run.percentage_exec = int((counter + 1 / (len(postman_tests) + 1)) * 100)
             server_run.save()
             nm = NewmanManager(postman_test.validation_file)
-            nm.add_auth(jwt_auth)
+            auth_choice = postman_test.test_scenario.authorization
+            if auth_choice == choices.AuthenticationChoices.jwt:
+                nm.add_auth(jwt_auth)
+            elif auth_choice == choices.AuthenticationChoices.header:
+                pass
+            elif auth_choice == choices.AuthenticationChoices.no_auth:
+                pass
             param = {}
             for ep in endpoints:
                 param[ep.test_scenario_url.name] = ep.url

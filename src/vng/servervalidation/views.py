@@ -46,9 +46,7 @@ class TestScenarioSelect(LoginRequiredMixin, FormView, MultipleObjectMixin, Mult
         return data
 
     def get(self, request, *args, **kwargs):
-
-
-https: // jwt.io / self.object_list = self.get_queryset()
+        self.object_list = self.get_queryset()
         return super().get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):

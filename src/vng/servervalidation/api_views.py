@@ -30,6 +30,36 @@ class ServerRunViewSet(
         mixins.RetrieveModelMixin,
         viewsets.GenericViewSet):
     """
+    create:
+    Create a provider-run.
+
+    Create a new provider-run instance.
+    {
+    "test_scenario": "ZDS 2.0 verification test",
+    "client_id": "tj",
+    "secret": "tyj",
+    "endpoints": [
+        {
+                "url": "https://ref.tst.vng.cloud/drc/",
+                "test_scenario_url":{
+                        "name": "DRC"
+                }
+        },
+        {
+                "url": "https://ref.tst.vng.cloud/ztc/",
+                "test_scenario_url":{
+                        "name": "ZTC"
+                }
+        },
+        {
+                "url": "https://ref.tst.vng.cloud/zrc/",
+                "test_scenario_url":{
+                        "name": "ZRC"
+                }
+        }
+        ]
+    }
+
     retrieve:
     Provider-run detail.
 
@@ -39,11 +69,6 @@ class ServerRunViewSet(
     Provider-run list.
 
     Return a list of all the existing provider-run.
-
-    create:
-    Create a provider-run.
-
-    Create a new provider-run instance.
     """
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (permissions.IsAuthenticated,)

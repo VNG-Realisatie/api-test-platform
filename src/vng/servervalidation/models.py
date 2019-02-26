@@ -113,12 +113,12 @@ class PostmanTestResult(models.Model):
             return '{} - {}'.format(self.pk, self.status)
 
     def is_success(self):
-        if self.status is None:
-            return 0
         if self.status == choices.ResultChoices.success:
             return 1
-        else:
+        if self.status == choices.ResultChoices.failed:
             return -1
+        else:
+            return 0
 
     def display_log(self):
         if self.log:

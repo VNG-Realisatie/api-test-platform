@@ -45,10 +45,18 @@ class TestScenarioSelect(LoginRequiredMixin, FormView, MultipleObjectMixin, Mult
         server_list = self.get_queryset()
         for sr in data['server_run_list']:
             success = True
-            for ptr in sr.postmantestresult_set.all():
-                if not ptr.is_success():
-                    success = False
+            ptr_set = sr.postmantestresult_set.all()
+            if len(ptr_set) == 0:
+                sr.success = None
+            else:
+                for ptr in ptr_set:
+                    if ptr.is_success() == 0:
+                        success = None
+                    elif ptr.is_success() == -1 and success is not None:
+                        success = False
+
             sr.success = success
+            print(success)
         data['running'] = False
         for server in server_list:
             if server.is_running():

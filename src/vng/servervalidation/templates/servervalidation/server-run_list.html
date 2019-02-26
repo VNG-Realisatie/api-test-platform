@@ -28,7 +28,7 @@
 
             {% if object_list %}
                 <h2>Providers list</h2>
-                <table class="table table--auto">
+                <table class="table">
                     {% include 'components/table/header-server-run.html' only %}
                     {% for server_run in object_list %}
                         {% include 'components/table/row-server-run.html' with server_run=server_run %}

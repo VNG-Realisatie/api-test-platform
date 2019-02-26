@@ -65,11 +65,12 @@ class VNGEndpoint(models.Model):
 
 class ScenarioCase(OrderedModel):
     url = models.CharField(max_length=200, help_text='''
-    General URL patter that will be compared
+    URL pattern that will be compared
     with the request and eventually matched.
-    Matching flag can be added, e.g. /test/{uuid}/stop
-    will match every url with text instead of {uuid}.
+    Wildcards can be added, e.g. '/test/{uuid}/stop'
+    will match the URL '/test/c5429dcc-6955-4e22-9832-08d52205f633/stop'.
     '''
+
                            )
     http_method = models.CharField(max_length=20, choices=choices.HTTPMethodChoiches.choices, default=choices.HTTPMethodChoiches.GET)
     vng_endpoint = models.ForeignKey(VNGEndpoint, on_delete=models.CASCADE)

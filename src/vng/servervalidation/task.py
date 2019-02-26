@@ -47,7 +47,7 @@ def execute_test(server_run_pk):
 
             if auth_choice == choices.AuthenticationChoices.jwt:
                 nm.replace_parameters({
-                    'Authentication': list(jwt_auth.values())[0].split()[1]
+                    'BEARER_TOKEN': list(jwt_auth.values())[0].split()[1]
                 })
             elif auth_choice == choices.AuthenticationChoices.header:
                 se = ServerHeader.objects.filter(server_run=server_run)

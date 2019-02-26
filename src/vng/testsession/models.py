@@ -3,6 +3,7 @@ import uuid
 import re
 
 from django.conf import settings
+from django.core.validators import RegexValidator
 from django.core.files import File
 from django.db import models
 from django.utils import timezone
@@ -54,7 +55,16 @@ class VNGEndpoint(models.Model):
 
     port = models.PositiveIntegerField(default=8080)
     url = models.URLField(max_length=200, blank=True, null=True, default=None)
-    name = models.CharField(max_length=200)
+    name = models.CharField(
+        max_length=200,
+        validators=[
+            RegexValidator(
+                regex='^[^ ]*$',
+                message='The name cannot contain spaces',
+                code='Invalid_name'
+            )
+        ]
+    )
     docker_image = models.CharField(max_length=200, blank=True, null=True, default=None)
     session_type = models.ForeignKey(SessionType, on_delete=models.CASCADE)
     test_file = models.FileField(settings.MEDIA_FOLDER_FILES['test_session'], blank=True, null=True, default=None)

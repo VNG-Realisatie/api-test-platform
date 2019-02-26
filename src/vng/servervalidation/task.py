@@ -46,11 +46,15 @@ def execute_test(server_run_pk):
             nm = NewmanManager(postman_test.validation_file)
 
             if auth_choice == choices.AuthenticationChoices.jwt:
-                nm.add_auth(jwt_auth)
+                nm.replace_parameters({
+                    'BEARER_TOKEN': list(jwt_auth.values())[0].split()[1]
+                })
             elif auth_choice == choices.AuthenticationChoices.header:
                 se = ServerHeader.objects.filter(server_run=server_run)
                 for header in se:
-                    nm.add_header(header.header_key, header.header_value)
+                    nm.replace_parameters({
+                        'Authentication': header.header_value
+                    })
             elif auth_choice == choices.AuthenticationChoices.no_auth:
                 pass
             param = {}

@@ -11,7 +11,7 @@ from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.http import (
-    Http404, HttpResponse, HttpResponseRedirect, HttpResponseServerError
+    Http404, HttpResponse, HttpResponseRedirect, HttpResponseServerError, HttpResponseForbidden
 )
 
 from rest_framework import generics, permissions, viewsets, views, mixins
@@ -75,7 +75,7 @@ class SessionViewSet(
             session.delete()
 
 
-class StopSessionView(OwnerSingleObject, generics.ListAPIView):
+class StopSessionView(generics.ListAPIView):
     """
     Stop Session
 
@@ -97,7 +97,8 @@ class StopSessionView(OwnerSingleObject, generics.ListAPIView):
         scenarios = ScenarioCase.objects.filter(vng_endpoint__session_type__session=self.kwargs['pk'])
 
         session = get_object_or_404(Session, id=self.kwargs['pk'])
-        self.check_ownership(session)
+        if session.user != self.request.user:
+            return HttpResponseForbidden()
         self.perform_operations(session)
         return scenarios
 

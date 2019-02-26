@@ -2,6 +2,7 @@ from django.contrib import admin
 import vng.servervalidation.models as model
 
 from ordered_model.admin import OrderedModelAdmin
+from django_admin_relation_links import AdminChangeLinksMixin
 
 
 def get_all_fields(mo):
@@ -27,15 +28,16 @@ class ExpectedPostmanResultInline(admin.TabularInline):
 
 
 @admin.register(model.PostmanTest)
-class PostmanTestAdmin(OrderedModelAdmin):
+class PostmanTestAdmin(AdminChangeLinksMixin, OrderedModelAdmin):
     list_display = ['test_scenario', 'move_up_down_links', 'validation_file']
-
+    changelist_links = ['expectedpostmanresult']
     inlines = [ExpectedPostmanResultInline]
 
 
 @admin.register(model.ExpectedPostmanResult)
 class ExpectedPostmanResult(OrderedModelAdmin):
     list_display = ['postman_test', 'move_up_down_links', 'expected_response']
+    list_filter = ['postman_test']
 
 
 @admin.register(model.PostmanTestResult)

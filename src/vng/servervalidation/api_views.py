@@ -36,8 +36,8 @@ class ServerRunViewSet(
     Create a new provider-run instance.
     {
     "test_scenario": "ZDS 2.0 verification test",
-    "client_id": "tj",
-    "secret": "tyj",
+    "client_id": "test-api-s694H3mpvZpd",
+    "secret": "JKzXwzfQvQlYpcnvMwIbdLsmymzzpFvC",
     "endpoints": [
         {
                 "url": "https://ref.tst.vng.cloud/drc/",

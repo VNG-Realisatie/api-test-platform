@@ -17,10 +17,12 @@
 
     <td class="table__cell">{{ server_run.test_scenario.name }}</td>
     <td class="table__cell">
-        {% if server_run.success == 1 %}
-            <p class='icon icon--checkmark'></p>
-        {% elif server_run.success == -1 %}
-            <p class='icon icon--cross'></p>
+        {% if server_run.success != None %}
+            {% if server_run.success == 1 %}
+                <p class='icon icon--checkmark'></p>
+            {% elif server_run.success == -1 %}
+                <p class='icon icon--cross'></p>
+            {% endif %}
         {% endif %}
     </td>
     <td class="table__cell">

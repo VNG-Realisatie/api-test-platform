@@ -17,13 +17,11 @@
 
     <td class="table__cell">{{ server_run.test_scenario.name }}</td>
     <td class="table__cell">
-        {% for postman in server_run.postmantestresult_set.all %}
-            {% if postman.is_success == 1 %}
-                <p class='icon icon--checkmark'></p>
-            {% elif postman.is_success == -1 %}
-                <p class='icon icon--cross'></p>
-            {% endif %}
-        {% endfor %}
+        {% if server_run.success == 1 %}
+            <p class='icon icon--checkmark'></p>
+        {% elif server_run.success == -1 %}
+            <p class='icon icon--cross'></p>
+        {% endif %}
     </td>
     <td class="table__cell">
         {% if not server_run.is_stopped and not server_run.is_running %}

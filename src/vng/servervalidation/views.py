@@ -43,6 +43,12 @@ class TestScenarioSelect(LoginRequiredMixin, FormView, MultipleObjectMixin, Mult
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         server_list = self.get_queryset()
+        for sr in data['server_run_list']:
+            success = True
+            for ptr in sr.postmantestresult_set.all():
+                if not ptr.is_success():
+                    success = False
+            sr.success = success
         data['running'] = False
         for server in server_list:
             if server.is_running():

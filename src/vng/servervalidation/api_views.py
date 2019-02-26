@@ -130,7 +130,7 @@ class ResultServerView(LoginRequiredMixin, views.APIView):
                 # if
                 if ep is None:
                     _call['status'] = 'Expected response not specified'
-                elif call['response']['code'] in ep.expected_response:
+                elif str(call['response']['code']) in ep.expected_response:
                     _call['status'] = 'As expected'
                 else:
                     success = False

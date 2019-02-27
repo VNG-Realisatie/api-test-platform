@@ -49,7 +49,7 @@ def start_app_b8s(session, bind_url):
             ip = kuber.status(get_app_name(session, bind_url))
             return ip
         except Exception as e:
-            err = r
+            err = e
     raise(err)
 
 

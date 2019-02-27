@@ -14,6 +14,7 @@ from rest_framework.exceptions import bad_request
 from rest_framework.authentication import (
     SessionAuthentication, TokenAuthentication
 )
+from drf_yasg.utils import swagger_auto_schema
 
 from ..utils.exceptions import Error400
 from ..permissions.UserPermissions import *

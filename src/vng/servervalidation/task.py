@@ -41,7 +41,7 @@ def execute_test(server_run_pk):
             if auth_choice == choices.AuthenticationChoices.jwt:
                 jwt_auth = get_jwt(server_run).credentials()
             server_run.status_exec = 'Running the test {}'.format(postman_test.validation_file)
-            server_run.percentage_exec = int((counter + 1 / (len(postman_tests) + 1)) * 100)
+            server_run.percentage_exec = int(((counter + 1) / (len(postman_tests) + 1)) * 100)
             server_run.save()
             nm = NewmanManager(postman_test.validation_file)
 

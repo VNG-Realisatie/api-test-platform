@@ -14,10 +14,11 @@ from rest_framework.exceptions import bad_request
 from rest_framework.authentication import (
     SessionAuthentication, TokenAuthentication
 )
+from drf_yasg.utils import swagger_auto_schema
 
 from ..utils.exceptions import Error400
 from ..permissions.UserPermissions import *
-from .serializers import ServerRunSerializer
+from .serializers import ServerRunSerializer, ServerRunPayloadExample
 from .models import (
     ServerRun, Endpoint, TestScenarioUrl, TestScenario, PostmanTest, PostmanTestResult, ExpectedPostmanResult
 )
@@ -34,31 +35,7 @@ class ServerRunViewSet(
     Create a provider-run.
 
     Create a new provider-run instance.
-    {
-    "test_scenario": "ZDS 2.0 verification test",
-    "client_id": "test-api-s694H3mpvZpd",
-    "secret": "JKzXwzfQvQlYpcnvMwIbdLsmymzzpFvC",
-    "endpoints": [
-        {
-                "url": "https://ref.tst.vng.cloud/drc/",
-                "test_scenario_url":{
-                        "name": "DRC"
-                }
-        },
-        {
-                "url": "https://ref.tst.vng.cloud/ztc/",
-                "test_scenario_url":{
-                        "name": "ZTC"
-                }
-        },
-        {
-                "url": "https://ref.tst.vng.cloud/zrc/",
-                "test_scenario_url":{
-                        "name": "ZRC"
-                }
-        }
-        ]
-    }
+
 
     retrieve:
     Provider-run detail.
@@ -73,6 +50,10 @@ class ServerRunViewSet(
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = ServerRunSerializer
+
+    @swagger_auto_schema(request_body=ServerRunPayloadExample)
+    def create(self, *args, **kwargs):
+        return super().create(*args, **kwargs)
 
     def get_queryset(self):
         return ServerRun.objects.filter(user=self.request.user).prefetch_related(

@@ -300,11 +300,13 @@ class RunTest(CSRFExemptMixin, View):
                 'relative_url': ''
             })
         )
-
-        if not endpoint.vng_endpoint.url.endswith('/'):
-            if sub.endswith('/'):
-                sub = sub[:-1]
-        return re.sub(endpoint.vng_endpoint.url, sub, content)
+        if endpoint.vng_endpoint.url is not None:
+            if not endpoint.vng_endpoint.url.endswith('/'):
+                if sub.endswith('/'):
+                    sub = sub[:-1]
+            return re.sub(endpoint.vng_endpoint.url, sub, content)
+        else:
+            return re.sub(endpoint.docker_url, sub, content)
 
     def sub_url_request(self, content, host, endpoint):
         sub = '{}{}'.format(
@@ -366,7 +368,7 @@ class RunTest(CSRFExemptMixin, View):
             else:
                 request_url = '{}/{}?{}'.format(eu.vng_endpoint.url, self.kwargs['relative_url'], arguments)
         else:
-            request_url = 'http://{}:{}/{}?{}'.format(eu.docker_url, eu.vng_endpoint.port, self.kwargs['relative_url'], arguments)
+            request_url = 'http://{}:{}/{}?{}'.format(eu.docker_url, 8080, self.kwargs['relative_url'], arguments)
         method = getattr(requests, request_method_name)
 
         try:

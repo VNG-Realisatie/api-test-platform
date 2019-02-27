@@ -23,7 +23,7 @@ class K8S():
         run_command(set_zone)
         run_command(set_project)
 
-    def deploy(self, app_name, image, port=8080):
+    def deploy(self, app_name, image, port=8080, access_port=8080):
         create_cluster = [
             'gcloud',
             'container',
@@ -44,8 +44,7 @@ class K8S():
             'run',
             '{}'.format(app_name),
             '--image={}'.format(image),
-            '--port',
-            '{}'.format(port),
+            '--port={}'.format(port),
         ]
         load_balancer = [
             'kubectl',
@@ -53,6 +52,8 @@ class K8S():
             'deployment',
             '{}'.format(app_name),
             '--type=LoadBalancer',
+            '--port={}'.format(access_port),
+            '--target-port={}'.format(port)
         ]
 
         # Create a general cluster (will error if it already exists)

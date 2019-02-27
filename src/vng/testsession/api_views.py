@@ -23,7 +23,6 @@ from vng.testsession.models import (
 )
 
 from ..utils import choices
-from ..utils.exceptions import Error400
 from ..utils.views import (
     ListAppendView, OwnerMultipleObjects, OwnerSingleObject, CSRFExemptMixin, SingleObjectMixin, ObjectOwner
 )
@@ -379,7 +378,7 @@ class RunTest(CSRFExemptMixin, View):
             else:
                 response = method(request_url, headers=request_header)
         except Exception as e:
-            raise Error400("The endpoint is not responding")
+            raise Http404()
 
         self.add_response(response, session_log, request_url, request)
 

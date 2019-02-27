@@ -6,8 +6,6 @@ from rest_framework import serializers
 from .models import *
 from .task import execute_test
 
-from ..utils.exceptions import Error400
-
 
 class TestScenarioUrlSerializer(serializers.ModelSerializer):
     class Meta:
@@ -31,7 +29,7 @@ class EndpointSerializer(serializers.ModelSerializer):
             ep = Endpoint.objects.create(test_scenario_url=tsu, url=url, server_run=validated_data['server'])
             return ep
         except Exception as e:
-            raise Error400("The urls names provided do not match")
+            raise serializers.ValidationError("The urls names provided do not match")
 
 
 class ServerRunSerializer(serializers.ModelSerializer):
@@ -55,22 +53,6 @@ class ServerRunSerializer(serializers.ModelSerializer):
             'status'
         ]
         read_only_fields = ['id', 'started', 'stopped', 'status']
-        # swagger_schema_fields = {
-        #     'example': {
-        #         'id': 4,
-        #         'started': '01/10/2010',
-        #         'no field': 123,
-        #         'test_scenario': 'asd',
-        #         'client_id': 'asd',
-        #         'secret': 'asd',
-        #         'endpoints': {
-        #             'url': 'www.google.com',
-        #             "test_scenario_url": {
-        #                 "name": "string"
-        #             }
-        #         }
-        #     }
-        # }
 
     def create(self, validated_data):
         endpoint_created = []

@@ -18,7 +18,6 @@ class TestScenarioUrlSerializer(serializers.ModelSerializer):
 class EndpointSerializer(serializers.ModelSerializer):
 
     test_scenario_url = TestScenarioUrlSerializer()
-    # name = serializers.StringRelatedField(source='test_scenario_url.name')
 
     class Meta:
         model = Endpoint
@@ -55,7 +54,23 @@ class ServerRunSerializer(serializers.ModelSerializer):
             'endpoints',
             'status'
         ]
-        read_only_fields = ['started', 'stopped', 'status']
+        read_only_fields = ['id', 'started', 'stopped', 'status']
+        # swagger_schema_fields = {
+        #     'example': {
+        #         'id': 4,
+        #         'started': '01/10/2010',
+        #         'no field': 123,
+        #         'test_scenario': 'asd',
+        #         'client_id': 'asd',
+        #         'secret': 'asd',
+        #         'endpoints': {
+        #             'url': 'www.google.com',
+        #             "test_scenario_url": {
+        #                 "name": "string"
+        #             }
+        #         }
+        #     }
+        # }
 
     def create(self, validated_data):
         endpoint_created = []
@@ -77,3 +92,38 @@ class ServerRunSerializer(serializers.ModelSerializer):
         instance.endpoints = endpoint_created
         execute_test.delay(instance.pk)
         return instance
+
+
+class ServerRunPayloadExample(ServerRunSerializer):
+
+    class Meta(ServerRunSerializer.Meta):
+        swagger_schema_fields = {
+            'example': {
+                "test_scenario": "ZDS 2.0 verification test",
+                "client_id": "test-api-s694H3mpvZpd",
+                "secret": "JKzXwzfQvQlYpcnvMwIbdLsmymzzpFvC",
+                "endpoints": [
+                    {
+                        "url": "https://ref.tst.vng.cloud/drc/",
+                        "test_scenario_url": {
+                            "name": "DRC"
+                        }
+                    },
+                    {
+                        "url": "https://ref.tst.vng.cloud/ztc/",
+                        "test_scenario_url": {
+                            "name": "ZTC"
+                        }
+                    },
+                    {
+                        "url": "https://ref.tst.vng.cloud/zrc/",
+                        "test_scenario_url": {
+                            "name": "ZRC"
+                        }
+                    }
+                ]
+            },
+            'response': {
+                'trt': 1
+            }
+        }

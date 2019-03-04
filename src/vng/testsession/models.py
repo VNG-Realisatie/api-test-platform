@@ -99,6 +99,7 @@ class Session(models.Model):
     status = models.CharField(max_length=20, choices=choices.StatusChoices.choices, default=choices.StatusChoices.starting)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     build_version = models.TextField(blank=True, null=True, default=None)
+    error_message = models.TextField(blank=True, null=True, default=None)
 
     def __str__(self):
         if self.user:

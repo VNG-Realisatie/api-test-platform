@@ -14,7 +14,7 @@ def run_command(command):
         del my_env["VIRTUAL_ENV"]
     if "HOME" not in my_env:
         my_env["HOME"] = "/home/maykin"
-    logger.info('Environment: {}'.format(str(my_env)))
+    # logger.info('Environment: {}'.format(str(my_env)))
     subp = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=my_env)
     res, error = subp.communicate('n\n')
     if error:

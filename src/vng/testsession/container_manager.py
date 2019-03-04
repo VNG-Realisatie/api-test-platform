@@ -88,8 +88,25 @@ class K8S():
         # Delete the workload
         run_command(clean_up)
 
+    def get_pods_status(self, app_name):
+        status_command = [
+            'kubectl',
+            'get',
+            'pods',
+            '--output=json'
+        ]
+        res1 = run_command(status_command).decode('utf-8')
+        pods = json.loads(res1)
+        items = pods.get('items')
+        for item in items:
+            metadata = item.get('metadata')
+            if metadata and app_name in metadata.get('name'):
+                status = item.get('status').get('containerStatuses')[0]
+                if item.get('status').get('phase') == 'Pending':
+                    return False, status.get('state').get('waiting').get('message')
+        raise Exception('Application {} not found in the deployed cluster'.format(app_name))
+
     def status(self, app_name):
-        NAMES = ['type', 'cluster_ip', 'external_ip', 'port', 'age']
         status_command = [
             'kubectl',
             'get',

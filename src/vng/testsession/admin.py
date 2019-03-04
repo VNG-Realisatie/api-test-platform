@@ -42,6 +42,7 @@ class SessionAdmin(admin.ModelAdmin):
         'status',
         'name',
         'id',
+        'error_message',
         'build_version',
     ]
     list_filter = ['user']

@@ -8,7 +8,8 @@ from django.urls import reverse
 
 from vng.accounts.models import User
 
-from .factories import ServerRunFactory, TestScenarioFactory, TestScenarioUrlFactory
+from ..models import PostmanTestResult
+from .factories import ServerRunFactory, TestScenarioFactory, TestScenarioUrlFactory, PostmanTestFactory
 
 
 def get_object(r):
@@ -22,7 +23,7 @@ def get_username():
 class RetrieveCreationTest(WebTest):
 
     def setUp(self):
-        self.test_scenario = TestScenarioFactory()
+        self.test_scenario = PostmanTestFactory().test_scenario
         self.server = ServerRunFactory()
         tsu1 = TestScenarioUrlFactory()
         tsu2 = TestScenarioUrlFactory()
@@ -63,6 +64,22 @@ class RetrieveCreationTest(WebTest):
     def test_creation_server_run(self):
         call = self.app.post_json(reverse('apiv1server:provider:api_server-run-list'), self.server_run, headers=self.get_user_key())
 
+    def test_full_stack(self):
+        call = self.app.post_json(reverse('apiv1server:provider:api_server-run-list'), self.server_run, headers=self.get_user_key())
+        call = call.json
+        self.assertEqual(call['secret'], self.server_run['secret'])
+        self.server_run['pk'] = call['id']
+        call = self.app.get(reverse('apiv1server:provider:api_server-run-detail', kwargs={
+            'pk': self.server_run['pk']
+        }), headers=self.get_user_key())
+        call = call.json
+        self.assertEqual(call['status'], 'stopped')
+        call = self.app.get(reverse('apiv1server:provider_result', kwargs={
+            'pk': self.server_run['pk']
+        }), headers=self.get_user_key())
+        ptr = PostmanTestResult.objects.filter(postman_test__test_scenario=self.test_scenario.pk).first()
+        self.assertEqual(call.json[0]['status'], ptr.status)
+
     def test_retrieve_server_run(self):
         headers = self.get_user_key()
         call = self.app.post_json(reverse('apiv1server:provider:api_server-run-list'), self.server_run, headers=headers)
@@ -77,5 +94,4 @@ class RetrieveCreationTest(WebTest):
         self.assertNotEqual(parsed['id'], fake_pk)
 
     def test_creation_server_run_auth(self):
-
         call = self.app.post_json(reverse('apiv1server:provider:api_server-run-list'), self.server_run, expect_errors=True)

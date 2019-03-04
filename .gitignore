@@ -20,6 +20,7 @@ __pycache__
 local.py
 /env/
 /media/
+!/media/Google.postman_collection.json
 /static/
 /src/vng/static/css
 /src/vng/static/js

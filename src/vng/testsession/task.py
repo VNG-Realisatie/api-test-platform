@@ -46,11 +46,16 @@ def start_app_b8s(session, bind_url):
     for trial in range(N_TRIALS):
         try:
             time.sleep(10)                      # Waiting for the load balancer to be loaded
-            ip = kuber.status(get_app_name(session, bind_url))
-            return ip
+            ip = kuber.status(app_name)
+
+            ready, message = kuber.get_pods_status(app_name)
+            if not ready:
+                return ready, message
+            return ip, None
         except Exception as e:
             err = e
-    raise(err)
+    ready, message = kuber.get_pods_status(app_name)
+    return ready, message
 
 
 @app.task
@@ -62,8 +67,8 @@ def bootstrap_session(session_pk, start_app=None):
     session = Session.objects.get(pk=session_pk)
     endpoint = VNGEndpoint.objects.filter(session_type=session.session_type)
     try:
+        error_deployment = False
         with transaction.atomic():
-            starting_docker = False
 
             for ep in endpoint:
                 bind_url = ExposedUrl()
@@ -71,13 +76,20 @@ def bootstrap_session(session_pk, start_app=None):
                 bind_url.vng_endpoint = ep
                 bind_url.save()
                 if ep.docker_image:
-                    starting_docker = True
-                    ip = start_app_b8s(session, bind_url)
-                    bind_url.docker_url = ip
-
-                bind_url.exposed_url = '{}/{}'.format(int(time.time()) * 100 + random.randint(0, 99), ep.name)
-                bind_url.save()
-        session.status = choices.StatusChoices.running
+                    ip, message = start_app_b8s(session, bind_url)
+                    if message is None:
+                        bind_url.docker_url = ip
+                    else:
+                        error_deployment = True
+                        session.status = choices.StatusChoices.error_deploy
+                        session.error_message = message
+                if not error_deployment:
+                    bind_url.exposed_url = '{}/{}'.format(int(time.time()) * 100 + random.randint(0, 99), ep.name)
+                    bind_url.save()
+                else:
+                    bind_url.delete()
+        if not error_deployment:
+            session.status = choices.StatusChoices.running
         session.save()
     except Exception as e:
         logger.exception(e)

@@ -12,6 +12,7 @@ class StatusChoices(DjangoChoices):
     running = ChoiceItem("running")
     shutting_down = ChoiceItem("shutting down")
     stopped = ChoiceItem("stopped")
+    error_deploy = ChoiceItem("Error deployment")
 
 
 class ResultChoices(DjangoChoices):

@@ -242,6 +242,7 @@ class TestAllProcedure(WebTest):
         self.assertIn('stopped', call.text)
 
     def test_report(self):
+        self._test_create_session()
         self._test_stop_session()
         session = Session.objects.get(pk=self.session.pk)
         url = reverse('testsession:session_report', kwargs={

@@ -70,7 +70,8 @@ class VNGEndpoint(models.Model):
     test_file = models.FileField(settings.MEDIA_FOLDER_FILES['test_session'], blank=True, null=True, default=None)
 
     def __str__(self):
-        return self.name
+        # To show the session type when adding a scenario case
+        return self.name + " ({})".format(self.session_type)
 
 
 class ScenarioCase(OrderedModel):

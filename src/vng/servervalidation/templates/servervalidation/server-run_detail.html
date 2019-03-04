@@ -75,6 +75,33 @@
                 </tbody>
             </table>
             {% endif %}
+            {% if postman.has_assertion %}
+            <h4>Assertions</h4>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="table__heading">Name</th>
+                        <th class="table__heading">Request</th>
+                        <th class="table__heading">Assertion</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for exec in postman.get_json_obj%}
+                        {% if 'assertions' in exec %}
+                            {% for assertion in exec.assertions %}
+                                {% if 'error' not in assertion %}
+                                    <tr>
+                                        <td class="table__cell">{{ exec.item.name }}</td>
+                                        <td class="table__cell">{{ exec.request.url.url  }}</td>
+                                        <td class="table__cell">{{ assertion.assertion }}</td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
         {% endfor %}
     </div>
 </article>

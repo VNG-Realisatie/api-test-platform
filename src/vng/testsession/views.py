@@ -68,7 +68,7 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
         form.instance.status = choices.StatusChoices.starting
         session = form.save()
         bootstrap_session.delay(session.pk, True)
-        return super().form_valid(form)
+        return HttpResponseRedirect(self.get_success_url())
 
 
 class SessionLogDetailView(OwnerSingleObject):

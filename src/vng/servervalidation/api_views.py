@@ -95,32 +95,27 @@ class ResultServerView(LoginRequiredMixin, views.APIView):
         for postman in postman_res:
             epr = ExpectedPostmanResult.objects.filter(postman_test=postman.postman_test).order_by('order')
             postman.json = postman.get_json_obj()
-            success = True
             postman_res_output = {
+                'time': postman.get_json_obj_info()['run']['timings']['started'],
                 'calls': []
             }
             for call, ep in zip_longest(postman.json, epr):
 
                 _call = {
-                    'time': postman.get_json_obj_info()['run']['timings']['started'],
                     'name': call['item']['name'],
                     'request': call['request']['method'],
                     'response': call['response']['code'],
                 }
-                # if
+                for _assertion in call['assertions']:
+                    _assertion['result'] = 'failed' if 'error' in _assertion else 'success'
+                _call['assertions'] = call['assertions']
                 if ep is None:
                     _call['status'] = 'Expected response not specified'
                 elif str(call['response']['code']) in ep.expected_response:
                     _call['status'] = 'As expected'
-                else:
-                    success = False
-                postman_res_output['calls'].append({
-                    'call': _call})
+                postman_res_output['calls'].append(_call)
 
-            if success:
-                postman_res_output['status'] = 'Succeeded'
-            else:
-                postman_res_output['status'] = 'Failed'
+            postman_res_output['status'] = postman.status
             response.append(postman_res_output)
         response = HttpResponse(json.dumps(response))
         response['Content-Type'] = 'application/json'

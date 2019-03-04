@@ -21,7 +21,7 @@ class PostmanTestFactory(Dmf):
     class Meta:
         model = PostmanTest
     test_scenario = factory.SubFactory(TestScenarioFactory)
-    validation_file = factory.django.FileField(from_path=settings.MEDIA_ROOT + '/google.postman_collection.json')
+    validation_file = factory.django.FileField(from_path=settings.MEDIA_ROOT + '/Google.postman_collection.json')
 
 
 class TestScenarioUrlFactory(Dmf):

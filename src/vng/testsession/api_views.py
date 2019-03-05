@@ -249,15 +249,8 @@ class RunTest(CSRFExemptMixin, View):
         for header, value in request.headers.items():
             if header.lower() not in whitelist:
                 request_headers[header] = value
-        # if 'Content-Length' in request.headers:
-        #     try:
-        #         length = request.headers['Content-Length']
-        #         request.headers['Content-Length'] = length
-        #     except:
-        #         pass
 
-        request_headers['host'] = parse.urlparse(endpoint.url).netloc
-
+        # request_headers['host'] = parse.urlparse(endpoint.url).netloc
         return request_headers
 
     def save_call(self, request, request_method_name, url, relative_url, session, status_code, session_log):
@@ -368,7 +361,10 @@ class RunTest(CSRFExemptMixin, View):
                 request_url = '{}/{}?{}'.format(eu.vng_endpoint.url, self.kwargs['relative_url'], arguments)
         else:
             request_url = 'http://{}:{}/{}?{}'.format(eu.docker_url, 8080, self.kwargs['relative_url'], arguments)
+        if arguments == '':
+            request_url = request_url[:-1]
         method = getattr(requests, request_method_name)
+        request_header['Host'] = '{}:{}'.format(eu.docker_url, 8080)
 
         try:
             if body:

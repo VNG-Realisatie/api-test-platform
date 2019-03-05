@@ -11,6 +11,8 @@ from django.urls import reverse
 
 from ordered_model.models import OrderedModel
 
+from filer.fields.file import FilerFileField
+
 from vng.accounts.models import User
 
 from ..utils import choices, postman
@@ -67,7 +69,7 @@ class VNGEndpoint(models.Model):
     )
     docker_image = models.CharField(max_length=200, blank=True, null=True, default=None)
     session_type = models.ForeignKey(SessionType, on_delete=models.CASCADE)
-    test_file = models.FileField(settings.MEDIA_FOLDER_FILES['test_session'], blank=True, null=True, default=None)
+    test_file = FilerFileField(null=True, blank=True, default=None, on_delete=models.SET_NULL)
 
     def __str__(self):
         # To show the session type when adding a scenario case

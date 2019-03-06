@@ -249,15 +249,8 @@ class RunTest(CSRFExemptMixin, View):
         for header, value in request.headers.items():
             if header.lower() not in whitelist:
                 request_headers[header] = value
-        # if 'Content-Length' in request.headers:
-        #     try:
-        #         length = request.headers['Content-Length']
-        #         request.headers['Content-Length'] = length
-        #     except:
-        #         pass
 
-        request_headers['host'] = parse.urlparse(endpoint.url).netloc
-
+        # request_headers['host'] = parse.urlparse(endpoint.url).netloc
         return request_headers
 
     def save_call(self, request, request_method_name, url, relative_url, session, status_code, session_log):
@@ -352,6 +345,7 @@ class RunTest(CSRFExemptMixin, View):
         return parsed
 
     def build_method(self, request_method_name, request, body=False):
+
         self.session = self.get_queryset()
         eu = get_object_or_404(ExposedUrl, session=self.session, exposed_url=self.get_exposed_url())
         request_header = self.get_http_header(request, eu.vng_endpoint)
@@ -368,17 +362,27 @@ class RunTest(CSRFExemptMixin, View):
                 request_url = '{}/{}?{}'.format(eu.vng_endpoint.url, self.kwargs['relative_url'], arguments)
         else:
             request_url = 'http://{}:{}/{}?{}'.format(eu.docker_url, 8080, self.kwargs['relative_url'], arguments)
+        if arguments == '':
+            request_url = request_url[:-1]
         method = getattr(requests, request_method_name)
 
-        try:
+        def make_call():
             if body:
                 rewritten_body = self.rewrite_request_body(request, endpoints)
                 logger.info("Request body after rewrite: %s", rewritten_body)
                 response = method(request_url, data=rewritten_body, headers=request_header)
             else:
                 response = method(request_url, headers=request_header)
+            return response
+
+        try:
+            response = make_call()
         except Exception as e:
-            raise Http404()
+            try:
+                request_header['Host'] = '{}:{}'.format(eu.docker_url, 8080)
+                response = make_call()
+            except Exception as e:
+                raise Http404()
 
         self.add_response(response, session_log, request_url, request)
 

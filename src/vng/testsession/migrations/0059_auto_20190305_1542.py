@@ -18,6 +18,11 @@ class Migration(migrations.Migration):
             name='url',
             field=models.CharField(help_text="\n    URL pattern that will be compared\n    with the request and eventually matched.\n    Wildcards can be added, e.g. '/test/{uuid}/stop'\n    will match the URL '/test/c5429dcc-6955-4e22-9832-08d52205f633/stop'.\n    ", max_length=200),
         ),
+        migrations.AlterField(
+            model_name='vngendpoint',
+            name='name',
+            field=models.CharField(max_length=200, validators=[django.core.validators.RegexValidator(code='Invalid_name', message='The name cannot contain spaces', regex='^[^ ]*$')]),
+        ),
         migrations.AddField(
             model_name='vngendpoint',
             name='test_file',

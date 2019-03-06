@@ -3,6 +3,7 @@ import factory
 from factory.django import DjangoModelFactory as Dmf
 from vng.accounts.models import User
 from django.conf import settings
+from filer.models import File
 from ..models import SessionType, Session, ScenarioCase, VNGEndpoint, ExposedUrl, SessionLog, TestSession
 from ...utils import choices
 
@@ -28,6 +29,13 @@ class TestSessionFactory(Dmf):
     json_result = factory.django.FileField(filename='testsession')
 
 
+class FilerField(Dmf):
+    class Meta:
+        model = File
+
+    file = factory.django.FileField(from_path=settings.POSTMAN_ROOT + '/google.postman_collection.json')
+
+
 class VNGEndpointFactory(Dmf):
 
     class Meta:
@@ -36,7 +44,7 @@ class VNGEndpointFactory(Dmf):
     name = factory.Sequence(lambda n: 'name{}'.format(n))
     url = 'http://ref.tst.vng.cloud/drc/api/v1'
     session_type = factory.SubFactory(SessionTypeFactory)
-    test_file = factory.django.FileField(from_path=settings.POSTMAN_ROOT + '/google.postman_collection.json')
+    test_file = factory.SubFactory(FilerField)
 
 
 class UserFactory(Dmf):

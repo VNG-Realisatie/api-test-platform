@@ -104,6 +104,8 @@ class K8S():
                 status = item.get('status').get('containerStatuses')[0]
                 if item.get('status').get('phase') == 'Pending':
                     return False, status.get('state').get('waiting').get('message')
+                elif item.get('status').get('phase') == 'Running':
+                    return True, None
         raise Exception('Application {} not found in the deployed cluster'.format(app_name))
 
     def status(self, app_name):

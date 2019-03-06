@@ -15,4 +15,8 @@ class Migration(migrations.Migration):
             name='url',
             field=models.URLField(blank=True, default=None, null=True),
         ),
+        migrations.RemoveField(
+            model_name='vngendpoint',
+            name='test_file',
+        ),
     ]

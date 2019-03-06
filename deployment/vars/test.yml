@@ -14,7 +14,7 @@ pub_key_users:
   - joeri
 
 project_repo: git@github.com:maykinmedia/api-testvoorziening.git
-branch: develop
+branch: feature/postman-django-filer
 
 nginx_server_name: "{{ project_name }}-{{ target }}.maykin.nl"
 nginx_access_log_file: "{{ project_root }}/log/nginx/access.log"

@@ -19,4 +19,8 @@ class Migration(migrations.Migration):
             model_name='vngendpoint',
             name='name',
         ),
+        migrations.RemoveField(
+            model_name='vngendpoint',
+            name='test_file',
+        ),
     ]

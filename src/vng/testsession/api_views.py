@@ -365,9 +365,6 @@ class RunTest(CSRFExemptMixin, View):
         if arguments == '':
             request_url = request_url[:-1]
         method = getattr(requests, request_method_name)
-        # import pdb
-        # pdb.set_trace()
-        # request_header['Host'] = '{}:{}'.format(eu.docker_url, 8080)
 
         def make_call():
             if body:

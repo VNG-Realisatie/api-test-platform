@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
             name='name',
             field=models.CharField(max_length=200, validators=[django.core.validators.RegexValidator(code='Invalid_name', message='The name cannot contain spaces', regex='^[^ ]*$')]),
         ),
-        migrations.AlterField(
+        migrations.AddField(
             model_name='vngendpoint',
             name='test_file',
             field=filer.fields.file.FilerFileField(blank=True, default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, to='filer.File'),

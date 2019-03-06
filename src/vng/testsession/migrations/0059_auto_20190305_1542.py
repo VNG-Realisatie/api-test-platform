@@ -18,10 +18,6 @@ class Migration(migrations.Migration):
             name='url',
             field=models.CharField(help_text="\n    URL pattern that will be compared\n    with the request and eventually matched.\n    Wildcards can be added, e.g. '/test/{uuid}/stop'\n    will match the URL '/test/c5429dcc-6955-4e22-9832-08d52205f633/stop'.\n    ", max_length=200),
         ),
-        migrations.RemoveField(
-            model_name='vngendpoint',
-            name='name',
-        ),
         migrations.AddField(
             model_name='vngendpoint',
             name='name',

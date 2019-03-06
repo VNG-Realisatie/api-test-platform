@@ -17,10 +17,6 @@ class Migration(migrations.Migration):
             name='server_run',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='servervalidation.ServerRun'),
         ),
-        migrations.RemoveField(
-            model_name='postmantest',
-            name='validation_file',
-        ),
         migrations.AddField(
             model_name='postmantest',
             name='validation_file',

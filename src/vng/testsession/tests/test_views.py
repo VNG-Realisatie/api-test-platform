@@ -194,6 +194,8 @@ class TestLog(WebTest):
         call = get_object(call.body)
         url = call['exposedurl_set'][0]['exposed_url']
         session_id = call['id']
+        # import pdb
+        # pdb.set_trace()
         call = self.app.get(url)
         call = self.app.get(reverse('apiv1session:stop_session', kwargs={'pk': session_id}))
         call = get_object(call.body)

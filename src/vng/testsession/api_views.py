@@ -345,6 +345,7 @@ class RunTest(CSRFExemptMixin, View):
         return parsed
 
     def build_method(self, request_method_name, request, body=False):
+
         self.session = self.get_queryset()
         eu = get_object_or_404(ExposedUrl, session=self.session, exposed_url=self.get_exposed_url())
         request_header = self.get_http_header(request, eu.vng_endpoint)
@@ -364,17 +365,27 @@ class RunTest(CSRFExemptMixin, View):
         if arguments == '':
             request_url = request_url[:-1]
         method = getattr(requests, request_method_name)
-        request_header['Host'] = '{}:{}'.format(eu.docker_url, 8080)
+        # import pdb
+        # pdb.set_trace()
+        # request_header['Host'] = '{}:{}'.format(eu.docker_url, 8080)
 
-        try:
+        def make_call():
             if body:
                 rewritten_body = self.rewrite_request_body(request, endpoints)
                 logger.info("Request body after rewrite: %s", rewritten_body)
                 response = method(request_url, data=rewritten_body, headers=request_header)
             else:
                 response = method(request_url, headers=request_header)
+            return response
+
+        try:
+            response = make_call()
         except Exception as e:
-            raise Http404()
+            try:
+                request_header['Host'] = '{}:{}'.format(eu.docker_url, 8080)
+                response = make_call()
+            except Exception as e:
+                raise Http404()
 
         self.add_response(response, session_log, request_url, request)
 

@@ -75,7 +75,7 @@ CACHES = {
 }
 
 AXES_CACHE = 'axes_cache'
-
+CELERY_TASK_ALWAYS_EAGER = True
 #
 # Jenkins settings
 #

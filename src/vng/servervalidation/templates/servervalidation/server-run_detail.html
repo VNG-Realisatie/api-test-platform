@@ -1,4 +1,5 @@
 {% extends 'master.html' %}
+{% load django_bootstrap_breadcrumbs %}
 
 {% block title %}Server-run detail{% endblock%}
 
@@ -7,8 +8,10 @@
 
 <article class="article">
     <div class="article__section">
-        <h1>View the log of a test session</h1>
-        <input type="button" class="button button--primary" value="Server-run list" onclick="location.href= '{% url 'server_run:server-run_list' %}';">
+        {% breadcrumb "Home" 'server_run:server-run_list' %}
+        {% breadcrumb 'Detail' 'testsession:sessions' %}
+        {% render_breadcrumbs 'components/breadcrumbs/breadcrumbs.html' %}
+        <h1>View the detail of a provider test</h1>
 
 
         <table class="table">
@@ -19,9 +22,87 @@
                 </tr>
             </thead>
             <tbody>
-                {% include 'components/table/table-server-run.html' with server_run=object only %}
+                {% include 'components/table/table-server-run.html' with server_run=object postman_result=postman_result only %}
             </tbody>
         </table>
+
+
+
+        {% for postman in postman_result %}
+            <h3>Postman Collection
+            <a href="{% url 'server_run:postman_download' postman.postman_test.pk %}">#{{ forloop.counter }}</a>
+            </h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="table__heading">Tijd</th>
+                        <th class="table__heading">Name</th>
+                        <th class="table__heading">Request</th>
+                        <th class="table__heading">Response status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for calls in postman.get_json_obj %}
+                        <tr>
+                            <td class="table__cell">{{ postman.get_json_obj_info.run.timings.started }}</td>
+                            <td class="table__cell">{{ calls.item.name }}</td>
+                            <td class="table__cell">{{ calls.request.method }} {{ calls.request.url.url }}</td>
+                            <td class="table__cell">{{ calls.response.code }} {{ calls.response.status }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% if postman.get_json_obj_info.run.failures %}
+            <h4>Failures</h4>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="table__heading">Name</th>
+                        <th class="table__heading">Error</th>
+                        <th class="table__heading">Test</th>
+                        <th class="table__heading">Message</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for failure in postman.get_json_obj_info.run.failures %}
+                        <tr>
+                            <td class="table__cell">{{ failure.source.name }}</td>
+                            <td class="table__cell">{{ failure.error.name }}</td>
+                            <td class="table__cell">{{ failure.error.test }}</td>
+                            <td class="table__cell">{{ failure.error.message }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+            {% if postman.has_assertion %}
+            <h4>Assertions</h4>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="table__heading">Name</th>
+                        <th class="table__heading">Request</th>
+                        <th class="table__heading">Assertion</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for exec in postman.get_json_obj%}
+                        {% if 'assertions' in exec %}
+                            {% for assertion in exec.assertions %}
+                                {% if 'error' not in assertion %}
+                                    <tr>
+                                        <td class="table__cell">{{ exec.item.name }}</td>
+                                        <td class="table__cell">{{ exec.request.url.url  }}</td>
+                                        <td class="table__cell">{{ assertion.assertion }}</td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+        {% endfor %}
     </div>
 </article>
 

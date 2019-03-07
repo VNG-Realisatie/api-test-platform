@@ -20,6 +20,7 @@ __pycache__
 local.py
 /env/
 /media/
+!/media/Google.postman_collection.json
 /static/
 /src/vng/static/css
 /src/vng/static/js
@@ -32,3 +33,6 @@ local.py
 .vscode/settings.json
 .vscode/launch.json
 .vscode/launch.json
+dump.rdb
+dump.rdb
+maintenance.html

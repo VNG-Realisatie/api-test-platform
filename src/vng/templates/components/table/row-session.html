@@ -1,18 +1,19 @@
 {% spaceless %}
     <tr>
         <td class="table__cell">
-            <a href="{% url 'testsession:session_log' session.id %}">{{ session.started }}</a>
+            <a href="{% url 'testsession:session_log' session.id %}">#{{ session.id }}</a>
+            Status: {{ session.get_status_display }}
         </td>
-        <td class="table__cell">{{ session.status }}</td>
+        <td class="table__cell">
+            {{ session.started|date }}<br />{{ session.started|time }}
+        </td>
         <td class="table__cell">{{ session.session_type.name }}</td>
-
 
         <td class="table__cell">
             <table>
                 {% for endpoint in session.exposedurl_set.all %}
                     <tr>
                         <td>
-                            {{endpoint.vng_endpoint.name}}
                             <a href="{% url 'testsession:run_test' endpoint.get_uuid_url endpoint.vng_endpoint.name '' %}">
                                 {{endpoint.exposed_url}}
                             </a>
@@ -22,15 +23,26 @@
             </table>
         </td>
 
-
         <td class="table__cell">
-            {% if not session.is_stopped %}
+            {% for eu in session.exposedurl_set.all %}
+                {% if eu.test_session %}
+                    {% if eu.test_session.is_success_test %}
+                        <p class='icon icon--checkmark'></p>
+                    {% else %}
+                        <p class='icon icon--cross'></p>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        </td>
+        <td class="table__cell">
+            {% if not session.is_stopped and not session.is_shutting_down %}
                 <form method="POST" action="{% url 'testsession:stop_session' session.id %}">
                     {% csrf_token %}
                     <input type="submit" type="button" class="button button--primary" value="Stop">
                 </form>
             {% else %}
                 <table>
+                {% comment '' %}
                 {% for endpoint in session.exposedurl_set.all %}
                     <tr>
                         <td>
@@ -40,6 +52,7 @@
                         <td>
                     </tr>
                 {% endfor %}
+                {% endcomment %}
                 </table>
             {% endif %}
         </td>

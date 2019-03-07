@@ -1,4 +1,5 @@
 import logging
+import copy
 import collections
 
 from django import forms
@@ -33,10 +34,13 @@ class CreateEndpointForm(forms.ModelForm):
         }
 
     def set_labels(self, labels):
-        tmp = dict(self.fields)
+        tmp = collections.OrderedDict()
         for k, new in zip(self.fields.keys(), labels):
-            tmp[k].label = new
-        self.fields = collections.OrderedDict(tmp)
+            self.fields[k].label = new
+
+    def add_text_area(self, text_area):
+        for e in text_area:
+            self.fields[e] = forms.CharField(widget=forms.Textarea)
 
     def __init__(self, quantity=0, field_name='field', text_area=[], *args, **kwargs):
         super().__init__(*args, **kwargs)

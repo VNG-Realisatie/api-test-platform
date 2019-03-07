@@ -48,12 +48,14 @@ INSTALLED_APPS = [
     # External applications.
     # 'axes',
     'sniplates',
+    'filer',
+    'mptt',
+    'drf_yasg',
     'hijack',
     'compat',  # Part of hijack
     'hijack_admin',
     'easy_thumbnails',
-    'filer',
-    'mptt',
+    'django_bootstrap_breadcrumbs',
 
     # Project applications.
     'vng.accounts',
@@ -61,6 +63,7 @@ INSTALLED_APPS = [
     'vng.testsession',
     'vng.apiAuthentication',
     'vng.servervalidation',
+    'vng.celery',
 
     # Rest Framework
     'rest_framework',
@@ -153,7 +156,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
 
-LANGUAGES = (('en', 'English'),)
+LANGUAGES = (('nl', 'Nederlands'),)
 
 
 LANGUAGE_CODE = 'en'
@@ -340,3 +343,8 @@ HIJACK_REGISTER_ADMIN = False
 # This is a CSRF-security risk.
 # See: http://django-hijack.readthedocs.io/en/latest/configuration/#allowing-get-method-for-hijack-views
 HIJACK_ALLOW_GET_REQUESTS = True
+
+# API Documentation configuration
+SWAGGER_SETTINGS = {
+    'DEFAULT_AUTO_SCHEMA_CLASS': 'vng.utils.schema.CompoundTagsSchema',
+}

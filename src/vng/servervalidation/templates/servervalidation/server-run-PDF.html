@@ -1,0 +1,118 @@
+
+{% load staticfiles %}
+{% with red="bgcolor='#FF0000' style='color:#ffffff' " %}
+{% with green="bgcolor='#1d8719' style='color:#ffffff'" %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Session Report</title>
+</head>
+
+<body>
+
+    {% include 'components/logo/logo.html' %}
+    <div>
+        <h1>Server Report</h1>
+
+        <h2>Server detail</h2>
+        <table class='table-t'>
+            <tbody>
+                <tr>
+        <td class="table__cell">Id</td>
+        <td class="table__cell">{{ object.pk }}</td>
+        </tr>
+
+        <tr>
+            <td class="table__cell">Test Scenario</td>
+            <td class="table__cell">{{ object.test_scenario }}</td>
+        </tr>
+        <tr>
+            <td class="table__cell">Started</td>
+            <td class="table__cell">{{ object.started }}</td>
+        </tr>
+        <tr>
+            <td class="table__cell">Stopped</td>
+            <td class="table__cell">{{ object.stopped }}</td>
+        </tr>
+
+        <tr>
+            <td class="table__cell">Status</td>
+            <td class="table__cell">{{ object.status }}</td>
+        </tr>
+            </tbody>
+        </table>
+        <h2>Postman collection</h2>
+        {% for postman in postman_result %}
+            <table class='table-t'>
+            <thead>
+                <tr>
+                    <th>HTTP method</th>
+                    <th>HTTP url</th>
+                    <th>Response</th>
+                    <th>Expected</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for calls in postman.json %}
+
+                <td class="table__cell" colspan="100%">{{calls.request.description.content}}</td>
+                <tr>
+                    <td class="table__cell">{{calls.request.method}}</td>
+                    <td class="table__cell">{{calls.request.url.url}}</td>
+                    {% if calls.response.code in calls.ep.expected_response %}
+                        <td class='cell-success cell-content-fix'>{{calls.response.code}} {{calls.response.status}}</td>
+                    {% else %}
+                        <td class='cell-fail cell-content-fix'>{{calls.response.code}} {{calls.response.status}}</td>
+                    {% endif %}
+                    <td class="table__cell">{{ calls.ep.expected_response }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% endfor %}
+    </div>
+</body>
+
+</html>
+
+<style>
+    body {
+        font-family:  Arial, Geneva, Helvetica;
+
+    }
+
+    .cell-success {
+        background-color: green;
+        color: white
+    }
+
+    .cell-fail {
+        background-color: red;
+        color: white
+    }
+
+    .table-t {
+        table-layout: auto;
+        border-collapse: collapse;
+        width: 100%
+    }
+
+    .cell-name {
+        width: 30%
+    }
+
+    .cell-content-fix {
+        max-width: 100%;
+        white-space: nowrap;
+    }
+
+    .cell-content {
+        width: 70%
+    }
+
+</style>
+
+{% endwith %}
+{% endwith %}

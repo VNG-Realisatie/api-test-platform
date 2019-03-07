@@ -6,12 +6,23 @@
 
 <tr>
     <td class="table__cell">Test Scenario</td>
-    <td class="table__cell">{{ server_run.test_scenario }}</td>
+    <td class="table__cell">
+        <ul>
+            {% for pc in server_run.test_scenario.postmantest_set.all %}
+            <li>
+                <a href="{% url 'server_run:postman_download' pc.pk %}">{{ server_run.test_scenario }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </td>
 </tr>
-<tr>
-    <td class="table__cell">Api endpoint</td>
-    <td class="table__cell">{{ server_run.api_endpoint }}</td>
-</tr>
+{% for ep in server_run.endpoint_set.all %}
+    <tr>
+        <td class="table__cell">{{ ep.test_scenario_url.name }}</td>
+        <td class="table__cell">{{ ep.url }}</td>
+    </tr>
+{% endfor %}
+
 <tr>
     <td class="table__cell">Started</td>
     <td class="table__cell">{{ server_run.started }}</td>
@@ -27,10 +38,18 @@
 </tr>
 
 <tr>
-    {% if server_run.log %}
-        <td class="table__cell">Log</td>
-        <td class="table__cell"><a href="{% url 'server_run:server-run_detail_log' server_run.pk %}">Visualize the log</az> </td>
-    {% endif %}
+    <td class="table__cell">Log</td>
+        {% for pr in postman_result %}
+            <td class="table__cell">
+                <ul>
+                    <li><a href="{% url 'server_run:server-run_detail_log' pr.pk %}">Visualize HTML log</a></li>
+                    <li><a href="{% url 'server_run:server-run_detail_log_json' pr.pk %}">Visualize JSON log</a></li>
+                    <li><a href="{% url 'server_run:server-run_detail_pdf' pr.server_run.pk pr.pk %}">Visualize PDF report</a></li>
+                </ul>
+            </td>
+        {% endfor %}
+    </td>
 </tr>
+
 
 {% endspaceless %}

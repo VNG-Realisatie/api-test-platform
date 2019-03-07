@@ -1,26 +1,28 @@
-from django.conf.urls import url, include
 from rest_framework import routers, serializers, viewsets
+from rest_framework.documentation import include_docs_urls
+
+from django.conf.urls import url, include
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
-from . import views
 
-session_detail = views.SessionViewSet.as_view({
-    'get': 'retrieve',
-    'put': 'update',
-    'delete': 'destroy'
-})
+from . import api_views, apps
+from ..utils.schema import schema_view
 
-session_list = views.SessionViewSet.as_view({
-    'get': 'list',
-    'post': 'create'
-})
+app_name = apps.AppConfig.__name__
 
-urlpatterns = [
-    url(r'testsessions/(?P<pk>[0-9]+)', session_detail, name='api_sessions'),
-    url(r'stop-session/(?P<pk>[0-9]+)', views.StopSessionView.as_view(), name='stop_session'),
-    url(r'result-session/(?P<pk>[0-9]+)', views.ResultSessionView.as_view(), name='result_session'),
-    url(r'testsessions/', session_list, name='test_session_list'),
-    url(r'sessiontypes/', views.SessionTypesViewSet.as_view(), name='sessionTypes'),
-    url(r'exposed_url/(?P<pk>[0-9]+)', views.ExposedUrlView.as_view(), name='sessionTypes'),
-    url(r'runtest/(?P<url>([^/])+)/$', login_required(views.RunTest.as_view()), name='sessionTypes'),
+
+router = routers.SimpleRouter()
+router.register('testsessions', api_views.SessionViewSet, 'test_session')
+router.register('sessiontypes', api_views.SessionTypesViewSet, 'session_types')
+router.register('exposed_url', api_views.ExposedUrlView, 'sessionTypes')
+
+
+urlpatterns = router.urls
+
+
+urlpatterns += [
+    url(r'testsessions/(?P<pk>[0-9]+)/stop$', api_views.StopSessionView.as_view(), name='stop_session'),
+    url(r'testsessions/(?P<pk>[0-9]+)/result$', api_views.ResultSessionView.as_view(), name='result_session'),
+    url(r'runtest/(?P<url>([^/])+)/$', login_required(api_views.RunTest.as_view()), name='sessionTypes'),
+    url(r'^schema/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ]

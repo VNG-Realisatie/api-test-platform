@@ -1,6 +1,11 @@
 import collections
+import functools
+from collections.abc import Iterable
+
+from weasyprint import HTML
 
 from django import http
+from django.conf import settings
 from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.template import loader, TemplateDoesNotExist
 from django.shortcuts import get_object_or_404
@@ -13,6 +18,17 @@ from django.views.generic.edit import ModelFormMixin, ProcessFormView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.list import MultipleObjectMixin, MultipleObjectTemplateResponseMixin, ListView
 from django.views.generic.detail import SingleObjectMixin, DetailView
+
+
+def rsetattr(obj, attr, val):
+    pre, _, post = attr.rpartition('.')
+    return setattr(rgetattr(obj, pre) if pre else obj, post, val)
+
+
+def rgetattr(obj, attr, *args):
+    def _getattr(obj, attr):
+        return getattr(obj, attr, *args)
+    return functools.reduce(_getattr, [obj] + attr.split('.'))
 
 
 @requires_csrf_token
@@ -67,7 +83,14 @@ class ObjectOwner(LoginRequiredMixin):
     field_name = None
     user_field = 'user'
 
+    def check_object(self, obj):
+        if self.field_name is None:
+            return self.request.user == rgetattr(obj, self.user_field)
+        return self.request.user == rgetattr(obj, self.field_name)
+
     def check_ownership(self, queryset):
+        if not isinstance(queryset, Iterable):
+            return self.check_object(queryset)
         if len(queryset) == 0:
             return queryset
         if self.field_name is None:
@@ -133,3 +156,14 @@ class OwnerMultipleObjects(ObjectOwner, ListView):
                 })
         context = self.get_context_data()
         return self.render_to_response(context)
+
+
+class PDFGenerator():
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs).render().content.decode('utf-8')
+        pdf = HTML(string=response, base_url=request.build_absolute_uri('/')).write_pdf()
+        response = HttpResponse(pdf, content_type='application/pdf')
+        if hasattr(self, 'filename'):
+            response['Content-Disposition'] = 'attachment; filename="{}"'.format(self.filename)
+        return response

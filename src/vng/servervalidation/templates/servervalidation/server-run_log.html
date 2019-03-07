@@ -2,14 +2,14 @@
 
 {% block title %}Log view{% endblock%}
 
-
 {% block content %}
 
 <article class="article">
     <div class="article__section">
         <h1>Log view</h1>
-        <input type="button" class="button button--primary" value="Back to the details" onclick="location.href = '{% url 'server_run:server-run_detail' server.pk %}';">
-        {{ server.display_log|safe }}
+
+        {{ object.display_log|safe }}
+
     </div>
 </article>
 {% endblock %}

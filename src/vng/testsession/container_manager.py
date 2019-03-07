@@ -23,7 +23,7 @@ class K8S():
         run_command(set_zone)
         run_command(set_project)
 
-    def deploy(self, app_name, image, port=8080):
+    def deploy(self, app_name, image, port=8080, access_port=8080):
         create_cluster = [
             'gcloud',
             'container',
@@ -44,8 +44,7 @@ class K8S():
             'run',
             '{}'.format(app_name),
             '--image={}'.format(image),
-            '--port',
-            '{}'.format(port),
+            '--port={}'.format(port),
         ]
         load_balancer = [
             'kubectl',
@@ -53,6 +52,8 @@ class K8S():
             'deployment',
             '{}'.format(app_name),
             '--type=LoadBalancer',
+            '--port={}'.format(access_port),
+            '--target-port={}'.format(port)
         ]
 
         # Create a general cluster (will error if it already exists)
@@ -87,15 +88,34 @@ class K8S():
         # Delete the workload
         run_command(clean_up)
 
+    def get_pods_status(self, app_name):
+        status_command = [
+            'kubectl',
+            'get',
+            'pods',
+            '--output=json'
+        ]
+        res1 = run_command(status_command).decode('utf-8')
+        pods = json.loads(res1)
+        items = pods.get('items')
+        for item in items:
+            metadata = item.get('metadata')
+            if metadata and app_name in metadata.get('name'):
+                status = item.get('status').get('containerStatuses')[0]
+                if item.get('status').get('phase') == 'Pending':
+                    return False, status.get('state').get('waiting').get('message')
+                elif item.get('status').get('phase') == 'Running':
+                    return True, None
+        raise Exception('Application {} not found in the deployed cluster'.format(app_name))
+
     def status(self, app_name):
-        NAMES = ['type', 'cluster_ip', 'external_ip', 'port', 'age']
-        staus_command = [
+        status_command = [
             'kubectl',
             'get',
             'service',
             '--output=json'
         ]
-        res1 = run_command(staus_command).decode('utf-8')
+        res1 = run_command(status_command).decode('utf-8')
         services = json.loads(res1)
         items = services.get('items')
         for item in items:

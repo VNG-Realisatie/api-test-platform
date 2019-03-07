@@ -2,7 +2,7 @@
 
 $icon-margin-3: $grid-margin-3;
 
-@mixin icon($icon) {
+@mixin icon($icon, $hover: true) {
   padding-left: $icon-margin-3;
   position: relative;
 
@@ -11,12 +11,14 @@ $icon-margin-3: $grid-margin-3;
     @include body;
     @extend .icon;
     @extend .icon-#{$icon};
-    font-size: 11px;
+    font-size: 20px;
     position: absolute;
     left: 0;
   }
 
-  &:hover:before {
-    transform: translateX(5px);
+  @if ($hover==true) {
+    &:hover:before {
+      transform: translateX(5px);
+    }
   }
 }

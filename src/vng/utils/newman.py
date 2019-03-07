@@ -21,7 +21,7 @@ class NewmanManager:
     newman_path = os.path.join(settings.BASE_DIR, 'node_modules', 'newman', 'bin', 'newman.js')
     RUN_HTML_REPORT = '{} run --reporters html {} --reporter-html-export ' + REPORT_FOLDER + '/{}.html {}'
     RUN_JSON_REPORT = '{} run  {} -r json --reporter-json-export ' + REPORT_FOLDER + '/{}.json {}'
-    GLOBAL_VAR_SYNTAX = '--global-var "{}={}"'
+    GLOBAL_VAR_SYNTAX = ' --global-var {}={} '
     TOKEN = 'TOKEN'
 
     def __init__(self, file, api_endpoint=None):
@@ -43,8 +43,8 @@ class NewmanManager:
         command = command.format(*args, self.global_vars)
         return run_command_with_shell(command)
 
-    def replace_parameters(self, dict):
-        for k, v in dict.items():
+    def replace_parameters(self, _dict):
+        for k, v in _dict.items():
             self.global_vars += self.GLOBAL_VAR_SYNTAX.format(k, v)
 
     def execute_test(self):

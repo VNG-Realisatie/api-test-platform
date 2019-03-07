@@ -17,21 +17,27 @@ $typography-margin-2: $grid-margin-2;
   h1 {
     @include h1(true);
   }
+
   h2 {
     @include h2(true);
   }
+
   h3 {
     @include h3(true);
   }
-  h3 {
+
+  h4 {
     @include h4(true);
   }
+
   p {
     @include body(true);
   }
+
   a {
     @include anchor;
   }
+
   hr {
     @include hr(true);
   }
@@ -94,13 +100,15 @@ $typography-margin-2: $grid-margin-2;
   color: $typography-color-link;
   text-decoration: none;
 
-  @if $hover == true {
+  @if $hover==true {
     &:hover {
       text-decoration: underline;
     }
-  } @else if $hover == false {
+  }
+
+  @else if $hover==false {
     &:hover {
-      text-decoration: none!important;
+      text-decoration: none !important;
     }
   }
 }
@@ -131,13 +139,15 @@ $typography-margin-2: $grid-margin-2;
 }
 
 @mixin _margin($margin, $property, $value) {
-  @if $margin == true {
+  @if $margin==true {
 
     &:not(:last-child) {
       #{$property}: $value;
     }
 
-  } @else if $margin != false  {
+  }
+
+  @else if $margin !=false {
     #{$property}: $margin;
   }
 }

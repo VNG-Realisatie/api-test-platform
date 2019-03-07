@@ -5,6 +5,7 @@ from factory.django import DjangoModelFactory as Dmf
 from vng.accounts.models import User
 from vng.testsession.tests.factories import UserFactory
 from django.conf import settings
+from filer.models import File
 from ..models import ServerRun, TestScenario, TestScenarioUrl, PostmanTest, PostmanTestResult
 
 
@@ -16,12 +17,19 @@ class TestScenarioFactory(Dmf):
     name = factory.sequence(lambda n: 'testype %d' % n)
 
 
+class FilerField(Dmf):
+    class Meta:
+        model = File
+
+    file = factory.django.FileField(from_path=settings.MEDIA_ROOT + '/Google.postman_collection.json')
+
+
 class PostmanTestFactory(Dmf):
 
     class Meta:
         model = PostmanTest
     test_scenario = factory.SubFactory(TestScenarioFactory)
-    validation_file = factory.django.FileField(from_path=settings.MEDIA_ROOT + '/google.postman_collection.json')
+    validation_file = factory.SubFactory(FilerField)
 
 
 class TestScenarioUrlFactory(Dmf):

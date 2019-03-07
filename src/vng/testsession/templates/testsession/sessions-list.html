@@ -3,14 +3,14 @@
 {% load django_bootstrap_breadcrumbs %}
 
 
-{% block title %}Test client - Lijstweergave sessies{% endblock %}
+{% block title %}Test consumer - Lijstweergave sessies{% endblock %}
 
 
 {% block content %}
     <article class="article">
         <div class="article__section">
-            <h1>Test client</h1>
-            <h2>Start een nieuwe client test-sessie</h2>
+            <h1>Test consumer</h1>
+            <h2>Start een nieuwe consumer test-sessie</h2>
 
             <form class="form" method="post">{% csrf_token %}
                 {% load_widgets form='forms.html' %}
@@ -32,8 +32,8 @@
             </form>
 
             {% if object_list %}
-                <h2>Client test-sessies</h2>
-                <table class="table">
+                <h2>Consumer test-sessies</h2>
+                <table class="table table--auto">
                     {% include 'components/table/header-session.html' only %}
                     {% for session in object_list %}
                         {% include 'components/table/row-session.html' with session=session %}

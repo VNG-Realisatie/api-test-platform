@@ -1,11 +1,18 @@
 from djchoices import DjangoChoices, ChoiceItem
 
 
+class AuthenticationChoices(DjangoChoices):
+    jwt = ChoiceItem("JWT")
+    header = ChoiceItem("Authorization header")
+    no_auth = ChoiceItem("No Authorization")
+
+
 class StatusChoices(DjangoChoices):
     starting = ChoiceItem("starting")
     running = ChoiceItem("running")
     shutting_down = ChoiceItem("shutting down")
     stopped = ChoiceItem("stopped")
+    error_deploy = ChoiceItem("Error deployment")
 
 
 class ResultChoices(DjangoChoices):

@@ -9,6 +9,7 @@ from django.conf import settings
 
 from ordered_model.models import OrderedModel
 from django.core.files.base import ContentFile
+from filer.fields.file import FilerFileField
 
 from vng.accounts.models import User
 
@@ -18,9 +19,19 @@ from ..utils import choices
 class TestScenario(models.Model):
 
     name = models.CharField(max_length=200, unique=True)
+    authorization = models.CharField(max_length=20, choices=choices.AuthenticationChoices.choices, default=choices.AuthenticationChoices.jwt)
 
     def __str__(self):
         return self.name
+
+    def jwt_enabled(self):
+        return self.authorization == choices.AuthenticationChoices.jwt
+
+    def no_auth(self):
+        return self.authorization == choices.AuthenticationChoices.no_auth
+
+    def custom_header(self):
+        return self.authorization == choices.AuthenticationChoices.header
 
 
 class TestScenarioUrl(models.Model):
@@ -35,7 +46,7 @@ class TestScenarioUrl(models.Model):
 class PostmanTest(OrderedModel):
     order_with_respect_to = 'test_scenario'
     test_scenario = models.ForeignKey(TestScenario, on_delete=models.CASCADE)
-    validation_file = models.FileField(settings.MEDIA_FOLDER_FILES['test_scenario'])
+    validation_file = FilerFileField(null=True, default=None, on_delete=models.SET_NULL)
 
     def __str__(self):
         return '{} {}'.format(self.test_scenario, self.validation_file)
@@ -52,13 +63,13 @@ class ExpectedPostmanResult(OrderedModel):
 
 class ServerRun(models.Model):
 
-    test_scenario = models.ForeignKey(TestScenario, on_delete=models.SET_NULL, null=True)
+    test_scenario = models.ForeignKey(TestScenario, on_delete=models.CASCADE)
     started = models.DateTimeField(default=timezone.now)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     stopped = models.DateTimeField(null=True, default=None, blank=True)
     status = models.CharField(max_length=20, choices=choices.StatusChoices.choices, default=choices.StatusChoices.starting)
-    client_id = models.TextField()
-    secret = models.TextField()
+    client_id = models.TextField(default=None, null=True, blank=True)
+    secret = models.TextField(default=None, null=True, blank=True)
     percentage_exec = models.IntegerField(default=None, null=True, blank=True)
     status_exec = models.TextField(default=None, null=True, blank=True)
 
@@ -82,6 +93,12 @@ class ServerRun(models.Model):
         return res
 
 
+class ServerHeader(models.Model):
+    server_run = models.ForeignKey(ServerRun, on_delete=models.CASCADE)
+    header_key = models.TextField()
+    header_value = models.TextField()
+
+
 class PostmanTestResult(models.Model):
 
     postman_test = models.ForeignKey(PostmanTest, on_delete=models.CASCADE)
@@ -89,6 +106,20 @@ class PostmanTestResult(models.Model):
     log_json = models.FileField(settings.MEDIA_FOLDER_FILES['servervalidation_log'], blank=True, null=True, default=None)
     server_run = models.ForeignKey(ServerRun, on_delete=models.CASCADE)
     status = models.CharField(max_length=10, choices=choices.ResultChoices.choices, default=None, null=True)
+
+    def __str__(self):
+        if self.status is None:
+            return '{}'.format(self.pk)
+        else:
+            return '{} - {}'.format(self.pk, self.status)
+
+    def is_success(self):
+        if self.status == choices.ResultChoices.success:
+            return 1
+        if self.status == choices.ResultChoices.failed:
+            return -1
+        else:
+            return 0
 
     def display_log(self):
         if self.log:
@@ -149,6 +180,17 @@ class PostmanTestResult(models.Model):
                     if '0' in line:
                         return choices.ResultChoices.success
         return choices.ResultChoices.failed
+
+    def get_outcome_json(self):
+        with open(self.log_json.path) as jfile:
+            json_obj = json.load(jfile)
+            if json_obj['run']['failures'] != []:
+                return choices.ResultChoices.failed
+            epr = ExpectedPostmanResult.objects.filter(postman_test=self.postman_test).order_by('order')
+            for call, expected in zip(json_obj['run']['executions'], epr):
+                if str(call['response']['code']) not in expected.expected_response:
+                    return choices.ResultChoices.failed
+            return choices.ResultChoices.success
 
 
 class Endpoint(models.Model):

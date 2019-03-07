@@ -3,6 +3,7 @@ import uuid
 import re
 
 from django.conf import settings
+from django.core.validators import RegexValidator
 from django.core.files import File
 from django.db import models
 from django.utils import timezone
@@ -10,9 +11,11 @@ from django.urls import reverse
 
 from ordered_model.models import OrderedModel
 
+from filer.fields.file import FilerFileField
+
 from vng.accounts.models import User
 
-from ..utils import choices
+from ..utils import choices, postman
 
 
 class SessionType(models.Model):
@@ -45,23 +48,43 @@ class TestSession(models.Model):
             with open(self.test_result.path) as fp:
                 return fp.read().replace('\n', '<br>')
 
+    def is_success_test(self):
+        if self.json_result is not None:
+            return postman.get_outcome_json(self.json_result)
+
 
 class VNGEndpoint(models.Model):
 
     port = models.PositiveIntegerField(default=8080)
-    url = models.URLField(max_length=200)
-    name = models.CharField(max_length=200)
+    url = models.URLField(max_length=200, blank=True, null=True, default=None)
+    name = models.CharField(
+        max_length=200,
+        validators=[
+            RegexValidator(
+                regex='^[^ ]*$',
+                message='The name cannot contain spaces',
+                code='Invalid_name'
+            )
+        ]
+    )
     docker_image = models.CharField(max_length=200, blank=True, null=True, default=None)
     session_type = models.ForeignKey(SessionType, on_delete=models.CASCADE)
-    test_file = models.FileField(settings.MEDIA_FOLDER_FILES['test_session'], blank=True, null=True, default=None)
+    test_file = FilerFileField(null=True, blank=True, default=None, on_delete=models.SET_NULL)
 
     def __str__(self):
-        return self.name
+        # To show the session type when adding a scenario case
+        return self.name + " ({})".format(self.session_type)
 
 
 class ScenarioCase(OrderedModel):
+    url = models.CharField(max_length=200, help_text='''
+    URL pattern that will be compared
+    with the request and eventually matched.
+    Wildcards can be added, e.g. '/test/{uuid}/stop'
+    will match the URL '/test/c5429dcc-6955-4e22-9832-08d52205f633/stop'.
+    '''
 
-    url = models.CharField(max_length=200)
+                           )
     http_method = models.CharField(max_length=20, choices=choices.HTTPMethodChoiches.choices, default=choices.HTTPMethodChoiches.GET)
     vng_endpoint = models.ForeignKey(VNGEndpoint, on_delete=models.CASCADE)
 
@@ -78,6 +101,7 @@ class Session(models.Model):
     status = models.CharField(max_length=20, choices=choices.StatusChoices.choices, default=choices.StatusChoices.starting)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     build_version = models.TextField(blank=True, null=True, default=None)
+    error_message = models.TextField(blank=True, null=True, default=None)
 
     def __str__(self):
         if self.user:
@@ -109,6 +133,7 @@ class ExposedUrl(models.Model):
     session = models.ForeignKey(Session, on_delete=models.CASCADE)
     vng_endpoint = models.ForeignKey(VNGEndpoint, on_delete=models.CASCADE)
     test_session = models.ForeignKey(TestSession, blank=True, null=True, default=None, on_delete=models.CASCADE)
+    docker_url = models.CharField(max_length=200, blank=True, null=True, default=None)
 
     def get_uuid_url(self):
         return re.search('([^/]+)', self.exposed_url).group(1)

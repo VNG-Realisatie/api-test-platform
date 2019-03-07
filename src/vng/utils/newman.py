@@ -43,8 +43,8 @@ class NewmanManager:
         command = command.format(*args, self.global_vars)
         return run_command_with_shell(command)
 
-    def replace_parameters(self, dict):
-        for k, v in dict.items():
+    def replace_parameters(self, _dict):
+        for k, v in _dict.items():
             self.global_vars += self.GLOBAL_VAR_SYNTAX.format(k, v)
 
     def execute_test(self):

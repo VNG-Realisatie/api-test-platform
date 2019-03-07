@@ -1,5 +1,6 @@
 {% spaceless %}
 <tr>
+
     {% if server_run.stopped %}
         <td class="table__cell">
             <a href="{% url 'server_run:server-run_detail' server_run.pk %}">#{{ server_run.id }}</a>
@@ -16,6 +17,15 @@
 
     <td class="table__cell">{{ server_run.test_scenario.name }}</td>
     <td class="table__cell">
+        {% if server_run.success != None %}
+            {% if server_run.success  %}
+                <p class='icon icon--checkmark'></p>
+            {% elif not server_run.success  %}
+                <p class='icon icon--cross'></p>
+            {% endif %}
+        {% endif %}
+    </td>
+    <td class="table__cell">
         {% if not server_run.is_stopped and not server_run.is_running %}
         <form method="POST" action="{% url 'server_run:server-run_stop' server_run.id %}">
             {% csrf_token %}
@@ -23,7 +33,9 @@
         </form>
         {% endif %}
         {% if not server_run.is_stopped  %}
-            {{ server_run.percentage_exec }}% {{ server_run.status_exec }}
+            {% if server_run.percentage_exec and server_run.status_exec %}
+                {{ server_run.percentage_exec }}% {{ server_run.status_exec }}
+            {% endif %}
         {% endif %}
     </td>
 </tr>

@@ -1,0 +1,13 @@
+@import '../../lib/icon';
+
+.icon {
+  &--cross {
+    @include icon(cross, false);
+    color: red;
+  }
+
+  &--checkmark {
+    @include icon(checkmark, false);
+    color: green;
+  }
+}

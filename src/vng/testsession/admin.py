@@ -18,7 +18,7 @@ class ExposedUrlInline(admin.TabularInline):
 
 @admin.register(model.ExposedUrl)
 class ExposedUrl(admin.ModelAdmin):
-    list_display = ['session', 'vng_endpoint', 'exposed_url', 'id', 'test_session']
+    list_display = ['session', 'vng_endpoint', 'exposed_url', 'id', 'test_session', 'docker_url']
     list_filter = ['session']
     search_fields = ['session']
 
@@ -42,6 +42,7 @@ class SessionAdmin(admin.ModelAdmin):
         'status',
         'name',
         'id',
+        'error_message',
         'build_version',
     ]
     list_filter = ['user']
@@ -63,7 +64,7 @@ class ScenarioCaseAdmin(OrderedModelAdmin):
         'move_up_down_links',
         'http_method',
         'vng_endpoint']
-    list_filter = ['vng_endpoint']
+    list_filter = ['vng_endpoint__session_type']
     search_fields = ['vng_endpoint']
 
 

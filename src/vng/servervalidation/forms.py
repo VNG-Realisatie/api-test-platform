@@ -38,6 +38,10 @@ class CreateEndpointForm(forms.ModelForm):
         for k, new in zip(self.fields.keys(), labels):
             self.fields[k].label = new
 
+    def add_text_area(self, text_area):
+        for e in text_area:
+            self.fields[e] = forms.CharField(widget=forms.Textarea)
+
     def __init__(self, quantity=0, field_name='field', text_area=[], *args, **kwargs):
         super().__init__(*args, **kwargs)
         for i in range(quantity):

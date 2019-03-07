@@ -2,6 +2,7 @@ from django.contrib import admin
 import vng.servervalidation.models as model
 
 from ordered_model.admin import OrderedModelAdmin
+from django_admin_relation_links import AdminChangeLinksMixin
 
 
 def get_all_fields(mo):
@@ -27,20 +28,21 @@ class ExpectedPostmanResultInline(admin.TabularInline):
 
 
 @admin.register(model.PostmanTest)
-class PostmanTestAdmin(OrderedModelAdmin):
+class PostmanTestAdmin(AdminChangeLinksMixin, OrderedModelAdmin):
     list_display = ['test_scenario', 'move_up_down_links', 'validation_file']
-
+    changelist_links = ['expectedpostmanresult']
     inlines = [ExpectedPostmanResultInline]
 
 
 @admin.register(model.ExpectedPostmanResult)
 class ExpectedPostmanResult(OrderedModelAdmin):
     list_display = ['postman_test', 'move_up_down_links', 'expected_response']
+    list_filter = ['postman_test']
 
 
 @admin.register(model.PostmanTestResult)
 class PostmanTestResultAdmin(admin.ModelAdmin):
-    list_display = ['postman_test', 'log', 'server_run']
+    list_display = ['id', 'postman_test', 'log', 'server_run', 'log_json']
 
 
 @admin.register(model.Endpoint)
@@ -52,7 +54,7 @@ class EndpointAdmin(admin.ModelAdmin):
 
 @admin.register(model.ServerRun)
 class ServerRunAdmin(admin.ModelAdmin):
-    list_display = ['test_scenario', 'started', 'stopped', 'user', 'status', 'client_id', 'secret', 'percentage_exec', 'status_exec']
+    list_display = ['test_scenario', 'started', 'stopped', 'user', 'status', 'client_id', 'secret', 'percentage_exec', 'status_exec', 'id']
     list_filter = ['user']
     search_fields = ['user']
 

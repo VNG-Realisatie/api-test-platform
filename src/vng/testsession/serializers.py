@@ -58,6 +58,7 @@ class SessionSerializer(serializers.ModelSerializer):
             'exposedurl_set',
             'build_version'
         ]
+        read_only_fields = ['started', 'stopped', 'status']
 
 
 class ScenarioCaseSerializer(serializers.ModelSerializer):

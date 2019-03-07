@@ -6,6 +6,9 @@
 
 
 {% block content %}
+    {% if running %}
+        <meta http-equiv="refresh" content="15">
+    {% endif %}
     <article class="article">
         <div class="article__section">
             <h1>Providers</h1>

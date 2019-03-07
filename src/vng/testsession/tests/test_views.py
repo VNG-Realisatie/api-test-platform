@@ -117,7 +117,7 @@ class CreationAndDeletion(WebTest):
         user = User.objects.all().first()
         self.assertEqual(session.user.pk, user.pk)
 
-    def stop_session_no_auth(self):
+    def test_stop_session_no_auth(self):
         session = SessionFactory()
         call = self.app.post(reverse('testsession:stop_session', kwargs={'session_id': session.id}), user=SessionFactory().user, status=403)
 
@@ -242,6 +242,7 @@ class TestAllProcedure(WebTest):
         self.assertIn('stopped', call.text)
 
     def test_report(self):
+        self._test_create_session()
         self._test_stop_session()
         session = Session.objects.get(pk=self.session.pk)
         url = reverse('testsession:session_report', kwargs={

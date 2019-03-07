@@ -309,7 +309,9 @@ class RunTest(CSRFExemptMixin, View):
                 'relative_url': ''
             })
         )
-        return re.sub(sub, endpoint.vng_endpoint.url, content)
+        if endpoint.vng_endpoint.url:
+            return re.sub(sub, endpoint.vng_endpoint.url, content)
+        return content
 
     def parse_response(self, response, request, base_url, endpoints):
         """
@@ -382,6 +384,7 @@ class RunTest(CSRFExemptMixin, View):
                 request_header['Host'] = '{}:{}'.format(eu.docker_url, 8080)
                 response = make_call()
             except Exception as e:
+                logger.exception(e)
                 raise Http404()
 
         self.add_response(response, session_log, request_url, request)

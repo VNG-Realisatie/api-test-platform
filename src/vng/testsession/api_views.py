@@ -298,7 +298,8 @@ class RunTest(CSRFExemptMixin, View):
                     sub = sub[:-1]
             return re.sub(endpoint.vng_endpoint.url, sub, content)
         else:
-            return re.sub(endpoint.docker_url, sub, content)
+            url = 'http://{}:{}/'.format(endpoint.docker_url, 8080)
+            return re.sub(url, sub, content)
 
     def sub_url_request(self, content, host, endpoint):
         sub = '{}{}'.format(

@@ -227,25 +227,6 @@ class RunTest(CSRFExemptMixin, View):
         logger.info("URL: %s", check_url)
         return re.search(parsed_url, check_url) is not None
 
-    def rewrite_http_header(self, header):
-        '''
-        Rewrite the header key value, from HTTP_XXX of Django to the HTTP standard
-
-        Arguments:
-            header String -- the key of the header
-
-        Returns:
-            String -- the modified url
-        '''
-        def upper_repl(match):
-            return '-{}'.format(match.group(1).upper())
-        header = header.lower()
-        header = header.replace('HTTP_', '')
-        header = header.replace('_', '-')
-        header = re.sub('-(.)', upper_repl, header)
-        header = '{}{}'.format(header[0].upper(), header[1:])
-        return header
-
     def get_http_header(self, request, endpoint):
         '''
         Extracts the http header from the request and add the authorization header for

@@ -7,6 +7,7 @@ from urllib import parse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views import View
+from django.utils import timezone
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
@@ -66,9 +67,15 @@ class SessionViewSet(
         return Session.objects.all().prefetch_related('exposedurl_set')
 
     def perform_create(self, serializer):
-        session = serializer.save(user=self.request.user, pk=None)
+        session = serializer.save(
+            user=self.request.user,
+            pk=None,
+            status=choices.StatusChoices.starting,
+            name=Session.assign_name(self.request.user.id),
+            started=timezone.now()
+        )
         try:
-            bootstrap_session(session.id)
+            bootstrap_session.delay(session.id)
         except Exception as e:
             logger.exception(e)
             session.delete()
@@ -310,6 +317,7 @@ class RunTest(CSRFExemptMixin, View):
                 'relative_url': ''
             })
         )
+
         if endpoint.vng_endpoint.url is not None:
             return re.sub(sub, endpoint.vng_endpoint.url, content)
         else:
@@ -319,6 +327,7 @@ class RunTest(CSRFExemptMixin, View):
                           '{}://{}:{}'.format(query.scheme, endpoint.docker_url, 8080),
                           content
                           )
+
 
     def parse_response(self, response, request, base_url, endpoints):
         """
@@ -391,6 +400,7 @@ class RunTest(CSRFExemptMixin, View):
                 request_header['Host'] = '{}:{}'.format(eu.docker_url, 8080)
                 response = make_call()
             except Exception as e:
+                logger.exception(e)
                 raise Http404()
 
         self.add_response(response, session_log, request_url, request)

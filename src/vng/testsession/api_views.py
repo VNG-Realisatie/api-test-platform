@@ -227,25 +227,6 @@ class RunTest(CSRFExemptMixin, View):
         logger.info("URL: %s", check_url)
         return re.search(parsed_url, check_url) is not None
 
-    def rewrite_http_header(self, header):
-        '''
-        Rewrite the header key value, from HTTP_XXX of Django to the HTTP standard
-
-        Arguments:
-            header String -- the key of the header
-
-        Returns:
-            String -- the modified url
-        '''
-        def upper_repl(match):
-            return '-{}'.format(match.group(1).upper())
-        header = header.lower()
-        header = header.replace('HTTP_', '')
-        header = header.replace('_', '-')
-        header = re.sub('-(.)', upper_repl, header)
-        header = '{}{}'.format(header[0].upper(), header[1:])
-        return header
-
     def get_http_header(self, request, endpoint):
         '''
         Extracts the http header from the request and add the authorization header for
@@ -305,8 +286,12 @@ class RunTest(CSRFExemptMixin, View):
                     sub = sub[:-1]
             return re.sub(endpoint.vng_endpoint.url, sub, content)
         else:
-            url = 'http://{}:{}/'.format(endpoint.docker_url, 8080)
-            return re.sub(url, sub, content)
+            query = parse.urlparse(sub)
+            return re.sub(
+                '{}://{}:{}/'.format(query.scheme, endpoint.docker_url, 8080),
+                sub,
+                content
+            )
 
     def sub_url_request(self, content, host, endpoint):
         sub = '{}{}'.format(
@@ -317,9 +302,16 @@ class RunTest(CSRFExemptMixin, View):
                 'relative_url': ''
             })
         )
-        if endpoint.vng_endpoint.url:
+
+        if endpoint.vng_endpoint.url is not None:
             return re.sub(sub, endpoint.vng_endpoint.url, content)
-        return content
+        else:
+            query = parse.urlparse(sub)
+            return re.sub(
+                sub,
+                '{}://{}:{}/'.format(query.scheme, endpoint.docker_url, 8080),
+                content
+            )
 
     def parse_response(self, response, request, base_url, endpoints):
         """
@@ -334,10 +326,11 @@ class RunTest(CSRFExemptMixin, View):
         else:
             host = 'https://{}'.format(request.get_host())
         for ep in endpoints:
+            logger.info("Rewriting response body:")
             parsed = self.sub_url_response(parsed, host, ep)
         return parsed
 
-    def rewrite_request_body(self, request, endpoints):
+    def rewrite_request_body(self, request, exposed):
         """
         Rewrites the request body's to replace the ATV URL endpoints to the VNG Reference endpoints
         https://testplatform/runtest/XXXX/api/v1/zaken/123
@@ -349,9 +342,9 @@ class RunTest(CSRFExemptMixin, View):
             host = 'http://{}'.format(request.get_host())
         else:
             host = 'https://{}'.format(request.get_host())
-        for ep in endpoints:
+        for eu in exposed:
             logger.info("Rewriting request body:")
-            parsed = self.sub_url_request(parsed, host, ep)
+            parsed = self.sub_url_request(parsed, host, eu)
         return parsed
 
     def build_method(self, request_method_name, request, body=False):

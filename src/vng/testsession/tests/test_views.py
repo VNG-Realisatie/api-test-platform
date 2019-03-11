@@ -2,6 +2,8 @@ import collections
 import json
 import copy
 
+import mock
+
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext
@@ -12,7 +14,7 @@ from vng.accounts.models import User
 
 from ..models import Session, SessionType, SessionLog, Report, ScenarioCase
 from .factories import (
-    SessionFactory, SessionTypeFactory, UserFactory, VNGEndpointDockerFactory,
+    SessionFactory, SessionTypeFactory, UserFactory, VNGEndpointDockerFactory, ExposedUrlEchoFactory,
     ScenarioCaseFactory, ExposedUrlFactory, SessionLogFactory, VNGEndpointFactory)
 from ...utils import choices
 
@@ -146,6 +148,11 @@ class TestLog(WebTest):
         self.exp_url.vng_endpoint.save()
         self.exp_url.save()
         self.session_log = SessionLogFactory()
+        self.endpoint_echo_e = ExposedUrlEchoFactory()
+        self.endpoint_echo_e.session.session_type = self.endpoint_echo_e.vng_endpoint.session_type
+        self.endpoint_echo_e.session.save()
+        self.endpoint_echo_e.exposed_url = '{}/{}'.format(self.endpoint_echo_e.exposed_url, self.endpoint_echo_e.vng_endpoint.name)
+        self.endpoint_echo_e.save()
 
     def test_retrieve_no_logged(self):
         call = self.app.get(reverse('testsession:session_log', kwargs={'session_id': self.session.id}), status=302)
@@ -230,6 +237,19 @@ class TestLog(WebTest):
         index = 0
         for s in sc:
             index = call.text[index:].index(s.url) + 2
+
+    @mock.patch('vng.testsession.api_views.logger')
+    def test_rewrite_body(self, mock_logger):
+        url = reverse('testsession:run_test', kwargs={
+            'exposed_url': self.endpoint_echo_e.get_uuid_url(),
+            'name': self.endpoint_echo_e.vng_endpoint.name,
+            'relative_url': ''
+        })
+        self.endpoint_echo_e.vng_endpoint.url += 'post/'
+        self.endpoint_echo_e.vng_endpoint.save()
+        call = self.app.post(url, url, user=self.endpoint_echo_e.session.user)
+        self.assertIn('Rewriting request body:', mock_logger.info.call_args_list[-7][0][0])
+        self.assertIn(url, call.text)
 
 
 class TestAllProcedure(WebTest):

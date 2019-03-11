@@ -66,9 +66,14 @@ class SessionViewSet(
         return Session.objects.all().prefetch_related('exposedurl_set')
 
     def perform_create(self, serializer):
-        session = serializer.save(user=self.request.user, pk=None)
+        session = serializer.save(
+            user=self.request.user,
+            pk=None,
+            status=choices.StatusChoices.starting,
+            name=Session.assign_name(self.request.user.id)
+        )
         try:
-            bootstrap_session(session.id)
+            bootstrap_session.delay(session.id)
         except Exception as e:
             logger.exception(e)
             session.delete()

@@ -24,7 +24,7 @@
         </td>
 
         <td class="table__cell">
-            {% if True and session.deploy_status%}
+            {% if session.is_starting and session.deploy_status%}
                 {{session.deploy_status}}
             {% else %}
                 {% for eu in session.exposedurl_set.all %}

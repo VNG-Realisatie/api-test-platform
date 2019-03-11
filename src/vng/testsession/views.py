@@ -63,11 +63,10 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
         form.instance.user = self.request.user
         form.instance.started = timezone.now()
         form.instance.status = choices.StatusChoices.starting
-        form.instance.name = "s{}{}".format(str(self.request.user.id), str(time.time()).replace('.', '-'))
-
-        form.instance.status = choices.StatusChoices.starting
+        form.instance.assign_name(self.request.user.id)
+        form.instance.name = Session.assign_name(self.request.user.id)
         session = form.save()
-        bootstrap_session.delay(session.pk, True)
+        bootstrap_session.delay(session.pk)
         return HttpResponseRedirect(self.get_success_url())
 
 

@@ -71,7 +71,7 @@ def start_app_b8s(session, bind_url):
 
 
 @app.task
-def bootstrap_session(session_pk, start_app=None):
+def bootstrap_session(session_pk):
     '''
     Cre ate all the necessary endpoint and exposes it so they can be used as proxy
     In case there is one or multiple docker images linked, it starts all of them

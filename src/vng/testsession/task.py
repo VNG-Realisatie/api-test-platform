@@ -54,15 +54,15 @@ def start_app_b8s(session, bind_url):
     for trial in range(N_TRIALS):
         try:
             time.sleep(10)                      # Waiting for the load balancer to be loaded
-            update_session_status(session, 'Polling to verify the deployment, attempt: {}'.format(trial))
+            update_session_status(session, 'Polling to verify the deployment, attempt: {}/10'.format(trial))
             ip = kuber.status(app_name)
 
             update_session_status(session, 'Checking the status of the pod')
             ready, message = kuber.get_pods_status(app_name)
             if not ready:
-                update_session_status(session, 'Deployed successfully')
+                update_session_status(session, 'An error within the image prevented from a correct deployment')
                 return ready, message
-            update_session_status(session, 'An error within the image prevented from a correct deployment')
+            update_session_status(session, 'Deployed successfully')
             return ip, None
         except Exception as e:
             err = e

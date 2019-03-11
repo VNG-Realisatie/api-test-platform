@@ -12,7 +12,8 @@ from vng.accounts.models import User
 
 from ..models import Session, SessionType, SessionLog, Report, ScenarioCase
 from .factories import (
-    SessionFactory, SessionTypeFactory, UserFactory, ScenarioCaseFactory, ExposedUrlFactory, SessionLogFactory, VNGEndpointFactory)
+    SessionFactory, SessionTypeFactory, UserFactory, VNGEndpointDockerFactory,
+    ScenarioCaseFactory, ExposedUrlFactory, SessionLogFactory, VNGEndpointFactory)
 from ...utils import choices
 
 
@@ -81,20 +82,25 @@ class CreationAndDeletion(WebTest):
     def setUp(self):
         self.session_type = SessionTypeFactory()
         self.user = UserFactory()
-
-    def test_session_creation(self):
-        session = {
-            'session_type': self.session_type.name,
-            'started': str(timezone.now()),
-            'status': choices.StatusChoices.running,
-            'api_endpoint': 'http://google.com'
-        }
+        self.session_type_docker = VNGEndpointDockerFactory().session_type
         call = self.app.post('/api/auth/login/', params=collections.OrderedDict([
             ('username', get_username()),
             ('password', 'password')]))
         key = get_object(call.body)['key']
-        head = {'Authorization': 'Token {}'.format(key)}
-        call = self.app.post(reverse('apiv1session:test_session-list'), session, headers=head)
+        self.head = {'Authorization': 'Token {}'.format(key)}
+
+    def test_session_creation(self):
+        session = {
+            'session_type': self.session_type.name,
+            'api_endpoint': 'http://google.com'
+        }
+
+        call = self.app.post(reverse('apiv1session:test_session-list'), session, headers=self.head)
+
+    def test_deploy_docker_via_api(self):
+        self.app.post_json(reverse('apiv1session:test_session-list'), {
+            'session_type': self.session_type_docker.name
+        }, headers=self.head)
 
     def test_session_creation_permission(self):
         Session.objects.all().delete()

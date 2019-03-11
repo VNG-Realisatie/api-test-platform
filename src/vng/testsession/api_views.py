@@ -7,6 +7,7 @@ from urllib import parse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views import View
+from django.utils import timezone
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
@@ -70,7 +71,8 @@ class SessionViewSet(
             user=self.request.user,
             pk=None,
             status=choices.StatusChoices.starting,
-            name=Session.assign_name(self.request.user.id)
+            name=Session.assign_name(self.request.user.id),
+            started=timezone.now()
         )
         try:
             bootstrap_session.delay(session.id)

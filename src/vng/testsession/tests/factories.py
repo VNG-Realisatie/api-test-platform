@@ -47,6 +47,17 @@ class VNGEndpointFactory(Dmf):
     test_file = factory.SubFactory(FilerField)
 
 
+class VNGEndpointDockerFactory(Dmf):
+
+    class Meta:
+        model = VNGEndpoint
+
+    name = factory.Sequence(lambda n: 'name_docker{}'.format(n))
+    docker_image = 'maykinmedia/vng-demo-api:latest.db'
+    session_type = factory.SubFactory(SessionTypeFactory)
+    test_file = factory.SubFactory(FilerField)
+
+
 class UserFactory(Dmf):
 
     class Meta:

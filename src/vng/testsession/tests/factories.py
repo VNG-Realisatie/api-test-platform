@@ -47,6 +47,17 @@ class VNGEndpointFactory(Dmf):
     test_file = factory.SubFactory(FilerField)
 
 
+class VNGEndpointEchoFactory(Dmf):
+
+    class Meta:
+        model = VNGEndpoint
+
+    name = factory.Sequence(lambda n: 'nameecho{}'.format(n))
+    url = 'https://postman-echo.com/'
+    session_type = factory.SubFactory(SessionTypeFactory)
+    test_file = factory.SubFactory(FilerField)
+
+
 class VNGEndpointDockerFactory(Dmf):
 
     class Meta:
@@ -88,6 +99,17 @@ class SessionFactory(Dmf):
     user = factory.SubFactory(UserFactory)
     session_type = factory.SubFactory(SessionTypeFactory)
     name = factory.Sequence(lambda n: 'name{}'.format(n))
+
+
+class ExposedUrlEchoFactory(Dmf):
+
+    class Meta:
+        model = ExposedUrl
+
+    test_session = factory.SubFactory(TestSessionFactory)
+    session = factory.SubFactory(SessionFactory)
+    vng_endpoint = factory.SubFactory(VNGEndpointEchoFactory)
+    exposed_url = factory.Sequence(lambda n: 'tst_echo{}'.format(n))
 
 
 class ExposedUrlFactory(Dmf):

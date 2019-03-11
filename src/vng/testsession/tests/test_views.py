@@ -12,7 +12,8 @@ from django_webtest import WebTest
 
 from vng.accounts.models import User
 
-from ..models import Session, SessionType, SessionLog, Report, ScenarioCase
+from ..models import Session, SessionType, SessionLog, Report, ScenarioCase, VNGEndpoint
+
 from .factories import (
     SessionFactory, SessionTypeFactory, UserFactory, VNGEndpointDockerFactory, ExposedUrlEchoFactory,
     ScenarioCaseFactory, ExposedUrlFactory, SessionLogFactory, VNGEndpointFactory)
@@ -137,7 +138,6 @@ class TestLog(WebTest):
         self.exp_url = ExposedUrlFactory()
         self.session = self.exp_url.session
         self.exp_url.vng_endpoint.session_type = self.session.session_type
-        self.exp_url.exposed_url = '{}/{}'.format(self.exp_url.exposed_url, self.exp_url.vng_endpoint.name)
         self.scenarioCase.vng_endpoint = self.exp_url.vng_endpoint
         self.scenarioCase_hard = copy.copy(self.scenarioCase)
         self.scenarioCase_hard.url = 'test/{uuid}/t'
@@ -227,6 +227,14 @@ class TestLog(WebTest):
         call = self.app.get(url, user=self.session.user, status=[404])
         rp = Report.objects.filter(scenario_case=self.scenarioCase_hard)
         self.assertTrue(len(rp) != 0)
+
+
+    def test_exposed_urls(self):
+        call = self.app.get(reverse("apiv1session:test_session-list"), user=self.session.user)
+        res = call.json
+        session = Session.objects.get(id=res[0]['id'])
+        endpoint = VNGEndpoint.objects.get(name=res[0]['exposedurl_set'][0]['vng_endpoint'])
+        self.assertEqual(endpoint.session_type, session.session_type)
 
     def test_ordered_report(self):
         url = reverse('testsession:session_report', kwargs={

@@ -206,12 +206,8 @@ class RunTest(CSRFExemptMixin, View):
     """ Proxy-view between clients and servers """
     error_codes = [(400, 599)]  # boundaries considered as errors
 
-    def get_exposed_url(self):
-        exposed_url = '{}/{}'.format(self.kwargs['exposed_url'], self.kwargs['name'])
-        return exposed_url
-
     def get_queryset(self):
-        return get_object_or_404(ExposedUrl, exposed_url=self.get_exposed_url()).session
+        return get_object_or_404(ExposedUrl, exposed_url=self.kwargs['exposed_url']).session
 
     def match_url(self, url, compare):
         '''
@@ -350,7 +346,7 @@ class RunTest(CSRFExemptMixin, View):
     def build_method(self, request_method_name, request, body=False):
 
         self.session = self.get_queryset()
-        eu = get_object_or_404(ExposedUrl, session=self.session, exposed_url=self.get_exposed_url())
+        eu = get_object_or_404(ExposedUrl, session=self.session, exposed_url=self.kwargs['exposed_url'])
         request_header = self.get_http_header(request, eu.vng_endpoint)
         session_log, session = self.build_session_log(request, request_header)
         if session.is_stopped():
@@ -390,7 +386,7 @@ class RunTest(CSRFExemptMixin, View):
 
         self.add_response(response, session_log, request_url, request)
 
-        self.save_call(request, request_method_name, self.get_exposed_url(),
+        self.save_call(request, request_method_name, self.kwargs['exposed_url'],
                        self.kwargs['relative_url'], session, response.status_code, session_log)
         reply = HttpResponse(self.parse_response(response, request, eu.vng_endpoint.url, endpoints), status=response.status_code)
         if 'Content-type' in response.headers:

@@ -10,7 +10,7 @@ from django_webtest import WebTest
 
 from vng.accounts.models import User
 
-from ..models import Session, SessionType, SessionLog, Report
+from ..models import Session, SessionType, SessionLog, Report, VNGEndpoint
 from .factories import (
     SessionFactory, SessionTypeFactory, UserFactory, ScenarioCaseFactory, ExposedUrlFactory, SessionLogFactory, VNGEndpointFactory)
 from ...utils import choices
@@ -213,6 +213,13 @@ class TestLog(WebTest):
         call = self.app.get(url, user=self.session.user, status=[404])
         rp = Report.objects.filter(scenario_case=self.scenarioCase_hard)
         self.assertTrue(len(rp) != 0)
+
+    def test_exposed_urls(self):
+        call = self.app.get(reverse("apiv1session:test_session-list"), user=self.session.user)
+        res = call.json
+        session = Session.objects.get(id=res[0]['id'])
+        endpoint = VNGEndpoint.objects.get(name=res[0]['exposedurl_set'][0]['vng_endpoint'])
+        self.assertEqual(endpoint.session_type, session.session_type)
 
 
 class TestAllProcedure(WebTest):

@@ -310,7 +310,15 @@ class RunTest(CSRFExemptMixin, View):
                 'relative_url': ''
             })
         )
-        return re.sub(sub, endpoint.vng_endpoint.url, content)
+        if endpoint.vng_endpoint.url is not None:
+            return re.sub(sub, endpoint.vng_endpoint.url, content)
+        else:
+            query = parse.urlparse(sub)
+
+            return re.sub(sub,
+                          '{}://{}:{}'.format(query.scheme, endpoint.docker_url, 8080),
+                          content
+                          )
 
     def parse_response(self, response, request, base_url, endpoints):
         """
@@ -328,7 +336,7 @@ class RunTest(CSRFExemptMixin, View):
             parsed = self.sub_url_response(parsed, host, ep)
         return parsed
 
-    def rewrite_request_body(self, request, endpoints):
+    def rewrite_request_body(self, request, exposed):
         """
         Rewrites the request body's to replace the ATV URL endpoints to the VNG Reference endpoints
         https://testplatform/runtest/XXXX/api/v1/zaken/123
@@ -340,9 +348,9 @@ class RunTest(CSRFExemptMixin, View):
             host = 'http://{}'.format(request.get_host())
         else:
             host = 'https://{}'.format(request.get_host())
-        for ep in endpoints:
+        for eu in exposed:
             logger.info("Rewriting request body:")
-            parsed = self.sub_url_request(parsed, host, ep)
+            parsed = self.sub_url_request(parsed, host, eu)
         return parsed
 
     def build_method(self, request_method_name, request, body=False):

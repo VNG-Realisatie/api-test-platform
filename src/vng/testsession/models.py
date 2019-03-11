@@ -102,6 +102,8 @@ class Session(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     build_version = models.TextField(blank=True, null=True, default=None)
     error_message = models.TextField(blank=True, null=True, default=None)
+    deploy_status = models.TextField(blank=True, null=True, default=None)
+    deploy_percentage = models.IntegerField(default=None, null=True, blank=True)
 
     def __str__(self):
         if self.user:

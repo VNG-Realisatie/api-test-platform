@@ -84,7 +84,7 @@ def bootstrap_session(session_pk, start_app=None):
                         session.status = choices.StatusChoices.error_deploy
                         session.error_message = message
                 if not error_deployment:
-                    bind_url.exposed_url = '{}/{}'.format(int(time.time()) * 100 + random.randint(0, 99), ep.name)
+                    bind_url.exposed_url = '{}'.format(int(time.time()) * 100 + random.randint(0, 99))
                     bind_url.save()
                 else:
                     bind_url.delete()

@@ -126,25 +126,22 @@ class SessionReport(OwnerSingleObject):
         context = super().get_context_data(**kwargs)
         scenario_case = self.model.objects.filter(vng_endpoint__session_type=self.session.session_type)
         report = list(Report.objects.filter(session_log__session=self.session))
+        report_ordered = []
         for case in scenario_case:
             is_in = False
             for rp in report:
                 if rp.scenario_case == case:
+                    report_ordered.append(rp)
                     is_in = True
                     break
             if not is_in:
-                report.append(Report(scenario_case=case, result=choices.HTTPCallChoiches.not_called))
+                report_ordered.append(Report(scenario_case=case, result=choices.HTTPCallChoiches.not_called))
 
         context.update({
             'session': self.session,
-            'object_list': report
+            'object_list': report_ordered,
+            'session_type': self.session.session_type,
         })
-
-        if len(report) > 0:
-            context.update({
-                'session_type': self.session.session_type,
-            })
-
         return context
 
 

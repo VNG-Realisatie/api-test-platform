@@ -10,7 +10,7 @@ from django_webtest import WebTest
 
 from vng.accounts.models import User
 
-from ..models import Session, SessionType, SessionLog, Report
+from ..models import Session, SessionType, SessionLog, Report, ScenarioCase
 from .factories import (
     SessionFactory, SessionTypeFactory, UserFactory, ScenarioCaseFactory, ExposedUrlFactory, SessionLogFactory, VNGEndpointFactory)
 from ...utils import choices
@@ -214,6 +214,16 @@ class TestLog(WebTest):
         call = self.app.get(url, user=self.session.user, status=[404])
         rp = Report.objects.filter(scenario_case=self.scenarioCase_hard)
         self.assertTrue(len(rp) != 0)
+
+    def test_ordered_report(self):
+        url = reverse('testsession:session_report', kwargs={
+            'session_id': self.session.id
+        })
+        sc = ScenarioCase.objects.filter(vng_endpoint__session_type=self.session.session_type).order_by('order')
+        call = self.app.get(url, user=self.session.user)
+        index = 0
+        for s in sc:
+            index = call.text[index:].index(s.url) + 2
 
 
 class TestAllProcedure(WebTest):

@@ -37,20 +37,32 @@ def stop_session(session_pk):
     session.save()
 
 
+def update_session_status(session, message):
+    session.deploy_status = message
+    session.save()
+
+
 def start_app_b8s(session, bind_url):
+    update_session_status(session, 'Connecting with google cloud')
     kuber = K8S()
     endpoint = bind_url.vng_endpoint
     app_name = get_app_name(session, bind_url)
+    update_session_status(session, 'Deploying the image')
     kuber.deploy(app_name, endpoint.docker_image, endpoint.port)
+    update_session_status(session, 'Exposing the service to internet')
     N_TRIALS = 10
     for trial in range(N_TRIALS):
         try:
             time.sleep(10)                      # Waiting for the load balancer to be loaded
+            update_session_status(session, 'Polling to verify the deployment, attempt: {}/10'.format(trial))
             ip = kuber.status(app_name)
 
+            update_session_status(session, 'Checking the status of the pod')
             ready, message = kuber.get_pods_status(app_name)
             if not ready:
+                update_session_status(session, 'An error within the image prevented from a correct deployment')
                 return ready, message
+            update_session_status(session, 'Deployed successfully')
             return ip, None
         except Exception as e:
             err = e
@@ -59,7 +71,7 @@ def start_app_b8s(session, bind_url):
 
 
 @app.task
-def bootstrap_session(session_pk, start_app=None):
+def bootstrap_session(session_pk):
     '''
     Cre ate all the necessary endpoint and exposes it so they can be used as proxy
     In case there is one or multiple docker images linked, it starts all of them

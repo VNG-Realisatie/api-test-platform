@@ -106,8 +106,9 @@ class ResultServerView(LoginRequiredMixin, views.APIView):
                     'request': call['request']['method'],
                     'response': call['response']['code'],
                 }
-                for _assertion in call['assertions']:
-                    _assertion['result'] = 'failed' if 'error' in _assertion else 'success'
+                if 'assertions' in call:
+                    for _assertion in call['assertions']:
+                        _assertion['result'] = 'failed' if 'error' in _assertion else 'success'
                 _call['assertions'] = call['assertions']
                 if ep is None:
                     _call['status'] = 'Expected response not specified'

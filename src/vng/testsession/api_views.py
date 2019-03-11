@@ -307,8 +307,8 @@ class RunTest(CSRFExemptMixin, View):
         else:
             query = parse.urlparse(sub)
             return re.sub(
-                sub,
                 '{}://{}:{}/'.format(query.scheme, endpoint.docker_url, 8080),
+                sub,
                 content
             )
 
@@ -331,7 +331,6 @@ class RunTest(CSRFExemptMixin, View):
                 '{}://{}:{}/'.format(query.scheme, endpoint.docker_url, 8080),
                 content
             )
-
 
     def parse_response(self, response, request, base_url, endpoints):
         """

@@ -298,8 +298,12 @@ class RunTest(CSRFExemptMixin, View):
                     sub = sub[:-1]
             return re.sub(endpoint.vng_endpoint.url, sub, content)
         else:
-            url = 'http://{}:{}/'.format(endpoint.docker_url, 8080)
-            return re.sub(url, sub, content)
+            query = parse.urlparse(sub)
+            return re.sub(
+                sub,
+                '{}://{}:{}/'.format(query.scheme, endpoint.docker_url, 8080),
+                content
+            )
 
     def sub_url_request(self, content, host, endpoint):
         sub = '{}{}'.format(
@@ -314,11 +318,11 @@ class RunTest(CSRFExemptMixin, View):
             return re.sub(sub, endpoint.vng_endpoint.url, content)
         else:
             query = parse.urlparse(sub)
-
-            return re.sub(sub,
-                          '{}://{}:{}'.format(query.scheme, endpoint.docker_url, 8080),
-                          content
-                          )
+            return re.sub(
+                sub,
+                '{}://{}:{}/'.format(query.scheme, endpoint.docker_url, 8080),
+                content
+            )
 
     def parse_response(self, response, request, base_url, endpoints):
         """

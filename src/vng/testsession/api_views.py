@@ -326,6 +326,7 @@ class RunTest(CSRFExemptMixin, View):
         else:
             host = 'https://{}'.format(request.get_host())
         for ep in endpoints:
+            logger.info("Rewriting response body:")
             parsed = self.sub_url_response(parsed, host, ep)
         return parsed
 

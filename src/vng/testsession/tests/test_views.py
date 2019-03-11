@@ -2,6 +2,8 @@ import collections
 import json
 import copy
 
+import mock
+
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext
@@ -236,7 +238,8 @@ class TestLog(WebTest):
         for s in sc:
             index = call.text[index:].index(s.url) + 2
 
-    def test_rewrite_body(self):
+    @mock.patch('vng.testsession.api_views.logger')
+    def test_rewrite_body(self, mock_logger):
         url = reverse('testsession:run_test', kwargs={
             'exposed_url': self.endpoint_echo_e.get_uuid_url(),
             'name': self.endpoint_echo_e.vng_endpoint.name,
@@ -245,6 +248,7 @@ class TestLog(WebTest):
         self.endpoint_echo_e.vng_endpoint.url += 'post/'
         self.endpoint_echo_e.vng_endpoint.save()
         call = self.app.post(url, url, user=self.endpoint_echo_e.session.user)
+        self.assertIn('Rewriting request body:', mock_logger.info.call_args_list[-7][0][0])
         self.assertIn(url, call.text)
 
 

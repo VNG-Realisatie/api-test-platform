@@ -75,7 +75,7 @@ class SessionViewSet(
             started=timezone.now()
         )
         try:
-            bootstrap_session.delay(session.id)
+            bootstrap_session(session.id)
         except Exception as e:
             logger.exception(e)
             session.delete()

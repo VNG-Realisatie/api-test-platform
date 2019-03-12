@@ -15,9 +15,10 @@ from vng.accounts.models import User
 from ..models import Session, SessionType, SessionLog, Report, ScenarioCase, VNGEndpoint
 
 from .factories import (
-    SessionFactory, SessionTypeFactory, UserFactory, VNGEndpointDockerFactory, ExposedUrlEchoFactory,
+    SessionFactory, SessionTypeFactory, VNGEndpointDockerFactory, ExposedUrlEchoFactory,
     ScenarioCaseFactory, ExposedUrlFactory, SessionLogFactory, VNGEndpointFactory)
 from ...utils import choices
+from ...utils.factories import UserFactory
 
 
 def get_object(r):
@@ -151,7 +152,6 @@ class TestLog(WebTest):
         self.endpoint_echo_e = ExposedUrlEchoFactory()
         self.endpoint_echo_e.session.session_type = self.endpoint_echo_e.vng_endpoint.session_type
         self.endpoint_echo_e.session.save()
-        self.endpoint_echo_e.exposed_url = '{}/{}'.format(self.endpoint_echo_e.exposed_url, self.endpoint_echo_e.vng_endpoint.name)
         self.endpoint_echo_e.save()
 
     def test_retrieve_no_logged(self):
@@ -228,7 +228,6 @@ class TestLog(WebTest):
         rp = Report.objects.filter(scenario_case=self.scenarioCase_hard)
         self.assertTrue(len(rp) != 0)
 
-
     def test_exposed_urls(self):
         call = self.app.get(reverse("apiv1session:test_session-list"), user=self.session.user)
         res = call.json
@@ -251,10 +250,8 @@ class TestLog(WebTest):
         url = reverse('testsession:run_test', kwargs={
             'exposed_url': self.endpoint_echo_e.get_uuid_url(),
             'name': self.endpoint_echo_e.vng_endpoint.name,
-            'relative_url': ''
+            'relative_url': 'post/'
         })
-        self.endpoint_echo_e.vng_endpoint.url += 'post/'
-        self.endpoint_echo_e.vng_endpoint.save()
         call = self.app.post(url, url, user=self.endpoint_echo_e.session.user)
         self.assertIn('Rewriting request body:', mock_logger.info.call_args_list[-7][0][0])
         self.assertIn(url, call.text)

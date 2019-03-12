@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'ordered_model',
     'django_admin_index',
     'django.contrib.admin',
+    'registration',
     # 'django.contrib.admindocs',
     # 'django.contrib.humanize',
     # 'django.contrib.sitemaps',
@@ -348,3 +349,7 @@ HIJACK_ALLOW_GET_REQUESTS = True
 SWAGGER_SETTINGS = {
     'DEFAULT_AUTO_SCHEMA_CLASS': 'vng.utils.schema.CompoundTagsSchema',
 }
+
+
+# User registration settings
+ACCOUNT_ACTIVATION_DAYS = 7

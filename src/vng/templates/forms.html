@@ -87,6 +87,10 @@
     {% reuse 'TextInput' input_type='password' %}
 {% endblock PasswordInput %}
 
+{% block EmailInput %}
+    {% reuse 'TextInput' input_type='email' %}
+{% endblock EmailInput %}
+
 
 {% block URLInput %}{% reuse "TextInput" input_type="url" %}{% endblock %}
 

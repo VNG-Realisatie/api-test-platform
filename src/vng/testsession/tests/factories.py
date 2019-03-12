@@ -5,6 +5,7 @@ from vng.accounts.models import User
 from django.conf import settings
 from filer.models import File
 from ..models import SessionType, Session, ScenarioCase, VNGEndpoint, ExposedUrl, SessionLog, TestSession
+from ...utils.factories import UserFactory
 from ...utils import choices
 
 
@@ -67,15 +68,6 @@ class VNGEndpointDockerFactory(Dmf):
     docker_image = 'maykinmedia/vng-demo-api:latest.db'
     session_type = factory.SubFactory(SessionTypeFactory)
     test_file = factory.SubFactory(FilerField)
-
-
-class UserFactory(Dmf):
-
-    class Meta:
-        model = User
-
-    username = factory.Sequence(lambda n: 'test{}'.format(n))
-    password = factory.PostGenerationMethodCall('set_password', 'password')
 
 
 class ScenarioCaseFactory(Dmf):

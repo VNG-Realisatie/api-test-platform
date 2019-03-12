@@ -3,6 +3,7 @@ import os
 # Django-hijack (and Django-hijack-admin)
 from django.urls import reverse_lazy
 
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 DJANGO_PROJECT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir))
 BASE_DIR = os.path.abspath(os.path.join(DJANGO_PROJECT_DIR, os.path.pardir, os.path.pardir))
@@ -49,6 +50,7 @@ INSTALLED_APPS = [
     # External applications.
     # 'axes',
     'sniplates',
+    'captcha',
     'filer',
     'mptt',
     'drf_yasg',
@@ -353,3 +355,5 @@ SWAGGER_SETTINGS = {
 
 # User registration settings
 ACCOUNT_ACTIVATION_DAYS = 7
+REGISTRATION_FORM = 'vng.utils.forms.RegistrationCaptcha'
+SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']

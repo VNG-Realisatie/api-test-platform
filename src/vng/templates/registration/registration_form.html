@@ -11,10 +11,10 @@
         <form method="post" action="" class="form">
             {% csrf_token %}
             {% load_widgets form='forms.html' %}
-
             {% for field in form %}
                 {% form_field field %}
             {% endfor %}
+
             <input type="submit" value="{% trans 'Submit' %}" class="button button--primary"/>
         </form>
 {% endblock %}

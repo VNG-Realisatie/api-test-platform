@@ -29,10 +29,7 @@ local.py
 /log/nginx/*.log*
 
 /src/vng/static/css/admin/admin_overrides.css
-.vscode/settings.json
-.vscode/settings.json
-.vscode/launch.json
-.vscode/launch.json
-dump.rdb
+.vscode/*
 dump.rdb
 maintenance.html
+vng.db-journal

@@ -26,7 +26,13 @@ $table-color-border: $color-gray;
     text-align: left;
     vertical-align: top;
     width: 100%;
-    word-break: keep-all;
+
+    &--keep_word {
+      word-break: keep-all;
+
+    }
+
+    word-break: break-all;
 
     &:last-of-type {
       border-bottom: 2px solid $table-color-border;

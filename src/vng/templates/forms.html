@@ -45,7 +45,9 @@
 {% endblock %}
 
 {% block _help %}
-    {% if help_text %}<p class="form__help">{{ help_text }}</p>{% endif %}
+    {% if help_text %}
+    <div class="form__help">{{ help_text }}</div>
+    {% endif %}
 {% endblock _help %}
 
 
@@ -86,6 +88,10 @@
 {% block PasswordInput %}
     {% reuse 'TextInput' input_type='password' %}
 {% endblock PasswordInput %}
+
+{% block EmailInput %}
+    {% reuse 'TextInput' input_type='email' %}
+{% endblock EmailInput %}
 
 
 {% block URLInput %}{% reuse "TextInput" input_type="url" %}{% endblock %}

@@ -1,12 +1,13 @@
 import factory
+
 from django_webtest import WebTest
 from django.urls import reverse
-from factory.django import DjangoModelFactory as Dmf
+
 from vng.testsession.tests.factories import UserFactory
-from vng.servervalidation.models import ServerRun, PostmanTest, PostmanTestResult
+from vng.servervalidation.models import ServerRun, PostmanTest, PostmanTestResult, User
 
 from .factories import TestScenarioFactory, ServerRunFactory, TestScenarioUrlFactory, PostmanTestFactory
-from ...utils import choices
+from ...utils import choices, forms
 
 
 class TestCreation(WebTest):
@@ -93,3 +94,36 @@ class TestList(WebTest):
     def test_list(self):
         call = self.app.get(reverse('server_run:server-run_list'), user='test')
         assert 'no session' not in str(call.body)
+
+
+class TestUserRegistration(WebTest):
+
+    def add_dynamic_field(self, form, name, value):
+        from webtest.forms import Text
+        field = Text(form, 'input', name, None, value)
+        field.id = name
+        form.fields[name] = [field]
+
+    def test_registration(self):
+
+        # user registration
+        call = self.app.get(reverse('registration_register'))
+        form = call.forms[0]
+        form['username'] = 'test'
+        form['email'] = 'test.gmail.com'
+        form['password1'] = 'asdgja3u8lksa'
+        form['password2'] = 'asdgja3u8lksa'
+        call = form.submit()
+
+        # try to login before email confirmation
+        call = self.app.get(reverse('auth_login'))
+        form = call.forms[0]
+        form['username'] = 'test'
+        form['password'] = 'password'
+        form.submit(expect_errors=True)
+
+        User.objects.create_user(username='test', password='12345678a').save()
+        call = self.app.get(reverse('auth_login'))
+        form = call.forms[0]
+        form['username'] = 'test'
+        form['password'] = '12345678a'

@@ -14,8 +14,5 @@ urlpatterns = [
     url('(?P<pk>[0-9]+)/log', views.ServerRunLogView.as_view(), name='server-run_detail_log'),
     url('(?P<pk>[0-9]+)/pdf/(?P<postman_res_id>[0-9]+)', views.ServerRunPdfView.as_view(), name='server-run_detail_pdf'),
     url('(?P<pk>[0-9]+)', views.ServerRunOutput.as_view(), name='server-run_detail'),
-    url('openapi-inspection_result', TemplateView.as_view(
-        template_name="servervalidation/openapi-inspection_result.html"), name='openapi-inspection_result'),
-    url('openapi-inspection', views.OpenApiInspection.as_view(), name='openapi-inspection'),
     url('$', views.TestScenarioSelect.as_view(), name='server-run_list'),
 ]

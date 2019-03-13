@@ -1,8 +1,6 @@
 import uuid
 import requests
 
-from json.decoder import JSONDecodeError
-
 from django import forms
 from django.contrib import messages
 from django.forms.utils import ErrorList
@@ -10,7 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.files import File
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse
 from django.utils import timezone
 from django.views import View
 from django.core.exceptions import PermissionDenied
@@ -22,35 +20,12 @@ from ..permissions.UserPermissions import *
 from ..utils import choices
 from ..utils.newman import DidNotRunException, NewmanManager
 from ..utils.views import OwnerSingleObject, PDFGenerator
-from .forms import CreateServerRunForm, CreateEndpointForm, OpenApiInspectionForm
+from .forms import CreateServerRunForm, CreateEndpointForm
 from .models import (
     ServerRun, Endpoint, TestScenarioUrl, TestScenario, PostmanTest, PostmanTestResult, ExpectedPostmanResult,
     ServerHeader
 )
 from .task import execute_test
-from .utils import openAPIInspector
-
-
-class OpenApiInspection(FormView):
-    template_name = 'servervalidation/openapi-inspection.html'
-    form_class = OpenApiInspectionForm
-    success_url = reverse_lazy('server_run:openapi-inspection_result')
-
-    def form_valid(self, form):
-        if form.is_valid():
-            url = form.cleaned_data['url']
-            try:
-                version = openAPIInspector(url)
-            except Exception as e:
-                if isinstance(e, JSONDecodeError):
-                    form.add_error('url', u'The link provided does not contain a json schema')
-                else:
-                    form.add_error('url', u'The link provided is not reachable')
-                return self.form_invalid(form)
-            self.request.session['openapi'] = True if version >= 2 else False
-            self.request.session['openapiv'] = version
-            return super().form_valid(form)
-        return super().form_invalid(form)
 
 
 class TestScenarioSelect(LoginRequiredMixin, FormView, MultipleObjectMixin, MultipleObjectTemplateResponseMixin):

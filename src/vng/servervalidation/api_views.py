@@ -2,8 +2,6 @@
 import json
 from itertools import zip_longest
 
-from json.decoder import JSONDecodeError
-
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from django.utils import timezone
@@ -13,53 +11,18 @@ from django.db.models import Prefetch
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from rest_framework import permissions, viewsets, mixins, views, status
-from rest_framework.exceptions import bad_request, APIException
-from rest_framework.response import Response
+from rest_framework.exceptions import bad_request
+
 from rest_framework.authentication import (
     SessionAuthentication, TokenAuthentication
 )
 from drf_yasg.utils import swagger_auto_schema
 
 from ..permissions.UserPermissions import *
-from .serializers import ServerRunSerializer, ServerRunPayloadExample, OpenApiInspectionSerializer
+from .serializers import ServerRunSerializer, ServerRunPayloadExample
 from .models import (
     ServerRun, Endpoint, TestScenarioUrl, TestScenario, PostmanTest, PostmanTestResult, ExpectedPostmanResult
 )
-from .utils import openAPIInspector
-
-
-class OpenAPIValidationException(APIException):
-    status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-    default_detail = 'A server error occurred.'
-
-    def __init__(self, detail, field, status_code):
-        if status_code is not None:
-            self.status_code = status_code
-        if detail is not None:
-            self.detail = {field: force_text(detail)}
-        else:
-            self.detail = {'detail': force_text(self.default_detail)}
-
-
-class OpenApiInspectionAPIView(views.APIView):
-
-    def post(self, request):
-        serializer = OpenApiInspectionSerializer(data=request.data)
-        if serializer.is_valid():
-            try:
-                version = openAPIInspector(serializer.data['url'])
-            except Exception as e:
-                print(e)
-                if isinstance(e, JSONDecodeError):
-                    raise OpenAPIValidationException('The link provided does not contain a json schema', 'url', status_code=status.HTTP_400_BAD_REQUEST)
-                else:
-                    raise OpenAPIValidationException('The link provided is not reachable', 'url', status_code=status.HTTP_400_BAD_REQUEST)
-
-            return Response({
-                'version': version,
-                'satisfied': True if version >= 2 else False
-            })
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ServerRunViewSet(

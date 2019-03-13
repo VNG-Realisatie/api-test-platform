@@ -127,3 +127,5 @@ class TestUserRegistration(WebTest):
         form = call.forms[0]
         form['username'] = 'test'
         form['password'] = '12345678a'
+        call = form.submit()
+        self.assertIn(call.text, 'consumer')

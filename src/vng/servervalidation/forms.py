@@ -12,6 +12,10 @@ from .models import ServerRun, Endpoint
 logger = logging.getLogger(__name__)
 
 
+class OpenApiInspectionForm(forms.Form):
+    url = forms.URLField()
+
+
 class CreateServerRunForm(forms.ModelForm):
     class Meta:
         model = ServerRun

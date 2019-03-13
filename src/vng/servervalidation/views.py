@@ -1,10 +1,14 @@
 import uuid
+import requests
 
+from django import forms
+from django.contrib import messages
+from django.forms.utils import ErrorList
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.files import File
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views import View
 from django.core.exceptions import PermissionDenied
@@ -16,12 +20,38 @@ from ..permissions.UserPermissions import *
 from ..utils import choices
 from ..utils.newman import DidNotRunException, NewmanManager
 from ..utils.views import OwnerSingleObject, PDFGenerator
-from .forms import CreateServerRunForm, CreateEndpointForm
+from .forms import CreateServerRunForm, CreateEndpointForm, OpenApiInspectionForm
 from .models import (
     ServerRun, Endpoint, TestScenarioUrl, TestScenario, PostmanTest, PostmanTestResult, ExpectedPostmanResult,
     ServerHeader
 )
 from .task import execute_test
+
+
+class OpenApiInspection(FormView):
+    template_name = 'servervalidation/openapi-inspection.html'
+    form_class = OpenApiInspectionForm
+    success_url = reverse_lazy('server_run:openapi-inspection_result')
+
+    def form_valid(self, form):
+        if form.is_valid():
+            url = form.cleaned_data['url']
+            try:
+                resp = requests.get(url)
+                try:
+                    data = resp.json()
+                except:
+                    form.add_error('url', u'The link provided does not contain a json schema')
+                    return self.form_invalid(form)
+                version = float(data['swagger'])
+                self.request.session['openapi'] = version
+                self.request.session['openapi_cond'] = True if version >= 2 else False
+            except Exception as e:
+                import pdb
+                pdb.set_trace()
+                form.add_error('url', u'The link provided is not reachable')
+                return self.form_invalid(form)
+        return super().form_valid(form)
 
 
 class TestScenarioSelect(LoginRequiredMixin, FormView, MultipleObjectMixin, MultipleObjectTemplateResponseMixin):

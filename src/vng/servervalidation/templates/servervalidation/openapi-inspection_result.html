@@ -1,0 +1,24 @@
+{% extends 'master.html' %}
+{% load sniplates %}
+
+
+{% block title %}Session List{% endblock %}
+
+
+
+{% block content %}
+    <article class="article">
+        <div class="article__section">
+            <h1>Providers</h1>
+            The service supports OpenAPI version {{request.session.openapi}}
+            {% if request.session.openapi %}
+                <p class='icon icon--checkmark'></p>
+            {% else %}
+                <p class='icon icon--cross'></p>
+            {% endif %}
+
+
+        </div>
+
+    </article>
+{% endblock %}

@@ -9,7 +9,7 @@ User = UserModel()
 
 
 class RegistrationCaptcha(RegistrationForm):
-    captcha = ReCaptchaField(widget=ReCaptchaV2Invisible)
+    # captcha = ReCaptchaField(widget=ReCaptchaV2Invisible)
 
     class Meta:
         model = User

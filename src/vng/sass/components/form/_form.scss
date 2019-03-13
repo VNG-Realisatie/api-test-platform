@@ -1,3 +1,4 @@
+@import '../../lib/grid';
 @import '../../lib/responsive';
 @import '../../lib/typography';
 @import 'constants';
@@ -22,7 +23,7 @@
   & &__select {
     @include body;
     @include responsive(width, 100%, 50%, 50%, 50%);
-    height: $form-margin-4;
+    min-height: $form-margin-4;
     line-height: $form-margin-4;
   }
 
@@ -57,6 +58,11 @@
   & &__help,
   & &__label {
     color: $form-color-label
+  }
+
+  & &__help ul {
+    list-style-position: inside;
+    padding: 0;
   }
 
   & &__input,

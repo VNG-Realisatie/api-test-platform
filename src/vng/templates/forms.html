@@ -45,7 +45,9 @@
 {% endblock %}
 
 {% block _help %}
-    {% if help_text %}<p class="form__help">{{ help_text }}</p>{% endif %}
+    {% if help_text %}
+    <div class="form__help">{{ help_text }}</div>
+    {% endif %}
 {% endblock _help %}
 
 

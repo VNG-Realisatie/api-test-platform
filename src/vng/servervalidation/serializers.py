@@ -7,6 +7,10 @@ from .models import *
 from .task import execute_test
 
 
+class OpenApiInspectionSerializer(serializers.Serializer):
+    url = serializers.URLField()
+
+
 class TestScenarioUrlSerializer(serializers.ModelSerializer):
     class Meta:
         model = TestScenarioUrl

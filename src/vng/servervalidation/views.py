@@ -1,6 +1,8 @@
 import uuid
 import requests
 
+from json.decoder import JSONDecodeError
+
 from django import forms
 from django.contrib import messages
 from django.forms.utils import ErrorList
@@ -26,6 +28,7 @@ from .models import (
     ServerHeader
 )
 from .task import execute_test
+from .utils import openAPIInspector
 
 
 class OpenApiInspection(FormView):
@@ -37,21 +40,13 @@ class OpenApiInspection(FormView):
         if form.is_valid():
             url = form.cleaned_data['url']
             try:
-                resp = requests.get(url)
-                try:
-                    data = resp.json()
-                except:
-                    form.add_error('url', u'The link provided does not contain a json schema')
-                    return self.form_invalid(form)
-                version = float(data['swagger'])
-                self.request.session['openapi'] = version
-                self.request.session['openapi_cond'] = True if version >= 2 else False
+                openAPIInspector(url)
             except Exception as e:
-                import pdb
-                pdb.set_trace()
-                form.add_error('url', u'The link provided is not reachable')
+                if isinstance(e, JSONDecodeError):
+                    form.add_error('url', u'The link provided does not contain a json schema')
+                else:
+                    form.add_error('url', u'The link provided is not reachable')
                 return self.form_invalid(form)
-        return super().form_valid(form)
 
 
 class TestScenarioSelect(LoginRequiredMixin, FormView, MultipleObjectMixin, MultipleObjectTemplateResponseMixin):

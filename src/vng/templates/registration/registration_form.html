@@ -12,7 +12,12 @@
             {% csrf_token %}
             {% load_widgets form='forms.html' %}
             {% for field in form %}
+                {% if field.name == 'captcha' %}
+                    {{field}}
+                {% else %}
                 {% form_field field %}
+                {% endif %}
+
             {% endfor %}
 
             <input type="submit" value="{% trans 'Submit' %}" class="button button--primary"/>

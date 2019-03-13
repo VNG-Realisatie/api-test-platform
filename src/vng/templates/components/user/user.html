@@ -4,6 +4,7 @@
         {{ request.user.username }}</p>
     {% else %}
         <a class="user__login" href={% url 'auth_login' %}>Login</a>
+        <div class="user__dropdown"><a class="user__logout" href={% url 'registration_register' %}>Register</a></div>
     {% endif %}
 
     {% if user.is_authenticated %}

@@ -28,7 +28,7 @@ from .models import (
 from .utils import openAPIInspector
 
 
-class CustomValidation(APIException):
+class OpenAPIValidation(APIException):
     status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
     default_detail = 'A server error occurred.'
 
@@ -49,14 +49,18 @@ class OpenApiInspectionView(views.APIView):
         serializer = OpenApiInspectionSerializer(data=request.data)
         if serializer.is_valid():
             try:
-                openAPIInspector(serializer.data['url'])
+                version = openAPIInspector(serializer.data['url'])
             except Exception as e:
                 print(e)
                 if isinstance(e, JSONDecodeError):
-                    raise CustomValidation('The link provided does not contain a json schema', 'url', status_code=status.HTTP_400_BAD_REQUEST)
+                    raise OpenAPIValidation('The link provided does not contain a json schema', 'url', status_code=status.HTTP_400_BAD_REQUEST)
                 else:
-                    raise CustomValidation('The link provided is not reachable', 'url', status_code=status.HTTP_400_BAD_REQUEST)
+                    raise OpenAPIValidation('The link provided is not reachable', 'url', status_code=status.HTTP_400_BAD_REQUEST)
 
+            return Response({
+                'version': version,
+                'satisfied': True if version >= 2 else False
+            })
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

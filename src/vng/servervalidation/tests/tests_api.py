@@ -127,3 +127,37 @@ class TestNoAssertion(WebTest):
         }), headers=self.get_user_key())
         call = call.json
         self.assertEqual(call['status'], 'stopped')
+
+
+def TestOpenApiInspector(WebTest):
+
+    def setUp(self):
+        self.url = reverse('server_run:openapi-inspection')
+
+    def test_invalid_url(self):
+        payload = {
+            'url': 'invalid url'
+        }
+        call = self.app.post_json(self.url, payload)
+        self.assertEqual(call.status, 400)
+
+    def test_non_reachable_url(self):
+        payload = {
+            'url': 'www.invalid.commoc'
+        }
+        call = self.app.post_json(self.url, payload)
+        self.assertEqual(call.status, 400)
+
+    def test_non_json_schema(self):
+        payload = {
+            'url': 'www.google.com'
+        }
+        call = self.app.post_json(self.url, payload)
+        self.assertEqual(call.status, 400)
+
+    def test_success(self):
+        payload = {
+            'url': 'https://ref.tst.vng.cloud/ztc/api/v1/schema/?format=openapi'
+        }
+        call = self.app.post_json(self.url, payload)
+        self.assertEqual(call.status, 200)

@@ -40,13 +40,17 @@ class OpenApiInspection(FormView):
         if form.is_valid():
             url = form.cleaned_data['url']
             try:
-                openAPIInspector(url)
+                version = openAPIInspector(url)
             except Exception as e:
                 if isinstance(e, JSONDecodeError):
                     form.add_error('url', u'The link provided does not contain a json schema')
                 else:
                     form.add_error('url', u'The link provided is not reachable')
                 return self.form_invalid(form)
+            self.request.session['openapi'] = True if version >= 2 else False
+            self.request.session['openapiv'] = version
+            return super().form_valid(form)
+        return super().form_invalid(form)
 
 
 class TestScenarioSelect(LoginRequiredMixin, FormView, MultipleObjectMixin, MultipleObjectTemplateResponseMixin):

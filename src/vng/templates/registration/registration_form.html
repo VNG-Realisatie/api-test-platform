@@ -13,11 +13,12 @@
             {% load_widgets form='forms.html' %}
             {% for field in form %}
                 {% if field.name == 'captcha' %}
-                    {{field}}
+                    <div class="form__control" role="group">
+                            {{field}}
+                    </div>
                 {% else %}
                 {% form_field field %}
                 {% endif %}
-
             {% endfor %}
 
             <input type="submit" value="{% trans 'Submit' %}" class="button button--primary"/>

@@ -42,8 +42,6 @@ class OpenAPIValidation(APIException):
 
 
 class OpenApiInspectionView(views.APIView):
-    authentication_classes = []
-    permission_classes = []
 
     def post(self, request):
         serializer = OpenApiInspectionSerializer(data=request.data)

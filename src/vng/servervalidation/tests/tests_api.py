@@ -129,7 +129,7 @@ class TestNoAssertion(WebTest):
         self.assertEqual(call['status'], 'stopped')
 
 
-def TestOpenApiInspector(WebTest):
+class TestOpenApiInspector(WebTest):
 
     def setUp(self):
         self.url = reverse('server_run:openapi-inspection')

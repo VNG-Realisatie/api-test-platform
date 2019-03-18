@@ -3,7 +3,7 @@ from django.conf.urls import url, include
 from rest_framework import routers, serializers, viewsets
 from django.conf.urls import url
 
-from . import views, api_views, apps
+from . import api_views, apps
 from ..utils.schema import schema_view
 
 app_name = apps.AppConfig.__name__

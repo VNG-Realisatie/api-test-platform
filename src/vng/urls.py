@@ -23,7 +23,7 @@ urlpatterns = [
     url(r'^reset/done/$', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
 
     # Simply show the master template.
-    url(r'accounts/', include('registration.backends.simple.urls')),
+    url(r'accounts/', include('registration.backends.default.urls')),
 
 
     # redirect the request to the testession

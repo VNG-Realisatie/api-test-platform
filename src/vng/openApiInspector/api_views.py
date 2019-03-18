@@ -1,11 +1,12 @@
 from json.decoder import JSONDecodeError
 
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework.exceptions import bad_request, APIException
 from rest_framework import views, status
 from django.utils.encoding import force_text
 from rest_framework.response import Response
 
-from .serializers import OpenApiInspectionSerializer
+from .serializers import OpenApiInspectionSerializer, OpenApiInspectionResponseSerializer
 
 from .utils import openAPIInspector
 
@@ -25,6 +26,7 @@ class OpenAPIValidationException(APIException):
 
 class OpenApiInspectionAPIView(views.APIView):
 
+    @swagger_auto_schema(request_body=OpenApiInspectionSerializer, responses={200: OpenApiInspectionResponseSerializer})
     def post(self, request):
         serializer = OpenApiInspectionSerializer(data=request.data)
         if serializer.is_valid():

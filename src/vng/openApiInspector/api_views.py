@@ -33,7 +33,7 @@ class OpenApiInspectionAPIView(views.APIView):
             try:
                 version = openAPIInspector(serializer.data['url'])
             except Exception as e:
-                if isinstance(e, JSONDecodeError):
+                if isinstance(e, JSONDecodeError) or isinstance(e, AttributeError):
                     raise OpenAPIValidationException('The link provided does not contain a json schema', 'url', status_code=status.HTTP_400_BAD_REQUEST)
                 else:
                     raise OpenAPIValidationException('The link provided is not reachable', 'url', status_code=status.HTTP_400_BAD_REQUEST)

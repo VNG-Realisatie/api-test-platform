@@ -19,7 +19,7 @@ class OpenApiInspection(FormView):
             try:
                 version = openAPIInspector(url)
             except Exception as e:
-                if isinstance(e, JSONDecodeError):
+                if isinstance(e, JSONDecodeError) or isinstance(e, AttributeError):
                     form.add_error('url', u'The link provided does not contain a json schema')
                 else:
                     form.add_error('url', u'The link provided is not reachable')

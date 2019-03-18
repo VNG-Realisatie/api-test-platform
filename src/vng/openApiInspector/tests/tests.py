@@ -50,3 +50,17 @@ class TestOpenApiInspector(WebTest):
         form['url'] = 'tss'
         call = form.submit()
         self.assertIn("Enter a valid URL", call.text)
+
+    def test_view_error1(self):
+        call = self.app.get(reverse('open_api_inspector:openapi-inspection'))
+        form = call.forms[0]
+        form['url'] = 'http://google.com'
+        call = form.submit()
+        self.assertIn("The link provided does not contain a json schema", call.text)
+
+    def test_view_error2(self):
+        call = self.app.get(reverse('open_api_inspector:openapi-inspection'))
+        form = call.forms[0]
+        form['url'] = 'https://test.cc.co'
+        call = form.submit()
+        self.assertIn("The link provided is not reachable", call.text)

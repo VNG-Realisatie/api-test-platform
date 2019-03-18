@@ -30,7 +30,7 @@ from .permission import IsOwner
 from .serializers import (
     SessionSerializer, SessionTypesSerializer, ExposedUrlSerializer, ScenarioCaseSerializer
 )
-from .views import bootstrap_session, StopSession
+from .views import bootstrap_session
 from .task import run_tests, stop_session
 
 logger = logging.getLogger(__name__)

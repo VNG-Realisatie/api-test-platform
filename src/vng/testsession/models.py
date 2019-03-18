@@ -85,9 +85,7 @@ class ScenarioCase(OrderedModel):
     with the request and eventually matched.
     Wildcards can be added, e.g. '/test/{uuid}/stop'
     will match the URL '/test/c5429dcc-6955-4e22-9832-08d52205f633/stop'.
-    '''
-
-                           )
+    ''')
     http_method = models.CharField(max_length=20, choices=choices.HTTPMethodChoiches.choices, default=choices.HTTPMethodChoiches.GET)
     vng_endpoint = models.ForeignKey(VNGEndpoint, on_delete=models.CASCADE)
 

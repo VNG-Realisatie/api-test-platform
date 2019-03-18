@@ -54,7 +54,7 @@ class RetrieveCreationTest(WebTest):
         self.server_run = create_server_run(self.test_scenario.name, [tsu1, tsu2])
 
     def get_user_key(self):
-        call = self.app.post('/api/auth/login/', params=collections.OrderedDict([
+        call = self.app.post(reverse('apiv1_auth:rest_login'), params=collections.OrderedDict([
             ('username', get_username()),
             ('password', 'password')]))
         key = get_object(call.body)['key']
@@ -107,7 +107,7 @@ class TestNoAssertion(WebTest):
         self.server_run = create_server_run(self.postman_test.test_scenario.name, [])
 
     def get_user_key(self):
-        call = self.app.post('/api/auth/login/', params=collections.OrderedDict([
+        call = self.app.post(reverse('apiv1_auth:rest_login'), params=collections.OrderedDict([
             ('username', get_username()),
             ('password', 'password')]))
         key = get_object(call.body)['key']

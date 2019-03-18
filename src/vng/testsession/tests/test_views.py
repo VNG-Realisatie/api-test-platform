@@ -57,7 +57,7 @@ class AuthorizationTests(WebTest):
         self.app.get(reverse('apiv1session:session_types-list'), expect_errors=True)
 
     def test_right_login(self):
-        call = self.app.post('/api/auth/login/', params=collections.OrderedDict([
+        call = self.app.post(reverse('apiv1_auth:rest_login'), params=collections.OrderedDict([
             ('username', get_username()),
             ('password', 'password')]))
         self.assertIsNotNone(call.json.get('key'))
@@ -87,7 +87,7 @@ class CreationAndDeletion(WebTest):
         self.session_type = SessionTypeFactory()
         self.user = UserFactory()
         self.session_type_docker = VNGEndpointDockerFactory().session_type
-        call = self.app.post('/api/auth/login/', params=collections.OrderedDict([
+        call = self.app.post(reverse('apiv1_auth:rest_login'), params=collections.OrderedDict([
             ('username', get_username()),
             ('password', 'password')]))
         key = get_object(call.body)['key']
@@ -116,7 +116,7 @@ class CreationAndDeletion(WebTest):
             'user': self.user.id,
         }
 
-        call = self.app.post('/api/auth/login/', params=collections.OrderedDict([
+        call = self.app.post(reverse('apiv1_auth:rest_login'), params=collections.OrderedDict([
             ('username', get_username()),
             ('password', 'password')]))
         key = get_object(call.body)['key']
@@ -196,7 +196,7 @@ class TestLog(WebTest):
                             status=[302, 401, 403, 404])
 
     def test_api_session(self):
-        call = self.app.post('/api/auth/login/', params=collections.OrderedDict([
+        call = self.app.post(reverse('apiv1_auth:rest_login'), params=collections.OrderedDict([
             ('username', get_username()),
             ('password', 'password')]))
         key = get_object(call.body)['key']
@@ -305,7 +305,7 @@ class TestLogNewman(WebTest):
         self.scenario_case1.vng_endpoint = self.scenario_case.vng_endpoint
         self.scenario_case1.save()
 
-        call = self.app.post('/api/auth/login/', params=collections.OrderedDict([
+        call = self.app.post(reverse('apiv1_auth:rest_login'), params=collections.OrderedDict([
             ('username', get_username()),
             ('password', 'password')]))
         key = get_object(call.body)['key']

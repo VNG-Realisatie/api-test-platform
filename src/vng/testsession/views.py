@@ -37,6 +37,7 @@ logger = logging.getLogger(__name__)
 
 
 class SessionListView(LoginRequiredMixin, ListAppendView):
+
     template_name = 'testsession/sessions-list.html'
     context_object_name = 'sessions_list'
     paginate_by = 10
@@ -71,6 +72,7 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
 
 
 class SessionLogDetailView(OwnerSingleObject):
+
     template_name = 'testsession/session-log-detail.html'
     context_object_name = 'log_list'
     model = SessionLog
@@ -79,6 +81,7 @@ class SessionLogDetailView(OwnerSingleObject):
 
 
 class SessionLogView(OwnerMultipleObjects):
+
     template_name = 'testsession/session-log.html'
     context_object_name = 'log_list'
     paginate_by = 200
@@ -97,6 +100,7 @@ class SessionLogView(OwnerMultipleObjects):
 
 
 class StopSession(OwnerSingleObject, View):
+
     model = Session
     pk_name = 'session_id'
 
@@ -170,9 +174,6 @@ class SessionTestReportPDF(PDFGenerator, SessionTestReport):
     template_name = 'testsession/session-test-report-PDF.html'
 
     def parse_json(self, obj):
-        '''
-        CHECK: not sure if it is needed any more, see prepare_file in newman.py
-        '''
         parsed = json.loads(obj)
         for i, run in enumerate(parsed['run']['executions']):
             url = run['request']['url']

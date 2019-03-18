@@ -12,6 +12,7 @@ from .utils import openAPIInspector
 
 
 class OpenAPIValidationException(APIException):
+
     status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
     default_detail = 'A server error occurred.'
 

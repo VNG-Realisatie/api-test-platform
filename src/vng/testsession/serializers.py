@@ -13,6 +13,7 @@ class SessionTypesSerializer(serializers.ModelSerializer):
 
 
 class ExposedUrlSerializer(serializers.ModelSerializer):
+
     vng_endpoint = serializers.SlugRelatedField(
         read_only=True,
         slug_field='name'
@@ -42,6 +43,7 @@ class ExposedUrlSerializer(serializers.ModelSerializer):
 
 
 class SessionSerializer(serializers.ModelSerializer):
+
     exposedurl_set = ExposedUrlSerializer(read_only=True, many=True)
     build_version = serializers.CharField(required=False)
 

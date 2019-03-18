@@ -29,6 +29,7 @@ from .task import execute_test
 
 
 class TestScenarioSelect(LoginRequiredMixin, FormView, MultipleObjectMixin, MultipleObjectTemplateResponseMixin):
+
     template_name = 'servervalidation/server-run_list.html'
     form_class = CreateServerRunForm
     context_object_name = 'server_run_list'
@@ -77,6 +78,7 @@ class TestScenarioSelect(LoginRequiredMixin, FormView, MultipleObjectMixin, Mult
 
 
 class CreateEndpoint(LoginRequiredMixin, CreateView):
+
     template_name = 'servervalidation/server-run_create.html'
     form_class = CreateEndpointForm
 
@@ -142,6 +144,7 @@ class CreateEndpoint(LoginRequiredMixin, CreateView):
 
 
 class ServerRunOutput(OwnerSingleObject, DetailView):
+
     model = ServerRun
     template_name = 'servervalidation/server-run_detail.html'
 
@@ -154,6 +157,7 @@ class ServerRunOutput(OwnerSingleObject, DetailView):
 
 
 class StopServer(OwnerSingleObject, View):
+
     model = ServerRun
     pk_name = 'server_id'
 
@@ -166,16 +170,19 @@ class StopServer(OwnerSingleObject, View):
 
 
 class ServerRunLogView(LoginRequiredMixin, DetailView):
+
     model = PostmanTestResult
     template_name = 'servervalidation/server-run_log.html'
 
 
 class ServerRunLogJsonView(LoginRequiredMixin, DetailView):
+
     model = PostmanTestResult
     template_name = 'servervalidation/server-run_log_json.html'
 
 
 class ServerRunPdfView(PDFGenerator, ServerRunOutput):
+
     template_name = 'servervalidation/server-run-PDF.html'
 
     def get_context_data(self, **kwargs):

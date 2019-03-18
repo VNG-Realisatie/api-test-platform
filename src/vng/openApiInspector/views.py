@@ -9,6 +9,7 @@ from .utils import openAPIInspector
 
 
 class OpenApiInspection(FormView):
+
     template_name = 'openApiInspector/openapi-inspection.html'
     form_class = OpenApiInspectionForm
     success_url = reverse_lazy('open_api_inspector:openapi-inspection_result')

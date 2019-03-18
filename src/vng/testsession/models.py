@@ -32,6 +32,7 @@ class SessionType(models.Model):
 
 
 class TestSession(models.Model):
+
     test_result = models.FileField(settings.MEDIA_FOLDER_FILES['testsession_log'], blank=True, null=True, default=None)
     json_result = models.TextField(blank=True, null=True, default=None)
 
@@ -78,6 +79,7 @@ class VNGEndpoint(models.Model):
 
 
 class ScenarioCase(OrderedModel):
+
     url = models.CharField(max_length=200, help_text='''
     URL pattern that will be compared
     with the request and eventually matched.
@@ -181,6 +183,7 @@ class SessionLog(models.Model):
 
 
 class Report(models.Model):
+
     class Meta:
         unique_together = ('scenario_case', 'session_log')
 

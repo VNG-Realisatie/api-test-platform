@@ -33,6 +33,7 @@ class EndpointSerializer(serializers.ModelSerializer):
 
 
 class ServerRunSerializer(serializers.ModelSerializer):
+
     endpoints = EndpointSerializer(many=True)
 
     test_scenario = serializers.SlugRelatedField(

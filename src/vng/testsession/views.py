@@ -1,37 +1,25 @@
 import json
-import os
-import random
 import logging
-import time
 
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import (
-    Http404, HttpResponse, HttpResponseRedirect, HttpResponseServerError
-)
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
 from django.views import View
-from django.conf import settings
 
-
-from zds_client import ClientAuth
 
 from vng.testsession.models import (
-    ScenarioCase, Session, SessionLog, SessionType, VNGEndpoint, ExposedUrl, TestSession, Report
+    ScenarioCase, Session, SessionLog, ExposedUrl, TestSession, Report
 )
 
 from .task import run_tests, bootstrap_session, stop_session
 from ..utils import choices
-from ..utils.newman import NewmanManager
 from ..utils.views import (
-    ListAppendView, OwnerMultipleObjects, OwnerSingleObject, CSRFExemptMixin, PDFGenerator
+    ListAppendView, OwnerMultipleObjects, OwnerSingleObject, PDFGenerator
 )
-from .serializers import (
-    SessionSerializer, SessionTypesSerializer, ExposedUrlSerializer, ScenarioCaseSerializer
-)
+
 
 logger = logging.getLogger(__name__)
 
@@ -175,7 +163,7 @@ class SessionTestReportPDF(PDFGenerator, SessionTestReport):
 
     def parse_json(self, obj):
         parsed = json.loads(obj)
-        for i, run in enumerate(parsed['run']['executions']):
+        for run in parsed['run']['executions']:
             url = run['request']['url']
             if 'protocol' in url:
                 new_url = url['protocol'] + '://'

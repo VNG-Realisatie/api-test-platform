@@ -1,24 +1,13 @@
-import uuid
-import requests
-
-from django import forms
-from django.contrib import messages
-from django.forms.utils import ErrorList
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.files import File
-from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
-from django.shortcuts import get_object_or_404, redirect, render
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
 from django.views import View
-from django.core.exceptions import PermissionDenied
 from django.views.generic import DetailView, CreateView, FormView
-from django.views.generic.list import MultipleObjectMixin, MultipleObjectTemplateResponseMixin, ListView
+from django.views.generic.list import MultipleObjectMixin, MultipleObjectTemplateResponseMixin
 
-
-from ..permissions.UserPermissions import *
 from ..utils import choices
-from ..utils.newman import DidNotRunException, NewmanManager
 from ..utils.views import OwnerSingleObject, PDFGenerator
 from .forms import CreateServerRunForm, CreateEndpointForm
 from .models import (

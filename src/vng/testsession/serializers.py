@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.urls import reverse
 from django.conf import settings
 
-from .models import *
+from .models import SessionType, ExposedUrl, Session, ScenarioCase
 
 
 class SessionTypesSerializer(serializers.ModelSerializer):
@@ -33,11 +33,13 @@ class ExposedUrlSerializer(serializers.ModelSerializer):
 
         v['exposed_url'] = '{}{}'.format(
             host,
-            reverse('testsession:run_test', kwargs={
+            reverse(
+                'testsession:run_test', kwargs={
                     'exposed_url': value.get_uuid_url(),
                     'name': value.vng_endpoint.name,
                     'relative_url': ''
-                    })
+                }
+            )
         )
         return v
 

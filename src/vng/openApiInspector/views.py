@@ -1,8 +1,7 @@
 from json.decoder import JSONDecodeError
 
-from django.shortcuts import render
 from django.views.generic import FormView
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse_lazy
 
 from .forms import OpenApiInspectionForm
 from .utils import openAPIInspector

@@ -23,6 +23,16 @@ class K8S():
         run_command(set_zone)
         run_command(set_project)
 
+    def fetch_resource(self, resource):
+        fetch = [
+            'kubectl',
+            'get',
+            resource,
+            '--output=json'
+        ]
+        res = run_command(fetch).decode('utf-8')
+        return json.loads(res)
+
     def deploy(self, app_name, image, port=8080, access_port=8080):
         create_cluster = [
             'gcloud',

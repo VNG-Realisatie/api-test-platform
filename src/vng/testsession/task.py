@@ -44,6 +44,17 @@ def update_session_status(session, message):
     session.save()
 
 
+def align_sessions_data():
+    data = K8S().fetch_resource('services')
+    for session in Session.objects.all():
+        for item in data.get('items'):
+            metadata = item.get('metadata')
+            if metadata and session.name in metadata.get('name'):
+                continue
+        session.status = choices.StatusChoices.stopped
+        session.save()
+
+
 def start_app_b8s(session, bind_url):
     update_session_status(session, 'Connecting with google cloud')
     kuber = K8S()
@@ -77,8 +88,9 @@ def start_app_b8s(session, bind_url):
 
 
 def purge_sessions():
+    align_sessions_data()
     purged = False
-    for session in Session.objects.filter(started__gte=make_aware(datetime.now()) - timedelta(days=1)).filter(status=choices.StatusChoices.running):
+    for session in Session.objects.filter(started__lte=make_aware(datetime.now()) - timedelta(days=1)).filter(status=choices.StatusChoices.running):
         purged = True
         stop_session(session.pk)
     return purged
@@ -94,26 +106,25 @@ def bootstrap_session(session_pk):
     endpoint = VNGEndpoint.objects.filter(session_type=session.session_type)
     try:
         error_deployment = False
-        with transaction.atomic():
 
-            for ep in endpoint:
-                bind_url = ExposedUrl()
-                bind_url.session = session
-                bind_url.vng_endpoint = ep
-                bind_url.save()
-                if ep.docker_image:
-                    ip, message = start_app_b8s(session, bind_url)
-                    if message is None:
-                        bind_url.docker_url = ip
-                    else:
-                        error_deployment = True
-                        session.status = choices.StatusChoices.error_deploy
-                        session.error_message = message
-                if not error_deployment:
-                    bind_url.exposed_url = '{}'.format(int(time.time()) * 100 + random.randint(0, 99))
-                    bind_url.save()
+        for ep in endpoint:
+            bind_url = ExposedUrl()
+            bind_url.session = session
+            bind_url.vng_endpoint = ep
+            bind_url.save()
+            if ep.docker_image:
+                ip, message = start_app_b8s(session, bind_url)
+                if message is None:
+                    bind_url.docker_url = ip
                 else:
-                    bind_url.delete()
+                    error_deployment = True
+                    session.status = choices.StatusChoices.error_deploy
+                    session.error_message = message
+            if not error_deployment:
+                bind_url.exposed_url = '{}'.format(int(time.time()) * 100 + random.randint(0, 99))
+                bind_url.save()
+            else:
+                bind_url.delete()
         if not error_deployment:
             session.status = choices.StatusChoices.running
         session.save()

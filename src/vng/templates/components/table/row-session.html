@@ -14,9 +14,11 @@
                 {% for endpoint in session.exposedurl_set.all %}
                     <tr>
                         <td>
-                            <a href="{% url 'testsession:run_test' endpoint.exposed_url endpoint.vng_endpoint.name '' %}">
-                                {{endpoint.exposed_url}}/{{endpoint.vng_endpoint.name }}
-                            </a>
+                            {% if endpoint.exposed_url %}
+                                <a href="{% url 'testsession:run_test' endpoint.exposed_url endpoint.vng_endpoint.name '' %}">
+                                    {{endpoint.exposed_url}}/{{endpoint.vng_endpoint.name }}
+                                </a>
+                            {% endif %}
                         <td>
                     </tr>
                 {% endfor %}

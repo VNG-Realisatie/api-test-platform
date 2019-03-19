@@ -134,9 +134,3 @@ def run_tests(session_pk):
     session.save()
 
     endpoint = VNGEndpoint.objects.filter(session_type=session.session_type)
-
-    # if the endpoints is related to an online cluster image it is stopped
-    for ep in endpoint:
-        if ep.docker_image:
-            kuber = K8S()
-            kuber.delete(session.name)

@@ -108,7 +108,6 @@ class StopSession(OwnerSingleObject, View):
         stop_session.delay(session.pk)
         session.status = choices.StatusChoices.shutting_down
         session.save()
-        run_tests.delay(session.pk)
         return HttpResponseRedirect(reverse('testsession:sessions'))
 
 

@@ -8,6 +8,7 @@ from celery.utils.log import get_task_logger
 from django.core.files import File
 from django.utils import timezone
 from django.db import transaction
+from django.utils.timezone import make_aware
 
 from ..celery.celery import app
 from .models import ExposedUrl, Session, TestSession, VNGEndpoint
@@ -77,7 +78,7 @@ def start_app_b8s(session, bind_url):
 
 def purge_sessions():
     purged = False
-    for session in Session.objects.filter(started=datetime.now() - timedelta(days=1)).filter(status=choices.StatusChoices.running):
+    for session in Session.objects.filter(started__gte=make_aware(datetime.now()) - timedelta(days=1)).filter(status=choices.StatusChoices.running):
         purged = True
         stop_session(session.pk)
     return purged

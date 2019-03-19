@@ -2,6 +2,7 @@ import uuid
 import time
 import random
 
+from datetime import date, timedelta, datetime
 from celery.utils.log import get_task_logger
 
 from django.core.files import File
@@ -66,8 +67,20 @@ def start_app_b8s(session, bind_url):
             return ip, None
         except Exception as e:
             err = e
+    update_session_status(session, 'Impossible to deploy successfully, try to remove old sessions')
+    if purge_sessions():
+        start_app_b8s(session, bind_url)
+    update_session_status(session, 'Impossible to deploy successfully, all the resources are being used.')
     ready, message = kuber.get_pods_status(app_name)
     return ready, message
+
+
+def purge_sessions():
+    purged = False
+    for session in Session.objects.filter(started=datetime.now() - timedelta(days=1)).filter(status=choices.StatusChoices.running):
+        purged = True
+        stop_session(session.pk)
+    return purged
 
 
 @app.task

@@ -105,9 +105,9 @@ class StopSession(OwnerSingleObject, View):
         if session.status == choices.StatusChoices.stopped or session.status == choices.StatusChoices.shutting_down:
             return HttpResponseRedirect(reverse('testsession:sessions'))
 
-        stop_session.delay(session.pk)
         session.status = choices.StatusChoices.shutting_down
         session.save()
+        stop_session.delay(session.pk)
         return HttpResponseRedirect(reverse('testsession:sessions'))
 
 

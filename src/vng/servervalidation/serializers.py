@@ -1,9 +1,6 @@
-from django.utils.encoding import smart_text
-from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
-
 from rest_framework import serializers
 
-from .models import *
+from .models import TestScenarioUrl, Endpoint, ServerRun, TestScenario
 from .task import execute_test
 
 
@@ -28,11 +25,12 @@ class EndpointSerializer(serializers.ModelSerializer):
             tsu = TestScenarioUrl.objects.get(name=name, test_scenario=validated_data['server'].test_scenario)
             ep = Endpoint.objects.create(test_scenario_url=tsu, url=url, server_run=validated_data['server'])
             return ep
-        except Exception as e:
+        except Exception:
             raise serializers.ValidationError("The urls names provided do not match")
 
 
 class ServerRunSerializer(serializers.ModelSerializer):
+
     endpoints = EndpointSerializer(many=True)
 
     test_scenario = serializers.SlugRelatedField(

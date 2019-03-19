@@ -12,7 +12,7 @@ from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.http import (
-    Http404, HttpResponse, HttpResponseRedirect, HttpResponseServerError, HttpResponseForbidden
+    Http404, HttpResponse, HttpResponseForbidden
 )
 
 from rest_framework import generics, permissions, viewsets, views, mixins
@@ -20,18 +20,17 @@ from rest_framework.authentication import (
     SessionAuthentication, TokenAuthentication
 )
 from vng.testsession.models import (
-    ScenarioCase, Session, SessionLog, SessionType, VNGEndpoint, ExposedUrl, TestSession, Report
+    ScenarioCase, Session, SessionLog, SessionType, ExposedUrl, Report
 )
 
 from ..utils import choices
-from ..utils.views import (
-    ListAppendView, OwnerMultipleObjects, OwnerSingleObject, CSRFExemptMixin, SingleObjectMixin, ObjectOwner
-)
+from ..utils.views import CSRFExemptMixin
+
 from .permission import IsOwner
 from .serializers import (
     SessionSerializer, SessionTypesSerializer, ExposedUrlSerializer, ScenarioCaseSerializer
 )
-from .views import bootstrap_session, StopSession
+from .views import bootstrap_session
 from .task import run_tests, stop_session
 
 logger = logging.getLogger(__name__)
@@ -101,7 +100,6 @@ class StopSessionView(generics.ListAPIView):
 
     def get_queryset(self):
         scenarios = ScenarioCase.objects.filter(vng_endpoint__session_type__session=self.kwargs['pk'])
-
         session = get_object_or_404(Session, id=self.kwargs['pk'])
         if session.user != self.request.user:
             return HttpResponseForbidden()
@@ -126,7 +124,7 @@ class ResultSessionView(LoginRequiredMixin, views.APIView):
         scenario_cases = ScenarioCase.objects.filter(vng_endpoint__session_type=session.session_type)
         report = list(Report.objects.filter(session_log__session=session))
 
-        def check():
+        def check(sc):
             nonlocal res
             for rp in report:
                 if rp.scenario_case == sc:
@@ -135,7 +133,7 @@ class ResultSessionView(LoginRequiredMixin, views.APIView):
             res = {'result': 'failed'}
 
         for sc in scenario_cases:
-            check()
+            check(sc)
         if len(scenario_cases) == 0:
             res = {'result': 'No scenario cases available'}
         if res is None:
@@ -155,13 +153,10 @@ class ResultSessionView(LoginRequiredMixin, views.APIView):
             call = {
                 'scenario_case': ScenarioCaseSerializer(rp.scenario_case).data
             }
-
             call['result'] = rp.result
-
             res['report'].append(call)
 
         res['test_session_url'] = session.get_absolute_request_url(request)
-
         response = HttpResponse(json.dumps(res))
         response['Content-Type'] = 'application/json'
         return response
@@ -267,15 +262,31 @@ class RunTest(CSRFExemptMixin, View):
                     logger.info("Saving report: %s", report.result)
                     report.save()
 
-    def sub_url_response(self, content, host, endpoint):
+    def get_reverse_runtest(self, host, exposed_url):
         sub = '{}{}'.format(
             host,
             reverse('testsession:run_test', kwargs={
-                'exposed_url': endpoint.get_uuid_url(),
-                'name': endpoint.vng_endpoint.name,
+                'exposed_url': exposed_url.get_uuid_url(),
+                'name': exposed_url.vng_endpoint.name,
                 'relative_url': ''
             })
         )
+        return sub
+
+    def sub_url_response(self, content, host, endpoint):
+        '''
+        Replace the url of the response body
+
+        Arguments:
+            content Str -- Body of the response
+            host Str -- Host of the webservice
+            endpoint ExposedUrl -- ExposedUrl corresponding the call
+
+        Returns:
+            Str -- The body after the rewrite
+        '''
+
+        sub = self.get_reverse_runtest(host, endpoint)
         if endpoint.vng_endpoint.url is not None:
             if not endpoint.vng_endpoint.url.endswith('/'):
                 if sub.endswith('/'):
@@ -290,14 +301,18 @@ class RunTest(CSRFExemptMixin, View):
             )
 
     def sub_url_request(self, content, host, endpoint):
-        sub = '{}{}'.format(
-            host,
-            reverse('testsession:run_test', kwargs={
-                'exposed_url': endpoint.get_uuid_url(),
-                'name': endpoint.vng_endpoint.name,
-                'relative_url': ''
-            })
-        )
+        '''
+        Replace the url of the request body
+
+        Arguments:
+            content Str -- Body of the request
+            host Str -- Host of the webservice
+            endpoint ExposedUrl -- ExposedUrl corresponding the call
+
+        Returns:
+            Str -- The body after the rewrite
+        '''
+        sub = self.get_reverse_runtest(host, endpoint)
 
         if endpoint.vng_endpoint.url is not None:
             return re.sub(sub, endpoint.vng_endpoint.url, content)
@@ -344,7 +359,6 @@ class RunTest(CSRFExemptMixin, View):
         return parsed
 
     def build_method(self, request_method_name, request, body=False):
-
         self.session = self.get_queryset()
         eu = get_object_or_404(ExposedUrl, session=self.session, exposed_url=self.kwargs['exposed_url'])
         request_header = self.get_http_header(request, eu.vng_endpoint)

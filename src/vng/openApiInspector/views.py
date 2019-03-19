@@ -1,14 +1,14 @@
 from json.decoder import JSONDecodeError
 
-from django.shortcuts import render
 from django.views.generic import FormView
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse_lazy
 
 from .forms import OpenApiInspectionForm
 from .utils import openAPIInspector
 
 
 class OpenApiInspection(FormView):
+
     template_name = 'openApiInspector/openapi-inspection.html'
     form_class = OpenApiInspectionForm
     success_url = reverse_lazy('open_api_inspector:openapi-inspection_result')

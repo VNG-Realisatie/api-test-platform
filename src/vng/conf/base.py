@@ -2,7 +2,7 @@ import os
 
 # Django-hijack (and Django-hijack-admin)
 from django.urls import reverse_lazy
-
+from celery.schedules import crontab
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 DJANGO_PROJECT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir))
@@ -358,3 +358,10 @@ SWAGGER_SETTINGS = {
 ACCOUNT_ACTIVATION_DAYS = 7
 REGISTRATION_FORM = 'vng.utils.forms.RegistrationCaptcha'
 SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
+
+CELERY_BEAT_SCHEDULE = {
+    'task-number-one': {
+        'task': 'vng.testsession.task.purge_sessions',
+        'schedule': crontab(hour=0, minute=0),
+    },
+}

@@ -87,6 +87,7 @@ def start_app_b8s(session, bind_url):
     return ready, message
 
 
+@app.task
 def purge_sessions():
     align_sessions_data()
     purged = False

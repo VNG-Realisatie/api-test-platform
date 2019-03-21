@@ -2,6 +2,8 @@ import collections
 import json
 import copy
 
+import mock
+
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext
@@ -10,10 +12,13 @@ from django_webtest import WebTest
 
 from vng.accounts.models import User
 
-from ..models import Session, SessionType, SessionLog, Report
+from ..models import Session, SessionType, SessionLog, Report, ScenarioCase, VNGEndpoint
+
 from .factories import (
-    SessionFactory, SessionTypeFactory, UserFactory, ScenarioCaseFactory, ExposedUrlFactory, SessionLogFactory, VNGEndpointFactory)
+    SessionFactory, SessionTypeFactory, VNGEndpointDockerFactory, ExposedUrlEchoFactory,
+    ScenarioCaseFactory, ExposedUrlFactory, SessionLogFactory, VNGEndpointFactory)
 from ...utils import choices
+from ...utils.factories import UserFactory
 
 
 def get_object(r):
@@ -52,7 +57,7 @@ class AuthorizationTests(WebTest):
         self.app.get(reverse('apiv1session:session_types-list'), expect_errors=True)
 
     def test_right_login(self):
-        call = self.app.post('/api/auth/login/', params=collections.OrderedDict([
+        call = self.app.post(reverse('apiv1_auth:rest_login'), params=collections.OrderedDict([
             ('username', get_username()),
             ('password', 'password')]))
         self.assertIsNotNone(call.json.get('key'))
@@ -81,20 +86,25 @@ class CreationAndDeletion(WebTest):
     def setUp(self):
         self.session_type = SessionTypeFactory()
         self.user = UserFactory()
+        self.session_type_docker = VNGEndpointDockerFactory().session_type
+        call = self.app.post(reverse('apiv1_auth:rest_login'), params=collections.OrderedDict([
+            ('username', get_username()),
+            ('password', 'password')]))
+        key = get_object(call.body)['key']
+        self.head = {'Authorization': 'Token {}'.format(key)}
 
     def test_session_creation(self):
         session = {
             'session_type': self.session_type.name,
-            'started': str(timezone.now()),
-            'status': choices.StatusChoices.running,
             'api_endpoint': 'http://google.com'
         }
-        call = self.app.post('/api/auth/login/', params=collections.OrderedDict([
-            ('username', get_username()),
-            ('password', 'password')]))
-        key = get_object(call.body)['key']
-        head = {'Authorization': 'Token {}'.format(key)}
-        call = self.app.post(reverse('apiv1session:test_session-list'), session, headers=head)
+
+        call = self.app.post(reverse('apiv1session:test_session-list'), session, headers=self.head)
+
+    def test_deploy_docker_via_api(self):
+        self.app.post_json(reverse('apiv1session:test_session-list'), {
+            'session_type': self.session_type_docker.name
+        }, headers=self.head)
 
     def test_session_creation_permission(self):
         Session.objects.all().delete()
@@ -106,7 +116,7 @@ class CreationAndDeletion(WebTest):
             'user': self.user.id,
         }
 
-        call = self.app.post('/api/auth/login/', params=collections.OrderedDict([
+        call = self.app.post(reverse('apiv1_auth:rest_login'), params=collections.OrderedDict([
             ('username', get_username()),
             ('password', 'password')]))
         key = get_object(call.body)['key']
@@ -129,7 +139,6 @@ class TestLog(WebTest):
         self.exp_url = ExposedUrlFactory()
         self.session = self.exp_url.session
         self.exp_url.vng_endpoint.session_type = self.session.session_type
-        self.exp_url.exposed_url = '{}/{}'.format(self.exp_url.exposed_url, self.exp_url.vng_endpoint.name)
         self.scenarioCase.vng_endpoint = self.exp_url.vng_endpoint
         self.scenarioCase_hard = copy.copy(self.scenarioCase)
         self.scenarioCase_hard.url = 'test/{uuid}/t'
@@ -140,6 +149,10 @@ class TestLog(WebTest):
         self.exp_url.vng_endpoint.save()
         self.exp_url.save()
         self.session_log = SessionLogFactory()
+        self.endpoint_echo_e = ExposedUrlEchoFactory()
+        self.endpoint_echo_e.session.session_type = self.endpoint_echo_e.vng_endpoint.session_type
+        self.endpoint_echo_e.session.save()
+        self.endpoint_echo_e.save()
 
     def test_retrieve_no_logged(self):
         call = self.app.get(reverse('testsession:session_log', kwargs={'session_id': self.session.id}), status=302)
@@ -183,7 +196,7 @@ class TestLog(WebTest):
                             status=[302, 401, 403, 404])
 
     def test_api_session(self):
-        call = self.app.post('/api/auth/login/', params=collections.OrderedDict([
+        call = self.app.post(reverse('apiv1_auth:rest_login'), params=collections.OrderedDict([
             ('username', get_username()),
             ('password', 'password')]))
         key = get_object(call.body)['key']
@@ -214,6 +227,34 @@ class TestLog(WebTest):
         call = self.app.get(url, user=self.session.user, status=[404])
         rp = Report.objects.filter(scenario_case=self.scenarioCase_hard)
         self.assertTrue(len(rp) != 0)
+
+    def test_exposed_urls(self):
+        call = self.app.get(reverse("apiv1session:test_session-list"), user=self.session.user)
+        res = call.json
+        session = Session.objects.get(id=res[0]['id'])
+        endpoint = VNGEndpoint.objects.get(name=res[0]['exposedurl_set'][0]['vng_endpoint'])
+        self.assertEqual(endpoint.session_type, session.session_type)
+
+    def test_ordered_report(self):
+        url = reverse('testsession:session_report', kwargs={
+            'session_id': self.session.id
+        })
+        sc = ScenarioCase.objects.filter(vng_endpoint__session_type=self.session.session_type).order_by('order')
+        call = self.app.get(url, user=self.session.user)
+        index = 0
+        for s in sc:
+            index = call.text[index:].index(s.url) + 2
+
+    @mock.patch('vng.testsession.api_views.logger')
+    def test_rewrite_body(self, mock_logger):
+        url = reverse('testsession:run_test', kwargs={
+            'exposed_url': self.endpoint_echo_e.get_uuid_url(),
+            'name': self.endpoint_echo_e.vng_endpoint.name,
+            'relative_url': 'post/'
+        })
+        call = self.app.post(url, url, user=self.endpoint_echo_e.session.user)
+        self.assertIn('Rewriting request body:', mock_logger.info.call_args_list[-7][0][0])
+        self.assertIn(url, call.text)
 
 
 class TestAllProcedure(WebTest):
@@ -264,7 +305,7 @@ class TestLogNewman(WebTest):
         self.scenario_case1.vng_endpoint = self.scenario_case.vng_endpoint
         self.scenario_case1.save()
 
-        call = self.app.post('/api/auth/login/', params=collections.OrderedDict([
+        call = self.app.post(reverse('apiv1_auth:rest_login'), params=collections.OrderedDict([
             ('username', get_username()),
             ('password', 'password')]))
         key = get_object(call.body)['key']

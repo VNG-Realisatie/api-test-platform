@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.urls import reverse
 from django.conf import settings
 
-from .models import *
+from .models import SessionType, ExposedUrl, Session, ScenarioCase
 
 
 class SessionTypesSerializer(serializers.ModelSerializer):
@@ -13,7 +13,11 @@ class SessionTypesSerializer(serializers.ModelSerializer):
 
 
 class ExposedUrlSerializer(serializers.ModelSerializer):
-    vng_endpoint = serializers.StringRelatedField(read_only=True)
+
+    vng_endpoint = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='name'
+    )
 
     class Meta:
         model = ExposedUrl
@@ -29,16 +33,19 @@ class ExposedUrlSerializer(serializers.ModelSerializer):
 
         v['exposed_url'] = '{}{}'.format(
             host,
-            reverse('testsession:run_test', kwargs={
+            reverse(
+                'testsession:run_test', kwargs={
                     'exposed_url': value.get_uuid_url(),
                     'name': value.vng_endpoint.name,
                     'relative_url': ''
-                    })
+                }
+            )
         )
         return v
 
 
 class SessionSerializer(serializers.ModelSerializer):
+
     exposedurl_set = ExposedUrlSerializer(read_only=True, many=True)
     build_version = serializers.CharField(required=False)
 

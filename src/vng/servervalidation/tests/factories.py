@@ -1,12 +1,17 @@
 import factory
+from factory.django import DjangoModelFactory as Dmf
+
+from filer.models import File
+
 from django.utils import timezone
 from django.core.files.base import ContentFile
-from factory.django import DjangoModelFactory as Dmf
+from django.conf import settings
+
 from vng.accounts.models import User
 from vng.testsession.tests.factories import UserFactory
-from django.conf import settings
-from filer.models import File
+
 from ..models import ServerRun, TestScenario, TestScenarioUrl, PostmanTest, PostmanTestResult
+from ...utils.factories import UserFactory
 
 
 class TestScenarioFactory(Dmf):
@@ -22,6 +27,21 @@ class FilerField(Dmf):
         model = File
 
     file = factory.django.FileField(from_path=settings.MEDIA_ROOT + '/Google.postman_collection.json')
+
+
+class FilerFieldNoAssertion(Dmf):
+    class Meta:
+        model = File
+
+    file = factory.django.FileField(from_path=settings.MEDIA_ROOT + '/Google_no_assertion.postman_collection.json')
+
+
+class PostmanTestNoAssertionFactory(Dmf):
+
+    class Meta:
+        model = PostmanTest
+    test_scenario = factory.SubFactory(TestScenarioFactory)
+    validation_file = factory.SubFactory(FilerFieldNoAssertion)
 
 
 class PostmanTestFactory(Dmf):

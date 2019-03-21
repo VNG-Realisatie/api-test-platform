@@ -1,20 +1,13 @@
-import uuid
-
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.files import File
-from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
-from django.shortcuts import get_object_or_404, redirect, render
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
 from django.views import View
-from django.core.exceptions import PermissionDenied
 from django.views.generic import DetailView, CreateView, FormView
-from django.views.generic.list import MultipleObjectMixin, MultipleObjectTemplateResponseMixin, ListView
+from django.views.generic.list import MultipleObjectMixin, MultipleObjectTemplateResponseMixin
 
-
-from ..permissions.UserPermissions import *
 from ..utils import choices
-from ..utils.newman import DidNotRunException, NewmanManager
 from ..utils.views import OwnerSingleObject, PDFGenerator
 from .forms import CreateServerRunForm, CreateEndpointForm
 from .models import (
@@ -25,6 +18,7 @@ from .task import execute_test
 
 
 class TestScenarioSelect(LoginRequiredMixin, FormView, MultipleObjectMixin, MultipleObjectTemplateResponseMixin):
+
     template_name = 'servervalidation/server-run_list.html'
     form_class = CreateServerRunForm
     context_object_name = 'server_run_list'
@@ -73,6 +67,7 @@ class TestScenarioSelect(LoginRequiredMixin, FormView, MultipleObjectMixin, Mult
 
 
 class CreateEndpoint(LoginRequiredMixin, CreateView):
+
     template_name = 'servervalidation/server-run_create.html'
     form_class = CreateEndpointForm
 
@@ -138,6 +133,7 @@ class CreateEndpoint(LoginRequiredMixin, CreateView):
 
 
 class ServerRunOutput(OwnerSingleObject, DetailView):
+
     model = ServerRun
     template_name = 'servervalidation/server-run_detail.html'
 
@@ -150,6 +146,7 @@ class ServerRunOutput(OwnerSingleObject, DetailView):
 
 
 class StopServer(OwnerSingleObject, View):
+
     model = ServerRun
     pk_name = 'server_id'
 
@@ -162,16 +159,19 @@ class StopServer(OwnerSingleObject, View):
 
 
 class ServerRunLogView(LoginRequiredMixin, DetailView):
+
     model = PostmanTestResult
     template_name = 'servervalidation/server-run_log.html'
 
 
 class ServerRunLogJsonView(LoginRequiredMixin, DetailView):
+
     model = PostmanTestResult
     template_name = 'servervalidation/server-run_log_json.html'
 
 
 class ServerRunPdfView(PDFGenerator, ServerRunOutput):
+
     template_name = 'servervalidation/server-run-PDF.html'
 
     def get_context_data(self, **kwargs):

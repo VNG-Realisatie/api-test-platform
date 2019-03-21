@@ -2,25 +2,25 @@
 import json
 from itertools import zip_longest
 
-from django.utils import timezone
-from django.db import transaction
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Prefetch
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
+from django.utils import timezone
+
+from django.db import transaction
+from django.db.models import Prefetch
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from rest_framework import permissions, viewsets, mixins, views
-from rest_framework.exceptions import bad_request
+# from rest_framework.exceptions import bad_request
+
 from rest_framework.authentication import (
     SessionAuthentication, TokenAuthentication
 )
 from drf_yasg.utils import swagger_auto_schema
 
-from ..permissions.UserPermissions import *
+# from ..permissions.UserPermissions import isOwner
 from .serializers import ServerRunSerializer, ServerRunPayloadExample
-from .models import (
-    ServerRun, Endpoint, TestScenarioUrl, TestScenario, PostmanTest, PostmanTestResult, ExpectedPostmanResult
-)
+from .models import ServerRun, PostmanTestResult, ExpectedPostmanResult
 
 
 class ServerRunViewSet(
@@ -106,9 +106,12 @@ class ResultServerView(LoginRequiredMixin, views.APIView):
                     'request': call['request']['method'],
                     'response': call['response']['code'],
                 }
-                for _assertion in call['assertions']:
-                    _assertion['result'] = 'failed' if 'error' in _assertion else 'success'
-                _call['assertions'] = call['assertions']
+                if 'assertions' in call:
+                    for _assertion in call['assertions']:
+                        _assertion['result'] = 'failed' if 'error' in _assertion else 'success'
+                    _call['assertions'] = call['assertions']
+                else:
+                    _call['assertions'] = []
                 if ep is None:
                     _call['status'] = 'Expected response not specified'
                 elif str(call['response']['code']) in ep.expected_response:

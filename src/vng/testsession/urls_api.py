@@ -14,7 +14,7 @@ app_name = apps.AppConfig.__name__
 router = routers.SimpleRouter()
 router.register('testsessions', api_views.SessionViewSet, 'test_session')
 router.register('sessiontypes', api_views.SessionTypesViewSet, 'session_types')
-router.register('exposed_url', api_views.ExposedUrlView, 'sessionTypes')
+router.register('exposed_url', api_views.ExposedUrlView, 'exposed_url')
 
 
 urlpatterns = router.urls
@@ -23,6 +23,5 @@ urlpatterns = router.urls
 urlpatterns += [
     url(r'testsessions/(?P<pk>[0-9]+)/stop$', api_views.StopSessionView.as_view(), name='stop_session'),
     url(r'testsessions/(?P<pk>[0-9]+)/result$', api_views.ResultSessionView.as_view(), name='result_session'),
-    url(r'runtest/(?P<url>([^/])+)/$', login_required(api_views.RunTest.as_view()), name='sessionTypes'),
     url(r'^schema/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ]

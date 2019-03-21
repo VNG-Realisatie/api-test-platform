@@ -9,7 +9,8 @@ from django.urls import reverse
 from vng.accounts.models import User
 
 from ..models import PostmanTestResult
-from .factories import ServerRunFactory, TestScenarioFactory, TestScenarioUrlFactory, PostmanTestFactory
+from .factories import ServerRunFactory, TestScenarioFactory, TestScenarioUrlFactory, PostmanTestFactory, PostmanTestNoAssertionFactory
+from ...utils.factories import UserFactory
 
 
 def get_object(r):
@@ -17,41 +18,43 @@ def get_object(r):
 
 
 def get_username():
-    return User.objects.all().first().username
+    l = User.objects.all()
+    if len(l) != 0:
+        return l.first().username
+    return UserFactory().username
+
+
+def create_server_run(name, tsu):
+    endpoints = []
+    for t in tsu:
+        endpoints.append({
+            "test_scenario_url": {
+                "name": t.name
+            },
+            'url': 'https://google.com',
+        })
+    return {
+        'test_scenario': name,
+        'client_id': 'client_id_field',
+        'secret': 'secret_field',
+        'endpoints': endpoints
+    }
 
 
 class RetrieveCreationTest(WebTest):
 
     def setUp(self):
         self.test_scenario = PostmanTestFactory().test_scenario
-        self.server = ServerRunFactory()
         tsu1 = TestScenarioUrlFactory()
         tsu2 = TestScenarioUrlFactory()
         tsu1.test_scenario = self.test_scenario
         tsu2.test_scenario = self.test_scenario
         tsu1.save()
         tsu2.save()
-        self.server_run = {
-            'test_scenario': self.test_scenario.name,
-            'client_id': 'client_id_field',
-            'secret': 'secret_field',
-            'endpoints': [
-                {
-                    "test_scenario_url": {
-                        "name": tsu1.name
-                    },
-                    'url': 'https://google.com',
-                }, {
-                    "test_scenario_url": {
-                        "name": tsu2.name
-                    },
-                    'url': 'https://google2.com',
-                }
-            ]
-        }
+        self.server_run = create_server_run(self.test_scenario.name, [tsu1, tsu2])
 
     def get_user_key(self):
-        call = self.app.post('/api/auth/login/', params=collections.OrderedDict([
+        call = self.app.post(reverse('apiv1_auth:rest_login'), params=collections.OrderedDict([
             ('username', get_username()),
             ('password', 'password')]))
         key = get_object(call.body)['key']
@@ -95,3 +98,32 @@ class RetrieveCreationTest(WebTest):
 
     def test_creation_server_run_auth(self):
         call = self.app.post_json(reverse('apiv1server:provider:api_server-run-list'), self.server_run, expect_errors=True)
+
+
+class TestNoAssertion(WebTest):
+
+    def setUp(self):
+        self.postman_test = PostmanTestNoAssertionFactory()
+        self.server_run = create_server_run(self.postman_test.test_scenario.name, [])
+
+    def get_user_key(self):
+        call = self.app.post(reverse('apiv1_auth:rest_login'), params=collections.OrderedDict([
+            ('username', get_username()),
+            ('password', 'password')]))
+        key = get_object(call.body)['key']
+        head = {'Authorization': 'Token {}'.format(key)}
+        return head
+
+    def _test_creation(self):
+        call = self.app.post_json(reverse('apiv1server:provider:api_server-run-list'), self.server_run, headers=self.get_user_key())
+        call = call.json
+        self.server_run['pk'] = call['id']
+        self.assertEqual(call['test_scenario'], self.server_run['test_scenario'])
+
+    def test_retrieve(self):
+        self._test_creation()
+        call = self.app.get(reverse('apiv1server:provider:api_server-run-detail', kwargs={
+            'pk': self.server_run['pk']
+        }), headers=self.get_user_key())
+        call = call.json
+        self.assertEqual(call['status'], 'stopped')

@@ -2,6 +2,7 @@ import os
 
 # Django-hijack (and Django-hijack-admin)
 from django.urls import reverse_lazy
+from celery.schedules import crontab
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 DJANGO_PROJECT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir))
@@ -19,8 +20,8 @@ DEBUG = False
 ALLOWED_HOSTS = []
 
 LOGIN_REDIRECT_URL = "/"
-LOGIN_URL = '/login'
-LOGOUT_REDIRECT_URL = "/login"
+LOGIN_URL = '/accounts/login'
+LOGOUT_REDIRECT_URL = "/accounts/login"
 
 
 # Application definition
@@ -41,6 +42,7 @@ INSTALLED_APPS = [
     'ordered_model',
     'django_admin_index',
     'django.contrib.admin',
+    'registration',
     # 'django.contrib.admindocs',
     # 'django.contrib.humanize',
     # 'django.contrib.sitemaps',
@@ -48,6 +50,7 @@ INSTALLED_APPS = [
     # External applications.
     # 'axes',
     'sniplates',
+    'captcha',
     'filer',
     'mptt',
     'drf_yasg',
@@ -63,6 +66,7 @@ INSTALLED_APPS = [
     'vng.testsession',
     'vng.apiAuthentication',
     'vng.servervalidation',
+    'vng.openApiInspector',
     'vng.celery',
 
     # Rest Framework
@@ -347,4 +351,17 @@ HIJACK_ALLOW_GET_REQUESTS = True
 # API Documentation configuration
 SWAGGER_SETTINGS = {
     'DEFAULT_AUTO_SCHEMA_CLASS': 'vng.utils.schema.CompoundTagsSchema',
+}
+
+
+# User registration settings
+ACCOUNT_ACTIVATION_DAYS = 7
+REGISTRATION_FORM = 'vng.utils.forms.RegistrationCaptcha'
+SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
+
+CELERY_BEAT_SCHEDULE = {
+    'task-number-one': {
+        'task': 'vng.testsession.task.purge_sessions',
+        'schedule': crontab(hour=0, minute=0),
+    },
 }

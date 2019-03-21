@@ -1,42 +1,31 @@
 import json
-import os
-import random
 import logging
-import time
 
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import (
-    Http404, HttpResponse, HttpResponseRedirect, HttpResponseServerError
-)
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
 from django.views import View
-from django.conf import settings
 
-
-from zds_client import ClientAuth
 
 from vng.testsession.models import (
-    ScenarioCase, Session, SessionLog, SessionType, VNGEndpoint, ExposedUrl, TestSession, Report
+    ScenarioCase, Session, SessionLog, ExposedUrl, TestSession, Report
 )
 
 from .task import run_tests, bootstrap_session, stop_session
 from ..utils import choices
-from ..utils.newman import NewmanManager
 from ..utils.views import (
-    ListAppendView, OwnerMultipleObjects, OwnerSingleObject, CSRFExemptMixin, PDFGenerator
+    ListAppendView, OwnerMultipleObjects, OwnerSingleObject, PDFGenerator
 )
-from .serializers import (
-    SessionSerializer, SessionTypesSerializer, ExposedUrlSerializer, ScenarioCaseSerializer
-)
+
 
 logger = logging.getLogger(__name__)
 
 
 class SessionListView(LoginRequiredMixin, ListAppendView):
+
     template_name = 'testsession/sessions-list.html'
     context_object_name = 'sessions_list'
     paginate_by = 10
@@ -63,15 +52,15 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
         form.instance.user = self.request.user
         form.instance.started = timezone.now()
         form.instance.status = choices.StatusChoices.starting
-        form.instance.name = "s{}{}".format(str(self.request.user.id), str(time.time()).replace('.', '-'))
-
-        form.instance.status = choices.StatusChoices.starting
+        form.instance.assign_name(self.request.user.id)
+        form.instance.name = Session.assign_name(self.request.user.id)
         session = form.save()
-        bootstrap_session.delay(session.pk, True)
+        bootstrap_session.delay(session.pk)
         return HttpResponseRedirect(self.get_success_url())
 
 
 class SessionLogDetailView(OwnerSingleObject):
+
     template_name = 'testsession/session-log-detail.html'
     context_object_name = 'log_list'
     model = SessionLog
@@ -80,6 +69,7 @@ class SessionLogDetailView(OwnerSingleObject):
 
 
 class SessionLogView(OwnerMultipleObjects):
+
     template_name = 'testsession/session-log.html'
     context_object_name = 'log_list'
     paginate_by = 200
@@ -98,6 +88,7 @@ class SessionLogView(OwnerMultipleObjects):
 
 
 class StopSession(OwnerSingleObject, View):
+
     model = Session
     pk_name = 'session_id'
 
@@ -106,10 +97,9 @@ class StopSession(OwnerSingleObject, View):
         if session.status == choices.StatusChoices.stopped or session.status == choices.StatusChoices.shutting_down:
             return HttpResponseRedirect(reverse('testsession:sessions'))
 
-        stop_session.delay(session.pk)
         session.status = choices.StatusChoices.shutting_down
         session.save()
-        run_tests.delay(session.pk)
+        stop_session.delay(session.pk)
         return HttpResponseRedirect(reverse('testsession:sessions'))
 
 
@@ -126,25 +116,22 @@ class SessionReport(OwnerSingleObject):
         context = super().get_context_data(**kwargs)
         scenario_case = self.model.objects.filter(vng_endpoint__session_type=self.session.session_type)
         report = list(Report.objects.filter(session_log__session=self.session))
+        report_ordered = []
         for case in scenario_case:
             is_in = False
             for rp in report:
                 if rp.scenario_case == case:
+                    report_ordered.append(rp)
                     is_in = True
                     break
             if not is_in:
-                report.append(Report(scenario_case=case, result=choices.HTTPCallChoiches.not_called))
+                report_ordered.append(Report(scenario_case=case, result=choices.HTTPCallChoiches.not_called))
 
         context.update({
             'session': self.session,
-            'object_list': report
+            'object_list': report_ordered,
+            'session_type': self.session.session_type,
         })
-
-        if len(report) > 0:
-            context.update({
-                'session_type': self.session.session_type,
-            })
-
         return context
 
 
@@ -174,11 +161,8 @@ class SessionTestReportPDF(PDFGenerator, SessionTestReport):
     template_name = 'testsession/session-test-report-PDF.html'
 
     def parse_json(self, obj):
-        '''
-        CHECK: not sure if it is needed any more, see prepare_file in newman.py
-        '''
         parsed = json.loads(obj)
-        for i, run in enumerate(parsed['run']['executions']):
+        for run in parsed['run']['executions']:
             url = run['request']['url']
             if 'protocol' in url:
                 new_url = url['protocol'] + '://'

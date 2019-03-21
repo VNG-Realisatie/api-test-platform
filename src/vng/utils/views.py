@@ -1,12 +1,10 @@
-import collections
 import functools
 from collections.abc import Iterable
 
 from weasyprint import HTML
 
 from django import http
-from django.conf import settings
-from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponseForbidden
+from django.http import Http404, HttpResponse
 from django.template import loader, TemplateDoesNotExist
 from django.shortcuts import get_object_or_404
 from django.views.defaults import ERROR_500_TEMPLATE_NAME
@@ -17,7 +15,7 @@ from django.core.exceptions import PermissionDenied
 from django.views.generic.edit import ModelFormMixin, ProcessFormView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.list import MultipleObjectMixin, MultipleObjectTemplateResponseMixin, ListView
-from django.views.generic.detail import SingleObjectMixin, DetailView
+from django.views.generic.detail import DetailView
 
 
 def rsetattr(obj, attr, val):

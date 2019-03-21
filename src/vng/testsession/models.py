@@ -1,6 +1,7 @@
 import json
 import uuid
 import re
+import time
 
 from django.conf import settings
 from django.core.validators import RegexValidator
@@ -31,6 +32,7 @@ class SessionType(models.Model):
 
 
 class TestSession(models.Model):
+
     test_result = models.FileField(settings.MEDIA_FOLDER_FILES['testsession_log'], blank=True, null=True, default=None)
     json_result = models.TextField(blank=True, null=True, default=None)
 
@@ -77,14 +79,13 @@ class VNGEndpoint(models.Model):
 
 
 class ScenarioCase(OrderedModel):
+
     url = models.CharField(max_length=200, help_text='''
     URL pattern that will be compared
     with the request and eventually matched.
     Wildcards can be added, e.g. '/test/{uuid}/stop'
     will match the URL '/test/c5429dcc-6955-4e22-9832-08d52205f633/stop'.
-    '''
-
-                           )
+    ''')
     http_method = models.CharField(max_length=20, choices=choices.HTTPMethodChoiches.choices, default=choices.HTTPMethodChoiches.GET)
     vng_endpoint = models.ForeignKey(VNGEndpoint, on_delete=models.CASCADE)
 
@@ -102,6 +103,12 @@ class Session(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     build_version = models.TextField(blank=True, null=True, default=None)
     error_message = models.TextField(blank=True, null=True, default=None)
+    deploy_status = models.TextField(blank=True, null=True, default=None)
+    deploy_percentage = models.IntegerField(default=None, null=True, blank=True)
+
+    @staticmethod
+    def assign_name(id):
+        return "s{}{}".format(str(id), str(time.time()).replace('.', '-'))
 
     def __str__(self):
         if self.user:
@@ -174,6 +181,7 @@ class SessionLog(models.Model):
 
 
 class Report(models.Model):
+
     class Meta:
         unique_together = ('scenario_case', 'session_log')
 

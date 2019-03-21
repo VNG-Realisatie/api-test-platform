@@ -7,11 +7,12 @@ from urllib import parse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views import View
+from django.utils import timezone
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.http import (
-    Http404, HttpResponse, HttpResponseRedirect, HttpResponseServerError, HttpResponseForbidden
+    Http404, HttpResponse, HttpResponseForbidden
 )
 
 from rest_framework import generics, permissions, viewsets, views, mixins
@@ -19,18 +20,17 @@ from rest_framework.authentication import (
     SessionAuthentication, TokenAuthentication
 )
 from vng.testsession.models import (
-    ScenarioCase, Session, SessionLog, SessionType, VNGEndpoint, ExposedUrl, TestSession, Report
+    ScenarioCase, Session, SessionLog, SessionType, ExposedUrl, Report
 )
 
 from ..utils import choices
-from ..utils.views import (
-    ListAppendView, OwnerMultipleObjects, OwnerSingleObject, CSRFExemptMixin, SingleObjectMixin, ObjectOwner
-)
+from ..utils.views import CSRFExemptMixin
+
 from .permission import IsOwner
 from .serializers import (
     SessionSerializer, SessionTypesSerializer, ExposedUrlSerializer, ScenarioCaseSerializer
 )
-from .views import bootstrap_session, StopSession
+from .views import bootstrap_session
 from .task import run_tests, stop_session
 
 logger = logging.getLogger(__name__)
@@ -66,7 +66,13 @@ class SessionViewSet(
         return Session.objects.all().prefetch_related('exposedurl_set')
 
     def perform_create(self, serializer):
-        session = serializer.save(user=self.request.user, pk=None)
+        session = serializer.save(
+            user=self.request.user,
+            pk=None,
+            status=choices.StatusChoices.starting,
+            name=Session.assign_name(self.request.user.id),
+            started=timezone.now()
+        )
         try:
             bootstrap_session(session.id)
         except Exception as e:
@@ -94,7 +100,6 @@ class StopSessionView(generics.ListAPIView):
 
     def get_queryset(self):
         scenarios = ScenarioCase.objects.filter(vng_endpoint__session_type__session=self.kwargs['pk'])
-
         session = get_object_or_404(Session, id=self.kwargs['pk'])
         if session.user != self.request.user:
             return HttpResponseForbidden()
@@ -119,7 +124,7 @@ class ResultSessionView(LoginRequiredMixin, views.APIView):
         scenario_cases = ScenarioCase.objects.filter(vng_endpoint__session_type=session.session_type)
         report = list(Report.objects.filter(session_log__session=session))
 
-        def check():
+        def check(sc):
             nonlocal res
             for rp in report:
                 if rp.scenario_case == sc:
@@ -128,7 +133,7 @@ class ResultSessionView(LoginRequiredMixin, views.APIView):
             res = {'result': 'failed'}
 
         for sc in scenario_cases:
-            check()
+            check(sc)
         if len(scenario_cases) == 0:
             res = {'result': 'No scenario cases available'}
         if res is None:
@@ -148,13 +153,10 @@ class ResultSessionView(LoginRequiredMixin, views.APIView):
             call = {
                 'scenario_case': ScenarioCaseSerializer(rp.scenario_case).data
             }
-
             call['result'] = rp.result
-
             res['report'].append(call)
 
         res['test_session_url'] = session.get_absolute_request_url(request)
-
         response = HttpResponse(json.dumps(res))
         response['Content-Type'] = 'application/json'
         return response
@@ -199,12 +201,8 @@ class RunTest(CSRFExemptMixin, View):
     """ Proxy-view between clients and servers """
     error_codes = [(400, 599)]  # boundaries considered as errors
 
-    def get_exposed_url(self):
-        exposed_url = '{}/{}'.format(self.kwargs['exposed_url'], self.kwargs['name'])
-        return exposed_url
-
     def get_queryset(self):
-        return get_object_or_404(ExposedUrl, exposed_url=self.get_exposed_url()).session
+        return get_object_or_404(ExposedUrl, exposed_url=self.kwargs['exposed_url']).session
 
     def match_url(self, url, compare):
         '''
@@ -219,25 +217,6 @@ class RunTest(CSRFExemptMixin, View):
         logger.info("Parsed: %s", parsed_url)
         logger.info("URL: %s", check_url)
         return re.search(parsed_url, check_url) is not None
-
-    def rewrite_http_header(self, header):
-        '''
-        Rewrite the header key value, from HTTP_XXX of Django to the HTTP standard
-
-        Arguments:
-            header String -- the key of the header
-
-        Returns:
-            String -- the modified url
-        '''
-        def upper_repl(match):
-            return '-{}'.format(match.group(1).upper())
-        header = header.lower()
-        header = header.replace('HTTP_', '')
-        header = header.replace('_', '-')
-        header = re.sub('-(.)', upper_repl, header)
-        header = '{}{}'.format(header[0].upper(), header[1:])
-        return header
 
     def get_http_header(self, request, endpoint):
         '''
@@ -283,34 +262,67 @@ class RunTest(CSRFExemptMixin, View):
                     logger.info("Saving report: %s", report.result)
                     report.save()
 
-    def sub_url_response(self, content, host, endpoint):
+    def get_reverse_runtest(self, host, exposed_url):
         sub = '{}{}'.format(
             host,
             reverse('testsession:run_test', kwargs={
-                'exposed_url': endpoint.get_uuid_url(),
-                'name': endpoint.vng_endpoint.name,
+                'exposed_url': exposed_url.get_uuid_url(),
+                'name': exposed_url.vng_endpoint.name,
                 'relative_url': ''
             })
         )
+        return sub
+
+    def sub_url_response(self, content, host, endpoint):
+        '''
+        Replace the url of the response body
+
+        Arguments:
+            content Str -- Body of the response
+            host Str -- Host of the webservice
+            endpoint ExposedUrl -- ExposedUrl corresponding the call
+
+        Returns:
+            Str -- The body after the rewrite
+        '''
+
+        sub = self.get_reverse_runtest(host, endpoint)
         if endpoint.vng_endpoint.url is not None:
             if not endpoint.vng_endpoint.url.endswith('/'):
                 if sub.endswith('/'):
                     sub = sub[:-1]
             return re.sub(endpoint.vng_endpoint.url, sub, content)
         else:
-            url = 'http://{}:{}/'.format(endpoint.docker_url, 8080)
-            return re.sub(url, sub, content)
+            query = parse.urlparse(sub)
+            return re.sub(
+                '{}://{}:{}/'.format(query.scheme, endpoint.docker_url, 8080),
+                sub,
+                content
+            )
 
     def sub_url_request(self, content, host, endpoint):
-        sub = '{}{}'.format(
-            host,
-            reverse('testsession:run_test', kwargs={
-                'exposed_url': endpoint.get_uuid_url(),
-                'name': endpoint.vng_endpoint.name,
-                'relative_url': ''
-            })
-        )
-        return re.sub(sub, endpoint.vng_endpoint.url, content)
+        '''
+        Replace the url of the request body
+
+        Arguments:
+            content Str -- Body of the request
+            host Str -- Host of the webservice
+            endpoint ExposedUrl -- ExposedUrl corresponding the call
+
+        Returns:
+            Str -- The body after the rewrite
+        '''
+        sub = self.get_reverse_runtest(host, endpoint)
+
+        if endpoint.vng_endpoint.url is not None:
+            return re.sub(sub, endpoint.vng_endpoint.url, content)
+        else:
+            query = parse.urlparse(sub)
+            return re.sub(
+                sub,
+                '{}://{}:{}/'.format(query.scheme, endpoint.docker_url, 8080),
+                content
+            )
 
     def parse_response(self, response, request, base_url, endpoints):
         """
@@ -325,10 +337,11 @@ class RunTest(CSRFExemptMixin, View):
         else:
             host = 'https://{}'.format(request.get_host())
         for ep in endpoints:
+            logger.info("Rewriting response body:")
             parsed = self.sub_url_response(parsed, host, ep)
         return parsed
 
-    def rewrite_request_body(self, request, endpoints):
+    def rewrite_request_body(self, request, exposed):
         """
         Rewrites the request body's to replace the ATV URL endpoints to the VNG Reference endpoints
         https://testplatform/runtest/XXXX/api/v1/zaken/123
@@ -340,15 +353,14 @@ class RunTest(CSRFExemptMixin, View):
             host = 'http://{}'.format(request.get_host())
         else:
             host = 'https://{}'.format(request.get_host())
-        for ep in endpoints:
+        for eu in exposed:
             logger.info("Rewriting request body:")
-            parsed = self.sub_url_request(parsed, host, ep)
+            parsed = self.sub_url_request(parsed, host, eu)
         return parsed
 
     def build_method(self, request_method_name, request, body=False):
-
         self.session = self.get_queryset()
-        eu = get_object_or_404(ExposedUrl, session=self.session, exposed_url=self.get_exposed_url())
+        eu = get_object_or_404(ExposedUrl, session=self.session, exposed_url=self.kwargs['exposed_url'])
         request_header = self.get_http_header(request, eu.vng_endpoint)
         session_log, session = self.build_session_log(request, request_header)
         if session.is_stopped():
@@ -383,11 +395,12 @@ class RunTest(CSRFExemptMixin, View):
                 request_header['Host'] = '{}:{}'.format(eu.docker_url, 8080)
                 response = make_call()
             except Exception as e:
+                logger.exception(e)
                 raise Http404()
 
         self.add_response(response, session_log, request_url, request)
 
-        self.save_call(request, request_method_name, self.get_exposed_url(),
+        self.save_call(request, request_method_name, self.kwargs['exposed_url'],
                        self.kwargs['relative_url'], session, response.status_code, session_log)
         reply = HttpResponse(self.parse_response(response, request, eu.vng_endpoint.url, endpoints), status=response.status_code)
         if 'Content-type' in response.headers:

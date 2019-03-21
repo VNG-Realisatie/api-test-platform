@@ -1,12 +1,16 @@
 {% extends 'master.html' %}
 {% load sniplates %}
 
-{% block title %}Login{% endblock %}
+
+{% block title %}Session List{% endblock %}
+
+
 
 {% block content %}
     <article class="article">
         <div class="article__section">
-            <h1>Login</h1>
+            <h1>OpenAPI Check</h1>
+            <h2>Check if the API supports OpenApi 2.0 or higher</h2>
 
             <form class="form" method="post">{% csrf_token %}
                 {% load_widgets form='forms.html' %}
@@ -15,8 +19,12 @@
                     {% form_field field %}
                 {% endfor %}
 
-                <input type="submit" class="button button--primary" value="Login">
+                <input type="submit" class="button button--primary" value="Verify">
+                <input type="button" class="button" value="Cancel"
+                       onclick="location.href = '{% url 'server_run:server-run_list' %}';">
             </form>
+
         </div>
+
     </article>
 {% endblock %}

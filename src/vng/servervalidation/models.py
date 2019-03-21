@@ -44,6 +44,7 @@ class TestScenarioUrl(models.Model):
 
 
 class PostmanTest(OrderedModel):
+
     order_with_respect_to = 'test_scenario'
     test_scenario = models.ForeignKey(TestScenario, on_delete=models.CASCADE)
     validation_file = FilerFileField(null=True, default=None, on_delete=models.SET_NULL)
@@ -53,6 +54,7 @@ class PostmanTest(OrderedModel):
 
 
 class ExpectedPostmanResult(OrderedModel):
+
     order_with_respect_to = 'postman_test'
     postman_test = models.ForeignKey(PostmanTest, on_delete=models.CASCADE)
     expected_response = models.CharField(max_length=20, choices=choices.HTTPResponseStatus.choices)
@@ -82,18 +84,9 @@ class ServerRun(models.Model):
     def is_running(self):
         return self.status == choices.StatusChoices.running
 
-    def get_fields_no_file(self):
-        '''
-        Used in server-run_detail
-        '''
-        res = []
-        for field in self._meta.fields:
-            if field.get_internal_type() not in ('FileField',):
-                res.append((field.name, field.value_to_string(self)))
-        return res
-
 
 class ServerHeader(models.Model):
+
     server_run = models.ForeignKey(ServerRun, on_delete=models.CASCADE)
     header_key = models.TextField()
     header_value = models.TextField()

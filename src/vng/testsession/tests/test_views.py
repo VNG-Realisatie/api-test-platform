@@ -337,8 +337,12 @@ class TestAuthProxy(WebTest):
         self.user = UserFactory()
         self.vng_no_auth = VNGEndpointEchoFactory()
         self.vng_auth = VNGEndpointEchoFactory()
+        self.vng_header = VNGEndpointEchoFactory()
         self.vng_auth.session_type.authentication = choices.AuthenticationChoices.jwt
         self.vng_auth.session_type.save()
+        self.vng_header.session_type.authentication = choices.AuthenticationChoices.header
+        self.vng_header.session_type.header = 'test'
+        self.vng_header.session_type.save()
 
         call = self.app.post(reverse('apiv1_auth:rest_login'), params=collections.OrderedDict([
             ('username', get_username()),
@@ -354,6 +358,10 @@ class TestAuthProxy(WebTest):
             ('session_type', self.vng_auth.session_type.name),
         ]), headers=self.head).json['exposedurl_set'][0]['exposed_url']
 
+        self.url_head = self.app.post(reverse("apiv1session:test_session-list"), params=collections.OrderedDict([
+            ('session_type', self.vng_header.session_type.name),
+        ]), headers=self.head).json['exposedurl_set'][0]['exposed_url']
+
     def test_no_auth(self):
         resp = self.app.post(self.url_no_auth + 'post')
         self.assertNotIn('authorization', resp.json['headers'])
@@ -361,3 +369,7 @@ class TestAuthProxy(WebTest):
     def test_auth(self):
         resp = self.app.post(self.url_auth + 'post')
         self.assertIn('authorization', resp.json['headers'])
+
+    def test_header(self):
+        resp = self.app.post(self.url_head + 'post')
+        self.assertEqual('test', resp.json['headers']['authorization'])

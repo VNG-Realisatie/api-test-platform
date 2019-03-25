@@ -25,7 +25,7 @@ class ExposedUrl(admin.ModelAdmin):
 
 @admin.register(model.SessionType)
 class SessionTypeAdmin(admin.ModelAdmin):
-    list_display = ['name', 'standard', 'role', 'application', 'version']
+    list_display = ['name', 'standard', 'role', 'application', 'version', 'client_id', 'secret', 'header']
     list_filter = ['name']
     search_fields = ['name']
 

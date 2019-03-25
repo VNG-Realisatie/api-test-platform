@@ -1,11 +1,6 @@
 from djchoices import DjangoChoices, ChoiceItem
 
 
-class JwtChoices(DjangoChoices):
-    jwt = ChoiceItem("JWT")
-    no_auth = ChoiceItem("No Authorization")
-
-
 class AuthenticationChoices(DjangoChoices):
     jwt = ChoiceItem("JWT")
     header = ChoiceItem("Authorization header")

@@ -26,7 +26,7 @@ class SessionType(models.Model):
     role = models.CharField(max_length=200, null=True)
     application = models.CharField(max_length=200, null=True)
     version = models.CharField(max_length=200, null=True)
-    authentication = models.CharField(max_length=20, default=choices.AuthenticationChoices.no_auth, choices=choices.AuthenticationChoices.choices)
+    authentication = models.CharField(max_length=20, default=choices.JwtChoices.no_auth, choices=choices.JwtChoices.choices)
     client_id = models.TextField(default=None, null=True, blank=True)
     secret = models.TextField(default=None, null=True, blank=True)
 

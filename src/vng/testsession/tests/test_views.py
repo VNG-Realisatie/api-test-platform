@@ -261,8 +261,6 @@ class TestUrlMatchingPatterns(WebTest):
 
     def setUp(self):
         self.scenario_case = ScenarioCaseFactory(url='test')
-        # self.scenario_case.url = '/test'
-        # self.scenario_case.save()
 
         call = self.app.post(reverse('apiv1_auth:rest_login'), params=collections.OrderedDict([
             ('username', get_username()),
@@ -271,14 +269,24 @@ class TestUrlMatchingPatterns(WebTest):
         self.head = {'Authorization': 'Token {}'.format(key)}
 
     def test_create_session(self):
+        # Save the report list
         report_list = Report.objects.all()
         resp = self.app.post_json(reverse('apiv1session:test_session-list'), {
             'session_type': self.scenario_case.vng_endpoint.session_type.name
         }, headers=self.head)
-        self.app.get(resp.json['exposedurl_set'][0]['exposed_url'] + self.scenario_case.url + '/dummy', expect_errors=True)
+
+        # Call the url with additional padding
+        self.app.get(resp.json['exposedurl_set'][0]['exposed_url'] + 'test' + '/dummy', expect_errors=True)
+        # Check that the report has not been crated
         self.assertEqual(len(report_list), len(Report.objects.all()))
+
+        # Call the url without further padding
         self.app.get(resp.json['exposedurl_set'][0]['exposed_url'] + self.scenario_case.url, expect_errors=True)
+        # Check if the report has been created
         self.assertEqual(len(report_list) + 1, len(Report.objects.all()))
+
+        last_report = Report.objects.latest('id')
+        self.assertEqual(last_report.scenario_case, self.scenario_case)
 
 
 class TestAllProcedure(WebTest):

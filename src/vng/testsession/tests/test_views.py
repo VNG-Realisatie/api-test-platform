@@ -281,7 +281,7 @@ class TestUrlMatchingPatterns(WebTest):
         self.assertEqual(len(report_list), len(Report.objects.all()))
 
         # Call the url without further padding
-        self.app.get(resp.json['exposedurl_set'][0]['exposed_url'] + self.scenario_case.url, expect_errors=True)
+        self.app.get(resp.json['exposedurl_set'][0]['exposed_url'] + 'test', expect_errors=True)
         # Check if the report has been created
         self.assertEqual(len(report_list) + 1, len(Report.objects.all()))
 

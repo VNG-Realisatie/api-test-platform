@@ -246,7 +246,9 @@ class RunTest(CSRFExemptMixin, View):
 
         if session.session_type.authentication == choices.AuthenticationChoices.jwt:
             jwt_auth = get_jwt(session.session_type).credentials()
-            request_headers.update(jwt_auth)
+            for k, i in jwt_auth.items():
+                if k not in request_headers:
+                    request_headers.update(jwt_auth)
 
         # request_headers['host'] = parse.urlparse(endpoint.url).netloc
         return request_headers

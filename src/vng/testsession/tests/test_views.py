@@ -15,7 +15,7 @@ from vng.accounts.models import User
 from ..models import Session, SessionType, SessionLog, Report, ScenarioCase, VNGEndpoint
 
 from .factories import (
-    SessionFactory, SessionTypeFactory, VNGEndpointDockerFactory, ExposedUrlEchoFactory,
+    SessionFactory, SessionTypeFactory, VNGEndpointDockerFactory, ExposedUrlEchoFactory, VNGEndpointEchoFactory,
     ScenarioCaseFactory, ExposedUrlFactory, SessionLogFactory, VNGEndpointFactory)
 from ...utils import choices
 from ...utils.factories import UserFactory
@@ -329,3 +329,35 @@ class TestLogNewman(WebTest):
         call = self.app.get(reverse('apiv1session:result_session', kwargs={'pk': session_id}))
         call = get_object(call.body)
         self.assertEqual(call['result'], 'failed')
+
+
+class TestAuthProxy(WebTest):
+
+    def setUp(self):
+        self.user = UserFactory()
+        self.vng_no_auth = VNGEndpointEchoFactory()
+        self.vng_auth = VNGEndpointEchoFactory()
+        self.vng_auth.session_type.authentication = choices.AuthenticationChoices.jwt
+        self.vng_auth.session_type.save()
+
+        call = self.app.post(reverse('apiv1_auth:rest_login'), params=collections.OrderedDict([
+            ('username', get_username()),
+            ('password', 'password')]))
+        key = get_object(call.body)['key']
+        self.head = {'Authorization': 'Token {}'.format(key)}
+
+        self.url_no_auth = self.app.post(reverse("apiv1session:test_session-list"), params=collections.OrderedDict([
+            ('session_type', self.vng_no_auth.session_type.name),
+        ]), headers=self.head).json['exposedurl_set'][0]['exposed_url']
+
+        self.url_auth = self.app.post(reverse("apiv1session:test_session-list"), params=collections.OrderedDict([
+            ('session_type', self.vng_auth.session_type.name),
+        ]), headers=self.head).json['exposedurl_set'][0]['exposed_url']
+
+    def test_no_auth(self):
+        resp = self.app.post(self.url_no_auth + 'post')
+        self.assertNotIn('authorization', resp.json['headers'])
+
+    def test_auth(self):
+        resp = self.app.post(self.url_auth + 'post')
+        self.assertIn('authorization', resp.json['headers'])

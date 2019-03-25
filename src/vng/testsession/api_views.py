@@ -212,7 +212,7 @@ class RunTest(CSRFExemptMixin, View):
         # casting of the reference url into a regex
         param_pattern = '{[^/]+}'
         any_c = '[^/]+'
-        parsed_url = '( |/)*' + re.sub(param_pattern, any_c, compare)
+        parsed_url = '( |/)*' + re.sub(param_pattern, any_c, compare) + '$'
         check_url = url.replace('/api/v1//', '/api/v1/')
         logger.info("Parsed: %s", parsed_url)
         logger.info("URL: %s", check_url)

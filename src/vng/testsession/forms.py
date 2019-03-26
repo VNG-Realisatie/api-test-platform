@@ -11,9 +11,6 @@ class SessionTypeForm(forms.ModelForm):
         model = SessionType
         fields = '__all__'
 
-    def clean_featured(self):
-        return forms.ValidationError('asds')
-
     def clean(self):
         cleaned_data = super().clean()
         if cleaned_data['authentication'] == AuthenticationChoices.jwt:
@@ -22,5 +19,4 @@ class SessionTypeForm(forms.ModelForm):
         elif cleaned_data['authentication'] == AuthenticationChoices.header:
             if not cleaned_data['header']:
                 raise forms.ValidationError(_('Header must be provided with this authentication method'))
-        import pdb
-        pdb.set_trace()
+        return cleaned_data

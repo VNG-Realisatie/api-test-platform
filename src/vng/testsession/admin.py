@@ -1,7 +1,9 @@
+from ordered_model.admin import OrderedModelAdmin
 from django.contrib import admin
+
 import vng.testsession.models as model
 
-from ordered_model.admin import OrderedModelAdmin
+from .forms import SessionTypeForm
 
 
 class VNGEndpointInline(admin.TabularInline):
@@ -30,6 +32,7 @@ class SessionTypeAdmin(admin.ModelAdmin):
     search_fields = ['name']
 
     inlines = [VNGEndpointInline]
+    form = SessionTypeForm
 
 
 @admin.register(model.Session)

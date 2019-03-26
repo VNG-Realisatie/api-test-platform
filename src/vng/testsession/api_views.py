@@ -359,6 +359,10 @@ class RunTest(CSRFExemptMixin, View):
         return parsed
 
     def build_method(self, request_method_name, request, body=False):
+        subdomain = re.match('(\w+).', request.META.get('HTTP_HOST', ''))
+        if subdomain is None:
+            raise Http404
+        subdomain = subdomain.group(1)
         self.session = self.get_queryset()
         eu = get_object_or_404(ExposedUrl, session=self.session, exposed_url=self.kwargs['exposed_url'])
         request_header = self.get_http_header(request, eu.vng_endpoint)

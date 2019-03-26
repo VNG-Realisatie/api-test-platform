@@ -2,8 +2,10 @@
 {% spaceless %}
     <nav class="navigation" role="navigation">
         <ul class="navigation__list">
+            {% if user.is_authenticated %}
             {% include './navigation-list-item.html' with view_name='testsession:sessions' label=_('Test consumer') request=request only %}
             {% include './navigation-list-item.html' with view_name='server_run:server-run_list' label=_('Test Provider') request=request only %}
+            {% endif %}
             {% include './navigation-list-item.html' with view_name='open_api_inspector:openapi-inspection' label=_('OpenApi inspection') request=request only %}
         </ul>
     </nav>

@@ -1,10 +1,11 @@
 <div class="user">
-    <p class="user__name">
     {% if user.is_authenticated %}
-        {{ request.user.username }}</p>
+    <p class="user__name">
+        {{ request.user.username }}
+    </p>
     {% else %}
         <a class="user__login" href={% url 'auth_login' %}>Login</a>
-        <p class="user__name">
+        <br />
         <a class="user__logout" href={% url 'registration_register' %}>Register</a>
     {% endif %}
 

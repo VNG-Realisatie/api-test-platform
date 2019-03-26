@@ -27,7 +27,7 @@
 
         <td class="table__cell table__cell--keep_word">
             {% if session.is_starting and session.deploy_status%}
-                {{session.deploy_status}}
+                {{session.deploy_status}} - {{session.deploy_percentage}}%
             {% else %}
                 {% for eu in session.exposedurl_set.all %}
                     {% if eu.test_session %}

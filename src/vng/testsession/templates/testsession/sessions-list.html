@@ -57,11 +57,18 @@ function update(){
     Http.onreadystatechange=(e)=>{
         session = JSON.parse(Http.responseText);
         console.log(session);
-        obj.text(`${session.deploy_status} - ${session.deploy_percentage}%`)
-        if(session.deploy_percentage<100)
+        if (session.deploy_status) {
+          obj.html(`${session.deploy_status}: ${session.deploy_percentage}%<br /><div style='background-color: green; width: ${ session.deploy_percentage}%; height: 20px;'></div>`)
+          if (session.deploy_percentage<100)
             setTimeout(() => {
                 update();
             }, 5000);
+          if (session.deploy_percentage == 100) {
+            setTimeout(() => {
+              location.reload();
+            }, 2000);
+          }
+        }
     }
 }
 

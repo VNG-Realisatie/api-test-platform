@@ -43,7 +43,7 @@ def update_session_status(session, message, percentage=None):
     session.deploy_status = message
     if percentage is not None:
         if percentage >= 100:
-            percentage = 99
+            percentage = 100
         session.deploy_percentage = percentage
     session.save()
 
@@ -60,26 +60,26 @@ def align_sessions_data():
 
 
 def start_app_b8s(session, bind_url):
-    update_session_status(session, 'Connecting with google cloud', 1)
+    update_session_status(session, 'Verbinding maken met Kubernetes', 1)
     kuber = K8S()
     endpoint = bind_url.vng_endpoint
     app_name = get_app_name(session, bind_url)
-    update_session_status(session, 'Deploying the image', 10)
+    update_session_status(session, 'Docker image installatie op Kubernetes', 10)
     kuber.deploy(app_name, endpoint.docker_image, endpoint.port)
-    update_session_status(session, 'Exposing the service to internet', 25)
+    update_session_status(session, 'Installatie voortgang', 22)
     N_TRIALS = 10
     for trial in range(N_TRIALS):
         try:
             time.sleep(10)                      # Waiting for the load balancer to be loaded
-            update_session_status(session, 'Polling to verify the deployment, attempt: {}/10'.format(trial), 30 + (10 * trial))
+            update_session_status(session, 'Installatie voortgang'.format(trial), 28 + (12 * trial))
             ip = kuber.status(app_name)
 
-            update_session_status(session, 'Checking the status of the pod', 95)
+            update_session_status(session, 'Status controle van pod', 95)
             ready, message = kuber.get_pods_status(app_name)
             if not ready:
                 update_session_status(session, 'An error within the image prevented from a correct deployment')
                 return ready, message
-            update_session_status(session, 'Deployed successfully', 100)
+            update_session_status(session, 'Installatie succesvol uitgevoerd', 100)
             return ip, None
         except Exception as e:
             err = e

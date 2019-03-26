@@ -5,6 +5,7 @@
 #    pip-compile --output-file requirements/base.txt requirements/base.in
 #
 -e git+https://github.com/maykinmedia/gemma-zds-client-3.4.git@e826a2fa111100d33d7c164a7bdf95d07c3b916c#egg=gemma-zds-client
+-e git+https://github.com/maykinmedia/django-subdomains.git#egg=django-subdomains
 amqp==2.4.1               # via kombu
 billiard==3.5.0.5         # via celery
 cachetools==3.0.0         # via google-auth

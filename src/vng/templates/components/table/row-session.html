@@ -26,7 +26,7 @@
         </td>
 
             {% if session.is_starting and session.deploy_status%}
-        <td class="table__cell table__cell--keep_word" id='starting'>
+        <td class="table__cell table__cell--keep_word" id='starting' session_id='{{session.id}}' >
                 {{session.deploy_status}} - {{session.deploy_percentage}}%
             {% else %}
         <td class="table__cell table__cell--keep_word">

@@ -46,7 +46,7 @@ class TestScenarioUrl(models.Model):
 class PostmanTest(OrderedModel):
     order_with_respect_to = 'test_scenario'
     test_scenario = models.ForeignKey(TestScenario, on_delete=models.CASCADE)
-    validation_file = FilerFileField(null=True, default=None, on_delete=models.SET_NULL)
+    validation_file = FilerFileField(null=True, blank=True, default=None, on_delete=models.SET_NULL)
 
     def __str__(self):
         return '{} {}'.format(self.test_scenario, self.validation_file)

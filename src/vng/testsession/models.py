@@ -21,11 +21,15 @@ from ..utils import choices, postman
 
 class SessionType(models.Model):
 
-    name = models.CharField(max_length=200, unique=True)
-    standard = models.CharField(max_length=200, null=True)
-    role = models.CharField(max_length=200, null=True)
-    application = models.CharField(max_length=200, null=True)
-    version = models.CharField(max_length=200, null=True)
+    name = models.CharField('Naam', max_length=200, unique=True)
+    standard = models.CharField('Standaard', max_length=200, null=True)
+    role = models.CharField('Rol', max_length=200, null=True)
+    application = models.CharField('Applicatie', max_length=200, null=True)
+    version = models.CharField('Versie', max_length=200, null=True)
+
+    class Meta:
+        verbose_name = 'Sessie type'
+        verbose_name_plural = 'Sessie type'
 
     def __str__(self):
         return self.name
@@ -35,6 +39,10 @@ class TestSession(models.Model):
 
     test_result = models.FileField(settings.MEDIA_FOLDER_FILES['testsession_log'], blank=True, null=True, default=None)
     json_result = models.TextField(blank=True, null=True, default=None)
+
+    class Meta:
+        verbose_name = 'Test Sessie'
+        verbose_name_plural = 'Test Sessie'
 
     def save_test(self, file):
         name_file = str(uuid.uuid4())
@@ -95,16 +103,20 @@ class ScenarioCase(OrderedModel):
 
 class Session(models.Model):
 
-    name = models.CharField(max_length=30, unique=True, null=True)
-    session_type = models.ForeignKey(SessionType, on_delete=models.CASCADE)
-    started = models.DateTimeField(default=timezone.now)
-    stopped = models.DateTimeField(null=True, blank=True)
+    name = models.CharField('Naam', max_length=30, unique=True, null=True)
+    session_type = models.ForeignKey(SessionType, verbose_name='Sessie type', on_delete=models.CASCADE)
+    started = models.DateTimeField('Gestart op', default=timezone.now)
+    stopped = models.DateTimeField('Gestopt op', null=True, blank=True)
     status = models.CharField(max_length=20, choices=choices.StatusChoices.choices, default=choices.StatusChoices.starting)
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    user = models.ForeignKey(User, verbose_name='Gebruiker', on_delete=models.SET_NULL, null=True)
     build_version = models.TextField(blank=True, null=True, default=None)
     error_message = models.TextField(blank=True, null=True, default=None)
     deploy_status = models.TextField(blank=True, null=True, default=None)
     deploy_percentage = models.IntegerField(default=None, null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Sessie'
+        verbose_name_plural = 'Sessie'
 
     @staticmethod
     def assign_name(id):

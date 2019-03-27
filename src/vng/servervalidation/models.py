@@ -18,8 +18,8 @@ from ..utils import choices
 
 class TestScenario(models.Model):
 
-    name = models.CharField(max_length=200, unique=True)
-    authorization = models.CharField(max_length=20, choices=choices.AuthenticationChoices.choices, default=choices.AuthenticationChoices.jwt)
+    name = models.CharField('Naam', max_length=200, unique=True)
+    authorization = models.CharField('Authorisatie', max_length=20, choices=choices.AuthenticationChoices.choices, default=choices.AuthenticationChoices.jwt)
 
     def __str__(self):
         return self.name
@@ -36,7 +36,7 @@ class TestScenario(models.Model):
 
 class TestScenarioUrl(models.Model):
 
-    name = models.CharField(max_length=200)
+    name = models.CharField('Naam', max_length=200)
     test_scenario = models.ForeignKey(TestScenario, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -66,9 +66,9 @@ class ExpectedPostmanResult(OrderedModel):
 class ServerRun(models.Model):
 
     test_scenario = models.ForeignKey(TestScenario, on_delete=models.CASCADE)
-    started = models.DateTimeField(default=timezone.now)
+    started = models.DateTimeField('Gestart op', default=timezone.now)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    stopped = models.DateTimeField(null=True, default=None, blank=True)
+    stopped = models.DateTimeField('Gestopt op', null=True, default=None, blank=True)
     status = models.CharField(max_length=20, choices=choices.StatusChoices.choices, default=choices.StatusChoices.starting)
     client_id = models.TextField(default=None, null=True, blank=True)
     secret = models.TextField(default=None, null=True, blank=True)

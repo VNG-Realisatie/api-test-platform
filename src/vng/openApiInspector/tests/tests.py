@@ -56,11 +56,11 @@ class TestOpenApiInspector(WebTest):
         form = call.forms[0]
         form['url'] = 'http://google.com'
         call = form.submit()
-        self.assertIn("The link provided does not contain a json schema", call.text)
+        self.assertIn("geen geldige JSON schema", call.text)
 
     def test_view_error2(self):
         call = self.app.get(reverse('open_api_inspector:openapi-inspection'))
         form = call.forms[0]
         form['url'] = 'https://test.cc.co'
         call = form.submit()
-        self.assertIn("The link provided is not reachable", call.text)
+        self.assertIn("Deze link is niet op te vragen", call.text)

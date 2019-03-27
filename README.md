@@ -13,6 +13,9 @@ Om de doelen van de Common Ground te bereiken hebben we een testvoorziening nodi
    2. voor het valideren van een consumer of provider, om een stempeltje “compliant met de standaard” te verkrijgen.
 * Idealiter kunnen gemeenten dezelfde constructie gebruiken om een implementatie van door leverancier ingezette software te testen tegen het testplatform.
 * Wat extraatjes zoals ‘badges’ waarmee je resultaat validatie voor een bepaalde build/versie kunt tonen zou mooi zijn.
+* De testvoorziening moet aanroepbaar zijn als API
+* Het opstarten van tests en ophalen van resultaten loopt via REST/JSON calls 
+* Integratie met een eigen CI/CD pipeline is mogelijk, voorbeeld voor het doen van regressietesten
 
 ## Doel
 Deze repository bevat alles wat nodig is voor de ontwikkeling van een nieuw API-testplatform

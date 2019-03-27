@@ -30,7 +30,7 @@ class TestOpenApiInspector(WebTest):
 
     def test_success(self):
         payload = {
-            'url': 'https://ref.tst.vng.cloud/ztc/api/v1/schema/?format=openapi'
+            'url': 'https://ref.tst.vng.cloud/ztc/api/v1/schema/openapi.json?v=3'
         }
         call = self.app.post_json(self.url, payload)
         self.assertIn('200', call.status)
@@ -39,7 +39,7 @@ class TestOpenApiInspector(WebTest):
     def test_view(self):
         call = self.app.get(reverse('open_api_inspector:openapi-inspection'))
         form = call.forms[0]
-        form['url'] = 'https://ref.tst.vng.cloud/ztc/api/v1/schema/?format=openapi'
+        form['url'] = 'https://ref.tst.vng.cloud/ztc/api/v1/schema/openapi.json?v=3'
         call = form.submit().follow()
         self.assertIn("Resultaat", call.text)
         self.assertIn("icon--checkmark", call.text)
@@ -49,7 +49,7 @@ class TestOpenApiInspector(WebTest):
         form = call.forms[0]
         form['url'] = 'tss'
         call = form.submit()
-        self.assertIn("Enter a valid URL", call.text)
+        self.assertIn("Voer een geldige URL in", call.text)
 
     def test_view_error1(self):
         call = self.app.get(reverse('open_api_inspector:openapi-inspection'))

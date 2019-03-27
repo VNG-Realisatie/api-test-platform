@@ -19,12 +19,13 @@ class OpenApiInspection(FormView):
             try:
                 version = openAPIInspector(url)
             except Exception as e:
+                raise e
                 if isinstance(e, JSONDecodeError) or isinstance(e, AttributeError):
                     form.add_error('url', u'The link provided does not contain a json schema')
                 else:
                     form.add_error('url', u'The link provided is not reachable')
                 return self.form_invalid(form)
-            self.request.session['openapi'] = True if version >= 2 else False
+            self.request.session['openapi'] = True if version >= 3 else False
             self.request.session['openapiv'] = version
             return super().form_valid(form)
         return super().form_invalid(form)

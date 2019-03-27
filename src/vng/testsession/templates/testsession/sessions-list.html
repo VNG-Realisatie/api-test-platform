@@ -62,7 +62,7 @@ function update(){
           if (session.deploy_percentage<100)
             setTimeout(() => {
                 update();
-            }, 5000);
+            }, 1000);
           if (session.deploy_percentage == 100) {
             setTimeout(() => {
               location.reload();

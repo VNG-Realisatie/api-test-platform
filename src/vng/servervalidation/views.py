@@ -122,11 +122,13 @@ class CreateEndpoint(LoginRequiredMixin, CreateView):
         form.instance.server_run = self.server
         if len(tsu) > 0:
             form.instance.test_scenario_url = tsu[0]
-        ep = form.instance
-        ep.save()
-        self.endpoints.append(ep)
         self.server.status = choices.StatusChoices.running
         self.server.save()
+
+        ep = form.instance
+        ep.server_run = self.server
+        ep.save()
+        self.endpoints.append(ep)
         execute_test.delay(self.server.pk)
 
         return HttpResponseRedirect(self.get_success_url())

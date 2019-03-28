@@ -32,14 +32,12 @@ class ExposedUrlSerializer(serializers.ModelSerializer):
         else:
             host = 'https://{}'.format(request.get_host())
 
-        v['subdomain'] = '{}{}'.format(
-            host,
-            reverse_sub(
-                'serverproxy:run_test', subdomain=value.subdomain, kwargs={
-                    'relative_url': ''
-                }
-            )
+        v['subdomain'] = reverse_sub(
+            'serverproxy:run_test', subdomain=value.subdomain, kwargs={
+                'relative_url': ''
+            }
         )
+
         return v
 
 

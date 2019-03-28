@@ -20,4 +20,9 @@ class Migration(migrations.Migration):
             name='deploy_status',
             field=models.TextField(blank=True, default=None, null=True),
         ),
+        migrations.AlterField(
+            model_name='exposedurl',
+            name='exposed_url',
+            field=models.CharField(max_length=200),
+        ),
     ]

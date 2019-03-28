@@ -29,12 +29,23 @@ from ..utils.views import CSRFExemptMixin
 
 from .permission import IsOwner
 from .serializers import (
-    SessionSerializer, SessionTypesSerializer, ExposedUrlSerializer, ScenarioCaseSerializer
+    SessionSerializer, SessionTypesSerializer, ExposedUrlSerializer, ScenarioCaseSerializer,
+    SessionStatusSerializer
 )
 from .views import bootstrap_session
 from .task import run_tests, stop_session
 
 logger = logging.getLogger(__name__)
+
+
+class SessionViewStatusSet(
+        mixins.RetrieveModelMixin,
+        viewsets.GenericViewSet):
+    serializer_class = SessionStatusSerializer
+    authentication_classes = (TokenAuthentication, SessionAuthentication)
+    permission_classes = (permissions.IsAuthenticated, IsOwner)
+
+    queryset = Session.objects.all()
 
 
 class SessionViewSet(

@@ -8,41 +8,73 @@
 
 
 {% block content %}
-    <article class="article">
-        <div class="article__section">
-            <h1>Test consumer</h1>
-            <h2>Start een nieuwe consumer test-sessie</h2>
+<article class="article">
+    <div class="article__section">
+        <h1>Test consumer</h1>
+        <h2>Start een nieuwe consumer test-sessie</h2>
 
-            <form class="form" method="post">{% csrf_token %}
-                {% load_widgets form='forms.html' %}
+        <form class="form" method="post">{% csrf_token %}
+            {% load_widgets form='forms.html' %}
 
-                {% if form.non_field_errors %}
-                    <ul class="form__error-list">
-                        {% for error in form.non_field_errors %}
-                            <li class="form__error">{{ error }}</li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-
-                {% for field in form %}
-                    {% form_field field %}
+            {% if form.non_field_errors %}
+            <ul class="form__error-list">
+                {% for error in form.non_field_errors %}
+                <li class="form__error">{{ error }}</li>
                 {% endfor %}
-
-                <input type="submit" class="button button--primary" value="Start nieuwe test-sessie">
-
-            </form>
-
-            {% if object_list %}
-                <h2>Consumer test-sessies</h2>
-                <table class="table table--auto">
-                    {% include 'components/table/header-session.html' only %}
-                    {% for session in object_list %}
-                        {% include 'components/table/row-session.html' with session=session %}
-                    {% endfor %}
-                </table>
-                {% include 'components/pagination/pagination.html' %}
+            </ul>
             {% endif %}
-        </div>
 
-    </article>
+            {% for field in form %}
+            {% form_field field %}
+            {% endfor %}
+
+            <input type="submit" class="button button--primary" value="Start nieuwe test-sessie">
+
+        </form>
+
+        {% if object_list %}
+        <h2>Consumer test-sessies</h2>
+        <table class="table table--auto">
+            {% include 'components/table/header-session.html' only %}
+            {% for session in object_list %}
+            {% include 'components/table/row-session.html' with session=session %}
+            {% endfor %}
+        </table>
+        {% include 'components/pagination/pagination.html' %}
+        {% endif %}
+    </div>
+
+</article>
+{% endblock %}
+
+{% block script %}
+obj = $("#starting")
+const Http = new XMLHttpRequest();
+const url=  window.location.origin+"/api/v1/status/" + obj.attr('session_id');
+
+function update(){
+    Http.open("GET", url);
+    Http.send();
+    Http.onreadystatechange=(e)=>{
+        session = JSON.parse(Http.responseText);
+        console.log(session);
+        if (session.deploy_status) {
+          obj.html(`${session.deploy_status}: ${session.deploy_percentage}%<br /><div style='background-color: green; width: ${ session.deploy_percentage}%; height: 20px;'></div>`)
+          if (session.deploy_percentage<100)
+            setTimeout(() => {
+                update();
+            }, 1000);
+          if (session.deploy_percentage == 100) {
+            setTimeout(() => {
+              location.reload();
+            }, 2000);
+          }
+        }
+    }
+}
+
+if(obj.length ==1){
+    update()
+}
+
 {% endblock %}

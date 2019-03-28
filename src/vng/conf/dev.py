@@ -98,7 +98,7 @@ warnings.filterwarnings(
 )
 
 MIDDLEWARE += [
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 INSTALLED_APPS += [

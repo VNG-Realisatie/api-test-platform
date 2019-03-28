@@ -4,6 +4,7 @@ import logging
 import requests
 
 from urllib import parse
+from subdomains.utils import reverse as reverse_sub
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views import View
@@ -202,7 +203,7 @@ class RunTest(CSRFExemptMixin, View):
     error_codes = [(400, 599)]  # boundaries considered as errors
 
     def get_queryset(self):
-        return get_object_or_404(ExposedUrl, exposed_url=self.kwargs['exposed_url']).session
+        return get_object_or_404(ExposedUrl, subdomain=self.request.subdomain).session
 
     def match_url(self, url, compare):
         '''
@@ -265,9 +266,7 @@ class RunTest(CSRFExemptMixin, View):
     def get_reverse_runtest(self, host, exposed_url):
         sub = '{}{}'.format(
             host,
-            reverse('testsession:run_test', kwargs={
-                'exposed_url': exposed_url.get_uuid_url(),
-                'name': exposed_url.vng_endpoint.name,
+            reverse_sub('serverproxy:run_test', subdomain=exposed_url.subdomain, kwargs={
                 'relative_url': ''
             })
         )
@@ -359,12 +358,8 @@ class RunTest(CSRFExemptMixin, View):
         return parsed
 
     def build_method(self, request_method_name, request, body=False):
-        subdomain = re.match('(\w+).', request.META.get('HTTP_HOST', ''))
-        if subdomain is None:
-            raise Http404
-        subdomain = subdomain.group(1)
         self.session = self.get_queryset()
-        eu = get_object_or_404(ExposedUrl, session=self.session, exposed_url=self.kwargs['exposed_url'])
+        eu = get_object_or_404(ExposedUrl, session=self.session, subdomain=request.subdomain)
         request_header = self.get_http_header(request, eu.vng_endpoint)
         session_log, session = self.build_session_log(request, request_header)
         if session.is_stopped():
@@ -404,7 +399,7 @@ class RunTest(CSRFExemptMixin, View):
 
         self.add_response(response, session_log, request_url, request)
 
-        self.save_call(request, request_method_name, self.kwargs['exposed_url'],
+        self.save_call(request, request_method_name, request.subdomain,
                        self.kwargs['relative_url'], session, response.status_code, session_log)
         reply = HttpResponse(self.parse_response(response, request, eu.vng_endpoint.url, endpoints), status=response.status_code)
         if 'Content-type' in response.headers:

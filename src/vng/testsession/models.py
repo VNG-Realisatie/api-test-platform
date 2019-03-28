@@ -143,7 +143,7 @@ class ExposedUrl(models.Model):
     docker_url = models.CharField(max_length=200, blank=True, null=True, default=None)
 
     def get_uuid_url(self):
-        return re.search('([^/]+)', self.exposed_url).group(1)
+        return re.search('([^/]+)', self.subdomain).group(1)
 
     def __str__(self):
         return '{} {}'.format(self.session, self.vng_endpoint)

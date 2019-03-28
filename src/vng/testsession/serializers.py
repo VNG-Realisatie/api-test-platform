@@ -21,7 +21,7 @@ class ExposedUrlSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ExposedUrl
-        fields = ['id', 'exposed_url', 'session', 'vng_endpoint']
+        fields = ['id', 'subdomain', 'session', 'vng_endpoint']
 
     def to_representation(self, value):
         v = super().to_representation(value)
@@ -31,10 +31,10 @@ class ExposedUrlSerializer(serializers.ModelSerializer):
         else:
             host = 'https://{}'.format(request.get_host())
 
-        v['exposed_url'] = '{}{}'.format(
+        v['subdomain'] = '{}{}'.format(
             host,
             reverse(
-                'testsession:run_test', kwargs={
+                'serverproxy:run_test', kwargs={
                     'exposed_url': value.get_uuid_url(),
                     'name': value.vng_endpoint.name,
                     'relative_url': ''

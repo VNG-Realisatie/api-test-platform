@@ -357,6 +357,27 @@ class RunTest(CSRFExemptMixin, View):
             parsed = self.sub_url_request(parsed, host, eu)
         return parsed
 
+    def build_url(self, eu, arguments):
+        ru = self.kwargs['relative_url']
+        if eu.vng_endpoint.url is not None:
+            # sperimental
+            # TODO: check if required or not
+            path = parse.urlparse(eu.vng_endpoint.url).path
+            if path.startswith('/'):
+                path = path[1:]
+            if ru.startswith(path):
+                self.kwargs['relative_url'] = self.kwargs['relative_url'].strip(path)
+            # endsperimental
+            if eu.vng_endpoint.url.endswith('/'):
+                request_url = '{}{}?{}'.format(eu.vng_endpoint.url, self.kwargs['relative_url'], arguments)
+            else:
+                request_url = '{}/{}?{}'.format(eu.vng_endpoint.url, self.kwargs['relative_url'], arguments)
+        else:
+            request_url = 'http://{}:{}/{}?{}'.format(eu.docker_url, 8080, self.kwargs['relative_url'], arguments)
+        if arguments == '':
+            request_url = request_url[:-1]
+        return request_url
+
     def build_method(self, request_method_name, request, body=False):
         self.session = self.get_queryset()
         eu = get_object_or_404(ExposedUrl, session=self.session, subdomain=request.subdomain)
@@ -367,15 +388,7 @@ class RunTest(CSRFExemptMixin, View):
         endpoints = ExposedUrl.objects.filter(session=session)
         arguments = request.META['QUERY_STRING']
 
-        if eu.vng_endpoint.url is not None:
-            if eu.vng_endpoint.url.endswith('/'):
-                request_url = '{}{}?{}'.format(eu.vng_endpoint.url, self.kwargs['relative_url'], arguments)
-            else:
-                request_url = '{}/{}?{}'.format(eu.vng_endpoint.url, self.kwargs['relative_url'], arguments)
-        else:
-            request_url = 'http://{}:{}/{}?{}'.format(eu.docker_url, 8080, self.kwargs['relative_url'], arguments)
-        if arguments == '':
-            request_url = request_url[:-1]
+        request_url = self.build_url(eu, arguments)
         method = getattr(requests, request_method_name)
 
         def make_call():

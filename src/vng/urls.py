@@ -29,12 +29,12 @@ urlpatterns = [
     # redirect the request to the testession
     url(r'^api/auth/', include(('vng.apiAuthentication.urls', 'api_auth'), namespace='apiv1_auth')),
     url(r'^api/v1/', include('vng.testsession.urls_api', namespace='apiv1session')),
-    url(r'^', include('vng.testsession.urls_api_sub', namespace='serverproxy')),
     url(r'^api/v1/', include('vng.servervalidation.urls_api', namespace='apiv1server')),
     url(r'^api/v1/', include('vng.openApiInspector.urls_api', namespace='apiv1inspector')),
     url(r'^server/', include('vng.servervalidation.urls', namespace='server_run')),
     url(r'^inspector/', include('vng.openApiInspector.urls', namespace='open_api_inspector')),
     url(r'^', include('vng.testsession.urls', namespace='testsession')),
+    url(r'^', include('vng.testsession.urls_api_sub', namespace='serverproxy')),
 ]
 
 # NOTE: The staticfiles_urlpatterns also discovers static files (ie. no need to run collectstatic). Both the static

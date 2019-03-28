@@ -2,7 +2,7 @@
 {% load sniplates %}
 
 
-{% block title %}Session List{% endblock %}
+{% block title %}Providers{% endblock %}
 
 
 {% block content %}
@@ -12,7 +12,7 @@
     <article class="article">
         <div class="article__section">
             <h1>Providers</h1>
-            <h2>Start a new provider-test</h2>
+            <h2>Start een nieuwe provider-test</h2>
 
             <form class="form" method="post">{% csrf_token %}
                 {% load_widgets form='forms.html' %}
@@ -21,13 +21,11 @@
                     {% form_field field %}
                 {% endfor %}
 
-                <input type="submit" class="button button--primary" value="Continue">
-                <input type="button" class="button" value="Cancel"
-                       onclick="location.href = '{% url 'server_run:server-run_list' %}';">
+                <input type="submit" class="button button--primary" value="Volgende">
             </form>
 
             {% if object_list %}
-                <h2>Providers list</h2>
+                <h2>Provider tests</h2>
                 <table class="table">
                     {% include 'components/table/header-server-run.html' only %}
                     {% for server_run in object_list %}

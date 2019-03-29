@@ -4,6 +4,7 @@ import logging
 import requests
 
 from urllib import parse
+from zds_client import ClientAuth
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views import View
@@ -37,6 +38,21 @@ from .task import run_tests, stop_session
 logger = logging.getLogger(__name__)
 
 
+
+def get_jwt(session):
+
+    return ClientAuth(
+        client_id=session.client_id,
+        secret=session.secret,
+        scopes=['zds.scopes.zaken.lezen',
+                'zds.scopes.zaaktypes.lezen',
+                'zds.scopes.zaken.aanmaken',
+                'zds.scopes.statussen.toevoegen',
+                'zds.scopes.zaken.bijwerken'],
+        zaaktypes=['*']
+    )
+
+  
 class SessionViewStatusSet(
         mixins.RetrieveModelMixin,
         viewsets.GenericViewSet):
@@ -45,6 +61,7 @@ class SessionViewStatusSet(
     permission_classes = (permissions.IsAuthenticated, IsOwner)
 
     queryset = Session.objects.all()
+
 
 
 class SessionViewSet(
@@ -229,7 +246,7 @@ class RunTest(CSRFExemptMixin, View):
         logger.info("URL: %s", check_url)
         return re.search(parsed_url, check_url) is not None
 
-    def get_http_header(self, request, endpoint):
+    def get_http_header(self, request, endpoint, session):
         '''
         Extracts the http header from the request and add the authorization header for
         gemma platform
@@ -239,6 +256,13 @@ class RunTest(CSRFExemptMixin, View):
         for header, value in request.headers.items():
             if header.lower() not in whitelist:
                 request_headers[header] = value
+
+        if session.session_type.authentication == choices.AuthenticationChoices.jwt:
+            jwt_auth = get_jwt(session.session_type).credentials()
+            for k, i in jwt_auth.items():
+                request_headers[k] = i
+        elif session.session_type.authentication == choices.AuthenticationChoices.header:
+            request_headers['authorization'] = session.session_type.header
 
         # request_headers['host'] = parse.urlparse(endpoint.url).netloc
         return request_headers
@@ -372,7 +396,7 @@ class RunTest(CSRFExemptMixin, View):
     def build_method(self, request_method_name, request, body=False):
         self.session = self.get_queryset()
         eu = get_object_or_404(ExposedUrl, session=self.session, exposed_url=self.kwargs['exposed_url'])
-        request_header = self.get_http_header(request, eu.vng_endpoint)
+        request_header = self.get_http_header(request, eu.vng_endpoint, self.session)
         session_log, session = self.build_session_log(request, request_header)
         if session.is_stopped():
             raise Http404

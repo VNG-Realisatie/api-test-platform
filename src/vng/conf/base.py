@@ -104,6 +104,11 @@ SUBDOMAIN_URLCONFS = {
     '*': 'vng.testsession.urls_api_sub',
 }
 
+SUBDOMAIN_SEPARATOR = '-'
+
+SUBDOMAIN_REGEX = '(?P<submatch>\w+)-'
+
+
 # List of callables that know how to import templates from various sources.
 RAW_TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',

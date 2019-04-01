@@ -9,5 +9,5 @@ from . import api_views, apps
 app_name = apps.AppConfig.__name__
 
 urlpatterns = [
-    url(r'^(?P<relative_url>[-\w|/|.]*)$', api_views.RunTest.as_view(), name='run_test'),
+    url(r'^(?P<relative_url>[-\w|/|\.]*)$', api_views.RunTest.as_view(), name='run_test'),
 ]

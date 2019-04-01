@@ -154,6 +154,15 @@ class TestLog(WebTest):
         self.endpoint_echo_e.session.save()
         self.endpoint_echo_e.save()
 
+        self.endpoint_echo_h = ExposedUrlEchoFactory()
+        self.endpoint_echo_h.session.session_type = self.endpoint_echo_h.vng_endpoint.session_type
+        self.endpoint_echo_h.vng_endpoint.url = 'https://postman-echo.com/headers'
+        self.endpoint_echo_h.vng_endpoint.save()
+        self.endpoint_echo_h.session.session_type.authentication = choices.AuthenticationChoices.jwt
+        self.endpoint_echo_h.session.session_type.save()
+        self.endpoint_echo_h.session.save()
+        self.endpoint_echo_h.save()
+
     def test_retrieve_no_logged(self):
         call = self.app.get(reverse('testsession:session_log', kwargs={'session_id': self.session.id}), status=302)
 
@@ -255,6 +264,17 @@ class TestLog(WebTest):
         call = self.app.post(url, url, user=self.endpoint_echo_e.session.user)
         self.assertIn('Rewriting request body:', mock_logger.info.call_args_list[-7][0][0])
         self.assertIn(url, call.text)
+
+    def test_no_rewrite_header(self):
+
+        url = reverse('testsession:run_test', kwargs={
+            'exposed_url': self.endpoint_echo_h.get_uuid_url(),
+            'name': self.endpoint_echo_h.vng_endpoint.name,
+            'relative_url': ''
+        })
+        headers = {'authorization': 'dummy'}
+        call = self.app.get(url, headers=headers, user=self.endpoint_echo_h.session.user)
+        self.assertEqual(call.json['headers']['authorization'], headers['authorization'])
 
 
 class TestUrlMatchingPatterns(WebTest):

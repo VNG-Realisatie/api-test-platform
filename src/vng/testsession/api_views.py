@@ -38,7 +38,6 @@ from .task import run_tests, stop_session
 logger = logging.getLogger(__name__)
 
 
-
 def get_jwt(session):
 
     return ClientAuth(
@@ -52,7 +51,7 @@ def get_jwt(session):
         zaaktypes=['*']
     )
 
-  
+
 class SessionViewStatusSet(
         mixins.RetrieveModelMixin,
         viewsets.GenericViewSet):
@@ -61,7 +60,6 @@ class SessionViewStatusSet(
     permission_classes = (permissions.IsAuthenticated, IsOwner)
 
     queryset = Session.objects.all()
-
 
 
 class SessionViewSet(
@@ -455,7 +453,7 @@ class RunTest(CSRFExemptMixin, View):
         return self.build_method('delete', request)
 
     def patch(self, request, *args, **kwargs):
-        return self.build_method('patch', request)
+        return self.build_method('patch', request, body=True)
 
     def build_session_log(self, request, header):
         session = self.session

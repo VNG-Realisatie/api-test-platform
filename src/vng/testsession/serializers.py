@@ -10,7 +10,15 @@ class SessionTypesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SessionType
-        fields = ['id', 'name', 'standard', 'role', 'application', 'version']
+        fields = [
+            'id',
+            'name',
+            'standard',
+            'role',
+            'application',
+            'version',
+            'authentication',
+        ]
 
 
 class ExposedUrlSerializer(serializers.ModelSerializer):

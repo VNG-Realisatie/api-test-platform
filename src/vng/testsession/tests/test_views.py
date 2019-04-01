@@ -15,7 +15,7 @@ from vng.accounts.models import User
 from ..models import Session, SessionType, SessionLog, Report, ScenarioCase, VNGEndpoint
 
 from .factories import (
-    SessionFactory, SessionTypeFactory, VNGEndpointDockerFactory, ExposedUrlEchoFactory,
+    SessionFactory, SessionTypeFactory, VNGEndpointDockerFactory, ExposedUrlEchoFactory, VNGEndpointEchoFactory,
     ScenarioCaseFactory, ExposedUrlFactory, SessionLogFactory, VNGEndpointFactory)
 from ...utils import choices
 from ...utils.factories import UserFactory
@@ -154,6 +154,15 @@ class TestLog(WebTest):
         self.endpoint_echo_e.session.save()
         self.endpoint_echo_e.save()
 
+        self.endpoint_echo_h = ExposedUrlEchoFactory()
+        self.endpoint_echo_h.session.session_type = self.endpoint_echo_h.vng_endpoint.session_type
+        self.endpoint_echo_h.vng_endpoint.url = 'https://postman-echo.com/headers'
+        self.endpoint_echo_h.vng_endpoint.save()
+        self.endpoint_echo_h.session.session_type.authentication = choices.AuthenticationChoices.jwt
+        self.endpoint_echo_h.session.session_type.save()
+        self.endpoint_echo_h.session.save()
+        self.endpoint_echo_h.save()
+
     def test_retrieve_no_logged(self):
         call = self.app.get(reverse('testsession:session_log', kwargs={'session_id': self.session.id}), status=302)
 
@@ -256,6 +265,49 @@ class TestLog(WebTest):
         self.assertIn('Rewriting request body:', mock_logger.info.call_args_list[-7][0][0])
         self.assertIn(url, call.text)
 
+    def test_no_rewrite_header(self):
+
+        url = reverse('testsession:run_test', kwargs={
+            'exposed_url': self.endpoint_echo_h.get_uuid_url(),
+            'name': self.endpoint_echo_h.vng_endpoint.name,
+            'relative_url': ''
+        })
+        headers = {'authorization': 'dummy'}
+        call = self.app.get(url, headers=headers, user=self.endpoint_echo_h.session.user)
+        self.assertEqual(call.json['headers']['authorization'], headers['authorization'])
+
+
+class TestUrlMatchingPatterns(WebTest):
+
+    def setUp(self):
+        self.scenario_case = ScenarioCaseFactory(url='test')
+
+        call = self.app.post(reverse('apiv1_auth:rest_login'), params=collections.OrderedDict([
+            ('username', get_username()),
+            ('password', 'password')]))
+        key = get_object(call.body)['key']
+        self.head = {'Authorization': 'Token {}'.format(key)}
+
+    def test_create_session(self):
+        # Save the report list
+        report_list = Report.objects.all()
+        resp = self.app.post_json(reverse('apiv1session:test_session-list'), {
+            'session_type': self.scenario_case.vng_endpoint.session_type.name
+        }, headers=self.head)
+
+        # Call the url with additional padding
+        self.app.get(resp.json['exposedurl_set'][0]['exposed_url'] + 'test' + '/dummy', expect_errors=True)
+        # Check that the report has not been crated
+        self.assertEqual(len(report_list), len(Report.objects.all()))
+
+        # Call the url without further padding
+        self.app.get(resp.json['exposedurl_set'][0]['exposed_url'] + 'test', expect_errors=True)
+        # Check if the report has been created
+        self.assertEqual(len(report_list) + 1, len(Report.objects.all()))
+
+        last_report = Report.objects.latest('id')
+        self.assertEqual(last_report.scenario_case, self.scenario_case)
+
 
 class TestAllProcedure(WebTest):
     csrf_checks = False
@@ -329,3 +381,47 @@ class TestLogNewman(WebTest):
         call = self.app.get(reverse('apiv1session:result_session', kwargs={'pk': session_id}))
         call = get_object(call.body)
         self.assertEqual(call['result'], 'failed')
+
+
+class TestAuthProxy(WebTest):
+
+    def setUp(self):
+        self.user = UserFactory()
+        self.vng_no_auth = VNGEndpointEchoFactory()
+        self.vng_auth = VNGEndpointEchoFactory()
+        self.vng_header = VNGEndpointEchoFactory()
+        self.vng_auth.session_type.authentication = choices.AuthenticationChoices.jwt
+        self.vng_auth.session_type.save()
+        self.vng_header.session_type.authentication = choices.AuthenticationChoices.header
+        self.vng_header.session_type.header = 'test'
+        self.vng_header.session_type.save()
+
+        call = self.app.post(reverse('apiv1_auth:rest_login'), params=collections.OrderedDict([
+            ('username', get_username()),
+            ('password', 'password')]))
+        key = get_object(call.body)['key']
+        self.head = {'Authorization': 'Token {}'.format(key)}
+
+        self.url_no_auth = self.app.post(reverse("apiv1session:test_session-list"), params=collections.OrderedDict([
+            ('session_type', self.vng_no_auth.session_type.name),
+        ]), headers=self.head).json['exposedurl_set'][0]['exposed_url']
+
+        self.url_auth = self.app.post(reverse("apiv1session:test_session-list"), params=collections.OrderedDict([
+            ('session_type', self.vng_auth.session_type.name),
+        ]), headers=self.head).json['exposedurl_set'][0]['exposed_url']
+
+        self.url_head = self.app.post(reverse("apiv1session:test_session-list"), params=collections.OrderedDict([
+            ('session_type', self.vng_header.session_type.name),
+        ]), headers=self.head).json['exposedurl_set'][0]['exposed_url']
+
+    def test_no_auth(self):
+        resp = self.app.post(self.url_no_auth + 'post')
+        self.assertNotIn('authorization', resp.json['headers'])
+
+    def test_auth(self):
+        resp = self.app.post(self.url_auth + 'post')
+        self.assertIn('authorization', resp.json['headers'])
+
+    def test_header(self):
+        resp = self.app.post(self.url_head + 'post')
+        self.assertEqual('test', resp.json['headers']['authorization'])

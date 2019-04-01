@@ -9,7 +9,15 @@ class SessionTypesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SessionType
-        fields = ['id', 'name', 'standard', 'role', 'application', 'version']
+        fields = [
+            'id',
+            'name',
+            'standard',
+            'role',
+            'application',
+            'version',
+            'authentication',
+        ]
 
 
 class ExposedUrlSerializer(serializers.ModelSerializer):
@@ -42,6 +50,21 @@ class ExposedUrlSerializer(serializers.ModelSerializer):
             )
         )
         return v
+
+
+class SessionStatusSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Session
+        fields = [
+            'id',
+            'session_type',
+            'started',
+            'stopped',
+            'status',
+            'deploy_status',
+            'deploy_percentage'
+        ]
 
 
 class SessionSerializer(serializers.ModelSerializer):

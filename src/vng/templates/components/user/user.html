@@ -1,13 +1,15 @@
 <div class="user">
-    <p class="user__name">
     {% if user.is_authenticated %}
-        {{ request.user.username }}</p>
+    <p class="user__name">
+        {{ request.user.username }}
+    </p>
     {% else %}
-        <a class="user__login" href={% url 'auth_login' %}>Login</a>
-        <div class="user__dropdown"><a class="user__logout" href={% url 'registration_register' %}>Register</a></div>
+        <a class="user__login" href="{% url 'auth_login' %}">Login</a>
+        <br />
+        <a class="user__logout" href="{% url 'registration_register' %}">Registreer</a>
     {% endif %}
 
     {% if user.is_authenticated %}
-        <div class="user__dropdown"><a class="user__logout" href={% url 'auth_logout' %}>Logout</a></div>
+        <div class="user__dropdown">&nbsp;&nbsp;<a class="user__logout" href="{% url 'auth_logout' %}">Logout</a></div>
     {% endif %}
 </div>

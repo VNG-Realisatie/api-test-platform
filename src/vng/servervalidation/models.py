@@ -18,8 +18,8 @@ from ..utils import choices
 
 class TestScenario(models.Model):
 
-    name = models.CharField(max_length=200, unique=True)
-    authorization = models.CharField(max_length=20, choices=choices.AuthenticationChoices.choices, default=choices.AuthenticationChoices.jwt)
+    name = models.CharField('Naam', max_length=200, unique=True)
+    authorization = models.CharField('Authorisatie', max_length=20, choices=choices.AuthenticationChoices.choices, default=choices.AuthenticationChoices.jwt)
 
     def __str__(self):
         return self.name
@@ -36,7 +36,7 @@ class TestScenario(models.Model):
 
 class TestScenarioUrl(models.Model):
 
-    name = models.CharField(max_length=200)
+    name = models.CharField('Naam', max_length=200)
     test_scenario = models.ForeignKey(TestScenario, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -44,6 +44,7 @@ class TestScenarioUrl(models.Model):
 
 
 class PostmanTest(OrderedModel):
+
     order_with_respect_to = 'test_scenario'
     test_scenario = models.ForeignKey(TestScenario, on_delete=models.CASCADE)
     validation_file = FilerFileField(null=True, blank=True, default=None, on_delete=models.SET_NULL)
@@ -53,6 +54,7 @@ class PostmanTest(OrderedModel):
 
 
 class ExpectedPostmanResult(OrderedModel):
+
     order_with_respect_to = 'postman_test'
     postman_test = models.ForeignKey(PostmanTest, on_delete=models.CASCADE)
     expected_response = models.CharField(max_length=20, choices=choices.HTTPResponseStatus.choices)
@@ -64,9 +66,9 @@ class ExpectedPostmanResult(OrderedModel):
 class ServerRun(models.Model):
 
     test_scenario = models.ForeignKey(TestScenario, on_delete=models.CASCADE)
-    started = models.DateTimeField(default=timezone.now)
+    started = models.DateTimeField('Gestart op', default=timezone.now)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    stopped = models.DateTimeField(null=True, default=None, blank=True)
+    stopped = models.DateTimeField('Gestopt op', null=True, default=None, blank=True)
     status = models.CharField(max_length=20, choices=choices.StatusChoices.choices, default=choices.StatusChoices.starting)
     client_id = models.TextField(default=None, null=True, blank=True)
     secret = models.TextField(default=None, null=True, blank=True)
@@ -82,18 +84,9 @@ class ServerRun(models.Model):
     def is_running(self):
         return self.status == choices.StatusChoices.running
 
-    def get_fields_no_file(self):
-        '''
-        Used in server-run_detail
-        '''
-        res = []
-        for field in self._meta.fields:
-            if field.get_internal_type() not in ('FileField',):
-                res.append((field.name, field.value_to_string(self)))
-        return res
-
 
 class ServerHeader(models.Model):
+
     server_run = models.ForeignKey(ServerRun, on_delete=models.CASCADE)
     header_key = models.TextField()
     header_value = models.TextField()

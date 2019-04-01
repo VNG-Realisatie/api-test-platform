@@ -4,6 +4,7 @@ import logging
 import requests
 
 from urllib import parse
+from zds_client import ClientAuth
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views import View
@@ -28,12 +29,37 @@ from ..utils.views import CSRFExemptMixin
 
 from .permission import IsOwner
 from .serializers import (
-    SessionSerializer, SessionTypesSerializer, ExposedUrlSerializer, ScenarioCaseSerializer
+    SessionSerializer, SessionTypesSerializer, ExposedUrlSerializer, ScenarioCaseSerializer,
+    SessionStatusSerializer
 )
 from .views import bootstrap_session
 from .task import run_tests, stop_session
 
 logger = logging.getLogger(__name__)
+
+
+def get_jwt(session):
+
+    return ClientAuth(
+        client_id=session.client_id,
+        secret=session.secret,
+        scopes=['zds.scopes.zaken.lezen',
+                'zds.scopes.zaaktypes.lezen',
+                'zds.scopes.zaken.aanmaken',
+                'zds.scopes.statussen.toevoegen',
+                'zds.scopes.zaken.bijwerken'],
+        zaaktypes=['*']
+    )
+
+
+class SessionViewStatusSet(
+        mixins.RetrieveModelMixin,
+        viewsets.GenericViewSet):
+    serializer_class = SessionStatusSerializer
+    authentication_classes = (TokenAuthentication, SessionAuthentication)
+    permission_classes = (permissions.IsAuthenticated, IsOwner)
+
+    queryset = Session.objects.all()
 
 
 class SessionViewSet(
@@ -212,13 +238,13 @@ class RunTest(CSRFExemptMixin, View):
         # casting of the reference url into a regex
         param_pattern = '{[^/]+}'
         any_c = '[^/]+'
-        parsed_url = '( |/)*' + re.sub(param_pattern, any_c, compare)
+        parsed_url = '( |/)*' + re.sub(param_pattern, any_c, compare) + '$'
         check_url = url.replace('/api/v1//', '/api/v1/')
         logger.info("Parsed: %s", parsed_url)
         logger.info("URL: %s", check_url)
         return re.search(parsed_url, check_url) is not None
 
-    def get_http_header(self, request, endpoint):
+    def get_http_header(self, request, endpoint, session):
         '''
         Extracts the http header from the request and add the authorization header for
         gemma platform
@@ -228,6 +254,14 @@ class RunTest(CSRFExemptMixin, View):
         for header, value in request.headers.items():
             if header.lower() not in whitelist:
                 request_headers[header] = value
+
+        if session.session_type.authentication == choices.AuthenticationChoices.jwt:
+            jwt_auth = get_jwt(session.session_type).credentials()
+            for k, i in jwt_auth.items():
+                if k not in request_headers:
+                    request_headers[k] = i
+        elif session.session_type.authentication == choices.AuthenticationChoices.header:
+            request_headers['authorization'] = session.session_type.header
 
         # request_headers['host'] = parse.urlparse(endpoint.url).netloc
         return request_headers
@@ -361,7 +395,7 @@ class RunTest(CSRFExemptMixin, View):
     def build_method(self, request_method_name, request, body=False):
         self.session = self.get_queryset()
         eu = get_object_or_404(ExposedUrl, session=self.session, exposed_url=self.kwargs['exposed_url'])
-        request_header = self.get_http_header(request, eu.vng_endpoint)
+        request_header = self.get_http_header(request, eu.vng_endpoint, self.session)
         session_log, session = self.build_session_log(request, request_header)
         if session.is_stopped():
             raise Http404
@@ -420,7 +454,7 @@ class RunTest(CSRFExemptMixin, View):
         return self.build_method('delete', request)
 
     def patch(self, request, *args, **kwargs):
-        return self.build_method('patch', request)
+        return self.build_method('patch', request, body=True)
 
     def build_session_log(self, request, header):
         session = self.session

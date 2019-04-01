@@ -1,7 +1,9 @@
+from ordered_model.admin import OrderedModelAdmin
 from django.contrib import admin
+
 import vng.testsession.models as model
 
-from ordered_model.admin import OrderedModelAdmin
+from .forms import SessionTypeForm
 
 
 class VNGEndpointInline(admin.TabularInline):
@@ -25,11 +27,12 @@ class ExposedUrl(admin.ModelAdmin):
 
 @admin.register(model.SessionType)
 class SessionTypeAdmin(admin.ModelAdmin):
-    list_display = ['name', 'standard', 'role', 'application', 'version']
+    list_display = ['name', 'standard', 'role', 'application', 'version', 'header']
     list_filter = ['name']
     search_fields = ['name']
 
     inlines = [VNGEndpointInline]
+    form = SessionTypeForm
 
 
 @admin.register(model.Session)

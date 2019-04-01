@@ -15,4 +15,9 @@ class Migration(migrations.Migration):
             name='header',
             field=models.TextField(blank=True, default=None, null=True),
         ),
+        migrations.RenameField(
+            model_name='exposedurl',
+            old_name='exposed_url',
+            new_name='subdomain',
+        ),
     ]

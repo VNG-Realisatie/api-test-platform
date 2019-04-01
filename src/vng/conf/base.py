@@ -105,7 +105,7 @@ SUBDOMAIN_URLCONFS = {
 }
 
 SUBDOMAIN_SEPARATOR = '-'
-
+DEFAULT_URL_SCHEME = 'https'
 
 # List of callables that know how to import templates from various sources.
 RAW_TEMPLATE_LOADERS = (

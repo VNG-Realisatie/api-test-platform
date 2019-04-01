@@ -21,11 +21,11 @@ from ..utils import choices, postman
 
 class SessionType(models.Model):
 
-    name = models.CharField(max_length=200, unique=True)
-    standard = models.CharField(max_length=200, null=True)
-    role = models.CharField(max_length=200, null=True)
-    application = models.CharField(max_length=200, null=True)
-    version = models.CharField(max_length=200, null=True)
+    name = models.CharField('Naam', max_length=200, unique=True)
+    standard = models.CharField('Standaard', max_length=200, null=True)
+    role = models.CharField('Rol', max_length=200, null=True)
+    application = models.CharField('Applicatie', max_length=200, null=True)
+    version = models.CharField('Versie', max_length=200, null=True)
     authentication = models.CharField(max_length=20, default=choices.AuthenticationChoices.no_auth, choices=choices.AuthenticationChoices.choices)
     client_id = models.TextField(default=None, null=True, blank=True)
     secret = models.TextField(default=None, null=True, blank=True)

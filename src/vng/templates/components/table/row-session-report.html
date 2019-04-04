@@ -5,6 +5,11 @@
 <tr>
     <td class="table__cell" >{{ report.scenario_case.http_method }}</td>
     <td class="table__cell" >{{ report.scenario_case.url }}</td>
+    <td class="table__cell" >
+        {% for qps in report.scenario_case.queryparamsscenario_set.all %}
+            {{qps}}
+        {% endfor %}
+    </td>
     {% if report.is_success %}
         <td class="table__cell" {{ green }}>{{ report.result }}</td>
     {% elif report.is_failed %}

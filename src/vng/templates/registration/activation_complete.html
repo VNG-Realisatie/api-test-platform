@@ -1,14 +1,11 @@
 {% extends "registration/registration_base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Account Activated" %}{% endblock %}
+{% block title %}{% trans "Uw account is geactiveerd" %}{% endblock %}
 
 {% block content %}
 <p>
-    {% trans "Your account is now activated." %}
-    {% if not user.is_authenticated %}
-    {% trans "You can log in." %}
-    {% endif %}
+Uw account is nu geactiveerd. U kunt inloggen met de ingevoerde gegevens.
 </p>
 {% endblock %}
 

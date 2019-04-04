@@ -105,6 +105,13 @@ class ScenarioCase(OrderedModel):
         return '{} - {}'.format(self.http_method, self.url)
 
 
+class QueryParamsScenario(models.Model):
+
+    scenario_case = models.ForeignKey(ScenarioCase, on_delete=models.CASCADE)
+    name = models.CharField(max_length=50)
+    expected_value = models.CharField(max_length=50, default='*')
+
+
 class Session(models.Model):
 
     name = models.CharField('Naam', max_length=30, unique=True, null=True)

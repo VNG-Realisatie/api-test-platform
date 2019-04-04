@@ -18,6 +18,10 @@ class ExposedUrlInline(admin.TabularInline):
     model = model.ExposedUrl
 
 
+class QueryParamsScenarioInline(admin.TabularInline):
+    model = model.QueryParamsScenario
+
+
 @admin.register(model.ExposedUrl)
 class ExposedUrl(admin.ModelAdmin):
     list_display = ['session', 'vng_endpoint', 'subdomain', 'id', 'test_session', 'docker_url']
@@ -70,6 +74,13 @@ class ScenarioCaseAdmin(OrderedModelAdmin):
         'vng_endpoint']
     list_filter = ['vng_endpoint__session_type']
     search_fields = ['vng_endpoint']
+    inlines = [QueryParamsScenarioInline]
+
+
+@admin.register(model.QueryParamsScenario)
+class QueryParamsScenarioAdmin(admin.ModelAdmin):
+    list_display = ['name', 'scenario_case', 'expected_value']
+    list_filter = ['scenario_case']
 
 
 @admin.register(model.TestSession)

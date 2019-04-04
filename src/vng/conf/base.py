@@ -219,7 +219,7 @@ FIXTURE_DIRS = (
     os.path.join(DJANGO_PROJECT_DIR, 'fixtures'),
 )
 
-DEFAULT_FROM_EMAIL = 'vng@example.com'
+DEFAULT_FROM_EMAIL = 'test@maykinmedia.nl'
 EMAIL_TIMEOUT = 10
 
 LOGGING_DIR = os.path.join(BASE_DIR, 'log')

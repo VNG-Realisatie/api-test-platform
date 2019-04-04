@@ -14,7 +14,7 @@ pub_key_users:
   - joeri
   - alvise
 
-project_repo: git@github.com:maykinmedia/api-testvoorziening.git
+project_repo: git@github.com:VNG-Realisatie/api-testvoorziening.git
 branch: develop
 
 nginx_server_name: "{{ project_name }}-{{ target }}.maykin.nl"

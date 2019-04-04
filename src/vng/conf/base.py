@@ -368,6 +368,10 @@ ACCOUNT_ACTIVATION_DAYS = 7
 REGISTRATION_FORM = 'vng.utils.forms.RegistrationCaptcha'
 SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
 
+RECAPTCHA_PUBLIC_KEY = '6LcTJJwUAAAAAA2hnSDtDKRUMTfkkutr9fS2ow53'
+RECAPTCHA_PRIVATE_KEY = '6LcTJJwUAAAAACcnz9rUuJ3YOc1qszjk0uigyI3G'
+
+
 CELERY_BEAT_SCHEDULE = {
     'task-number-one': {
         'task': 'vng.testsession.task.purge_sessions',

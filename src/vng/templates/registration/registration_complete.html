@@ -4,7 +4,12 @@
 {% block title %}{% trans "Activation email sent" %}{% endblock %}
 
 {% block content %}
-<p>Er is een e-mail verstuurd. Volg de instructies om het registratieproces af te ronden.</p>
+<article class="article">
+    <div class="article__section">
+        <h2>Registration successful</h2>
+        <p>{% trans "U heeft een e-mail ontvangen met de te volgen stappen om het registreren te voltooien." %}</p>
+    </div>
+</article>
 {% endblock %}
 
 

@@ -36,6 +36,7 @@ class HTTPMethodChoiches(DjangoChoices):
 class HTTPResponseStatus(DjangoChoices):
     OK_200 = ChoiceItem("200 OK")
     CREATED_201 = ChoiceItem("201 Created")
+    NO_CONTENT_204 = ChoiceItem("204 No Content")
     MOVED_301 = ChoiceItem("301 Moved Permanently")
     FOUND_302 = ChoiceItem("302 Found")
     BAD_REQUEST_400 = ChoiceItem("400 Bad Request")

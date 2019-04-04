@@ -259,7 +259,8 @@ class RunTest(CSRFExemptMixin, View):
         if session.session_type.authentication == choices.AuthenticationChoices.jwt:
             jwt_auth = get_jwt(session.session_type).credentials()
             for k, i in jwt_auth.items():
-                request_headers[k] = i
+                if k not in request_headers:
+                    request_headers[k] = i
         elif session.session_type.authentication == choices.AuthenticationChoices.header:
             request_headers['authorization'] = session.session_type.header
 

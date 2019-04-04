@@ -396,7 +396,7 @@ class RunTest(CSRFExemptMixin, View):
             if path.startswith('/'):
                 path = path[1:]
             if ru.startswith(path):
-                self.kwargs['relative_url'] = self.kwargs['relative_url'].strip(path)
+                self.kwargs['relative_url'] = self.kwargs['relative_url'][len(path):]
             # endsperimental
             if eu.vng_endpoint.url.endswith('/'):
                 request_url = '{}{}?{}'.format(eu.vng_endpoint.url, self.kwargs['relative_url'], arguments)

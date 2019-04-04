@@ -4,6 +4,7 @@ import logging
 import requests
 
 from urllib import parse
+from zds_client import ClientAuth
 from subdomains.utils import reverse as reverse_sub
 from django.shortcuts import get_object_or_404
 from django.urls import reverse

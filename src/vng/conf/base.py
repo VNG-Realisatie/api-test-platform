@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django_admin_index',
     'django.contrib.admin',
     'registration',
+    'subdomains',
     # 'django.contrib.admindocs',
     # 'django.contrib.humanize',
     # 'django.contrib.sitemaps',
@@ -89,6 +90,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     # 'django.middleware.locale.LocaleMiddleware',
+    'subdomains.middleware.SubdomainURLRoutingMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -97,6 +99,13 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'vng.urls'
+
+SUBDOMAIN_URLCONFS = {
+    '*': 'vng.testsession.urls_api_sub',
+}
+
+SUBDOMAIN_SEPARATOR = '-'
+DEFAULT_URL_SCHEME = 'https'
 
 # List of callables that know how to import templates from various sources.
 RAW_TEMPLATE_LOADERS = (

@@ -113,10 +113,11 @@ def bootstrap_session(session_pk):
         error_deployment = False
 
         for ep in endpoint:
-            bind_url = ExposedUrl()
-            bind_url.session = session
-            bind_url.vng_endpoint = ep
-            bind_url.save()
+            bind_url = ExposedUrl.objects.create(
+                session=session,
+                vng_endpoint=ep,
+                subdomain='{}'.format(int(time.time()) * 100 + random.randint(0, 99))
+            )
             if ep.docker_image:
                 ip, message = start_app_b8s(session, bind_url)
                 if message is None:
@@ -126,7 +127,6 @@ def bootstrap_session(session_pk):
                     session.status = choices.StatusChoices.error_deploy
                     session.error_message = message
             if not error_deployment:
-                bind_url.exposed_url = '{}'.format(int(time.time()) * 100 + random.randint(0, 99))
                 bind_url.save()
             else:
                 bind_url.delete()

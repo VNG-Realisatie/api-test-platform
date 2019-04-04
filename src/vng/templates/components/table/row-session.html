@@ -1,3 +1,4 @@
+{% load subdomainurls %}
 {% spaceless %}
     <tr>
         <td class="table__cell table_cell--nowrap">
@@ -14,9 +15,9 @@
                 {% for endpoint in session.exposedurl_set.all %}
                     <tr>
                         <td>
-                            {% if endpoint.exposed_url %}
-                                <a href="{% url 'testsession:run_test' endpoint.exposed_url endpoint.vng_endpoint.name '' %}">
-                                    {{endpoint.exposed_url}}/{{endpoint.vng_endpoint.name }}
+                            {% if endpoint.subdomain %}
+                                <a href="{% url_sub 'serverproxy:run_test' endpoint.subdomain '' %}">
+                                    {{endpoint.subdomain}}/{{endpoint.vng_endpoint.name }}
                                 </a>
                             {% endif %}
                         <td>

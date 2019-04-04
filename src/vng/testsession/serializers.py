@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.urls import reverse
 from django.conf import settings
+from subdomains.utils import reverse as reverse_sub
 
 from .models import SessionType, ExposedUrl, Session, ScenarioCase
 
@@ -29,7 +30,7 @@ class ExposedUrlSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ExposedUrl
-        fields = ['id', 'exposed_url', 'session', 'vng_endpoint']
+        fields = ['id', 'subdomain', 'session', 'vng_endpoint']
 
     def to_representation(self, value):
         v = super().to_representation(value)
@@ -39,16 +40,12 @@ class ExposedUrlSerializer(serializers.ModelSerializer):
         else:
             host = 'https://{}'.format(request.get_host())
 
-        v['exposed_url'] = '{}{}'.format(
-            host,
-            reverse(
-                'testsession:run_test', kwargs={
-                    'exposed_url': value.get_uuid_url(),
-                    'name': value.vng_endpoint.name,
-                    'relative_url': ''
-                }
-            )
+        v['subdomain'] = reverse_sub(
+            'serverproxy:run_test', subdomain=value.subdomain, kwargs={
+                'relative_url': ''
+            }
         )
+
         return v
 
 

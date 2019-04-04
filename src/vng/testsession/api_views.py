@@ -5,6 +5,7 @@ import requests
 
 from urllib import parse
 from zds_client import ClientAuth
+from subdomains.utils import reverse as reverse_sub
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views import View
@@ -228,7 +229,7 @@ class RunTest(CSRFExemptMixin, View):
     error_codes = [(400, 599)]  # boundaries considered as errors
 
     def get_queryset(self):
-        return get_object_or_404(ExposedUrl, exposed_url=self.kwargs['exposed_url']).session
+        return get_object_or_404(ExposedUrl, subdomain=self.request.subdomain).session
 
     def match_url(self, url, compare):
         '''
@@ -296,17 +297,6 @@ class RunTest(CSRFExemptMixin, View):
                     logger.info("Saving report: %s", report.result)
                     report.save()
 
-    def get_reverse_runtest(self, host, exposed_url):
-        sub = '{}{}'.format(
-            host,
-            reverse('testsession:run_test', kwargs={
-                'exposed_url': exposed_url.get_uuid_url(),
-                'name': exposed_url.vng_endpoint.name,
-                'relative_url': ''
-            })
-        )
-        return sub
-
     def sub_url_response(self, content, host, endpoint):
         '''
         Replace the url of the response body
@@ -320,11 +310,14 @@ class RunTest(CSRFExemptMixin, View):
             Str -- The body after the rewrite
         '''
 
-        sub = self.get_reverse_runtest(host, endpoint)
+        sub = host
         if endpoint.vng_endpoint.url is not None:
             if not endpoint.vng_endpoint.url.endswith('/'):
                 if sub.endswith('/'):
                     sub = sub[:-1]
+            else:
+                if not sub.endswith('/'):
+                    sub = sub + '/'
             return re.sub(endpoint.vng_endpoint.url, sub, content)
         else:
             query = parse.urlparse(sub)
@@ -346,9 +339,15 @@ class RunTest(CSRFExemptMixin, View):
         Returns:
             Str -- The body after the rewrite
         '''
-        sub = self.get_reverse_runtest(host, endpoint)
+        sub = host
 
         if endpoint.vng_endpoint.url is not None:
+            if not endpoint.vng_endpoint.url.endswith('/'):
+                if sub.endswith('/'):
+                    sub = sub[:-1]
+            else:
+                if not sub.endswith('/'):
+                    sub = sub + '/'
             return re.sub(sub, endpoint.vng_endpoint.url, content)
         else:
             query = parse.urlparse(sub)
@@ -366,10 +365,8 @@ class RunTest(CSRFExemptMixin, View):
         https://testplatform/runtest/XXXX/api/v1/zaken/123
         """
         parsed = response.text
-        if settings.DEBUG:
-            host = 'http://{}'.format(request.get_host())
-        else:
-            host = 'https://{}'.format(request.get_host())
+        protocol = settings.DEFAULT_URL_SCHEME
+        host = '{}://{}'.format(protocol, request.get_host())
         for ep in endpoints:
             logger.info("Rewriting response body:")
             parsed = self.sub_url_response(parsed, host, ep)
@@ -383,26 +380,24 @@ class RunTest(CSRFExemptMixin, View):
         https://ref.tst.vng.cloud/zrc/api/v1/zaken/123
         """
         parsed = request.body.decode('utf-8')
-        if settings.DEBUG:
-            host = 'http://{}'.format(request.get_host())
-        else:
-            host = 'https://{}'.format(request.get_host())
+        protocol = settings.DEFAULT_URL_SCHEME
+        host = '{}://{}'.format(protocol, request.get_host())
         for eu in exposed:
             logger.info("Rewriting request body:")
             parsed = self.sub_url_request(parsed, host, eu)
         return parsed
 
-    def build_method(self, request_method_name, request, body=False):
-        self.session = self.get_queryset()
-        eu = get_object_or_404(ExposedUrl, session=self.session, exposed_url=self.kwargs['exposed_url'])
-        request_header = self.get_http_header(request, eu.vng_endpoint, self.session)
-        session_log, session = self.build_session_log(request, request_header)
-        if session.is_stopped():
-            raise Http404
-        endpoints = ExposedUrl.objects.filter(session=session)
-        arguments = request.META['QUERY_STRING']
-
+    def build_url(self, eu, arguments):
+        ru = self.kwargs['relative_url']
         if eu.vng_endpoint.url is not None:
+            # sperimental
+            # TODO: check if required or not
+            path = parse.urlparse(eu.vng_endpoint.url).path
+            if path.startswith('/'):
+                path = path[1:]
+            if ru.startswith(path):
+                self.kwargs['relative_url'] = self.kwargs['relative_url'].strip(path)
+            # endsperimental
             if eu.vng_endpoint.url.endswith('/'):
                 request_url = '{}{}?{}'.format(eu.vng_endpoint.url, self.kwargs['relative_url'], arguments)
             else:
@@ -411,6 +406,19 @@ class RunTest(CSRFExemptMixin, View):
             request_url = 'http://{}:{}/{}?{}'.format(eu.docker_url, 8080, self.kwargs['relative_url'], arguments)
         if arguments == '':
             request_url = request_url[:-1]
+        return request_url
+
+    def build_method(self, request_method_name, request, body=False):
+        self.session = self.get_queryset()
+        eu = get_object_or_404(ExposedUrl, session=self.session, subdomain=request.subdomain)
+        request_header = self.get_http_header(request, eu.vng_endpoint, self.session)
+        session_log, session = self.build_session_log(request, request_header)
+        if session.is_stopped():
+            raise Http404
+        endpoints = ExposedUrl.objects.filter(session=session)
+        arguments = request.META['QUERY_STRING']
+
+        request_url = self.build_url(eu, arguments)
         method = getattr(requests, request_method_name)
 
         def make_call():
@@ -434,7 +442,7 @@ class RunTest(CSRFExemptMixin, View):
 
         self.add_response(response, session_log, request_url, request)
 
-        self.save_call(request, request_method_name, self.kwargs['exposed_url'],
+        self.save_call(request, request_method_name, request.subdomain,
                        self.kwargs['relative_url'], session, response.status_code, session_log)
         reply = HttpResponse(self.parse_response(response, request, eu.vng_endpoint.url, endpoints), status=response.status_code)
         if 'Content-type' in response.headers:

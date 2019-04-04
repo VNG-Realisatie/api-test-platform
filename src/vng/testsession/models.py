@@ -152,14 +152,14 @@ class Session(models.Model):
 
 class ExposedUrl(models.Model):
 
-    exposed_url = models.CharField(max_length=200)
+    subdomain = models.CharField(max_length=200, unique=True)
     session = models.ForeignKey(Session, on_delete=models.CASCADE)
     vng_endpoint = models.ForeignKey(VNGEndpoint, on_delete=models.CASCADE)
     test_session = models.ForeignKey(TestSession, blank=True, null=True, default=None, on_delete=models.CASCADE)
     docker_url = models.CharField(max_length=200, blank=True, null=True, default=None)
 
     def get_uuid_url(self):
-        return re.search('([^/]+)', self.exposed_url).group(1)
+        return re.search('([^/]+)', self.subdomain).group(1)
 
     def __str__(self):
         return '{} {}'.format(self.session, self.vng_endpoint)

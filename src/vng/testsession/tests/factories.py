@@ -101,7 +101,7 @@ class ExposedUrlEchoFactory(Dmf):
     test_session = factory.SubFactory(TestSessionFactory)
     session = factory.SubFactory(SessionFactory)
     vng_endpoint = factory.SubFactory(VNGEndpointEchoFactory)
-    exposed_url = factory.Sequence(lambda n: 'tst_echo{}'.format(n))
+    subdomain = factory.Sequence(lambda n: 'tstecho{}'.format(n))
 
 
 class ExposedUrlFactory(Dmf):
@@ -112,7 +112,7 @@ class ExposedUrlFactory(Dmf):
     test_session = factory.SubFactory(TestSessionFactory)
     session = factory.SubFactory(SessionFactory)
     vng_endpoint = factory.SubFactory(VNGEndpointFactory)
-    exposed_url = factory.Sequence(lambda n: 'tst{}'.format(n))
+    subdomain = factory.Sequence(lambda n: 'tst{}'.format(n))
 
 
 class SessionLogFactory(Dmf):

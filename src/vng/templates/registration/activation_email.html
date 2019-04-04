@@ -3,22 +3,16 @@
 <html lang="en">
 
 <head>
-    <title>{{ site.name }} {% trans "registration" %}</title>
+    <title>Registratie op het VNG API test-platform</title>
 </head>
 
 <body>
 <p>
-    {% blocktrans with site_name=site.name %}
-    You (or someone pretending to be you) have asked to register an account at
-    {{ site_name }}.  If this wasn't you, please ignore this email
-    and your address will be removed from our records.
-    {% endblocktrans %}
+  U heeft zich aangemeld voor een account op het API test-platform van VNG.
+  Mocht u dit niet hebben gedaan dan kunt u dit bericht negeren. Uw e-mailadres wordt automatisch verwijderd.
 </p>
 <p>
-    {% blocktrans %}
-    To activate this account, please click the following link within the next
-    {{ expiration_days }} days:
-    {% endblocktrans %}
+Om dit account te accepteren klik op de volgende link binnen 7 dagen:
 </p>
 
 <p>
@@ -27,10 +21,10 @@
     </a>
 </p>
 <p>
-    {% blocktrans with site_name=site.name %}
-    Sincerely,
-    {{ site_name }} Management
-    {% endblocktrans %}
+  met vriendelijke groet,
+</p>
+<p>
+  VNG API test-platform beheer
 </p>
 </body>
 

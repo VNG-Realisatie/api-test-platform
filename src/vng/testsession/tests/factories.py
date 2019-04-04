@@ -4,7 +4,7 @@ from factory.django import DjangoModelFactory as Dmf
 from vng.accounts.models import User
 from django.conf import settings
 from filer.models import File
-from ..models import SessionType, Session, ScenarioCase, VNGEndpoint, ExposedUrl, SessionLog, TestSession
+from ..models import SessionType, Session, ScenarioCase, VNGEndpoint, ExposedUrl, SessionLog, TestSession, QueryParamsScenario
 from ...utils.factories import UserFactory
 from ...utils import choices
 
@@ -78,6 +78,16 @@ class ScenarioCaseFactory(Dmf):
     url = 'unknown/23'
     http_method = choices.HTTPMethodChoiches.GET
     vng_endpoint = factory.SubFactory(VNGEndpointFactory)
+
+
+class QueryParamsScenarioFactory(Dmf):
+
+    class Meta:
+        model = QueryParamsScenario
+
+    scenario_case = factory.SubFactory(ScenarioCaseFactory)
+    name = 'tparam'
+    expected_value = '*'
 
 
 class SessionFactory(Dmf):

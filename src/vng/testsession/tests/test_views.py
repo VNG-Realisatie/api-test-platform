@@ -275,7 +275,8 @@ class TestLog(WebTest):
             'relative_url': ''
         })
         headers = {'authorization': 'dummy'}
-        call = self.app.get(url, headers=headers, user=self.endpoint_echo_h.session.user)
+        call = self.app.get(url, extra_environ={'HTTP_HOST': '{}-example.com'.format(self.endpoint_echo_h.subdomain)},
+                            headers=headers, user=self.endpoint_echo_h.session.user)
         self.assertEqual(call.json['headers']['authorization'], headers['authorization'])
 
 

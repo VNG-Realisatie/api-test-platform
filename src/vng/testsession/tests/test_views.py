@@ -271,10 +271,7 @@ class TestLog(WebTest):
         self.assertIn(url, call.text)
 
     def test_no_rewrite_header(self):
-
-        url = reverse('testsession:run_test', kwargs={
-            'exposed_url': self.endpoint_echo_h.get_uuid_url(),
-            'name': self.endpoint_echo_h.vng_endpoint.name,
+        url = reverse_sub('serverproxy:run_test', self.endpoint_echo_h.subdomain, kwargs={
             'relative_url': ''
         })
         headers = {'authorization': 'dummy'}

@@ -19,7 +19,8 @@ from ..models import Session, SessionType, SessionLog, Report, ScenarioCase, VNG
 
 from .factories import (
     SessionFactory, SessionTypeFactory, VNGEndpointDockerFactory, ExposedUrlEchoFactory, VNGEndpointEchoFactory,
-    ScenarioCaseFactory, ExposedUrlFactory, SessionLogFactory, VNGEndpointFactory)
+    ScenarioCaseFactory, ExposedUrlFactory, SessionLogFactory, VNGEndpointFactory, QueryParamsScenarioFactory
+)
 from ...utils import choices
 from ...utils.factories import UserFactory
 
@@ -278,6 +279,50 @@ class TestLog(WebTest):
         call = self.app.get(url, extra_environ={'HTTP_HOST': '{}-example.com'.format(self.endpoint_echo_h.subdomain)},
                             headers=headers, user=self.endpoint_echo_h.session.user)
         self.assertEqual(call.json['headers']['authorization'], headers['authorization'])
+
+
+class TestUrlParam(WebTest):
+
+    def setUp(self):
+        self.qp = QueryParamsScenarioFactory()
+        self.scenario_case = self.qp.scenario_case
+        self.vng_endpoint = self.scenario_case.vng_endpoint
+        self.session = SessionFactory(session_type=self.vng_endpoint.session_type)
+        self.exposed_url = ExposedUrlFactory(session=self.session, vng_endpoint=self.vng_endpoint)
+
+    def test_query_params_no_match(self):
+        report = len(Report.objects.filter(scenario_case=self.scenario_case))
+        url = reverse_sub('serverproxy:run_test', self.exposed_url.subdomain, kwargs={
+            'relative_url': self.scenario_case.url
+        })
+        call = self.app.get(url, extra_environ={'HTTP_HOST': '{}-example.com'.format(self.exposed_url.subdomain)},
+                            user=self.session.user, status=[404])
+        self.assertEqual(report, len(Report.objects.filter(scenario_case=self.scenario_case)))
+
+    def test_query_params_match_wild(self):
+        report = len(Report.objects.filter(scenario_case=self.scenario_case))
+        url = reverse_sub('serverproxy:run_test', self.exposed_url.subdomain, kwargs={
+            'relative_url': self.scenario_case.url
+        })
+        call = self.app.get(url,
+                            {self.qp.name: 'dummy'},
+                            extra_environ={'HTTP_HOST': '{}-example.com'.format(self.exposed_url.subdomain)},
+                            user=self.session.user, status=[404]
+                            )
+        self.assertEqual(report + 1, len(Report.objects.filter(scenario_case=self.scenario_case)))
+
+    def test_query_params_match(self):
+        qp = QueryParamsScenarioFactory(scenario_case=self.scenario_case, expected_value='dummy', name='strict')
+        report = len(Report.objects.filter(scenario_case=self.scenario_case))
+        url = reverse_sub('serverproxy:run_test', self.exposed_url.subdomain, kwargs={
+            'relative_url': self.scenario_case.url
+        })
+        call = self.app.get(url,
+                            {'strict': 'dummy', self.qp.name: 'dummy'},
+                            extra_environ={'HTTP_HOST': '{}-example.com'.format(self.exposed_url.subdomain)},
+                            user=self.session.user, status=[404]
+                            )
+        self.assertEqual(report + 1, len(Report.objects.filter(scenario_case=self.scenario_case)))
 
 
 class TestUrlMatchingPatterns(WebTest):

@@ -22,7 +22,8 @@ from rest_framework.authentication import (
     SessionAuthentication, TokenAuthentication
 )
 from vng.testsession.models import (
-    ScenarioCase, Session, SessionLog, SessionType, ExposedUrl, Report
+    ScenarioCase, Session, SessionLog, SessionType, ExposedUrl, Report,
+    QueryParamsScenario
 )
 
 from ..utils import choices
@@ -231,7 +232,7 @@ class RunTest(CSRFExemptMixin, View):
     def get_queryset(self):
         return get_object_or_404(ExposedUrl, subdomain=self.request.subdomain).session
 
-    def match_url(self, url, compare):
+    def match_url(self, url, compare, query_params):
         '''
         Return True if the url matches the compare url.
         The compare url contains the parameter matching group {param}
@@ -239,11 +240,21 @@ class RunTest(CSRFExemptMixin, View):
         # casting of the reference url into a regex
         param_pattern = '{[^/]+}'
         any_c = '[^/]+'
-        parsed_url = '( |/)*' + re.sub(param_pattern, any_c, compare) + '$'
+        parsed_url = '( |/)*' + re.sub(param_pattern, any_c, compare)
+        if len(query_params) == 0:
+            parsed_url += '$'
+        else:
+            parsed_url += '?'
         check_url = url.replace('/api/v1//', '/api/v1/')
         logger.info("Parsed: %s", parsed_url)
         logger.info("URL: %s", check_url)
-        return re.search(parsed_url, check_url) is not None
+        if re.search(parsed_url, check_url) is not None:
+            params = getattr(self.request, self.request.method)
+            for qp in query_params:
+                par = params.get(qp.name)
+                if par is None or (qp.expected_value != '*' and qp.expected_value != par):
+                    return False
+            return True
 
     def get_http_header(self, request, endpoint, session):
         '''
@@ -280,7 +291,7 @@ class RunTest(CSRFExemptMixin, View):
         for case in scenario_cases:
             logger.info(case)
             if case.http_method.lower() == request_method_name.lower():
-                if self.match_url(request.build_absolute_uri(), case.url):
+                if self.match_url(request.build_absolute_uri(), case.url, QueryParamsScenario.objects.filter(scenario_case=case)):
                     pre_exist = Report.objects.filter(scenario_case=case).filter(session_log__session=session)
                     if len(pre_exist) == 0:
                         report = Report(scenario_case=case, session_log=session_log)

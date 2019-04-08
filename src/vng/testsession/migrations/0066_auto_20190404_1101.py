@@ -28,7 +28,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='exposedurl',
             name='subdomain',
-            field=models.CharField(max_length=200, unique=True),
+            field=models.CharField(max_length=200, unique=True, null=True),
         ),
         migrations.AlterField(
             model_name='session',

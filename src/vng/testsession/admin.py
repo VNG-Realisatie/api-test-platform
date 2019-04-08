@@ -26,7 +26,7 @@ class QueryParamsScenarioInline(admin.TabularInline):
 class ExposedUrl(admin.ModelAdmin):
     list_display = ['session', 'vng_endpoint', 'subdomain', 'id', 'test_session', 'docker_url']
     list_filter = ['session']
-    search_fields = ['session']
+    search_fields = ['session__name']
 
 
 @admin.register(model.SessionType)

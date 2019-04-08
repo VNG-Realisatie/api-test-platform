@@ -31,6 +31,7 @@ class HTTPMethodChoiches(DjangoChoices):
     GET = ChoiceItem("GET")
     PUT = ChoiceItem("PUT")
     DELETE = ChoiceItem("DELETE")
+    PATCH = ChoiceItem("PATCH")
 
 
 class HTTPResponseStatus(DjangoChoices):

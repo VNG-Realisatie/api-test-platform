@@ -165,7 +165,7 @@ class Session(models.Model):
 
 class ExposedUrl(models.Model):
 
-    subdomain = models.CharField(max_length=200, unique=True)
+    subdomain = models.CharField(max_length=200, unique=True, null=True)
     session = models.ForeignKey(Session, on_delete=models.CASCADE)
     vng_endpoint = models.ForeignKey(VNGEndpoint, on_delete=models.CASCADE)
     test_session = models.ForeignKey(TestSession, blank=True, null=True, default=None, on_delete=models.CASCADE)

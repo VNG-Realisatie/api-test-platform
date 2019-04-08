@@ -58,8 +58,6 @@ class SessionViewStatusSet(
         mixins.RetrieveModelMixin,
         viewsets.GenericViewSet):
     serializer_class = SessionStatusSerializer
-    authentication_classes = (TokenAuthentication, SessionAuthentication)
-    permission_classes = (permissions.IsAuthenticated, IsOwner)
 
     queryset = Session.objects.all()
 

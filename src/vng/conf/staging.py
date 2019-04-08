@@ -27,7 +27,7 @@ DATABASES = {
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '-tu6q!6cvp@pe5!97e1i##lmp_%yxjj$k20*ul+ac^u(p2)clj'
 
-ALLOWED_HOSTS = ['vng-staging.maykin.nl', '*vng-staging.maykin.nl']
+ALLOWED_HOSTS = ['.maykin.nl']  # not possible in other way due to django constraints
 
 # Redis cache backend
 # NOTE: If you do not use a cache backend, do not use a session backend or

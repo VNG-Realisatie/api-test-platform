@@ -25,7 +25,11 @@
             {% endif %}
         {% endif %}
     </td>
-    <td class="table__cell">
+    {% if server_run.is_running %}
+        <td class="table__cell" id='starting' server_run_id='{{server_run.id}}'>
+    {% else %}
+        <td class="table__cell">
+    {% endif %}
         {% if not server_run.is_stopped and not server_run.is_running %}
         <form method="POST" action="{% url 'server_run:server-run_stop' server_run.id %}">
             {% csrf_token %}

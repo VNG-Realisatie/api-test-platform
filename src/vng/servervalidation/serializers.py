@@ -48,7 +48,9 @@ class ServerRunSerializer(serializers.ModelSerializer):
             'client_id',
             'secret',
             'endpoints',
-            'status'
+            'status',
+            'percentage_exec',
+            'status_exec'
         ]
         read_only_fields = ['id', 'started', 'stopped', 'status']
 

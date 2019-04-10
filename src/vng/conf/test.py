@@ -23,10 +23,15 @@ DATABASES = {
     }
 }
 
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_HOST_USER = 'apikey'
+EMAIL_HOST_PASSWORD = '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'
+
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '-tu6q!6cvp@pe5!97e1i##lmp_%yxjj$k20*ul+ac^u(p2)clj'
 
 ALLOWED_HOSTS = ['.maykin.nl']  # not possible in other way due to django constraints
+
 
 # Redis cache backend
 # NOTE: If you do not use a cache backend, do not use a session backend or

@@ -289,6 +289,13 @@ class TestUrlParam(WebTest):
         self.vng_endpoint = self.scenario_case.vng_endpoint
         self.session = SessionFactory(session_type=self.vng_endpoint.session_type)
         self.exposed_url = ExposedUrlFactory(session=self.session, vng_endpoint=self.vng_endpoint)
+        self.qp_p = QueryParamsScenarioFactory()
+        self.scenario_case_p = self.qp_p.scenario_case
+        self.scenario_case_p.http_method = choices.HTTPMethodChoiches.PUT
+        self.scenario_case_p.save()
+        self.vng_endpoint_p = self.scenario_case_p.vng_endpoint
+        self.session_p = SessionFactory(session_type=self.vng_endpoint_p.session_type)
+        self.exposed_url_p = ExposedUrlFactory(session=self.session_p, vng_endpoint=self.vng_endpoint_p)
 
     def test_query_params_no_match(self):
         report = len(Report.objects.filter(scenario_case=self.scenario_case))
@@ -323,6 +330,17 @@ class TestUrlParam(WebTest):
                             user=self.session.user, status=[404]
                             )
         self.assertEqual(report + 1, len(Report.objects.filter(scenario_case=self.scenario_case)))
+
+    def test_query_params_put(self):
+        report = len(Report.objects.filter(scenario_case=self.scenario_case_p))
+        url = reverse_sub('serverproxy:run_test', self.exposed_url_p.subdomain, kwargs={
+            'relative_url': self.scenario_case_p.url
+        })
+        call = self.app.put(url + '?{}=dummy'.format(self.qp_p.name),
+                            extra_environ={'HTTP_HOST': '{}-example.com'.format(self.exposed_url_p.subdomain)},
+                            user=self.session_p.user, status=[404]
+                            )
+        self.assertEqual(report + 1, len(Report.objects.filter(scenario_case=self.scenario_case_p)))
 
 
 class TestUrlMatchingPatterns(WebTest):

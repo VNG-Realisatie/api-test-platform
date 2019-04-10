@@ -301,9 +301,11 @@ class RunTest(CSRFExemptMixin, View):
                     for a, b in self.error_codes:
                         if status_code >= a and status_code <= b:
                             report.result = choices.HTTPCallChoiches.failed
+                            report.session_log = session_log
                             is_failed = True
                             break
-                    if not is_failed and not report.is_failed():
+                    if not is_failed and not report.is_failed() or (session.sandbox and not is_failed):
+                        report.session_log = session_log
                         report.result = choices.HTTPCallChoiches.success
                     logger.info("Saving report: %s", report.result)
                     report.save()

@@ -30,7 +30,7 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
     context_object_name = 'sessions_list'
     paginate_by = 10
     model = Session
-    fields = ['session_type']
+    fields = ['session_type', 'sandbox']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

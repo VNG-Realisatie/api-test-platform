@@ -136,3 +136,13 @@
         {% endwith %}
     </li>
 {% endblock %}
+
+
+{% block CheckboxInput %}
+    <div class="form__control" role="group">
+        {% reuse '_label' %}
+        <input name="{{ html_name }}" class="form__check" type="checkbox" id="{{ id_for_label }}" value="{{ id }}">
+        {% reuse '_help' %}
+        {% reuse '_errors' %}
+    </div>
+{% endblock %}

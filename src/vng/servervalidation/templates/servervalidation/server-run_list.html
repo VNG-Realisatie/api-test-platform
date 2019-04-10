@@ -26,13 +26,25 @@
 
             {% if object_list %}
                 <h2>Provider tests</h2>
+
                 <table class="table">
                     {% include 'components/table/header-server-run.html' only %}
                     {% for server_run in object_list %}
-                        {% include 'components/table/row-server-run.html' with server_run=server_run %}
+                        {% if not server_run.scheduled %}
+                            {% include 'components/table/row-server-run.html' with server_run=server_run %}
+                        {% endif %}
                     {% endfor %}
                 </table>
+                <h2>Scheduled</h2>
 
+                <table class="table">
+                    {% include 'components/table/header-server-run-scheduled.html' only %}
+                    {% for server_run in object_list %}
+                        {% if server_run.scheduled %}
+                            {% include 'components/table/row-server-run-scheduled.html' with server_run=server_run %}
+                        {% endif %}
+                    {% endfor %}
+                </table>
                 {% include 'components/pagination/pagination.html' %}
             {% endif %}
         </div>

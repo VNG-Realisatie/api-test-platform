@@ -130,7 +130,8 @@ class CreateEndpoint(LoginRequiredMixin, CreateView):
         ep.server_run = self.server
         ep.save()
         self.endpoints.append(ep)
-        execute_test.delay(self.server.pk)
+        if not self.server.scheduled:
+            execute_test.delay(self.server.pk)
 
         return HttpResponseRedirect(self.get_success_url())
 

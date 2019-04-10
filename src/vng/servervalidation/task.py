@@ -29,6 +29,13 @@ def get_jwt(server_run):
 
 
 @app.task
+def execute_test_scheduled():
+    server_run = ServerRun.object.filter(scheduled=True)
+    for sr in server_run:
+        execute_test(sr.pk)
+
+
+@app.task
 def execute_test(server_run_pk):
     server_run = ServerRun.objects.get(pk=server_run_pk)
     endpoints = Endpoint.objects.filter(server_run=server_run)

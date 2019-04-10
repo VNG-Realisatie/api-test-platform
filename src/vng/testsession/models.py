@@ -130,6 +130,7 @@ class Session(models.Model):
     error_message = models.TextField(blank=True, null=True, default=None)
     deploy_status = models.TextField(blank=True, null=True, default=None)
     deploy_percentage = models.IntegerField(default=None, null=True, blank=True)
+    sandbox = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = 'Sessie'

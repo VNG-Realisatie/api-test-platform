@@ -30,6 +30,7 @@ class TestScenarioSelect(LoginRequiredMixin, FormView, MultipleObjectMixin, Mult
 
     def form_valid(self, form):
         ts_id = form.instance.test_scenario.id
+        self.request.session['server_run_scheduled'] = form.instance.scheduled
         return redirect(reverse('server_run:server-run_create', kwargs={
             "test_id": ts_id
         }))
@@ -76,7 +77,7 @@ class CreateEndpoint(LoginRequiredMixin, CreateView):
 
     def fetch_server(self):
         ts = get_object_or_404(TestScenario, pk=self.kwargs['test_id'])
-        self.server = ServerRun(user=self.request.user, test_scenario=ts)
+        self.server = ServerRun(user=self.request.user, test_scenario=ts, scheduled=self.request.session['server_run_scheduled'])
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)

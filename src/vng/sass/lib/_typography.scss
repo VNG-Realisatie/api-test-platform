@@ -208,3 +208,7 @@ $typography-margin-2: $grid-margin-2;
   font-weight: normal;
   font-style: italic;
 }
+
+p {
+  @include body(true);
+}

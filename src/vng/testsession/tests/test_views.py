@@ -15,7 +15,7 @@ from django_webtest import WebTest
 
 from vng.accounts.models import User
 
-from ..models import Session, SessionType, SessionLog, Report, ScenarioCase, VNGEndpoint
+from ..models import Session, SessionType, SessionLog, Report, ScenarioCase, VNGEndpoint, ExposedUrl
 
 from .factories import (
     SessionFactory, SessionTypeFactory, VNGEndpointDockerFactory, ExposedUrlEchoFactory, VNGEndpointEchoFactory,
@@ -376,6 +376,63 @@ class TestUrlMatchingPatterns(WebTest):
 
         last_report = Report.objects.latest('id')
         self.assertEqual(last_report.scenario_case, self.scenario_case)
+
+
+class TestSandboxMode(WebTest):
+
+    def setUp(self):
+        self.user = UserFactory()
+        self.sc = ScenarioCaseFactory(url='status/{code}')
+        self.sc.vng_endpoint.url = 'https://postman-echo.com/'
+        self.sc.vng_endpoint.save()
+
+    def test_sandbox(self):
+        call = self.app.get(reverse('testsession:sessions'), user=self.user)
+        form = call.forms[0]
+        form['session_type'].select('2')
+        form['sandbox'] = True
+        form.submit()
+        session = Session.objects.all().order_by('-pk')[0]
+        eu = ExposedUrl.objects.get(session=session)
+
+        all_rep = Report.objects.all()
+        url = reverse_sub('serverproxy:run_test', eu.subdomain, kwargs={
+            'relative_url': 'status/404'
+        })
+        call = self.app.get(url, extra_environ={'HTTP_HOST': '{}-example.com'.format(eu.subdomain)}, user=session.user, status=[404])
+        report = Report.objects.get(scenario_case=self.sc)
+
+        self.assertEqual(choices.HTTPCallChoiches.failed, report.result)
+        url = reverse_sub('serverproxy:run_test', eu.subdomain, kwargs={
+            'relative_url': 'status/200'
+        })
+        call = self.app.get(url, extra_environ={'HTTP_HOST': '{}-example.com'.format(eu.subdomain)}, user=session.user)
+        report = Report.objects.get(scenario_case=self.sc)
+        self.assertEqual(choices.HTTPCallChoiches.success, report.result)
+
+    def test_no_sandbox(self):
+        call = self.app.get(reverse('testsession:sessions'), user=self.user)
+        form = call.forms[0]
+        form['session_type'].select('2')
+        form['sandbox'] = False
+        form.submit()
+        session = Session.objects.all().order_by('-pk')[0]
+        eu = ExposedUrl.objects.get(session=session)
+
+        all_rep = Report.objects.all()
+        url = reverse_sub('serverproxy:run_test', eu.subdomain, kwargs={
+            'relative_url': 'status/404'
+        })
+        call = self.app.get(url, extra_environ={'HTTP_HOST': '{}-example.com'.format(eu.subdomain)}, user=session.user, status=[404])
+        report = Report.objects.get(scenario_case=self.sc)
+
+        self.assertEqual(choices.HTTPCallChoiches.failed, report.result)
+        url = reverse_sub('serverproxy:run_test', eu.subdomain, kwargs={
+            'relative_url': 'status/200'
+        })
+        call = self.app.get(url, extra_environ={'HTTP_HOST': '{}-example.com'.format(eu.subdomain)}, user=session.user)
+        report = Report.objects.get(scenario_case=self.sc)
+        self.assertEqual(choices.HTTPCallChoiches.failed, report.result)
 
 
 class TestAllProcedure(WebTest):

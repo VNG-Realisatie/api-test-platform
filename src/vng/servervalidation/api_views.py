@@ -148,4 +148,4 @@ class ResultServerView(LoginRequiredMixin, views.APIView):
 
             postman_res_output['status'] = postman.status
             response.append(postman_res_output)
-        return JsonResponse(response)
+        return JsonResponse(response, safe=False)

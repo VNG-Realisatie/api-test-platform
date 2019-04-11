@@ -72,10 +72,7 @@ class CreateEndpoint(LoginRequiredMixin, CreateView):
 
     def fetch_server(self):
         ts = get_object_or_404(TestScenario, pk=self.kwargs['test_id'])
-        if self.request.session['server_run_scheduled']:
-            self.server = ServerRun(user=self.request.user, test_scenario=ts, scheduled=True, status=choices.StatusWithScheduledChoices.scheduled)
-        else:
-            self.server = ServerRun(user=self.request.user, test_scenario=ts, scheduled=False)
+        self.server = ServerRun(user=self.request.user, test_scenario=ts, scheduled=self.request.session['server_run_scheduled'])
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)

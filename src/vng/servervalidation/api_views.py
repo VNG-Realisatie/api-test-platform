@@ -61,7 +61,10 @@ class ServerRunViewSet(
 
     @transaction.atomic
     def perform_create(self, serializer):
-        self.server = ServerRun(user=self.request.user, test_scenario=ts, scheduled=self.request.session['server_run_scheduled'])
+        if 'endpoints' in serializer._kwargs['data']:
+            server = serializer.save(user=self.request.user, pk=None, started=timezone.now(), endpoint_list=serializer._kwargs['data'].pop('endpoints'))
+        else:
+            server = serializer.save(user=self.request.user, pk=None, started=timezone.now())
 
 
 class ResultServerViewShield(

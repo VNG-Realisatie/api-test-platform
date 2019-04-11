@@ -32,6 +32,10 @@ $table-color-border: $color-gray;
 
     }
 
+    &--error {
+      background-color: #ff6666;
+    }
+
     word-break: break-all;
 
     &:last-of-type {

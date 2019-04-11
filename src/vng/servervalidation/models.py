@@ -153,6 +153,12 @@ class PostmanTestResult(models.Model):
                 else:
                     req['url'] = '{}/{}'.format(url, path)
 
+                execution['item']['error_test'] = True
+                for assertion in execution['assertions']:
+                    if 'error' in assertion:
+                        execution['item']['error_test'] = True
+                        break
+
         return res
 
     def save_json(self, filename, file):

@@ -3,7 +3,7 @@ import json
 from itertools import zip_longest
 
 from django.shortcuts import get_object_or_404
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.utils import timezone
 
 from django.db import transaction
@@ -19,7 +19,7 @@ from rest_framework.authentication import (
 from drf_yasg.utils import swagger_auto_schema
 
 # from ..permissions.UserPermissions import isOwner
-from .serializers import ServerRunSerializer, ServerRunPayloadExample
+from .serializers import ServerRunSerializer, ServerRunPayloadExample, ServerRunResultShield
 from .models import ServerRun, PostmanTestResult, ExpectedPostmanResult
 
 
@@ -65,6 +65,34 @@ class ServerRunViewSet(
             server = serializer.save(user=self.request.user, pk=None, started=timezone.now(), endpoint_list=serializer._kwargs['data'].pop('endpoints'))
         else:
             server = serializer.save(user=self.request.user, pk=None, started=timezone.now())
+
+# TODO: decorate it setting the response serializer
+
+
+class ResultServerViewShield(
+        mixins.RetrieveModelMixin,
+        viewsets.GenericViewSet):
+
+    def retrieve(self, request, pk=None):
+        ptr = get_object_or_404(PostmanTestResult, server_run__pk=pk)
+
+        res = False
+        for calls in ptr.get_json_obj():
+            res = res or (calls['response']['code'] >= 200 and calls['response']['code'] < 400 and not calls['item']['error_test'])
+        if res:
+            message = 'Success'
+            color = 'green'
+        else:
+            message = 'Failed'
+            color = 'red'
+        result = {
+            'schemaVersion': 1,
+            'label': 'Test provider',
+            'message': message,
+            'color': color,
+        }
+
+        return JsonResponse(result)
 
 
 class ResultServerView(LoginRequiredMixin, views.APIView):

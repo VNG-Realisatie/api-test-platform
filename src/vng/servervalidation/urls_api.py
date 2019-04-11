@@ -11,6 +11,7 @@ app_name = apps.AppConfig.__name__
 
 router = routers.DefaultRouter()
 router.register('provider-run', api_views.ServerRunViewSet, base_name='api_server-run')
+router.register('provider-run-shield', api_views.ResultServerViewShield, base_name='api_server-run-shield')
 
 
 urlpatterns = [

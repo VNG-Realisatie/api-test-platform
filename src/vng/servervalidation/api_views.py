@@ -61,18 +61,14 @@ class ServerRunViewSet(
 
     @transaction.atomic
     def perform_create(self, serializer):
-        if 'endpoints' in serializer._kwargs['data']:
-            server = serializer.save(user=self.request.user, pk=None, started=timezone.now(), endpoint_list=serializer._kwargs['data'].pop('endpoints'))
-        else:
-            server = serializer.save(user=self.request.user, pk=None, started=timezone.now())
-
-# TODO: decorate it setting the response serializer
+        self.server = ServerRun(user=self.request.user, test_scenario=ts, scheduled=self.request.session['server_run_scheduled'])
 
 
 class ResultServerViewShield(
         mixins.RetrieveModelMixin,
         viewsets.GenericViewSet):
 
+    @swagger_auto_schema(responses={200: ServerRunResultShield})
     def retrieve(self, request, pk=None):
         ptr = get_object_or_404(PostmanTestResult, server_run__pk=pk)
 

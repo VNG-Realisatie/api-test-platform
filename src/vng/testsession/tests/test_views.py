@@ -413,8 +413,6 @@ class TestSandboxMode(WebTest):
     def test_no_sandbox(self):
         call = self.app.get(reverse('testsession:sessions'), user=self.user)
         form = call.forms[0]
-        import pdb
-        pdb.set_trace()
         form['session_type'].select(form['session_type'].options[-1][0])
         form['sandbox'] = False
         form.submit()

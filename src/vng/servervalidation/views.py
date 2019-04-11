@@ -72,7 +72,10 @@ class CreateEndpoint(LoginRequiredMixin, CreateView):
 
     def fetch_server(self):
         ts = get_object_or_404(TestScenario, pk=self.kwargs['test_id'])
-        self.server = ServerRun(user=self.request.user, test_scenario=ts, scheduled=self.request.session['server_run_scheduled'])
+        if self.request.session['server_run_scheduled']:
+            self.server = ServerRun(user=self.request.user, test_scenario=ts, scheduled=True, status=choices.StatusWithScheduledChoices.scheduled)
+        else:
+            self.server = ServerRun(user=self.request.user, test_scenario=ts, scheduled=False)
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
@@ -118,7 +121,10 @@ class CreateEndpoint(LoginRequiredMixin, CreateView):
         form.instance.server_run = self.server
         if len(tsu) > 0:
             form.instance.test_scenario_url = tsu[0]
-        self.server.status = choices.StatusChoices.running
+        if self.server.scheduled:
+            self.server.status = choices.StatusWithScheduledChoices.scheduled
+        else:
+            self.server.status = choices.StatusWithScheduledChoices.running
         self.server.save()
 
         ep = form.instance
@@ -152,7 +158,7 @@ class StopServer(OwnerSingleObject, View):
     def post(self, request, *args, **kwargs):
         server = self.get_object()
         server.stopped = timezone.now()
-        server.status = choices.StatusChoices.stopped
+        server.status = choices.StatusWithScheduledChoices.stopped
         server.save()
         return redirect(reverse('server_run:server-run_list'))
 

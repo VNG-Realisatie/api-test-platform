@@ -30,7 +30,7 @@ def get_jwt(server_run):
 
 @app.task
 def execute_test_scheduled():
-    server_run = ServerRun.objects.filter(scheduled=True).filter(status=choices.StatusChoices.running)
+    server_run = ServerRun.objects.filter(scheduled=True).filter(status=choices.StatusWithScheduledChoices.running)
     for sr in server_run:
         execute_test(sr.pk, stop=False)
 
@@ -85,6 +85,6 @@ def execute_test(server_run_pk, stop=True):
         server_run.status_exec = 'An error occurred'
     server_run.percentage_exec = 100
     if stop:
-        server_run.status = choices.StatusChoices.stopped
+        server_run.status = choices.StatusWithScheduledChoices.stopped
         server_run.stopped = timezone.now()
     server_run.save()

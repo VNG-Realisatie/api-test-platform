@@ -30,7 +30,7 @@ def get_jwt(server_run):
 
 @app.task
 def execute_test_scheduled():
-    server_run = ServerRun.objects.filter(scheduled=True).filter(status=choices.StatusWithScheduledChoices.running)
+    server_run = ServerRun.objects.filter(scheduled=True).filter(status=choices.StatusWithScheduledChoices.scheduled)
     for sr in server_run:
         execute_test(sr.pk, stop=False)
 
@@ -38,6 +38,7 @@ def execute_test_scheduled():
 @app.task
 def execute_test(server_run_pk, stop=True):
     server_run = ServerRun.objects.get(pk=server_run_pk)
+    server_run.status = choices.StatusWithScheduledChoices.run
     endpoints = Endpoint.objects.filter(server_run=server_run)
 
     file_name = str(uuid.uuid4())

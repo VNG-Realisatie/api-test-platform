@@ -150,6 +150,17 @@ class ServerRunOutput(OwnerSingleObject, DetailView):
         return context
 
 
+class TriggerServerRun(OwnerSingleObject, View):
+
+    model = ServerRun
+    pk_name = 'server_id'
+
+    def get(self, request, *args, **kwargs):
+        server = self.get_object()
+        execute_test(server.pk, stop=False)
+        return redirect(reverse('server_run:server-run_list'))
+
+
 class StopServer(OwnerSingleObject, View):
 
     model = ServerRun

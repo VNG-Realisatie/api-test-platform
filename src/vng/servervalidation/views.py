@@ -51,11 +51,6 @@ class TestScenarioSelect(LoginRequiredMixin, FormView, MultipleObjectMixin, Mult
                         success = False
 
                 sr.success = success
-        data['running'] = False
-        for server in server_list:
-            if server.is_running():
-                data['running'] = True
-                break
         return data
 
     def get(self, request, *args, **kwargs):

@@ -30,7 +30,7 @@ def get_jwt(server_run):
 
 @app.task
 def execute_test_scheduled():
-    server_run = ServerRun.object.filter(scheduled=True)
+    server_run = ServerRun.objects.filter(scheduled=True).filter(status=choices.StatusChoices.running)
     for sr in server_run:
         execute_test(sr.pk)
 

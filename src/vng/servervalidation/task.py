@@ -38,7 +38,7 @@ def execute_test_scheduled():
 @app.task
 def execute_test(server_run_pk, stop=True):
     server_run = ServerRun.objects.get(pk=server_run_pk)
-    server_run.status = choices.StatusWithScheduledChoices.run
+    server_run.status = choices.StatusWithScheduledChoices.running
     endpoints = Endpoint.objects.filter(server_run=server_run)
 
     file_name = str(uuid.uuid4())

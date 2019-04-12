@@ -336,6 +336,8 @@ class RunTest(CSRFExemptMixin, View):
             return re.sub(endpoint.vng_endpoint.url, sub, content)
         else:
             query = parse.urlparse(sub)
+            if not sub.endswith('/'):
+                sub = sub + '/'
             return re.sub(
                 '{}://{}:{}/'.format(query.scheme, endpoint.docker_url, 8080),
                 sub,
@@ -355,7 +357,6 @@ class RunTest(CSRFExemptMixin, View):
             Str -- The body after the rewrite
         '''
         sub = host
-
         if endpoint.vng_endpoint.url is not None:
             if not endpoint.vng_endpoint.url.endswith('/'):
                 if sub.endswith('/'):
@@ -366,6 +367,8 @@ class RunTest(CSRFExemptMixin, View):
             return re.sub(sub, endpoint.vng_endpoint.url, content)
         else:
             query = parse.urlparse(sub)
+            if not sub.endswith('/'):
+                sub = sub + '/'
             return re.sub(
                 sub,
                 '{}://{}:{}/'.format(query.scheme, endpoint.docker_url, 8080),

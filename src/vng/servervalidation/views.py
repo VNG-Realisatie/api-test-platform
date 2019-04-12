@@ -30,6 +30,7 @@ class TestScenarioSelect(LoginRequiredMixin, FormView, MultipleObjectMixin, Mult
 
     def form_valid(self, form):
         ts_id = form.instance.test_scenario.id
+        self.request.session['server_run_scheduled'] = form.instance.scheduled
         return redirect(reverse('server_run:server-run_create', kwargs={
             "test_id": ts_id
         }))
@@ -50,11 +51,6 @@ class TestScenarioSelect(LoginRequiredMixin, FormView, MultipleObjectMixin, Mult
                         success = False
 
                 sr.success = success
-        data['running'] = False
-        for server in server_list:
-            if server.is_running():
-                data['running'] = True
-                break
         return data
 
     def get(self, request, *args, **kwargs):
@@ -76,7 +72,7 @@ class CreateEndpoint(LoginRequiredMixin, CreateView):
 
     def fetch_server(self):
         ts = get_object_or_404(TestScenario, pk=self.kwargs['test_id'])
-        self.server = ServerRun(user=self.request.user, test_scenario=ts)
+        self.server = ServerRun(user=self.request.user, test_scenario=ts, scheduled=self.request.session['server_run_scheduled'])
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
@@ -122,14 +118,18 @@ class CreateEndpoint(LoginRequiredMixin, CreateView):
         form.instance.server_run = self.server
         if len(tsu) > 0:
             form.instance.test_scenario_url = tsu[0]
-        self.server.status = choices.StatusChoices.running
+        if self.server.scheduled:
+            self.server.status = choices.StatusWithScheduledChoices.scheduled
+        else:
+            self.server.status = choices.StatusWithScheduledChoices.running
         self.server.save()
 
         ep = form.instance
         ep.server_run = self.server
         ep.save()
         self.endpoints.append(ep)
-        execute_test.delay(self.server.pk)
+        if not self.server.scheduled:
+            execute_test.delay(self.server.pk)
 
         return HttpResponseRedirect(self.get_success_url())
 
@@ -147,6 +147,17 @@ class ServerRunOutput(OwnerSingleObject, DetailView):
         return context
 
 
+class TriggerServerRun(OwnerSingleObject, View):
+
+    model = ServerRun
+    pk_name = 'server_id'
+
+    def get(self, request, *args, **kwargs):
+        server = self.get_object()
+        execute_test(server.pk, stop=False)
+        return redirect(reverse('server_run:server-run_list'))
+
+
 class StopServer(OwnerSingleObject, View):
 
     model = ServerRun
@@ -155,7 +166,7 @@ class StopServer(OwnerSingleObject, View):
     def post(self, request, *args, **kwargs):
         server = self.get_object()
         server.stopped = timezone.now()
-        server.status = choices.StatusChoices.stopped
+        server.status = choices.StatusWithScheduledChoices.stopped
         server.save()
         return redirect(reverse('server_run:server-run_list'))
 

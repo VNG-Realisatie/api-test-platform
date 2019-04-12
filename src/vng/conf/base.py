@@ -377,4 +377,8 @@ CELERY_BEAT_SCHEDULE = {
         'task': 'vng.testsession.task.purge_sessions',
         'schedule': crontab(hour=0, minute=0),
     },
+    'scheduled-test-provider': {
+        'task': 'vng.servervalidation.task.execute_test_scheduled',
+        'schedule': crontab(hour=0, minute=0),
+    },
 }

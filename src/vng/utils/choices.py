@@ -15,6 +15,10 @@ class StatusChoices(DjangoChoices):
     error_deploy = ChoiceItem("Error deployment")
 
 
+class StatusWithScheduledChoices(StatusChoices):
+    scheduled = ChoiceItem("Scheduled")
+
+
 class ResultChoices(DjangoChoices):
     success = ChoiceItem("Success")
     failed = ChoiceItem("Failed")

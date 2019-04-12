@@ -34,3 +34,4 @@ dump.rdb
 maintenance.html
 vng.db-journal
 src/celerybeat-schedule
+src/celerybeat.pid

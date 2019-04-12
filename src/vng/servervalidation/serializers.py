@@ -109,3 +109,10 @@ class ServerRunPayloadExample(ServerRunSerializer):
                 'trt': 1
             }
         }
+
+
+class ServerRunResultShield(serializers.Serializer):
+    schemaVersion = serializers.IntegerField(default=1)
+    label = serializers.CharField(max_length=200)
+    message = serializers.CharField(max_length=200)
+    color = serializers.CharField(max_length=200)

@@ -390,7 +390,7 @@ class TestSandboxMode(WebTest):
     def test_sandbox(self):
         call = self.app.get(reverse('testsession:sessions'), user=self.user)
         form = call.forms[0]
-        form['session_type'].select('2')
+        form['session_type'].select(form['session_type'].options[-1][0])
         form['sandbox'] = True
         form.submit()
         session = Session.objects.all().order_by('-pk')[0]
@@ -414,7 +414,7 @@ class TestSandboxMode(WebTest):
     def test_no_sandbox(self):
         call = self.app.get(reverse('testsession:sessions'), user=self.user)
         form = call.forms[0]
-        form['session_type'].select('2')
+        form['session_type'].select(form['session_type'].options[-1][0])
         form['sandbox'] = False
         form.submit()
         session = Session.objects.all().order_by('-pk')[0]

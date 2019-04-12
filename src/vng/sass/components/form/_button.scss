@@ -20,6 +20,11 @@
   &:hover {
     background-color: darken($form-color-input-background, 5%);
   }
+
+  &--small {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
 }
 
 .button--primary:not([disabled]) {
@@ -31,7 +36,7 @@
     background-color: darken($form-color-primary, 5%);
   }
 
-  + .button {
+  +.button {
     margin-left: 1rem;
   }
 }

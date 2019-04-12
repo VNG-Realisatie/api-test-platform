@@ -15,6 +15,7 @@ from django_webtest import WebTest
 
 from vng.accounts.models import User
 
+from ..api_views import RunTest
 from ..models import Session, SessionType, SessionLog, Report, ScenarioCase, VNGEndpoint, ExposedUrl
 
 from .factories import (
@@ -555,3 +556,34 @@ class TestAuthProxy(WebTest):
         http_host = get_subdomain(self.url_head)
         resp = self.app.post(self.url_head + 'post', extra_environ={'HTTP_HOST': '{}-example.com'.format(http_host)})
         self.assertEqual('test', resp.json['headers']['authorization'])
+
+
+class TestRewriteBody(WebTest):
+
+    def setUp(self):
+        self.euv = RunTest()
+        self.ep = ExposedUrlFactory()
+        self.ep_docker = VNGEndpointDockerFactory()
+        self.ep_d = ExposedUrlFactory(vng_endpoint=self.ep_docker, docker_url='127.0.0.1')
+        self.host = 'example.com'
+
+    def test_request(self):
+        content = 'dummy{}/dummy'.format(self.host)
+        res = self.euv.sub_url_request(content, self.host, self.ep)
+        self.assertEqual('dummy{}/dummy'.format(self.ep.vng_endpoint.url), res)
+
+    def test_response(self):
+        content = 'dummy{}/dummy'.format(self.ep.vng_endpoint.url)
+        res = self.euv.sub_url_response(content, self.host, self.ep)
+        print(res)
+        self.assertEqual('dummy{}/dummy'.format(self.host), res)
+
+    def test_request_docker(self):
+        content = 'dummy{}/dummy'.format(self.host)
+        res = self.euv.sub_url_request(content, self.host, self.ep_d)
+        self.assertEqual('dummy://{}:8080/dummy'.format(self.ep_d.docker_url), res)
+
+    def test_response_docker(self):
+        content = 'dummy://{}:8080/dummy'.format(self.ep_d.docker_url)
+        res = self.euv.sub_url_response(content, self.host, self.ep_d)
+        self.assertEqual('dummy{}/dummy'.format(self.host), res)

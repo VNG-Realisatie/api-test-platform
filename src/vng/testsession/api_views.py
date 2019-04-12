@@ -357,7 +357,6 @@ class RunTest(CSRFExemptMixin, View):
             Str -- The body after the rewrite
         '''
         sub = host
-
         if endpoint.vng_endpoint.url is not None:
             if not endpoint.vng_endpoint.url.endswith('/'):
                 if sub.endswith('/'):

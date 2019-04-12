@@ -32,14 +32,6 @@
   }
 
 
-  & &__check {
-    @include body;
-    @include responsive(width, 100%, 50%, 50%, 50%);
-    min-height: $form-margin-4;
-    line-height: $form-margin-4;
-  }
-
-
   & &__error-list,
   & &__error {
     list-style: none;

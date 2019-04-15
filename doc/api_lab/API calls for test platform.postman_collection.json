@@ -1,0 +1,336 @@
+{
+	"info": {
+		"_postman_id": "0d751f31-eb3d-4e76-86d4-8c474a1aa676",
+		"name": "API calls for test platform",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "0a6a7da4-1e47-44b4-a530-c5db398009de",
+						"exec": [
+							"",
+							"var jsonData = pm.response.json();",
+							"console.log(jsonData);",
+							"pm.globals.set(\"key\", jsonData.key);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"username\": \"henri\",\n\t\"password\": \"henrihenri\"\n}"
+				},
+				"url": {
+					"raw": "https://vng-staging.maykin.nl/api/auth/login/",
+					"protocol": "https",
+					"host": [
+						"vng-staging",
+						"maykin",
+						"nl"
+					],
+					"path": [
+						"api",
+						"auth",
+						"login",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Session types",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a7ba93a5-5d08-4494-8e83-1767be104981",
+						"exec": [
+							"",
+							"var jsonData = pm.response.json();",
+							"pm.globals.set(\"session_type\", jsonData[0].name);",
+							"zaaktype = pm.variables.get(\"session_type\");",
+							"console.log(zaaktype);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https://vng-staging.maykin.nl/api/v1/sessiontypes/",
+					"protocol": "https",
+					"host": [
+						"vng-staging",
+						"maykin",
+						"nl"
+					],
+					"path": [
+						"api",
+						"v1",
+						"sessiontypes",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create session",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "61d8b58e-e703-4585-b052-bbf4c212c6a1",
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"console.log(jsonData);",
+							"for(var i in jsonData.exposedurl_set){",
+							"    var obj = jsonData.exposedurl_set[i];",
+							"    //console.log(obj.vng_endpoint);",
+							"    //console.log(obj.exposed_url);",
+							"    //pm.globals.set(obj.subdomain, obj.subdomain.replace(/\\/$/, \"\"));    //trailing slash wordt verwijderd",
+							"    pm.globals.set(obj.vng_endpoint, obj.subdomain + \"api/v1\");",
+							"    //console.log(obj.subdomain + \"api/v1\");",
+							"}",
+							"pm.globals.set(\"session_id\", jsonData.id);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Token {{key}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"session_type\": \"MOR sessie\"\n}"
+				},
+				"url": {
+					"raw": "https://vng-staging.maykin.nl/api/v1/testsessions/",
+					"protocol": "https",
+					"host": [
+						"vng-staging",
+						"maykin",
+						"nl"
+					],
+					"path": [
+						"api",
+						"v1",
+						"testsessions",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "session_status",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "54c9b79a-8994-4542-9ad3-5bed1f877556",
+						"exec": [
+							"",
+							"function pausecomp(millis){",
+							"  var date = new Date();",
+							"  var curDate = null;",
+							"  do { curDate = new Date(); }",
+							"  while(curDate-date < millis);",
+							"}",
+							"",
+							"var jsonData = pm.response.json();",
+							"if(jsonData.status != \"running\"){",
+							"    pausecomp(4000);",
+							"    postman.setNextRequest(\"session_status\");",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token {{key}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https://vng-staging.maykin.nl/api/v1/testsessions/{{session_id}}/",
+					"protocol": "https",
+					"host": [
+						"vng-staging",
+						"maykin",
+						"nl"
+					],
+					"path": [
+						"api",
+						"v1",
+						"testsessions",
+						"{{session_id}}",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get results",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "54c9b79a-8994-4542-9ad3-5bed1f877556",
+						"exec": [
+							"",
+							"function pausecomp(millis){",
+							"  var date = new Date();",
+							"  var curDate = null;",
+							"  do { curDate = new Date(); }",
+							"  while(curDate-date < millis);",
+							"}",
+							"",
+							"var jsonData = pm.response.json();",
+							"if(jsonData.status != \"running\"){",
+							"    pausecomp(4000);",
+							"    postman.setNextRequest(\"session_status\");",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token {{key}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https://vng-staging.maykin.nl/api/v1/testsessions/{{session_id}}/result",
+					"protocol": "https",
+					"host": [
+						"vng-staging",
+						"maykin",
+						"nl"
+					],
+					"path": [
+						"api",
+						"v1",
+						"testsessions",
+						"{{session_id}}",
+						"result"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "stop session",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https://vng-staging.maykin.nl/api/v1/testsessions/{{session_id}}/stop",
+					"protocol": "https",
+					"host": [
+						"vng-staging",
+						"maykin",
+						"nl"
+					],
+					"path": [
+						"api",
+						"v1",
+						"testsessions",
+						"{{session_id}}",
+						"stop"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "15e10eed-af4d-4325-93e9-6631a67503cc",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "66960653-352b-4f11-b29d-c87cf6661cb7",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

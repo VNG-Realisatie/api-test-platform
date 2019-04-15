@@ -1,0 +1,666 @@
+{
+	"info": {
+		"_postman_id": "557399ac-9395-42a4-80b0-7c18bef85171",
+		"name": "MOR demo",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Haal catalogussen op",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f6acbeab-a255-4c56-a376-551d2fc6ff51",
+						"exec": [
+							"var catalogussen = pm.response.json();",
+							"len = catalogussen.length;",
+							"for(i=1; i < len; i++){",
+							"    if(catalogussen[i].domein == \"TEST\"){",
+							"        zaaktype_url = catalogussen[i].zaaktypen[0];",
+							"        informatieobjecttype_url = catalogussen[i].informatieobjecttypen[0];",
+							"    }",
+							"}",
+							"pm.globals.set(\"zaaktype_url\", zaaktype_url);",
+							"pm.globals.set(\"informatieobjecttype_url\", informatieobjecttype_url);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "397fef33-1d59-41a2-8c7b-04042af7eede",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{ZTC}}/catalogussen",
+					"host": [
+						"{{ZTC}}"
+					],
+					"path": [
+						"catalogussen"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Haal het zaaktype \"Melding Openbare Ruimte\" op",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "43be3234-af43-4089-8cdb-33bdd7197669",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "d06709ba-5a49-4402-a74e-f8b51ed8fb4e",
+						"exec": [
+							"var zaaktype = pm.response.json();",
+							"pm.globals.set(\"statustype0_url\", zaaktype.statustypen[0]);  //eerste status",
+							"",
+							"pm.test(\"Zaaktype is Melding Openbare Ruimte\", function () {",
+							"    pm.expect(zaaktype.omschrijving).to.equal(\"Melding Openbare Ruimte\");",
+							"});",
+							"",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{zaaktype_url}}",
+					"host": [
+						"{{zaaktype_url}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Voeg zaak \"Scheve stoeptegel\" toe",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "00a339cc-747a-4305-890c-bd390f6d8c99",
+						"exec": [
+							"var zaak = pm.response.json();",
+							"pm.globals.set(\"zaak_url\", zaak.url);",
+							"",
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"Data checks succeeded\", function () {",
+							"    pm.expect(zaak.toelichting).to.eql(\"Scheve stoeptegel\");",
+							"    pm.expect(zaak.omschrijving).to.eql(\"\");",
+							"    pm.expect(zaak.zaakgeometrie).to.not.equal(null);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "503c5ed2-2489-47c9-a2f1-e9d77b31a669",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept-Crs",
+						"value": "EPSG:4326",
+						"type": "text"
+					},
+					{
+						"key": "Content-Crs",
+						"value": "EPSG:4326",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"bronorganisatie\": \"509381406\",\n    \"startdatum\": \"2023-12-06\",\n    \"toelichting\": \"Scheve stoeptegel\",\n    \"verantwoordelijkeOrganisatie\": \"245122461\",\n    \"zaakgeometrie\": {\n        \"coordinates\": [\n            4.892651601528996,\n            52.36858261583563\n        ],\n        \"type\": \"Point\"\n    },\n    \"zaaktype\": \"https://ref.tst.vng.cloud/ztc/api/v1/catalogussen/f7afd156-c8f5-4666-b8b5-28a4a9b5dfc7/zaaktypen/0119dd4e-7be9-477e-bccf-75023b1453c1\"\n}"
+				},
+				"url": {
+					"raw": "{{ZRC}}/zaken",
+					"host": [
+						"{{ZRC}}"
+					],
+					"path": [
+						"zaken"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Voeg zaak \"Scheve stoeptegel\" toe",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept-Crs",
+								"value": "EPSG:4326",
+								"type": "text"
+							},
+							{
+								"key": "Content-Crs",
+								"value": "EPSG:4326",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"bronorganisatie\": \"509381406\",\n    \"registratiedatum\": \"2018-12-06\",\n    \"startdatum\": \"2023-12-06\",\n    \"toelichting\": \"Scheve stoeptegel\",\n    \"verantwoordelijkeOrganisatie\": \"245122461\",\n    \"zaakgeometrie\": {\n        \"coordinates\": [\n            4.892651601528996,\n            52.36858261583563\n        ],\n        \"type\": \"Point\"\n    },\n    \"zaaktype\": \"https://ref.tst.vng.cloud/ztc/api/v1/catalogussen/f7afd156-c8f5-4666-b8b5-28a4a9b5dfc7/zaaktypen/0119dd4e-7be9-477e-bccf-75023b1453c1\"\n}"
+						},
+						"url": {
+							"raw": "{{ZRC}}/zaken",
+							"host": [
+								"{{ZRC}}"
+							],
+							"path": [
+								"zaken"
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Fri, 05 Apr 2019 15:10:08 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "1128"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Location",
+							"value": "https://ref.tst.vng.cloud/zrc/api/v1/zaken/f0fa6483-1528-423c-a336-d9ba5defcf65"
+						},
+						{
+							"key": "Allow",
+							"value": "GET, POST, HEAD, OPTIONS"
+						},
+						{
+							"key": "Content-Crs",
+							"value": "EPSG:4326"
+						},
+						{
+							"key": "API-version",
+							"value": "1.0.0-alpha"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "SAMEORIGIN"
+						},
+						{
+							"key": "Vary",
+							"value": "Cookie"
+						},
+						{
+							"key": "Strict-Transport-Security",
+							"value": "max-age=15724800; includeSubDomains;"
+						},
+						{
+							"key": "X-XSS-Protection",
+							"value": "1"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "private"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"url\": \"https://ref.tst.vng.cloud/zrc/api/v1/zaken/f0fa6483-1528-423c-a336-d9ba5defcf65\",\n    \"identificatie\": \"53378d19-3e7e-4acd-92b0-b69d67d955ca\",\n    \"bronorganisatie\": \"509381406\",\n    \"omschrijving\": \"\",\n    \"toelichting\": \"Scheve stoeptegel\",\n    \"zaaktype\": \"https://ref.tst.vng.cloud/ztc/api/v1/catalogussen/f7afd156-c8f5-4666-b8b5-28a4a9b5dfc7/zaaktypen/0119dd4e-7be9-477e-bccf-75023b1453c1\",\n    \"registratiedatum\": \"2018-12-06\",\n    \"verantwoordelijkeOrganisatie\": \"245122461\",\n    \"startdatum\": \"2023-12-06\",\n    \"einddatum\": null,\n    \"einddatumGepland\": null,\n    \"uiterlijkeEinddatumAfdoening\": null,\n    \"publicatiedatum\": null,\n    \"communicatiekanaal\": \"\",\n    \"productenOfDiensten\": [],\n    \"vertrouwelijkheidaanduiding\": \"OPENBAAR\",\n    \"betalingsindicatie\": \"\",\n    \"betalingsindicatieWeergave\": \"\",\n    \"laatsteBetaaldatum\": null,\n    \"zaakgeometrie\": {\n        \"type\": \"Point\",\n        \"coordinates\": [\n            4.892651601528996,\n            52.36858261583563\n        ]\n    },\n    \"verlenging\": {\n        \"reden\": \"\",\n        \"duur\": null\n    },\n    \"opschorting\": {\n        \"indicatie\": false,\n        \"reden\": \"\"\n    },\n    \"selectielijstklasse\": \"\",\n    \"hoofdzaak\": null,\n    \"deelzaken\": [],\n    \"relevanteAndereZaken\": [],\n    \"status\": null,\n    \"kenmerken\": [],\n    \"archiefnominatie\": null,\n    \"archiefstatus\": \"nog_te_archiveren\",\n    \"archiefactiedatum\": null,\n    \"resultaat\": null\n}"
+				}
+			]
+		},
+		{
+			"name": "Haal statustype \"Nieuw\" op",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "78938b35-294d-4c2d-b3d5-a8e1570d8556",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{statustype0_url}}",
+					"host": [
+						"{{statustype0_url}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Zet status van de zaak op \"Nieuw\"",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "f5cd971f-d871-4f5b-bdaf-c29afe3be757",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept-Crs",
+						"value": "EPSG:4326",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"datumStatusGezet\": \"2018-12-06T13:44:57.452269\",\n    \"statusType\": \"https://ref.tst.vng.cloud/ztc/api/v1/catalogussen/f7afd156-c8f5-4666-b8b5-28a4a9b5dfc7/zaaktypen/0119dd4e-7be9-477e-bccf-75023b1453c1/statustypen/e53becac-cb4f-4dc7-911b-7d2ca066c041\",\n    \"statustoelichting\": \"Melding ontvangen\",\n    \"zaak\": \"{{zaak_url}}\"\n}"
+				},
+				"url": {
+					"raw": "{{ZRC}}/statussen",
+					"host": [
+						"{{ZRC}}"
+					],
+					"path": [
+						"statussen"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Haal het informatieobjecttype \"Afbeelding\" op",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{informatieobjecttype_url}}",
+					"host": [
+						"{{informatieobjecttype_url}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Voeg afbeelding toe aan documenten",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b76e58f3-a79e-489b-a4f7-dd4fe0374c63",
+						"exec": [
+							"var enkelvoudiginformatieobject = pm.response.json();",
+							"pm.globals.set(\"enkelvoudiginformatieobject_url\", enkelvoudiginformatieobject.url);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "93e5dddc-e612-4f5c-b6f0-68f4cb49c5ec",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept-Crs",
+						"value": "EPSG:4326",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"auteur\": \"anoniem\",\n    \"bronorganisatie\": \"509381406\",\n    \"creatiedatum\": \"2018-12-06\",\n    \"formaat\": \"image/jpeg\",\n    \"identificatie\": \"2e7d787ed9c54e0d9334a23cba08cbfd\",\n    \"informatieobjecttype\": \"https://ref.tst.vng.cloud/ztc/api/v1/catalogussen/f7afd156-c8f5-4666-b8b5-28a4a9b5dfc7/informatieobjecttypen/63a58060-8cd1-4c9d-bcc4-b6954353e758\",\n    \"inhoud\": \"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\",\n    \"taal\": \"dut\",\n    \"titel\": \"linked_in.jpg\"\n}"
+				},
+				"url": {
+					"raw": "{{DRC}}/enkelvoudiginformatieobjecten",
+					"host": [
+						"{{DRC}}"
+					],
+					"path": [
+						"enkelvoudiginformatieobjecten"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Koppel document aan zaak",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "5f78433a-5a25-4204-83b3-cccb1488a11c",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"informatieobject\": \"{{enkelvoudiginformatieobject_url}}\",\n    \"object\": \"{{zaak_url}}\",\n    \"objectType\": \"zaak\"\n}"
+				},
+				"url": {
+					"raw": "{{DRC}}/objectinformatieobjecten",
+					"host": [
+						"{{DRC}}"
+					],
+					"path": [
+						"objectinformatieobjecten"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Werk zaak-toelichting bij",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "18291023-d572-49f9-9185-c8889ecf5bb6",
+						"exec": [
+							"var zaak = pm.response.json();",
+							"pm.globals.set(\"zaak_url\", zaak.url);",
+							"",
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"Data checks succeeded\", function () {",
+							"    pm.expect(zaak.toelichting).to.eql(\"Scheve stoeptegel\");",
+							"    pm.expect(zaak.omschrijving).to.eql(\"\");",
+							"    pm.expect(zaak.zaakgeometrie).to.not.equal(null);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "e57ca82f-767e-4edc-ad11-bf17031be64c",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept-Crs",
+						"type": "text",
+						"value": "EPSG:4326"
+					},
+					{
+						"key": "Content-Crs",
+						"type": "text",
+						"value": "EPSG:4326"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"toelichting\": \"Scheve stoeptegel en scheve rand\"\n}"
+				},
+				"url": {
+					"raw": "{{zaak_url}}",
+					"host": [
+						"{{zaak_url}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Haal zaak op",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept-Crs",
+						"value": " EPSG:4326",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{zaak_url}}",
+					"host": [
+						"{{zaak_url}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Haal document via zaak op",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept-Crs",
+						"value": " EPSG:4326",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{zaak_url}}/informatieobjecten",
+					"host": [
+						"{{zaak_url}}"
+					],
+					"path": [
+						"informatieobjecten"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Haal alle zaken met statustype Nieuw op",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{ZRC}}/statussen?statusType=https://ref.tst.vng.cloud/ztc/api/v1/catalogussen/f7afd156-c8f5-4666-b8b5-28a4a9b5dfc7/zaaktypen/0119dd4e-7be9-477e-bccf-75023b1453c1/statustypen/e53becac-cb4f-4dc7-911b-7d2ca066c041",
+					"host": [
+						"{{ZRC}}"
+					],
+					"path": [
+						"statussen"
+					],
+					"query": [
+						{
+							"key": "statusType",
+							"value": "https://ref.tst.vng.cloud/ztc/api/v1/catalogussen/f7afd156-c8f5-4666-b8b5-28a4a9b5dfc7/zaaktypen/0119dd4e-7be9-477e-bccf-75023b1453c1/statustypen/e53becac-cb4f-4dc7-911b-7d2ca066c041"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImNsaWVudF9pZGVudGlmaWVyIjoiaGVucmlfa29ydmVyLWhnTVFXdE1VSjlJTiJ9.eyJpc3MiOiJoZW5yaV9rb3J2ZXItaGdNUVd0TVVKOUlOIiwiaWF0IjoxNTU0MzczNjY3LCJ6ZHMiOnsic2NvcGVzIjpbIm5vdGlmaWNhdGllcy5zY29wZXMuY29uc3VtZXJlbiIsIm5vdGlmaWNhdGllcy5zY29wZXMucHVibGljZXJlbiIsInNjb3Blcy5kb2N1bWVudGVuLnZlcndpamRlcmVuIiwiemRzLnNjb3Blcy5zdGF0dXNzZW4udG9ldm9lZ2VuIiwiemRzLnNjb3Blcy56YWFrdHlwZXMubGV6ZW4iLCJ6ZHMuc2NvcGVzLnpha2VuLmFhbm1ha2VuIiwiemRzLnNjb3Blcy56YWtlbi5iaWp3ZXJrZW4iLCJ6ZHMuc2NvcGVzLnpha2VuLmxlemVuIiwiemRzLnNjb3Blcy56YWtlbi52ZXJ3aWpkZXJlbiJdLCJ6YWFrdHlwZXMiOlsiaHR0cHM6Ly9yZWYudHN0LnZuZy5jbG91ZC96dGMvYXBpL3YxL2NhdGFsb2d1c3Nlbi84ZmZiMTFmMC1jN2NjLTRlMzUtOGE2NC1hMDYzOWFlYjhmMTgvemFha3R5cGVuL2MyZjk1MmNhLTI5OGUtNDg4Yy1iMWJlLWE4N2YxMWJkNWZhMiIsImh0dHBzOi8vcmVmLnRzdC52bmcuY2xvdWQvenRjL2FwaS92MS9jYXRhbG9ndXNzZW4vOGZmYjExZjAtYzdjYy00ZTM1LThhNjQtYTA2MzlhZWI4ZjE4L3phYWt0eXBlbi8wYzAxZDczZi1kZTY1LTQxNTgtYmMwZS0zZjE3OGY2ZjFjYmUiLCJodHRwczovL3JlZi50c3Qudm5nLmNsb3VkL3p0Yy9hcGkvdjEvY2F0YWxvZ3Vzc2VuL2FkZGQxZjExLWYyMGUtNDIzYy1iYTYwLWU2N2Q1ZTk3NDgyMy96YWFrdHlwZW4vNzZmZWZkZmItMzUyYy00NTg0LTgzZjgtYWE4MDZhODA1N2JlIiwiaHR0cHM6Ly9yZWYudHN0LnZuZy5jbG91ZC96dGMvYXBpL3YxL2NhdGFsb2d1c3Nlbi82OWE3NGUwOC03OTExLTRkZjEtOTRkMC1lZTlhM2NkMDU0YWEvemFha3R5cGVuLzA1MjYxMWEzLTgzMjItNGJmOS1hZjMyLWZiNjlhYjgzNDBlZiIsImh0dHBzOi8vcmVmLnRzdC52bmcuY2xvdWQvenRjL2FwaS92MS9jYXRhbG9ndXNzZW4vNjlhNzRlMDgtNzkxMS00ZGYxLTk0ZDAtZWU5YTNjZDA1NGFhL3phYWt0eXBlbi9jY2I2ZjU4OS0zNTg0LTQ5MmEtYTM2MS0xMjg0OWEyNGI3YzEiLCJodHRwczovL3JlZi50c3Qudm5nLmNsb3VkL3p0Yy9hcGkvdjEvY2F0YWxvZ3Vzc2VuLzY5YTc0ZTA4LTc5MTEtNGRmMS05NGQwLWVlOWEzY2QwNTRhYS96YWFrdHlwZW4vNDAyODhjMjktM2IwMi00N2U4LWIyYWItNWU3YTBjYWE0MmIwIiwiaHR0cHM6Ly9yZWYudHN0LnZuZy5jbG91ZC96dGMvYXBpL3YxL2NhdGFsb2d1c3Nlbi9mN2FmZDE1Ni1jOGY1LTQ2NjYtYjhiNS0yOGE0YTliNWRmYzcvemFha3R5cGVuLzAxMTlkZDRlLTdiZTktNDc3ZS1iY2NmLTc1MDIzYjE0NTNjMSIsImh0dHBzOi8vcmVmLnRzdC52bmcuY2xvdWQvenRjL2FwaS92MS9jYXRhbG9ndXNzZW4vMjg0ODdkM2YtNmExYi00ODljLWIwM2QtYzc1YWM2NjkzZTcyL3phYWt0eXBlbi9lZGUyZmQyOC0zMmQyLTQ2YzktOGNkZS1iNDRiYjA1NWQzYmMiLCJodHRwczovL3JlZi50c3Qudm5nLmNsb3VkL3p0Yy9hcGkvdjEvY2F0YWxvZ3Vzc2VuLzI4NDg3ZDNmLTZhMWItNDg5Yy1iMDNkLWM3NWFjNjY5M2U3Mi96YWFrdHlwZW4vM2I3NGZiZWItMWY0Ny00N2MwLTlkMzctZTE0YjI1NzkwYzVlIiwiaHR0cHM6Ly9yZWYudHN0LnZuZy5jbG91ZC96dGMvYXBpL3YxL2NhdGFsb2d1c3Nlbi8yODQ4N2QzZi02YTFiLTQ4OWMtYjAzZC1jNzVhYzY2OTNlNzIvemFha3R5cGVuLzdhZjJkNGRkLTUxMWItNGIyNy04OWE4LTc3YWM3YzhlN2E4MiJdfX0.q9MAZTfStMrSi6ctHjdnyCI2sx9GgsHAu3K4JxjkNNA",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "8c4bef1e-aac5-4d39-8691-db9eeaaf2d48",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "960088f4-a0a3-48a8-bebd-82442ea040c7",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

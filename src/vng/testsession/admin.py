@@ -22,8 +22,19 @@ class QueryParamsScenarioInline(admin.TabularInline):
     model = model.QueryParamsScenario
 
 
+class InjectHeaderInline(admin.TabularInline):
+    model = model.InjectHeader
+
+
+@admin.register(model.InjectHeader)
+class InjectHeaderAdmin(admin.ModelAdmin):
+    list_display = ['session_type', 'key', 'value']
+    list_filter = ['session_type']
+    search_fields = ['key', 'value']
+
+
 @admin.register(model.ExposedUrl)
-class ExposedUrl(admin.ModelAdmin):
+class ExposedUrlAdmin(admin.ModelAdmin):
     list_display = ['session', 'vng_endpoint', 'subdomain', 'id', 'test_session', 'docker_url']
     list_filter = ['session']
     search_fields = ['session__name']
@@ -35,7 +46,7 @@ class SessionTypeAdmin(admin.ModelAdmin):
     list_filter = ['name']
     search_fields = ['name']
 
-    inlines = [VNGEndpointInline]
+    inlines = [VNGEndpointInline, InjectHeaderInline]
     form = SessionTypeForm
 
 

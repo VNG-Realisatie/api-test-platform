@@ -23,7 +23,7 @@ from rest_framework.authentication import (
 )
 from vng.testsession.models import (
     ScenarioCase, Session, SessionLog, SessionType, ExposedUrl, Report,
-    QueryParamsScenario
+    QueryParamsScenario, InjectHeader
 )
 
 from ..utils import choices
@@ -277,7 +277,11 @@ class RunTest(CSRFExemptMixin, View):
         elif session.session_type.authentication == choices.AuthenticationChoices.header:
             request_headers['authorization'] = session.session_type.header
 
-        # request_headers['host'] = parse.urlparse(endpoint.url).netloc
+        # inject the eventual headers
+        to_inject = InjectHeader.objects.filter(session_type=session.session_type)
+        for header in to_inject:
+            request_headers[header.key] = header.value
+
         return request_headers
 
     def save_call(self, request, request_method_name, url, relative_url, session, status_code, session_log):

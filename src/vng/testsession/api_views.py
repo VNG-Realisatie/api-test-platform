@@ -442,6 +442,7 @@ class RunTest(CSRFExemptMixin, View):
         arguments = request.META['QUERY_STRING']
 
         request_url = self.build_url(eu, arguments)
+        logger.info('Requesting the url:{}'.format(request_url))
         method = getattr(requests, request_method_name)
 
         def make_call():

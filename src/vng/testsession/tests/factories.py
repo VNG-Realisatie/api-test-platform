@@ -1,12 +1,15 @@
+from ...utils import choices
+from ...utils.factories import UserFactory
 from django.utils import timezone
 import factory
 from factory.django import DjangoModelFactory as Dmf
 from vng.accounts.models import User
 from django.conf import settings
 from filer.models import File
-from ..models import SessionType, Session, ScenarioCase, VNGEndpoint, ExposedUrl, SessionLog, TestSession, QueryParamsScenario
-from ...utils.factories import UserFactory
-from ...utils import choices
+from ..models import (
+    SessionType, Session, ScenarioCase, VNGEndpoint, ExposedUrl,
+    SessionLog, TestSession, QueryParamsScenario, InjectHeader
+)
 
 
 class SessionTypeFactory(Dmf):
@@ -57,6 +60,16 @@ class VNGEndpointEchoFactory(Dmf):
     url = 'https://postman-echo.com/'
     session_type = factory.SubFactory(SessionTypeFactory)
     test_file = factory.SubFactory(FilerField)
+
+
+class HeaderInjectionFactory(Dmf):
+
+    class Meta:
+        model = InjectHeader
+
+    key = 'key'
+    value = 'dummy'
+    session_type = factory.SubFactory(SessionTypeFactory)
 
 
 class VNGEndpointDockerFactory(Dmf):

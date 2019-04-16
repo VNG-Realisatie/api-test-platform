@@ -22,6 +22,9 @@
         <h3>Gestart op: {{ session.started|date }}</h3>
 
         {% if log_list %}
+        <input type="button" class="button button--primary" value="Rapport" onclick="location.href = '{% url 'testsession:session_report' session.id %}';">
+        <input type="button" class="button button--primary" value="Rapport (PDF)" onclick="location.href = '{% url 'testsession:session_report-pdf' session.id %}';">
+
         <table class="table">
             {% include 'components/table/header-session-log.html' only %}
             {% for log in log_list %}
@@ -44,10 +47,10 @@
                 {% endif %}
             {% endfor %}
         </ul>
-        {% endif %}
-
         <input type="button" class="button button--primary" value="Rapport" onclick="location.href = '{% url 'testsession:session_report' session.id %}';">
         <input type="button" class="button button--primary" value="Rapport (PDF)" onclick="location.href = '{% url 'testsession:session_report-pdf' session.id %}';">
+        {% endif %}
+
 
     </div>
 

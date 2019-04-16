@@ -1,5 +1,6 @@
 {% extends 'master.html' %}
 {% load django_bootstrap_breadcrumbs %}
+{% load subdomainurls %}
 
 {% block title %}Test consumer - Detailweergave test-sessie{% endblock%}
 
@@ -20,9 +21,6 @@
 
         <h3>Gestart op: {{ session.started|date }}</h3>
 
-        <input type="button" class="button button--primary" value="Rapport" onclick="location.href = '{% url 'testsession:session_report' session.id %}';">
-        <input type="button" class="button button--primary" value="Rapport (PDF)" onclick="location.href = '{% url 'testsession:session_report-pdf' session.id %}';">
-
         {% if log_list %}
         <table class="table">
             {% include 'components/table/header-session-log.html' only %}
@@ -31,8 +29,26 @@
             {% endfor %}
         </table>
         {% else %}
-        <p>Er zijn geen verzoeken binnengekomen.</p>
+        <p>
+            Er zijn geen verzoeken binnengekomen.
+            Volg deze links om de API te gebruiken:
+        </p>
+        <ul>
+            {% for endpoint in session.exposedurl_set.all %}
+                {% if endpoint.subdomain %}
+                    <li>
+                        <a href="{% url_sub 'serverproxy:run_test' endpoint.subdomain '' %}">
+                            {{endpoint.subdomain}}/{{endpoint.vng_endpoint.name }}
+                        </a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
         {% endif %}
+
+        <input type="button" class="button button--primary" value="Rapport" onclick="location.href = '{% url 'testsession:session_report' session.id %}';">
+        <input type="button" class="button button--primary" value="Rapport (PDF)" onclick="location.href = '{% url 'testsession:session_report-pdf' session.id %}';">
+
     </div>
 
     {% if is_paginated %}

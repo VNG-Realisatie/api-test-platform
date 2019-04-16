@@ -7,7 +7,7 @@
     <td class="table__cell" >{{ report.scenario_case.url }}</td>
     <td class="table__cell" >
         {% for qps in report.scenario_case.queryparamsscenario_set.all %}
-            {{qps}}
+            {{qps.name}}: {{qps.expected_value}}
         {% endfor %}
     </td>
     {% if report.is_success %}

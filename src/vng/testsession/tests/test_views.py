@@ -20,7 +20,8 @@ from ..models import Session, SessionType, SessionLog, Report, ScenarioCase, VNG
 
 from .factories import (
     SessionFactory, SessionTypeFactory, VNGEndpointDockerFactory, ExposedUrlEchoFactory, VNGEndpointEchoFactory,
-    ScenarioCaseFactory, ExposedUrlFactory, SessionLogFactory, VNGEndpointFactory, QueryParamsScenarioFactory
+    ScenarioCaseFactory, ExposedUrlFactory, SessionLogFactory, VNGEndpointFactory, QueryParamsScenarioFactory,
+    HeaderInjectionFactory
 )
 from ...utils import choices
 from ...utils.factories import UserFactory
@@ -509,6 +510,32 @@ class TestLogNewman(WebTest):
         call = self.app.get(reverse('apiv1session:result_session', kwargs={'pk': session_id}))
         call = get_object(call.body)
         self.assertEqual(call['result'], 'failed')
+
+
+class TestHeaderInjection(WebTest):
+
+    def setUp(self):
+        self.endpoint = VNGEndpointEchoFactory()
+        self.hi = HeaderInjectionFactory(session_type=self.endpoint.session_type)
+
+        call = self.app.post(reverse('apiv1_auth:rest_login'), params=collections.OrderedDict([
+            ('username', get_username()),
+            ('password', 'password')]))
+        key = get_object(call.body)['key']
+        self.head = {'Authorization': 'Token {}'.format(key)}
+
+    def test_run(self):
+        call = self.app.post(reverse("apiv1session:test_session-list"), params=collections.OrderedDict([
+            ('session_type', self.endpoint.session_type.name),
+        ]), headers=self.head)
+        call = get_object(call.body)
+        session_id = call['id']
+        url = call['exposedurl_set'][0]['subdomain']
+
+        http_host = get_subdomain(call['exposedurl_set'][0]['subdomain'])
+        call = self.app.get(url + 'headers', extra_environ={'HTTP_HOST': '{}-example.com'.format(http_host)})
+        self.assertIn('key', call.json['headers'])
+        self.assertIn('dummy', call.json['headers']['key'])
 
 
 class TestAuthProxy(WebTest):

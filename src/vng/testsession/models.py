@@ -39,6 +39,16 @@ class SessionType(models.Model):
         return self.name
 
 
+class InjectHeader(models.Model):
+
+    session_type = models.ForeignKey(SessionType, on_delete=models.CASCADE)
+    key = models.CharField(max_length=200)
+    value = models.TextField()
+
+    class Meta:
+        unique_together = ('session_type', 'key')
+
+
 class TestSession(models.Model):
 
     test_result = models.FileField(settings.MEDIA_FOLDER_FILES['testsession_log'], blank=True, null=True, default=None)

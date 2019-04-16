@@ -69,13 +69,14 @@ class SessionLogAdmin(admin.ModelAdmin):
 class ScenarioCaseAdmin(OrderedModelAdmin):
     list_display = [
         'url',
-        'move_up_down_links',
+        'order',
         'http_method',
         'vng_endpoint'
     ]
     list_filter = ['vng_endpoint__session_type']
     search_fields = ['vng_endpoint__id']
     inlines = [QueryParamsScenarioInline]
+    list_editable = ['order']
 
 
 @admin.register(model.QueryParamsScenario)

@@ -92,6 +92,7 @@ class VNGEndpoint(models.Model):
 
 class ScenarioCase(OrderedModel):
 
+    order = models.PositiveIntegerField('order', editable=True, db_index=True)
     url = models.CharField(max_length=200, help_text='''
     URL pattern that will be compared
     with the request and eventually matched.

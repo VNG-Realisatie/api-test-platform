@@ -23,8 +23,8 @@ Deze repository bevat alles wat nodig is voor de ontwikkeling van een nieuw API-
 ## Vragen en bijdragen
 Lees meer over hoe je vragen kunt stellen, bugs kunt melden en bij kunt dragen (met code of documentatie) in [`CONTRIBUTING.md`](CONTRIBUTING.md) (EN).
 
-## Documentatie
-Aan de slag met de testvoorziening, ga naar de folder [api-lab](https://github.com/VNG-Realisatie/api-testvoorziening/tree/master/doc/api_lab) en download de tutorial.
+## Aan de slag met de testvoorziening voor API Lab
+Ga naar de folder [api-lab](https://github.com/VNG-Realisatie/api-testvoorziening/tree/master/doc/api_lab) voor het downloaden van de tutorial en de bijbehorende Postman collecties.
 
 ## Rollen
 

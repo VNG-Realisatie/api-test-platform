@@ -51,5 +51,46 @@
     </td>
 </tr>
 
+{% if server_run.scheduled %}
+<tr>
+    <td class="table__cell">Badge</td>
+</tr>
+<tr>
+    <td class="table__cell" colspan='2' >
+            <?prettify lang=html linenums=true?>
+            <pre class="prettyprint" id='snippet'>
+                <xmp>
+
+                </xmp>
+            </pre>
+    </td>
+</tr>
+{% endif %}
+
+{% block script %}
+    <script>
+    var str = '<span display="block" height="20px" class="common__BadgeWrapper-sc-16zh6vt-3 fagfmg">\n'
+            + '<img style="width:100%" alt="" \nsrc="https://img.shields.io/endpoint.svg?style=for-the-badge&amp;url={{request.scheme}}://{{request.get_host}}{% url "apiv1server:provider:api_server-run-shield-detail" server_run.id %}">\n '
+            + '</span>'
+
+  function htmlEscape(s) {
+    return s
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+  // this page's own source code
+  var quineHtml = htmlEscape(str);
+
+  // Highlight the operative parts:
+  quineHtml = quineHtml.replace(
+    /&lt;script src[\s\S]*?&gt;&lt;\/script&gt;|&lt;!--\?[\s\S]*?--&gt;|&lt;pre\b[\s\S]*?&lt;\/pre&gt;/g,
+    '<span class="operative">$&<\/span>');
+
+  // insert into PRE
+  document.getElementById("snippet").innerHTML = quineHtml;
+  </script>
+{% endblock %}
 
 {% endspaceless %}

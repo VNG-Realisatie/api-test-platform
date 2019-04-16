@@ -101,10 +101,9 @@ class CreateEndpoint(LoginRequiredMixin, CreateView):
         if self.server.test_scenario.jwt_enabled():
             self.server.client_id = form.data['Client ID']
             self.server.secret = form.data['Secret']
-            self.server.save()
         elif self.server.test_scenario.custom_header():
-            self.server.save()
             server_header = ServerHeader(server_run=self.server, header_key='Authorization', header_value=form.data['Authorization header'])
+        self.server.save()
         self.endpoints = []
         tsu = list(TestScenarioUrl.objects.filter(test_scenario=self.server.test_scenario))
         for key, value in form.data.items():

@@ -383,9 +383,10 @@ class RunTest(CSRFExemptMixin, View):
         https://testplatform/runtest/XXXX/api/v1/zaken/123
         """
         parsed = response.text
-        protocol = settings.DEFAULT_URL_SCHEME
-        host = '{}://{}'.format(protocol, request.get_host())
         for ep in endpoints:
+            host = reverse_sub('serverproxy:run_test', eu.subdomain, kwargs={
+                'relative_url': ''
+            })
             logger.info("Rewriting response body:")
             parsed = self.sub_url_response(parsed, host, ep)
         return parsed
@@ -398,9 +399,10 @@ class RunTest(CSRFExemptMixin, View):
         https://ref.tst.vng.cloud/zrc/api/v1/zaken/123
         """
         parsed = request.body.decode('utf-8')
-        protocol = settings.DEFAULT_URL_SCHEME
-        host = '{}://{}'.format(protocol, request.get_host())
         for eu in exposed:
+            host = reverse_sub('serverproxy:run_test', eu.subdomain, kwargs={
+                'relative_url': ''
+            })
             logger.info("Rewriting request body:")
             parsed = self.sub_url_request(parsed, host, eu)
         return parsed

@@ -27,7 +27,9 @@ class TestMultipleEndpoint(WebTest):
         res = form.submit().follow()
 
         form = res.forms[0]
-        form['test_scenario_url 1'] = 'https://ref.tst.vng.cloud/drc/api/v1/'
+        import pdb
+        pdb.set_trace()
+        form['test_scenario_url {}'.format(self.ts.id)] = 'https://ref.tst.vng.cloud/drc/api/v1/'
         form['url'] = 'https://ref.tst.vng.cloud/drc/api/v1/'
         form.submit()
 

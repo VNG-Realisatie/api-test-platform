@@ -403,8 +403,10 @@ class RunTest(CSRFExemptMixin, View):
             host = reverse_sub('serverproxy:run_test', eu.subdomain, kwargs={
                 'relative_url': ''
             })
-            logger.info("Rewriting request body:")
             parsed = self.sub_url_request(parsed, host, eu)
+        logger.info("Rewriting request body")
+        logger.info(request.body.decode('utf-8'))
+        logger.info(parsed)
         return parsed
 
     def build_url(self, eu, arguments):

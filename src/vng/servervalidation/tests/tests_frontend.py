@@ -27,7 +27,11 @@ class TestMultipleEndpoint(WebTest):
         res = form.submit().follow()
 
         form = res.forms[0]
-        form['test_scenario_url {}'.format(self.ts.id)] = 'https://ref.tst.vng.cloud/drc/api/v1/'
+        for name, _ in form.field_order:
+            if name is not None and 'test_scenario' in name:
+                print(name)
+                n = name
+        form[n] = 'https://ref.tst.vng.cloud/drc/api/v1/'
         form['url'] = 'https://ref.tst.vng.cloud/drc/api/v1/'
         form.submit()
 

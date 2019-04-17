@@ -39,6 +39,9 @@
                 {% endif %}
             {% endfor %}
         </table>
+        <input type="button" class="button button--primary" value="Rapport" onclick="location.href = '{% url 'testsession:session_report' session.id %}';">
+        <input type="button" class="button button--primary" value="Rapport (PDF)" onclick="location.href = '{% url 'testsession:session_report-pdf' session.id %}';">
+
         {% if session.is_stopped %}
             {% for postman in session.exposedurl_set.all %}
                 <h3>Postman Collection</h3>
@@ -169,8 +172,6 @@
             {% endfor %}
         {% endif %}
 
-        <input type="button" class="button button--primary" value="Rapport" onclick="location.href = '{% url 'testsession:session_report' session.id %}';">
-        <input type="button" class="button button--primary" value="Rapport (PDF)" onclick="location.href = '{% url 'testsession:session_report-pdf' session.id %}';">
         {% if log_list %}
 
 

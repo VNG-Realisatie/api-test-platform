@@ -10,6 +10,32 @@ from .factories import TestScenarioFactory, ServerRunFactory, TestScenarioUrlFac
 from ...utils import choices, forms
 
 
+class TestMultipleEndpoint(WebTest):
+
+    def setUp(self):
+        self.user = UserFactory()
+        self.ts = TestScenarioFactory()
+        self.ts.authorization = choices.AuthenticationChoices.no_auth
+        self.ts.save()
+        TestScenarioUrlFactory(test_scenario=self.ts)
+        TestScenarioUrlFactory(test_scenario=self.ts)
+
+    def test_run_collection(self):
+        call = self.app.get(reverse('server_run:server-run_list'), user=self.user)
+        form = call.forms[0]
+        form['test_scenario'].select(text=self.ts.name)
+        res = form.submit().follow()
+
+        form = res.forms[0]
+        for name, _ in form.field_order:
+            if name is not None and 'test_scenario' in name:
+                print(name)
+                n = name
+        form[n] = 'https://ref.tst.vng.cloud/drc/api/v1/'
+        form['url'] = 'https://ref.tst.vng.cloud/drc/api/v1/'
+        form.submit()
+
+
 class TestCreation(WebTest):
 
     def setUp(self):

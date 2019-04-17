@@ -1,5 +1,6 @@
 {% extends 'master.html' %}
 {% load django_bootstrap_breadcrumbs %}
+{% load subdomainurls %}
 
 {% block title %}Test consumer - Detailweergave test-sessie{% endblock%}
 
@@ -19,11 +20,31 @@
         <h2>Test consumer - {{ session }}</h2>
 
         <h3>Gestart op: {{ session.started|date }}</h3>
+        <h3>Endpoints</h3>
+        <table class="table">
+                <tr>
+                    <th class="table__heading">Naam</th>
+                    <th class="table__heading">Url</th>
+                </tr>
+                {% for endpoint in session.exposedurl_set.all %}
+                    {% if endpoint.subdomain %}
+                    <tr>
+                        <td class="table__cell">{{endpoint.vng_endpoint.name }}</td>
+                        <td class="table__cell">
+                            <a href="{% url_sub 'serverproxy:run_test' endpoint.subdomain '' %}">
+                                {% url_sub 'serverproxy:run_test' endpoint.subdomain '' %}
+                            </a>
+                        </td>
+                    <tr>
+                    {% endif %}
+                {% endfor %}
+            </table>
 
         <input type="button" class="button button--primary" value="Rapport" onclick="location.href = '{% url 'testsession:session_report' session.id %}';">
         <input type="button" class="button button--primary" value="Rapport (PDF)" onclick="location.href = '{% url 'testsession:session_report-pdf' session.id %}';">
-
         {% if log_list %}
+
+
         <table class="table">
             {% include 'components/table/header-session-log.html' only %}
             {% for log in log_list %}
@@ -31,8 +52,13 @@
             {% endfor %}
         </table>
         {% else %}
-        <p>Er zijn geen verzoeken binnengekomen.</p>
+        <p>
+            Er zijn geen verzoeken binnengekomen.
+            Volg deze links om de API te gebruiken:
+        </p>
         {% endif %}
+
+
     </div>
 
     {% if is_paginated %}

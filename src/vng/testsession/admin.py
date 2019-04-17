@@ -82,9 +82,10 @@ class ScenarioCaseAdmin(OrderedModelAdmin):
         'url',
         'move_up_down_links',
         'http_method',
-        'vng_endpoint']
+        'vng_endpoint'
+    ]
     list_filter = ['vng_endpoint__session_type']
-    search_fields = ['vng_endpoint']
+    search_fields = ['vng_endpoint__id']
     inlines = [QueryParamsScenarioInline]
 
 

@@ -384,7 +384,7 @@ class RunTest(CSRFExemptMixin, View):
         """
         parsed = response.text
         for ep in endpoints:
-            host = reverse_sub('serverproxy:run_test', eu.subdomain, kwargs={
+            host = reverse_sub('serverproxy:run_test', ep.subdomain, kwargs={
                 'relative_url': ''
             })
             logger.info("Rewriting response body:")

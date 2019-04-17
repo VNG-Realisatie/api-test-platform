@@ -404,6 +404,7 @@ class RunTest(CSRFExemptMixin, View):
                 'relative_url': ''
             })
             parsed = self.sub_url_request(parsed, host, eu)
+        logger.info("Rewriting request body:")
         return parsed
 
     def build_url(self, eu, arguments):

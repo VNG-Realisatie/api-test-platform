@@ -567,15 +567,24 @@ class TestRewriteBody(WebTest):
         self.ep_d = ExposedUrlFactory(vng_endpoint=self.ep_docker, docker_url='127.0.0.1')
         self.host = 'example.com'
 
+        self.ep_s = ExposedUrlFactory()
+        self.ep_s.vng_endpoint.subdomain = 'sub'
+        self.ep_s.vng_endpoint.save()
+        self.host_sub = 'sub.example.com'
+
     def test_request(self):
         content = 'dummy{}/dummy'.format(self.host)
         res = self.euv.sub_url_request(content, self.host, self.ep)
         self.assertEqual('dummy{}/dummy'.format(self.ep.vng_endpoint.url), res)
 
+    def test_request_subdomain(self):
+        content = 'dummy{}/dummy'.format(self.host_sub)
+        res = self.euv.sub_url_request(content, self.host_sub, self.ep_s)
+        self.assertEqual('dummy{}/dummy'.format(self.ep_s.vng_endpoint.url), res)
+
     def test_response(self):
         content = 'dummy{}/dummy'.format(self.ep.vng_endpoint.url)
         res = self.euv.sub_url_response(content, self.host, self.ep)
-        print(res)
         self.assertEqual('dummy{}/dummy'.format(self.host), res)
 
     def test_request_docker(self):

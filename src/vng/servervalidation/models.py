@@ -13,7 +13,7 @@ from filer.fields.file import FilerFileField
 
 from vng.accounts.models import User
 
-from ..utils import choices
+from ..utils import choices, postman
 
 
 class TestScenario(models.Model):
@@ -140,28 +140,7 @@ class PostmanTestResult(models.Model):
             return f
 
     def get_json_obj(self):
-        with open(self.log_json.path) as jfile:
-            f = json.load(jfile)
-            res = f['run']['executions']
-            for execution in res:
-                req = execution['request']['url']
-                url = '.'.join(req['host'])
-                path = ''
-                if 'path' in req:
-                    path = '/'.join(req['path'])
-                if 'protocol' in req:
-                    req['url'] = '{}://{}/{}'.format(req['protocol'], url, path)
-                else:
-                    req['url'] = '{}/{}'.format(url, path)
-
-                execution['item']['error_test'] = False
-                if 'assertions' in execution:
-                    for assertion in execution['assertions']:
-                        if 'error' in assertion:
-                            execution['item']['error_test'] = True
-                            break
-
-        return res
+        return postman.get_json_obj_file(self.log_json.path)
 
     def save_json(self, filename, file):
         content = json.load(file)

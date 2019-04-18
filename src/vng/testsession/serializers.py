@@ -83,7 +83,8 @@ class SessionSerializer(serializers.ModelSerializer):
             'stopped',
             'status',
             'exposedurl_set',
-            'build_version'
+            'build_version',
+            'sandbox'
         ]
         read_only_fields = ['started', 'stopped', 'status']
 

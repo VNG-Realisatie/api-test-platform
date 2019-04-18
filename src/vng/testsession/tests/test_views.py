@@ -162,7 +162,7 @@ class CreationAndDeletion(WebTest):
 
     def test_stop_session_no_auth(self):
         session = SessionFactory()
-        call = self.app.post(reverse('testsession:stop_session', kwargs={'session_id': session.id}), user=SessionFactory().user, status=403)
+        call = self.app.post(reverse('testsession:stop_session', kwargs={'session_id': session.id}), status=302)
 
 
 class TestLog(WebTest):

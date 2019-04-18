@@ -414,8 +414,6 @@ class RunTest(CSRFExemptMixin, View):
     def build_url(self, eu, arguments):
         ru = self.kwargs['relative_url']
         if eu.vng_endpoint.url is not None:
-            # import pdb
-            # pdb.set_trace()
             parsed_url = parse.urlparse(eu.vng_endpoint.url)
             path = parsed_url.path
             if path.startswith('/'):

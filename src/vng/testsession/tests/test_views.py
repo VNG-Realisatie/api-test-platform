@@ -95,6 +95,7 @@ class AuthorizationTests(WebTest):
 
 
 class CreationAndDeletion(WebTest):
+    csrf_checks = False
 
     def setUp(self):
         self.session_type = SessionTypeFactory()
@@ -105,6 +106,7 @@ class CreationAndDeletion(WebTest):
             ('password', 'password')]))
         key = get_object(call.body)['key']
         self.head = {'Authorization': 'Token {}'.format(key)}
+        self.vng_endpoint = VNGEndpointFactory()
 
     def test_session_creation(self):
         session = {
@@ -113,6 +115,24 @@ class CreationAndDeletion(WebTest):
         }
 
         call = self.app.post(reverse('apiv1session:test_session-list'), session, headers=self.head)
+
+    def test_report_postman(self):
+
+        session = {
+            'session_type': self.vng_endpoint.session_type.name,
+            'api_endpoint': 'http://google.com'
+        }
+
+        call = self.app.post(reverse('apiv1session:test_session-list'), session, headers=self.head)
+
+        session = Session.objects.all().order_by('-id').first()
+        self.app.post(reverse('testsession:stop_session', kwargs={
+            'session_id': session.id
+        }), user=session.user)
+
+        self.app.get(reverse('testsession:session_log', kwargs={
+            'session_id': session.id
+        }), user=session.user)
 
     def test_deploy_docker_via_api(self):
         self.app.post_json(reverse('apiv1session:test_session-list'), {

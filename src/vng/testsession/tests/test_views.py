@@ -387,6 +387,7 @@ class TestSandboxMode(WebTest):
         self.sc = ScenarioCaseFactory(url='status/{code}')
         self.sc.vng_endpoint.url = 'https://postman-echo.com/'
         self.sc.vng_endpoint.save()
+        self.session_type = self.sc.vng_endpoint.session_type
 
     def test_sandbox(self):
         call = self.app.get(reverse('testsession:sessions'), user=self.user)
@@ -435,6 +436,46 @@ class TestSandboxMode(WebTest):
         call = self.app.get(url, extra_environ={'HTTP_HOST': '{}-example.com'.format(eu.subdomain)}, user=session.user)
         report = Report.objects.get(scenario_case=self.sc)
         self.assertEqual(choices.HTTPCallChoiches.failed, report.result)
+
+    def test_create_sandbox_default(self):
+        session = {
+            'session_type': self.session_type.name,
+            'started': str(timezone.now()),
+            'status': choices.StatusChoices.running,
+            'api_endpoint': 'http://google.com',
+            'user': self.user.id,
+        }
+
+        call = self.app.post(reverse('apiv1_auth:rest_login'), params=collections.OrderedDict([
+            ('username', get_username()),
+            ('password', 'password')]))
+        key = get_object(call.body)['key']
+        head = {'Authorization': 'Token {}'.format(key)}
+        call = self.app.post(reverse('apiv1session:test_session-list'), session, headers=head)
+        response_parsed = get_object(call.body)
+        session = Session.objects.latest('id')
+        self.assertEqual(session.sandbox, False)
+
+    def test_create_sandbox(self):
+        session = {
+            'session_type': self.session_type.name,
+            'started': str(timezone.now()),
+            'status': choices.StatusChoices.running,
+            'api_endpoint': 'http://google.com',
+            'user': self.user.id,
+            'sandbox': True
+
+        }
+
+        call = self.app.post(reverse('apiv1_auth:rest_login'), params=collections.OrderedDict([
+            ('username', get_username()),
+            ('password', 'password')]))
+        key = get_object(call.body)['key']
+        head = {'Authorization': 'Token {}'.format(key)}
+        call = self.app.post(reverse('apiv1session:test_session-list'), session, headers=head)
+        response_parsed = get_object(call.body)
+        session = Session.objects.latest('id')
+        self.assertEqual(session.sandbox, True)
 
 
 class TestAllProcedure(WebTest):

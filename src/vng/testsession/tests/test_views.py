@@ -614,3 +614,34 @@ class TestRewriteBody(WebTest):
         content = 'dummy://{}:8080/dummy'.format(self.ep_d.docker_url)
         res = self.euv.sub_url_response(content, self.host, self.ep_d)
         self.assertEqual('dummy{}/dummy'.format(self.host), res)
+
+
+class TestRewriteUrl(WebTest):
+
+    def setUp(self):
+        self.endpoint = VNGEndpointFactory(url='http://www.dummy.com/path/sub/')
+        self.eu = ExposedUrlFactory(vng_endpoint=self.endpoint)
+
+    def test_url(self):
+        rt = RunTest()
+        rt.kwargs = {
+            'relative_url': ''
+        }
+        url = rt.build_url(self.eu, '')
+        self.assertEqual(url, self.endpoint.url)
+
+    def test_url_sub(self):
+        rt = RunTest()
+        rt.kwargs = {
+            'relative_url': 'path/'
+        }
+        url = rt.build_url(self.eu, '')
+        self.assertEqual(url, 'http://www.dummy.com/path/')
+
+    def test_url_sub_sub(self):
+        rt = RunTest()
+        rt.kwargs = {
+            'relative_url': 'path/sub/a'
+        }
+        url = rt.build_url(self.eu, '')
+        self.assertEqual(url, 'http://www.dummy.com/path/sub/a')

@@ -73,6 +73,7 @@ $typography-margin-2: $grid-margin-2;
 @mixin h3($margin: false, $margin-property: margin-bottom) {
   @include _h;
   @include _margin($margin, $margin-property, $typography-margin-1);
+  margin-top: 10px;
   font-size: 18px;
   line-height: 22px;
 }

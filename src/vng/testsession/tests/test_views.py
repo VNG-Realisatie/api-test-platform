@@ -299,6 +299,11 @@ class TestUrlParam(WebTest):
         self.session_p = SessionFactory(session_type=self.vng_endpoint_p.session_type)
         self.exposed_url_p = ExposedUrlFactory(session=self.session_p, vng_endpoint=self.vng_endpoint_p)
 
+        self.vng_endpoint.url = 'https://postman-echo.com/'
+        self.vng_endpoint_p.url = 'https://postman-echo.com/'
+        self.vng_endpoint.save()
+        self.vng_endpoint_p.save()
+
     def test_query_params_no_match(self):
         report = len(Report.objects.filter(scenario_case=self.scenario_case))
         url = reverse_sub('serverproxy:run_test', self.exposed_url.subdomain, kwargs={

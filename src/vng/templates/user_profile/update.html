@@ -1,0 +1,28 @@
+{% extends "user_profile/user_base.html" %}
+{% load sniplates %}
+{% load i18n %}
+
+{% block title %}{% trans "Register for an account" %}{% endblock %}
+
+{% block content %}
+<article class="article">
+    <div class="article__section">
+        <h1>Profiel</h1>
+        {% if request.GET.result %}
+            <p>Profiel succesvol bijgewerkt</p>
+        {% endif %}
+        <form method="post" action="" class="form">
+            {% csrf_token %}
+            {% load_widgets form='forms.html' %}
+            {% for field in form %}
+                {% if field.name == 'captcha' %}
+                    <div class="form__control" role="group">
+                            {{field}}
+                    </div>
+                {% else %}
+                {% form_field field %}
+                {% endif %}
+            {% endfor %}
+            <input type="submit" value="{% trans 'Submit' %}" class="button button--primary"/>
+        </form>
+{% endblock %}

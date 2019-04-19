@@ -1,8 +1,6 @@
 <div class="user">
     {% if user.is_authenticated %}
-    <p class="user__name">
-        {{ request.user.username }}
-    </p>
+    <a class="user__login" href="{% url 'user_edit:edit_profile' %}">{{ request.user.username }}</a>
     {% else %}
         <a class="user__login" href="{% url 'auth_login' %}">Login</a>
         <br />

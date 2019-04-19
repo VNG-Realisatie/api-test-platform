@@ -1,6 +1,10 @@
+from django_webtest import WebTest
+
 from django.test import TestCase
+from django.urls import reverse
 
 from ..models import User
+from ...utils.factories import UserFactory
 
 
 class UserManagerTests(TestCase):
@@ -21,3 +25,25 @@ class UserManagerTests(TestCase):
         self.assertFalse(user.is_superuser)
         self.assertFalse(user.is_staff)
         self.assertFalse(user.has_usable_password())
+
+
+class TestUserUpdate(WebTest):
+
+    def setUp(self):
+        self.user = UserFactory()
+
+    def test_update_info(self):
+        call = self.app.get(reverse('user_edit:edit_profile'), user=self.user)
+        form = call.forms[0]
+        form['first_name'] = 'dummyname'
+        form['last_name'] = 'dummylastname'
+        form['email'] = 'dummyemail@gmail.com'
+        call = form.submit().follow()
+        self.assertIn('dummyname', call.text)
+        self.assertIn('dummylastname', call.text)
+        self.assertIn('dummyemail@gmail.com', call.text)
+
+        user = User.objects.get(id=self.user.id)
+        self.assertEqual(user.first_name, 'dummyname')
+        self.assertEqual(user.last_name, 'dummylastname')
+        self.assertEqual(user.email, 'dummyemail@gmail.com')

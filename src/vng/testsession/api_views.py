@@ -420,19 +420,19 @@ class RunTest(CSRFExemptMixin, View):
     def build_url(self, eu, arguments):
         ru = self.kwargs['relative_url']
         if eu.vng_endpoint.url is not None:
-            # sperimental
-            # TODO: check if required or not
-            path = parse.urlparse(eu.vng_endpoint.url).path
+            parsed_url = parse.urlparse(eu.vng_endpoint.url)
+            path = parsed_url.path
             if path.startswith('/'):
                 path = path[1:]
-            if ru.startswith(path):
-                self.kwargs['relative_url'] = self.kwargs['relative_url'][len(path):]
-
-            # endsperimental
-            if eu.vng_endpoint.url.endswith('/'):
-                request_url = '{}{}?{}'.format(eu.vng_endpoint.url, self.kwargs['relative_url'], arguments)
+            if ru == '':
+                new_url = eu.vng_endpoint.url
             else:
-                request_url = '{}/{}?{}'.format(eu.vng_endpoint.url, self.kwargs['relative_url'], arguments)
+                new_url = parsed_url.scheme + '://' + parsed_url.netloc
+
+            if new_url.endswith('/'):
+                request_url = '{}{}?{}'.format(new_url, self.kwargs['relative_url'], arguments)
+            else:
+                request_url = '{}/{}?{}'.format(new_url, self.kwargs['relative_url'], arguments)
         else:
             request_url = 'http://{}:{}/{}?{}'.format(eu.docker_url, 8080, self.kwargs['relative_url'], arguments)
         if arguments == '':
@@ -457,9 +457,9 @@ class RunTest(CSRFExemptMixin, View):
             if body:
                 rewritten_body = self.rewrite_request_body(request, endpoints)
                 logger.info("Request body after rewrite: %s", rewritten_body)
-                response = method(request_url, data=rewritten_body, headers=request_header)
+                response = method(request_url, data=rewritten_body, headers=request_header, allow_redirects=False)
             else:
-                response = method(request_url, headers=request_header)
+                response = method(request_url, headers=request_header, allow_redirects=False)
             return response
 
         try:
@@ -477,8 +477,10 @@ class RunTest(CSRFExemptMixin, View):
         self.save_call(request, request_method_name, request.subdomain,
                        self.kwargs['relative_url'], session, response.status_code, session_log)
         reply = HttpResponse(self.parse_response(response, request, eu.vng_endpoint.url, endpoints), status=response.status_code)
-        if 'Content-type' in response.headers:
-            reply['Content-type'] = response.headers['Content-type']
+        white_headers = ['Content-type', 'location']
+        for h in white_headers:
+            if h in response.headers:
+                reply[h] = response.headers[h]
         return reply
 
     def get(self, request, *args, **kwargs):

@@ -1,19 +1,15 @@
-import uuid
 import time
 import random
 
-from datetime import date, timedelta, datetime
+from datetime import timedelta, datetime
 from celery.utils.log import get_task_logger
 
-from django.core.files import File
-from django.utils import timezone
-from django.db import transaction
 from django.utils.timezone import make_aware
 
 from ..celery.celery import app
 from .models import ExposedUrl, Session, TestSession, VNGEndpoint
 from ..utils import choices
-from ..utils.newman import DidNotRunException, NewmanManager
+from ..utils.newman import NewmanManager
 from .container_manager import K8S
 
 logger = get_task_logger(__name__)
@@ -71,7 +67,7 @@ def start_app_b8s(session, bind_url):
     for trial in range(N_TRIALS):
         try:
             time.sleep(10)                      # Waiting for the load balancer to be loaded
-            update_session_status(session, 'Installatie voortgang'.format(trial), 28 + (12 * trial))
+            update_session_status(session, 'Installatie voortgang {}'.format(trial), 28 + (12 * trial))
             ip = kuber.status(app_name)
 
             update_session_status(session, 'Status controle van pod', 95)
@@ -82,11 +78,12 @@ def start_app_b8s(session, bind_url):
             update_session_status(session, 'Installatie succesvol uitgevoerd', 100)
             return ip, None
         except Exception as e:
-            err = e
+            pass
     update_session_status(session, 'Impossible to deploy successfully, try to remove old sessions')
     if purge_sessions():
         start_app_b8s(session, bind_url)
-    update_session_status(session, 'Impossible to deploy successfully, all the resources are being used.')
+    else:
+        update_session_status(session, 'Impossible to deploy successfully, all the resources are being used.')
     ready, message = kuber.get_pods_status(app_name)
     return ready, message
 
@@ -104,7 +101,7 @@ def purge_sessions():
 @app.task
 def bootstrap_session(session_pk):
     '''
-    Cre ate all the necessary endpoint and exposes it so they can be used as proxy
+    Create all the necessary endpoint and exposes it so they can be used as proxy
     In case there is one or multiple docker images linked, it starts all of them
     '''
     session = Session.objects.get(pk=session_pk)
@@ -163,4 +160,4 @@ def run_tests(session_pk):
     session.status = choices.StatusChoices.stopped
     session.save()
 
-    endpoint = VNGEndpoint.objects.filter(session_type=session.session_type)
+    VNGEndpoint.objects.filter(session_type=session.session_type)

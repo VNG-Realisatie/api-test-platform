@@ -172,6 +172,8 @@ class TestLog(WebTest):
         self.exp_url = ExposedUrlFactory()
         self.session = self.exp_url.session
         self.exp_url.vng_endpoint.session_type = self.session.session_type
+        self.exp_url.vng_endpoint.url = 'https://postman-echo.com/'
+        self.exp_url.vng_endpoint.save()
         self.scenarioCase.vng_endpoint = self.exp_url.vng_endpoint
         self.scenarioCase_hard = copy.copy(self.scenarioCase)
         self.scenarioCase_hard.url = 'test/{uuid}/t'
@@ -318,6 +320,11 @@ class TestUrlParam(WebTest):
         self.vng_endpoint_p = self.scenario_case_p.vng_endpoint
         self.session_p = SessionFactory(session_type=self.vng_endpoint_p.session_type)
         self.exposed_url_p = ExposedUrlFactory(session=self.session_p, vng_endpoint=self.vng_endpoint_p)
+
+        self.vng_endpoint.url = 'https://postman-echo.com/'
+        self.vng_endpoint_p.url = 'https://postman-echo.com/'
+        self.vng_endpoint.save()
+        self.vng_endpoint_p.save()
 
     def test_query_params_no_match(self):
         report = len(Report.objects.filter(scenario_case=self.scenario_case))
@@ -684,3 +691,34 @@ class TestRewriteBody(WebTest):
         content = 'dummy://{}:8080/dummy'.format(self.ep_d.docker_url)
         res = self.euv.sub_url_response(content, self.host, self.ep_d)
         self.assertEqual('dummy{}/dummy'.format(self.host), res)
+
+
+class TestRewriteUrl(WebTest):
+
+    def setUp(self):
+        self.endpoint = VNGEndpointFactory(url='http://www.dummy.com/path/sub/')
+        self.eu = ExposedUrlFactory(vng_endpoint=self.endpoint)
+
+    def test_url(self):
+        rt = RunTest()
+        rt.kwargs = {
+            'relative_url': ''
+        }
+        url = rt.build_url(self.eu, '')
+        self.assertEqual(url, self.endpoint.url)
+
+    def test_url_sub(self):
+        rt = RunTest()
+        rt.kwargs = {
+            'relative_url': 'path/'
+        }
+        url = rt.build_url(self.eu, '')
+        self.assertEqual(url, 'http://www.dummy.com/path/')
+
+    def test_url_sub_sub(self):
+        rt = RunTest()
+        rt.kwargs = {
+            'relative_url': 'path/sub/a'
+        }
+        url = rt.build_url(self.eu, '')
+        self.assertEqual(url, 'http://www.dummy.com/path/sub/a')

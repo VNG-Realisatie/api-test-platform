@@ -451,9 +451,9 @@ class RunTest(CSRFExemptMixin, View):
             if body:
                 rewritten_body = self.rewrite_request_body(request, endpoints)
                 logger.info("Request body after rewrite: %s", rewritten_body)
-                response = method(request_url, data=rewritten_body, headers=request_header)
+                response = method(request_url, data=rewritten_body, headers=request_header, allow_redirects=False)
             else:
-                response = method(request_url, headers=request_header)
+                response = method(request_url, headers=request_header, allow_redirects=False)
             return response
 
         try:
@@ -471,8 +471,10 @@ class RunTest(CSRFExemptMixin, View):
         self.save_call(request, request_method_name, request.subdomain,
                        self.kwargs['relative_url'], session, response.status_code, session_log)
         reply = HttpResponse(self.parse_response(response, request, eu.vng_endpoint.url, endpoints), status=response.status_code)
-        if 'Content-type' in response.headers:
-            reply['Content-type'] = response.headers['Content-type']
+        white_headers = ['Content-type', 'location']
+        for h in white_headers:
+            if h in response.headers:
+                reply[h] = response.headers[h]
         return reply
 
     def get(self, request, *args, **kwargs):

@@ -151,20 +151,26 @@ class ResultSessionView(LoginRequiredMixin, views.APIView):
         scenario_cases = ScenarioCase.objects.filter(vng_endpoint__session_type=session.session_type)
         report = list(Report.objects.filter(session_log__session=session))
 
-        def check(sc):
-            nonlocal res
+        def check(scenario_cases, report):
+            not_called = False
+            if len(report) == 0:
+                return {'result': 'Geen oproep uitgevoerd'}
             for rp in report:
-                if rp.scenario_case == sc:
-                    if rp.result == choices.HTTPCallChoiches.success:
-                        return
-            res = {'result': 'failed'}
+                for sc in scenario_cases:
+                    if rp.scenario_case == sc:
+                        if rp.result == choices.HTTPCallChoiches.not_called:
+                            not_called = True
+                        elif rp.result == choices.HTTPCallChoiches.failed:
+                            return {'result': 'mislukt'}
+            if not_called:
+                return {'result': 'Gedeeltelijk succesvol'}
+            else:
+                return {'result': 'Succesvol'}
 
-        for sc in scenario_cases:
-            check(sc)
         if len(scenario_cases) == 0:
             res = {'result': 'No scenario cases available'}
-        if res is None:
-            res = {'result': 'success'}
+        else:
+            res = check(scenario_cases, report)
 
         res['report'] = []
         for case in scenario_cases:

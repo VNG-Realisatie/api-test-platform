@@ -550,7 +550,7 @@ class TestLogNewman(WebTest):
 
         call = self.app.get(reverse('apiv1session:result_session', kwargs={'pk': session_id}))
         call = get_object(call.body)
-        self.assertEqual(call['result'], 'failed')
+        self.assertEqual(call['result'], 'Geen oproep uitgevoerd')
 
 
 class TestHeaderInjection(WebTest):

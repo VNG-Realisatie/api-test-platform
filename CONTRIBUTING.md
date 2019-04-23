@@ -1,12 +1,12 @@
 # Contributing
 
-We – [VNG realisatie](https://www.vngrealisatie.nl/) and the maintainers of this project – know we can only create this standard together with you. Thus we appreciate your input, enjoy feedback and welcome improvements to this project and are very open to collaboration.
+We – [VNG realisatie](https://www.vngrealisatie.nl/) and the maintainers of this project – know we can only create this project together with you. Thus we appreciate your input, enjoy feedback and welcome improvements to this project and are very open to collaboration.
 
 We love issues and pull requests from everyone.
 
 ## Problems, suggestions and questions in Issues
 
-You don't need to change any of our code or documentation to be a contributor. Please help development by reporting problems, suggesting changes and asking questions. To do this, you can [create a GitHub Issue](https://help.github.com/articles/creating-an-issue/) for this project in the [GitHub Issues for VNG-Realisatie/gemma-zaken](https://github.com/VNG-Realisatie/gemma-zaken/issues).
+You don't need to change any of our code or documentation to be a contributor. Please help development by reporting problems, suggesting changes and asking questions. To do this, you can [create a GitHub Issue](https://help.github.com/articles/creating-an-issue/) for this project in the [GitHub Issues for VNG-Realisatie/api-testvoorziening](https://github.com/VNG-Realisatie/api-testvoorziening/issues).
 
 ## Documentation and code in Pull Requests
 

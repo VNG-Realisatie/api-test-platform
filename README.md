@@ -31,7 +31,7 @@ Ga naar de folder [api-lab](https://github.com/VNG-Realisatie/api-testvoorzienin
 - Opdrachtgever: [@TheoVNGPeters](https://github.com/TheoVNGPeters)
 - Delivery manager: [@wishalg](https://github.com/wishalg)
 - Product Owner: [@HenriKorver](https://github.com/HenriKorver)
-- Scrum Master:  [@TCIMEddy](https://github.com/TCIMEddy)
+- Scrum Master:  [@JanWillemKooi](https://github.com/JanWillemKooi)
 
 ## Snelle links
 

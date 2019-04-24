@@ -38,9 +38,6 @@ $table-color-border: $color-gray;
 
     word-break: break-all;
 
-    &:last-of-type {
-      border-bottom: 2px solid $table-color-border;
-    }
   }
 
   &--auto &__heading,

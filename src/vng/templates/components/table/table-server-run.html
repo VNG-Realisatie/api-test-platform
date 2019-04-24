@@ -69,9 +69,9 @@
 
 {% block script %}
     <script>
-    var str = '<span display="block" height="20px" class="common__BadgeWrapper-sc-16zh6vt-3 fagfmg">\n'
-            + '<img style="width:100%" alt="" \nsrc="https://img.shields.io/endpoint.svg?style=for-the-badge&amp;url={{request.scheme}}://{{request.get_host}}{% url "apiv1server:provider:api_server-run-shield-detail" server_run.id %}">\n '
-            + '</span>'
+    var str ='[![Status badge]\n'
+            +'(https://img.shields.io/endpoint.svg?style=for-the-badge&amp;url={{request.scheme}}://{{request.get_host}}{% url "apiv1server:provider:api_server-run-shield-detail" server_run.id %})]\n'
+            +'(https://shields.io/)\n'
 
   function htmlEscape(s) {
     return s

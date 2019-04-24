@@ -16,7 +16,7 @@
                     <tr>
                         <td>
                             {% if endpoint.subdomain %}
-                                <a href="{% url_sub 'serverproxy:run_test' endpoint.subdomain '' %}">
+                                <a href="{% url_sub 'serverproxy:run_test' endpoint.subdomain endpoint.vng_endpoint.path %}">
                                     {{endpoint.vng_endpoint.name}}/{{endpoint.vng_endpoint.path}}
                                 </a>
                             {% endif %}

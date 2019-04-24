@@ -29,18 +29,15 @@ $table-color-border: $color-gray;
 
     &--keep_word {
       word-break: keep-all;
-
     }
 
     &--error {
       background-color: #ff6666;
     }
 
-    word-break: break-all;
+    word-break: normal;
+    white-space: normal;
 
-    &:last-of-type {
-      border-bottom: 2px solid $table-color-border;
-    }
   }
 
   &--auto &__heading,

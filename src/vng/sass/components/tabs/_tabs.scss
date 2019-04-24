@@ -1,0 +1,53 @@
+@import '../../lib/color';
+@import '../../lib/animation';
+@import '../../lib/grid';
+@import '../../lib/typography';
+
+// $tabs-scheme: $scheme;
+
+.tabs {
+  &__list {
+    display: flex;
+    justify-content: stretch;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  &__list-item {
+    @include animate();
+    width: 100%;
+  }
+
+  &__list-item--active {
+    border-bottom-width: 2px;
+    background-color: $color-gray;
+  }
+
+  &__link {
+    outline: none !important;
+    color: inherit;
+    text-decoration: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &__track {
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  &__tab {
+    @include animate();
+    display: inline-block;
+    vertical-align: top;
+    visibility: hidden;
+    width: 100%;
+  }
+
+  &__tab--active {
+    visibility: visible;
+  }
+
+}

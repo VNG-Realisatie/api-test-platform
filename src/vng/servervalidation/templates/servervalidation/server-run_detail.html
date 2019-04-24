@@ -22,7 +22,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% include 'components/table/table-server-run.html' with server_run=object postman_result=postman_result only %}
+                {% include 'components/table/table-server-run.html' with server_run=object postman_result=postman_result request=request only %}
             </tbody>
         </table>
 

@@ -69,9 +69,10 @@
 
 {% block script %}
     <script>
-    var str ='[![Status badge]\n'
-            +'(https://img.shields.io/endpoint.svg?style=for-the-badge&amp;url={{request.scheme}}://{{request.get_host}}{% url "apiv1server:provider:api_server-run-shield-detail" server_run.id %})]\n'
-            +'(https://shields.io/)\n'
+    var str = '[![Status badge]\n'
+            + '(https://img.shields.io/endpoint.svg?style=for-the-badge&amp;\n'
+            + 'url={{request.scheme}}://{{request.get_host}}{% url "apiv1server:provider:api_server-run-shield-detail" server_run.id %})]\n'
+            + '(https://shields.io/)\n'
 
   function htmlEscape(s) {
     return s

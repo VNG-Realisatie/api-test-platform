@@ -108,6 +108,7 @@ class VNGEndpointAdmin(admin.ModelAdmin):
     list_display = [
         'url',
         'name',
+        'path',
         'docker_image',
         'session_type',
         'port',

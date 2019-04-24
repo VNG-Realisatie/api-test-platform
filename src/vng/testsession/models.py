@@ -84,7 +84,7 @@ class VNGEndpoint(models.Model):
 
     port = models.PositiveIntegerField(default=8080)
     url = models.URLField(max_length=200, blank=True, null=True, default=None)
-    path = models.CharField(max_length=200, blank=True, null=True, default=None)
+    path = models.CharField(max_length=200, default='')
     name = models.CharField(
         max_length=200,
         validators=[

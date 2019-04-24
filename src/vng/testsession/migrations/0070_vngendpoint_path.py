@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='vngendpoint',
             name='path',
-            field=models.CharField(blank=True, default=None, max_length=200, null=True),
+            field=models.CharField(default='', max_length=200),
         ),
     ]

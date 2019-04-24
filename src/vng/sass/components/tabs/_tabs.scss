@@ -21,10 +21,13 @@
 
   &__list-item--active {
     border-bottom-width: 2px;
+    background-color: $color-gray;
   }
 
   &__link {
+    outline: none !important;
     color: inherit;
+    text-decoration: none;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -47,7 +50,4 @@
     visibility: visible;
   }
 
-  .list {
-    //   @include margin(true, margin-top);
-  }
 }

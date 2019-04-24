@@ -26,17 +26,22 @@
                     <nav class="tabs__navigation">
                         <ul class="tabs__list">
                             <li class="tabs__list-item">
-                                <a class="tabs__link" href="#tab-sub-categories">Provider test</a>
+                                <h2>
+                                    <a class="tabs__link" href="#tab-sub-categories">
+                                    Provider test</a>
+                                </h2>
                             </li>
 
                             <li class="tabs__list-item">
-                                <a class="tabs__link" href="#tab-news-items">Scheduled</a>
+                                <h2>
+                                    <a class="tabs__link" href="#tab-news-items">
+                                    Scheduled test</a>
+                                </h2>
                             </li>
                         </ul>
                     </nav>
                     <div class="tabs__track">
                         <div id="tab-sub-categories" class="tabs__tab">
-                            <h2>Provider tests</h2>
                             <table class="table">
                                 {% include 'components/table/header-server-run.html' only %}
                                 {% for server_run in object_list %}
@@ -47,7 +52,6 @@
                             </table>
                         </div>
                         <div id="tab-news-items" class="tabs__tab">
-                            <h2>Scheduled</h2>
                             <table class="table" >
                                 {% include 'components/table/header-server-run-scheduled.html' only %}
                                 {% for server_run in object_list %}

@@ -3,7 +3,10 @@ from zds_client import ClientAuth
 
 from django.core.files import File
 from django.utils import timezone
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
 from celery.utils.log import get_task_logger
+from django.conf import settings
 
 from ..celery.celery import app
 from .models import PostmanTest, PostmanTestResult, Endpoint, ServerRun, ServerHeader
@@ -43,6 +46,9 @@ def execute_test(server_run_pk, scheduled=False):
 
     file_name = str(uuid.uuid4())
     postman_tests = PostmanTest.objects.filter(test_scenario=server_run.test_scenario).order_by('order')
+    # remove previous results
+    PostmanTestResult.objects.filter(server_run=server_run).delete()
+    failure = False
     try:
         for counter, postman_test in enumerate(postman_tests):
             auth_choice = postman_test.test_scenario.authorization
@@ -79,6 +85,7 @@ def execute_test(server_run_pk, scheduled=False):
             ptr.save_json(file_name, File(file_json))
             ptr.status = ptr.get_outcome_json()
             ptr.save()
+            failure = failure or (ptr.status == choices.StatusChoices.failed)
 
         server_run.status_exec = 'Completed'
     except Exception as e:
@@ -92,3 +99,22 @@ def execute_test(server_run_pk, scheduled=False):
         server_run.last_exec = timezone.now()
         server_run.status = choices.StatusWithScheduledChoices.scheduled
     server_run.save()
+    if failure:
+        send_email_failure(server_run)
+
+
+def send_email_failure(server_run):
+    from django.contrib.sites.models import Site
+    domain = Site.objects.get_current().domain
+    msg_html = render_to_string('servervalidation/failed_test_email.html', {
+        'server_run': server_run,
+        'domain': domain
+    })
+
+    send_mail(
+        'Failure of the scheduled test',
+        msg_html,
+        settings.DEFAULT_FROM_EMAIL,
+        server_run.user.email,
+        html_message=msg_html
+    )

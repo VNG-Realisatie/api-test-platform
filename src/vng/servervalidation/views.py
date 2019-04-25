@@ -163,7 +163,7 @@ class TriggerServerRun(OwnerSingleObject, View):
     def get(self, request, *args, **kwargs):
         server = self.get_object()
         self.request.session['server_run_scheduled'] = server.scheduled
-        execute_test(server.pk, scheduled=True)
+        execute_test.delay(server.pk, scheduled=True)
         return redirect(reverse('server_run:server-run_list'))
 
 

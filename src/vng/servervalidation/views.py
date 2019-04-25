@@ -40,6 +40,9 @@ class TestScenarioSelect(LoginRequiredMixin, FormView, MultipleObjectMixin, Mult
         server_list = self.get_queryset()
         for sr in data['server_run_list']:
             sr.success = sr.get_execution_result()
+        if 'server_run_scheduled' in self.request.session:
+            data['second_tab'] = self.request.session['server_run_scheduled']
+            del self.request.session['server_run_scheduled']
         return data
 
     def get(self, request, *args, **kwargs):
@@ -57,7 +60,9 @@ class CreateEndpoint(LoginRequiredMixin, CreateView):
     form_class = CreateEndpointForm
 
     def get_success_url(self):
-        return reverse('server_run:server-run_list')
+        return reverse('server_run:server-run_detail', kwargs={
+            'pk': self.server.pk
+        })
 
     def fetch_server(self):
         ts = get_object_or_404(TestScenario, pk=self.kwargs['test_id'])
@@ -139,7 +144,6 @@ class ServerRunOutputUuid(DetailView):
 
     model = ServerRun
     template_name = 'servervalidation/server-run_detail.html'
-    # queryset = ServerRun.objects.all()
     slug_field = 'uuid'
     slug_url_kwarg = 'uuid'
 
@@ -158,6 +162,7 @@ class TriggerServerRun(OwnerSingleObject, View):
 
     def get(self, request, *args, **kwargs):
         server = self.get_object()
+        self.request.session['server_run_scheduled'] = server.scheduled
         execute_test(server.pk, scheduled=True)
         return redirect(reverse('server_run:server-run_list'))
 
@@ -169,6 +174,7 @@ class StopServer(OwnerSingleObject, View):
 
     def post(self, request, *args, **kwargs):
         server = self.get_object()
+        self.request.session['server_run_scheduled'] = server.scheduled
         server.stopped = timezone.now()
         server.status = choices.StatusWithScheduledChoices.stopped
         server.save()

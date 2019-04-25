@@ -6,7 +6,7 @@ import uuid
 
 
 def create_uuid(apps, schema_editor):
-    server = apps.get_model('consortial_billing', 'Institution')
+    server = apps.get_model('servervalidation', 'ServerRun')
     for s in server.objects.all():
         s.uuid = uuid.uuid4()
         s.save()

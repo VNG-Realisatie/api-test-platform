@@ -22,7 +22,7 @@
             </form>
 
             {% if object_list %}
-                <div class="tabs">
+                <div class="tabs" data-tab-id="{{second_tab|yesno:"tab-news-items,tab-sub-categories"}}">
                     <nav class="tabs__navigation">
                         <ul class="tabs__list">
                             <li class="tabs__list-item">

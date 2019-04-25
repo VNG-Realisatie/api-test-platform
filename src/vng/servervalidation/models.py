@@ -1,6 +1,7 @@
 import json
 import array
 import itertools
+import uuid
 
 from datetime import datetime
 
@@ -76,6 +77,7 @@ class ServerRun(models.Model):
     percentage_exec = models.IntegerField(default=None, null=True, blank=True)
     status_exec = models.TextField(default=None, null=True, blank=True)
     scheduled = models.BooleanField(default=False)
+    uuid = models.UUIDField(default=uuid.uuid4)
 
     def __str__(self):
         return "{} - {}".format(self.started, self.status)

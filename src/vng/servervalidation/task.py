@@ -85,7 +85,7 @@ def execute_test(server_run_pk, scheduled=False):
             ptr.save_json(file_name, File(file_json))
             ptr.status = ptr.get_outcome_json()
             ptr.save()
-            failure = failure or (ptr.status == choices.StatusChoices.failed)
+            failure = failure or (ptr.status == choices.ResultChoices.failed)
 
         server_run.status_exec = 'Completed'
     except Exception as e:
@@ -99,7 +99,7 @@ def execute_test(server_run_pk, scheduled=False):
         server_run.last_exec = timezone.now()
         server_run.status = choices.StatusWithScheduledChoices.scheduled
     server_run.save()
-    if failure:
+    if failure and scheduled:
         send_email_failure(server_run)
 
 

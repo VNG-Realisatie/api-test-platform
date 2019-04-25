@@ -73,13 +73,13 @@ class ResultServerViewShield(
 
     @swagger_auto_schema(responses={200: ServerRunResultShield})
     def retrieve(self, request, pk=None):
-        postman_test_result = PostmanTestResult.objects.filter(server_run__pk=pk)
+        server = ServerRun.objects.get(pk=pk)
+        res = server.get_execution_result()
 
-        res = False
-        for ptr in postman_test_result:
-            for calls in ptr.get_json_obj():
-                res = res or (calls['response']['code'] >= 200 and calls['response']['code'] < 400 and not calls['item']['error_test'])
-        if res:
+        if res is None:
+            message = 'No yet run'
+            color = 'inactive'
+        elif res:
             message = 'Success'
             color = 'green'
         else:

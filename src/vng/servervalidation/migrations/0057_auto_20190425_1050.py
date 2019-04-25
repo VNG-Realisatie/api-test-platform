@@ -5,6 +5,13 @@ import django.db.models.deletion
 import uuid
 
 
+def create_uuid(apps, schema_editor):
+    server = apps.get_model('consortial_billing', 'Institution')
+    for s in server.objects.all():
+        s.uuid = uuid.uuid4()
+        s.save()
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -15,6 +22,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='serverrun',
             name='uuid',
-            field=models.UUIDField(default=uuid.uuid4),
+            field=models.UUIDField(blank=True, null=True),
+        ),
+        migrations.RunPython(create_uuid),
+        migrations.AlterField(
+            model_name='serverrun',
+            name='uuid',
+            field=models.UUIDField(default=uuid.uuid4, editable=True),
         ),
     ]

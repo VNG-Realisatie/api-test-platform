@@ -24,6 +24,11 @@
             {% endif %}
         {% endif %}
     </td>
+    <td class="table__cell">
+        {% if server_run.last_exec %}
+            {{server_run.last_exec}}
+        {% endif %}
+    </td>
     <td class="table__cell table__cell--keep_word">
 
         {% if not server_run.is_stopped %}

@@ -150,11 +150,6 @@ class ServerRunOutputUuid(DetailView):
         context["postman_result"] = ptr
         return context
 
-    # def get_object(self):
-    #     import pdb
-    #     pdb.set_trace()
-    #     return self.queryset.get(uuid=self.request.uuid)
-
 
 class TriggerServerRun(OwnerSingleObject, View):
 

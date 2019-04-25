@@ -89,5 +89,6 @@ def execute_test(server_run_pk, scheduled=False):
         server_run.status = choices.StatusWithScheduledChoices.stopped
         server_run.stopped = timezone.now()
     else:
+        server_run.last_exec = timezone.now()
         server_run.status = choices.StatusWithScheduledChoices.scheduled
     server_run.save()

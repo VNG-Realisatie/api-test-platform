@@ -85,6 +85,19 @@ class ServerRun(models.Model):
     def is_running(self):
         return self.status == choices.StatusChoices.running
 
+    def get_execution_result(self):
+        ptr_set = self.postmantestresult_set.all()
+        if len(ptr_set) == 0:
+            success = None
+        else:
+            success = True
+            for ptr in ptr_set:
+                if ptr.is_success() == 0:
+                    success = None
+                elif ptr.is_success() == -1 and success is not None:
+                    success = False
+        return success
+
 
 class ServerHeader(models.Model):
 

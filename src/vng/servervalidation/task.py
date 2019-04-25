@@ -112,9 +112,9 @@ def send_email_failure(server_run):
     })
 
     send_mail(
-        'Failure of the scheduled test',
+        'Failure of scheduled test',
         msg_html,
         settings.DEFAULT_FROM_EMAIL,
-        server_run.user.email,
+        [server_run.user.email],
         html_message=msg_html
     )

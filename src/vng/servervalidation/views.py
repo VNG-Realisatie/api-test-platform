@@ -135,6 +135,27 @@ class ServerRunOutput(OwnerSingleObject, DetailView):
         return context
 
 
+class ServerRunOutputUuid(DetailView):
+
+    model = ServerRun
+    template_name = 'servervalidation/server-run_detail.html'
+    # queryset = ServerRun.objects.all()
+    slug_field = 'uuid'
+    slug_url_kwarg = 'uuid'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        server_run = context['object']
+        ptr = PostmanTestResult.objects.filter(server_run=server_run)
+        context["postman_result"] = ptr
+        return context
+
+    # def get_object(self):
+    #     import pdb
+    #     pdb.set_trace()
+    #     return self.queryset.get(uuid=self.request.uuid)
+
+
 class TriggerServerRun(OwnerSingleObject, View):
 
     model = ServerRun

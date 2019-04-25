@@ -36,6 +36,18 @@
     <td class="table__cell">Status</td>
     <td class="table__cell">{{ server_run.status }}</td>
 </tr>
+{% if server_run.scheduled and not server_run.is_stopped %}
+<tr>
+    <td class="table__cell">Actie</td>
+    <td class="table__cell">
+        <form id="myform" method="POST" action="{% url 'server_run:server-run_stop' server_run.pk %}">
+            {% csrf_token %}
+            <input type="submit" class="form__button button button--primary" value="Stop">
+        </form>
+        <a type="submit" class="button button--primary "  href="{% url 'server_run:server-run_trigger' server_run.pk %}">Uitvoeren</a>
+    </td>
+</tr>
+{% endif %}
 
 <tr>
     <td class="table__cell">Log</td>
@@ -56,7 +68,7 @@
     <td class="table__cell">Badge HTML</td>
 </tr>
 <tr>
-    <td class="table__cell" colspan='4' >
+    <td class="table__cell" colspan='2' >
             <?prettify lang=html linenums=true?>
             <pre class="prettyprint" id='htmlSnippet'>
                 <xmp>
@@ -69,7 +81,7 @@
     <td class="table__cell">Badge Github</td>
 </tr>
 <tr>
-    <td class="table__cell" colspan='4' >
+    <td class="table__cell" colspan='2' >
             <?prettify lang=html linenums=true?>
             <pre class="prettyprint" id='gitSnippet'>
                 <xmp>

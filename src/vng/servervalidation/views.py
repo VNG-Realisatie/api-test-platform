@@ -163,7 +163,7 @@ class TriggerServerRun(OwnerSingleObject, View):
 
     def get(self, request, *args, **kwargs):
         server = self.get_object()
-        execute_test(server.pk, stop=False)
+        execute_test(server.pk, scheduled=True)
         return redirect(reverse('server_run:server-run_list'))
 
 

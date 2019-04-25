@@ -28,6 +28,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='serverrun',
             name='uuid',
-            field=models.UUIDField(default=uuid.uuid4, editable=True),
+            field=models.UUIDField(default=uuid.uuid4, editable=False),
         ),
     ]

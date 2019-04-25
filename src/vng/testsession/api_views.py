@@ -420,19 +420,10 @@ class RunTest(CSRFExemptMixin, View):
     def build_url(self, eu, arguments):
         ru = self.kwargs['relative_url']
         if eu.vng_endpoint.url is not None:
-            parsed_url = parse.urlparse(eu.vng_endpoint.url)
-            path = parsed_url.path
-            if path.startswith('/'):
-                path = path[1:]
-            if ru == '':
-                new_url = eu.vng_endpoint.url
+            if eu.vng_endpoint.url.endswith('/'):
+                request_url = '{}{}?{}'.format(eu.vng_endpoint.url, self.kwargs['relative_url'], arguments)
             else:
-                new_url = parsed_url.scheme + '://' + parsed_url.netloc
-
-            if new_url.endswith('/'):
-                request_url = '{}{}?{}'.format(new_url, self.kwargs['relative_url'], arguments)
-            else:
-                request_url = '{}/{}?{}'.format(new_url, self.kwargs['relative_url'], arguments)
+                request_url = '{}/{}?{}'.format(eu.vng_endpoint.url, self.kwargs['relative_url'], arguments)
         else:
             request_url = 'http://{}:{}/{}?{}'.format(eu.docker_url, 8080, self.kwargs['relative_url'], arguments)
         if arguments == '':

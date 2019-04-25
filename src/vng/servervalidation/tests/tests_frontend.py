@@ -155,3 +155,25 @@ class TestUserRegistration(WebTest):
         form['password'] = '12345678a'
         call = form.submit()
         self.assertIn(call.text, 'consumer')
+
+
+class IntegrationTest(WebTest):
+
+    def setUp(self):
+        self.server = ServerRunFactory()
+        self.server_s = ServerRunFactory(test_scenario=PostmanTestFactory().test_scenario, scheduled=True)
+
+    def test_access(self):
+        call = self.app.get(reverse('server_run:server-run_detail_uuid', kwargs={
+            'uuid': self.server.uuid
+        }))
+        self.assertIn(str(self.server.id), call.text)
+
+    def test_trigger(self):
+        prev = len(PostmanTestResult.objects.all())
+        self.app.get(
+            reverse('server_run:server-run_trigger', kwargs={
+                'server_id': self.server_s.id
+            }), user=self.server_s.user
+        )
+        self.assertEqual(prev, len(PostmanTestResult.objects.all()) - 1)

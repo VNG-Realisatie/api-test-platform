@@ -1,5 +1,6 @@
 import json
 import array
+import itertools
 
 from datetime import datetime
 
@@ -180,9 +181,14 @@ class PostmanTestResult(models.Model):
             if json_obj['run']['failures'] != []:
                 return choices.ResultChoices.failed
             epr = ExpectedPostmanResult.objects.filter(postman_test=self.postman_test).order_by('order')
-            for call, expected in zip(json_obj['run']['executions'], epr):
-                if str(call['response']['code']) not in expected.expected_response:
-                    return choices.ResultChoices.failed
+            # In case not all the expected result are specified just look at the response status
+            for call, expected in itertools.zip_longest(json_obj['run']['executions'], epr):
+                if expected is not None:
+                    if str(call['response']['code']) not in expected.expected_response:
+                        return choices.ResultChoices.failed
+                else:
+                    if not postman.get_call_result(call):
+                        return choices.ResultChoices.failed
             return choices.ResultChoices.success
 
 

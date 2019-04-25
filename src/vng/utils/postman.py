@@ -2,14 +2,15 @@ import json
 from .choices import ResultChoices
 
 
-def get_outcome_json(_json):
-    error_codes = range(400, 600)
+error_codes = range(400, 600)
 
+
+def get_outcome_json(_json):
     json_obj = json.loads(_json)
     if json_obj['run']['failures'] != []:
         return ResultChoices.failed
     for call in json_obj['run']['executions']:
-        if str(call['response']['code']) in error_codes:
+        if not get_call_result(call):
             return ResultChoices.failed
     return ResultChoices.success
 
@@ -17,6 +18,10 @@ def get_outcome_json(_json):
 def get_json_obj_file(filename):
     with open(filename) as jfile:
         return get_json_obj(jfile, file=True)
+
+
+def get_call_result(call):
+    return str(call['response']['code']) not in error_codes
 
 
 def get_json_obj(content, file=False):

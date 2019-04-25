@@ -8,7 +8,7 @@ from django.views.generic import DetailView, CreateView, FormView
 from django.views.generic.list import MultipleObjectMixin, MultipleObjectTemplateResponseMixin
 
 from ..utils import choices
-from ..utils.views import OwnerSingleObject, PDFGenerator
+from ..utils.views import OwnerSingleObject, PDFGenerator, MultiplePaginator
 from .forms import CreateServerRunForm, CreateEndpointForm
 from .models import (
     ServerRun, Endpoint, TestScenarioUrl, TestScenario, PostmanTest, PostmanTestResult, ExpectedPostmanResult,
@@ -17,7 +17,7 @@ from .models import (
 from .task import execute_test
 
 
-class TestScenarioSelect(LoginRequiredMixin, FormView, MultipleObjectMixin, MultipleObjectTemplateResponseMixin):
+class TestScenarioSelect(LoginRequiredMixin, MultiplePaginator, FormView, MultipleObjectMixin, MultipleObjectTemplateResponseMixin):
 
     template_name = 'servervalidation/server-run_list.html'
     form_class = CreateServerRunForm
@@ -37,7 +37,6 @@ class TestScenarioSelect(LoginRequiredMixin, FormView, MultipleObjectMixin, Mult
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        server_list = self.get_queryset()
         for sr in data['server_run_list']:
             sr.success = sr.get_execution_result()
         if 'server_run_scheduled' in self.request.session:

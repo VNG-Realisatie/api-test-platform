@@ -27,10 +27,18 @@
     <td class="table__cell">Started</td>
     <td class="table__cell">{{ server_run.started }}</td>
 </tr>
+{% if server_run.is_running %}
 <tr>
-    <td class="table__cell">Stopped</td>
-    <td class="table__cell">{{ server_run.stopped }}</td>
+    <td class="table__cell">Uitvoering</td>
+    <td class="table__cell" id='starting' server_run_id='{{server_run.id}}'></td>
 </tr>
+
+{% else %}
+    <tr>
+        <td class="table__cell">Stopped</td>
+        <td class="table__cell">{{ server_run.stopped }}</td>
+    </tr>
+{% endif %}
 
 <tr>
     <td class="table__cell">Status</td>
@@ -93,44 +101,46 @@
 {% endif %}
 
 {% block script %}
-    <script>
-    var gitSnippet = '[![Status badge]\n'
-            + '(https://img.shields.io/endpoint.svg?style=for-the-badge&amp;\n'
-            + 'url={{request.scheme}}://{{request.get_host}}{% url "apiv1server:provider:api_server-run-shield-detail" server_run.id %})]\n'
-            + '({{request.scheme}}://{{request.get_host}}{% url 'server_run:server-run_detail_uuid' server_run.uuid %})\n'
+    {% if server_run.scheduled %}
+        <script>
+        var gitSnippet = '[![Status badge]\n'
+                + '(https://img.shields.io/endpoint.svg?style=for-the-badge&amp;\n'
+                + 'url={{request.scheme}}://{{request.get_host}}{% url "apiv1server:provider:api_server-run-shield-detail" server_run.id %})]\n'
+                + '({{request.scheme}}://{{request.get_host}}{% url 'server_run:server-run_detail_uuid' server_run.uuid %})\n'
 
-    var htmlSnippet = '<span display="block" height="20px" class="common__BadgeWrapper-sc-16zh6vt-3 fagfmg">\n'
-            + '<a href="{{request.scheme}}://{{request.get_host}}{% url 'server_run:server-run_detail_uuid' server_run.uuid %}">\n'
-            + '<img style="width:100%" alt="" src="https://img.shields.io/endpoint.svg?style=for-the-badge&amp;\n '
-            + 'url={{request.scheme}}://{{request.get_host}}{% url "apiv1server:provider:api_server-run-shield-detail" server_run.id %}"></span></a>'
+        var htmlSnippet = '<span display="block" height="20px" class="common__BadgeWrapper-sc-16zh6vt-3 fagfmg">\n'
+                + '<a href="{{request.scheme}}://{{request.get_host}}{% url 'server_run:server-run_detail_uuid' server_run.uuid %}">\n'
+                + '<img style="width:100%" alt="" src="https://img.shields.io/endpoint.svg?style=for-the-badge&amp;\n '
+                + 'url={{request.scheme}}://{{request.get_host}}{% url "apiv1server:provider:api_server-run-shield-detail" server_run.id %}"></span></a>'
 
-    function htmlEscape(s) {
-        s = s.replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
-        return s
-    }
+        function htmlEscape(s) {
+            s = s.replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+            return s
+        }
 
-    function htmlReplace(s){
-        s=s.replace(
-        /&lt;script src[\s\S]*?&gt;&lt;\/script&gt;|&lt;!--\?[\s\S]*?--&gt;|&lt;pre\b[\s\S]*?&lt;\/pre&gt;/g,
-        '<span class="operative">$&<\/span>');
-        return s;
-    }
+        function htmlReplace(s){
+            s=s.replace(
+            /&lt;script src[\s\S]*?&gt;&lt;\/script&gt;|&lt;!--\?[\s\S]*?--&gt;|&lt;pre\b[\s\S]*?&lt;\/pre&gt;/g,
+            '<span class="operative">$&<\/span>');
+            return s;
+        }
 
-    // this page's own source code
-    gitSnippet = htmlEscape(gitSnippet);
-    gitSnippet = htmlReplace(gitSnippet);
-
-
-    htmlSnippet = htmlEscape(htmlSnippet);
-    htmlSnippet = htmlReplace(htmlSnippet);
+        // this page's own source code
+        gitSnippet = htmlEscape(gitSnippet);
+        gitSnippet = htmlReplace(gitSnippet);
 
 
-    // insert into PRE
-    document.getElementById("gitSnippet").innerHTML = gitSnippet;
-    document.getElementById("htmlSnippet").innerHTML = htmlSnippet;
-  </script>
+        htmlSnippet = htmlEscape(htmlSnippet);
+        htmlSnippet = htmlReplace(htmlSnippet);
+
+
+        // insert into PRE
+        document.getElementById("gitSnippet").innerHTML = gitSnippet;
+        document.getElementById("htmlSnippet").innerHTML = htmlSnippet;
+    </script>
+    {% endif %}
 {% endblock %}
 
 {% endspaceless %}

@@ -53,12 +53,25 @@
 
 {% if server_run.scheduled %}
 <tr>
-    <td class="table__cell">Badge</td>
+    <td class="table__cell">Badge HTML</td>
 </tr>
 <tr>
     <td class="table__cell" colspan='2' >
             <?prettify lang=html linenums=true?>
-            <pre class="prettyprint" id='snippet'>
+            <pre class="prettyprint" id='htmlSnippet'>
+                <xmp>
+
+                </xmp>
+            </pre>
+    </td>
+</tr>
+<tr>
+    <td class="table__cell">Badge Github</td>
+</tr>
+<tr>
+    <td class="table__cell" colspan='2' >
+            <?prettify lang=html linenums=true?>
+            <pre class="prettyprint" id='gitSnippet'>
                 <xmp>
 
                 </xmp>
@@ -69,27 +82,41 @@
 
 {% block script %}
     <script>
-    var str = '<span display="block" height="20px" class="common__BadgeWrapper-sc-16zh6vt-3 fagfmg">\n'
-            + '<img style="width:100%" alt="" \nsrc="https://img.shields.io/endpoint.svg?style=for-the-badge&amp;url={{request.scheme}}://{{request.get_host}}{% url "apiv1server:provider:api_server-run-shield-detail" server_run.id %}">\n '
-            + '</span>'
+    var gitSnippet = '[![Status badge]\n'
+            + '(https://img.shields.io/endpoint.svg?style=for-the-badge&amp;\n'
+            + 'url={{request.scheme}}://{{request.get_host}}{% url "apiv1server:provider:api_server-run-shield-detail" server_run.id %})]\n'
+            + '(https://shields.io/)\n'
 
-  function htmlEscape(s) {
-    return s
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
-  }
+    var htmlSnippet = '<span display="block" height="20px" class="common__BadgeWrapper-sc-16zh6vt-3 fagfmg">\n'
+            + '<img style="width:100%" alt="" \nsrc="https://img.shields.io/endpoint.svg?style=for-the-badge&amp;\n '
+            + 'url={{request.scheme}}://{{request.get_host}}{% url "apiv1server:provider:api_server-run-shield-detail" server_run.id %}"></span>'
 
-  // this page's own source code
-  var quineHtml = htmlEscape(str);
+    function htmlEscape(s) {
+        s = s.replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+        return s
+    }
 
-  // Highlight the operative parts:
-  quineHtml = quineHtml.replace(
-    /&lt;script src[\s\S]*?&gt;&lt;\/script&gt;|&lt;!--\?[\s\S]*?--&gt;|&lt;pre\b[\s\S]*?&lt;\/pre&gt;/g,
-    '<span class="operative">$&<\/span>');
+    function htmlReplace(s){
+        s=s.replace(
+        /&lt;script src[\s\S]*?&gt;&lt;\/script&gt;|&lt;!--\?[\s\S]*?--&gt;|&lt;pre\b[\s\S]*?&lt;\/pre&gt;/g,
+        '<span class="operative">$&<\/span>');
+        return s;
+    }
 
-  // insert into PRE
-  document.getElementById("snippet").innerHTML = quineHtml;
+    // this page's own source code
+    gitSnippet = htmlEscape(gitSnippet);
+    gitSnippet = htmlReplace(gitSnippet);
+
+
+    htmlSnippet = htmlEscape(htmlSnippet);
+    htmlSnippet = htmlReplace(htmlSnippet);
+
+
+    // insert into PRE
+    document.getElementById("gitSnippet").innerHTML = gitSnippet;
+    document.getElementById("htmlSnippet").innerHTML = htmlSnippet;
   </script>
 {% endblock %}
 

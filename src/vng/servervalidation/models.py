@@ -71,13 +71,14 @@ class ServerRun(models.Model):
     started = models.DateTimeField('Gestart op', default=timezone.now)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     stopped = models.DateTimeField('Gestopt op', null=True, default=None, blank=True)
+    last_exec = models.DateTimeField('Laatste uitvoering', null=True, default=None, blank=True)
     status = models.CharField(max_length=20, choices=choices.StatusWithScheduledChoices.choices, default=choices.StatusWithScheduledChoices.starting)
     client_id = models.TextField(default=None, null=True, blank=True)
     secret = models.TextField(default=None, null=True, blank=True)
     percentage_exec = models.IntegerField(default=None, null=True, blank=True)
     status_exec = models.TextField(default=None, null=True, blank=True)
     scheduled = models.BooleanField(default=False)
-    uuid = models.UUIDField(default=uuid.uuid4, editable=True)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
 
     def __str__(self):
         return "{} - {}".format(self.started, self.status)

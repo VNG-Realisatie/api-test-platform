@@ -83,8 +83,11 @@ class TestSession(models.Model):
 class VNGEndpoint(models.Model):
 
     port = models.PositiveIntegerField(default=8080)
-    url = models.URLField(max_length=200, blank=True, null=True, default=None)
-    path = models.CharField(max_length=200, default='')
+    url = models.URLField(max_length=200, blank=True, null=True, default=None,
+                          help_text='Base url (host of the service). E.g. http://ref.tst.vng.cloud, without the ending slash.')
+    path = models.CharField(max_length=200, default='',
+                            help_text='Path url that is appended in the front end page. The path must contain the slash at \
+                            the beginning. E.g. /zrc/api/v1/')
     name = models.CharField(
         max_length=200,
         validators=[

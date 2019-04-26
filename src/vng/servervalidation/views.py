@@ -30,7 +30,7 @@ class TestScenarioSelect(LoginRequiredMixin, FormView, MultiplePaginator, Multip
         return self.model.objects.filter(user=self.request.user).order_by('-started')
 
     def get_queryset_1(self):
-        return self.model.objects.filter(user=self.request.user).order_by('-started')
+        return self.model.objects.filter(user=self.request.user).filter(scheduled=True).order_by('-started')
 
     def form_valid(self, form):
         ts_id = form.instance.test_scenario.id

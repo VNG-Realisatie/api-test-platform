@@ -1,5 +1,6 @@
 {% extends 'master.html' %}
 {% load sniplates %}
+{% load index %}
 
 
 {% block title %}Providers{% endblock %}
@@ -44,26 +45,26 @@
                         <div id="tab-sub-categories" class="tabs__tab">
                             <table class="table">
                                 {% include 'components/table/header-server-run.html' only %}
-                                {% for server_run in object_list %}
+                                {% for server_run in object_list.0 %}
                                     {% if not server_run.scheduled %}
                                         {% include 'components/table/row-server-run.html' with server_run=server_run %}
                                     {% endif %}
                                 {% endfor %}
                             </table>
+
+                            {% include 'components/pagination/multiple_pagination.html' with index=0 paginator=paginators|index:0|index:0 page_obj=paginators|index:0|index:1 %}
                         </div>
                         <div id="tab-news-items" class="tabs__tab">
                             <table class="table" >
                                 {% include 'components/table/header-server-run-scheduled.html' only %}
-                                {% for server_run in object_list %}
-                                    {% if server_run.scheduled %}
-                                        {% include 'components/table/row-server-run-scheduled.html' with server_run=server_run %}
-                                    {% endif %}
+                                {% for server_run in object_list.1 %}
+                                    {% include 'components/table/row-server-run-scheduled.html' with server_run=server_run %}
                                 {% endfor %}
                             </table>
+                            {% include 'components/pagination/multiple_pagination.html'  with index=1 paginator=paginators|index:1|index:0 page_obj=paginators|index:1|index:1 %}
                         </div>
                     </div>
                 </div>
-                {% include 'components/pagination/pagination.html' %}
             {% endif %}
         </div>
 

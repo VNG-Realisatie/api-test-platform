@@ -83,8 +83,11 @@ class TestSession(models.Model):
 class VNGEndpoint(models.Model):
 
     port = models.PositiveIntegerField(default=8080)
-    url = models.URLField(max_length=200, blank=True, null=True, default=None)
-    path = models.CharField(max_length=200, default='')
+    url = models.URLField(max_length=200, blank=True, null=True, default=None,
+                          help_text='Base url (host of the service). E.g. http://ref.tst.vng.cloud, without the ending slash.')
+    path = models.CharField(max_length=200, default='',
+                            help_text='Path url that is appended in the front end page. The path must contain the slash at \
+                            the beginning. E.g. /zrc/api/v1/')
     name = models.CharField(
         max_length=200,
         validators=[
@@ -98,12 +101,6 @@ class VNGEndpoint(models.Model):
     docker_image = models.CharField(max_length=200, blank=True, null=True, default=None)
     session_type = models.ForeignKey(SessionType, on_delete=models.CASCADE)
     test_file = FilerFileField(null=True, blank=True, default=None, on_delete=models.SET_NULL)
-
-    def save(self, *args, **kwargs):
-        if self.url.endswith('/'):
-            self.url.endswith = self.url.endswith[:-1]
-        if self.url.path('/'):
-            self.url.path = self.url.path[:-1]
 
     def __str__(self):
         # To show the session type when adding a scenario case

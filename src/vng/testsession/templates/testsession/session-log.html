@@ -44,17 +44,18 @@
 
         {% if session.is_stopped %}
             {% for postman in session.exposedurl_set.all %}
-                <h3>Postman Collection</h3>
-
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th class="table__heading">Tijd</th>
-                            <th class="table__heading">Name</th>
-                            <th class="table__heading">Resultaat</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                {% if postman.test_session.get_json_obj %}
+                    <h3>Postman Collection</h3>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th class="table__heading">Tijd</th>
+                                <th class="table__heading">Name</th>
+                                <th class="table__heading">Resultaat</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                {% endif %}
                         {% for calls in postman.test_session.get_json_obj %}
                             <tr>
                                 {% if calls.response.code >= 200 and calls.response.code < 400 and not calls.item.error_test %}
@@ -143,7 +144,7 @@
                     </tbody>
                 </table>
                 {% endif %}
-
+                {% if postman.get_json_obj %}
                 <h4>Assertions</h4>
                 <table class="table">
                     <thead>
@@ -154,7 +155,8 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for exec in postman.get_json_obj%}
+                {% endif %}
+                        {% for exec in postman.get_json_obj %}
                             {% if 'assertions' in exec %}
                                 {% for assertion in exec.assertions %}
                                     {% if 'error' not in assertion %}

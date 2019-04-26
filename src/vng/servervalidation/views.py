@@ -17,15 +17,19 @@ from .models import (
 from .task import execute_test
 
 
-class TestScenarioSelect(LoginRequiredMixin, MultiplePaginator, FormView, MultipleObjectMixin, MultipleObjectTemplateResponseMixin):
+class TestScenarioSelect(LoginRequiredMixin, FormView, MultiplePaginator, MultipleObjectTemplateResponseMixin):
 
     template_name = 'servervalidation/server-run_list.html'
     form_class = CreateServerRunForm
     context_object_name = 'server_run_list'
     paginate_by = 10
     model = ServerRun
+    number_object_lists = 2
 
-    def get_queryset(self):
+    def get_queryset_0(self):
+        return self.model.objects.filter(user=self.request.user).order_by('-started')
+
+    def get_queryset_1(self):
         return self.model.objects.filter(user=self.request.user).order_by('-started')
 
     def form_valid(self, form):
@@ -37,8 +41,9 @@ class TestScenarioSelect(LoginRequiredMixin, MultiplePaginator, FormView, Multip
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        for sr in data['server_run_list']:
-            sr.success = sr.get_execution_result()
+        for qs in data['server_run_list']:
+            for sr in qs:
+                sr.success = sr.get_execution_result()
         if 'server_run_scheduled' in self.request.session:
             data['second_tab'] = self.request.session['server_run_scheduled']
             del self.request.session['server_run_scheduled']

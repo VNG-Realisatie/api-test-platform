@@ -78,30 +78,82 @@ class ListAppendView(MultipleObjectMixin, MultipleObjectTemplateResponseMixin, M
         return self.render_to_response(self.get_context_data(object_list=self.object_list, form=form))
 
 
-class MultiplePaginator(object):
+class MultiplePaginator(MultipleObjectMixin):
+    number_object_lists = 1
 
-    def paginate_queryset(self, queryset, page_size):
+    def multiple_paginate_queryset(self, queryset, page_size):
         """Paginate the queryset, if needed."""
-        paginator = self.get_paginator(
-            queryset, page_size, orphans=self.get_paginate_orphans(),
-            allow_empty_first_page=self.get_allow_empty())
         page_kwarg = self.page_kwarg
-        page = self.kwargs.get(page_kwarg) or self.request.GET.get(page_kwarg) or 1
-        try:
-            page_number = int(page)
-        except ValueError:
-            if page == 'last':
-                page_number = paginator.num_pages
-            else:
-                raise Http404(_("Page is not 'last', nor can it be converted to an int."))
-        try:
-            page = paginator.page(page_number)
-            return (paginator, page, page.object_list, page.has_other_pages())
-        except InvalidPage as e:
-            raise Http404(_('Invalid page (%(page_number)s): %(message)s') % {
-                'page_number': page_number,
-                'message': str(e)
-            })
+        # page = self.kwargs.get(page_kwarg) or self.request.GET.get(page_kwarg) or 1
+
+        all_params = self.request.GET.items()
+        pages = list(filter(lambda x: page_kwarg in x[0], all_params))
+        assert hasattr(self, 'number_object_lists'), 'Subclasses has to define the number_objects_lists property'
+
+        # sanity check, all the pages have to be present
+        for i in range(self.number_object_lists):
+            name = page_kwarg + str(i)
+            found = False
+            for p in pages:
+                if p[0] == name:
+                    found = True
+            if not found:
+                pages.append((name, 1))
+        # sort by the name
+        pages.sort(key=lambda x: int(x[0][-1]))
+
+        paginators = []
+        querysets = []
+        is_paginated = False
+        for i, (name, page) in enumerate(pages):
+            paginator = self.get_paginator(
+                queryset[i], page_size, orphans=self.get_paginate_orphans(),
+                allow_empty_first_page=self.get_allow_empty())
+            try:
+                page_number = int(page)
+            except ValueError:
+                if page == 'last':
+                    page_number = paginator.num_pages
+                else:
+                    raise Http404(_("Page is not 'last', nor can it be converted to an int."))
+            try:
+                page = paginator.page(page_number)
+                querysets.append(page.object_list)
+                paginators.append((paginator, page, page.object_list))
+                is_paginated = is_paginated or page.has_other_pages()
+            except InvalidPage as e:
+                raise Http404(_('Invalid page (%(page_number)s): %(message)s') % {
+                    'page_number': page_number,
+                    'message': str(e)
+                })
+        return paginators, querysets, is_paginated
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        # import pdb
+        # pdb.set_trace()
+        """Get the context for this view."""
+        querysets = []
+        for i in range(self.number_object_lists):
+            querysets.append(getattr(self, 'get_queryset_{}'.format(i))())
+        page_size = self.get_paginate_by(querysets)
+        context_object_name = self.get_context_object_name(querysets)
+        if page_size:
+            paginators, querysets, is_paginated = self.multiple_paginate_queryset(querysets, page_size)
+            context = {
+                'paginators': paginators,
+                'is_paginated': is_paginated,
+                'object_list': querysets
+            }
+        else:
+            context = {
+                'paginators': None,
+                'is_paginated': False,
+                'object_list': querysets
+            }
+        if context_object_name is not None:
+            context[context_object_name] = querysets
+        context.update(kwargs)
+        return super().get_context_data(**context)
 
 
 class ObjectOwner(LoginRequiredMixin):

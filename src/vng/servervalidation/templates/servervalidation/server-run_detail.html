@@ -37,25 +37,18 @@
                 <tbody>
                     {% for calls in postman.get_json_obj %}
                         <tr>
+                            <td class="table__cell">
+                                <b>{{calls.item.name}}</b>
+                            </td>
+                            <td class="table__cell">
+                            </td>
+                            <td class="table__cell">
                             {% if calls.response.code >= 200 and calls.response.code < 400 and not calls.item.error_test %}
-                                <td class="table__cell">
-                                    <b>{{calls.item.name}}</b>
-                                </td>
-                                <td class="table__cell">
-                                </td>
-                                <td class="table__cell">
-                                    <p class='icon icon--checkmark'></p>
-                                </td>
+                                <p class='icon icon--checkmark'></p>
                             {% else %}
-                                <td class="table__cell">
-                                    <b>{{calls.item.name}}</b>
-                                </td>
-                                <td class="table__cell">
-                                </td>
-                                <td class="table__cell">
-                                    <p class='icon icon--cross'></p>
-                                </td>
+                                <p class='icon icon--cross'></p>
                             {% endif %}
+                            </td>
                         </tr>
                         <tr>
                             <td class="table__cell">

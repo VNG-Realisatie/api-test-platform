@@ -1,5 +1,7 @@
 import json
 import array
+import itertools
+import uuid
 
 from datetime import datetime
 
@@ -59,12 +61,14 @@ class ServerRun(models.Model):
     started = models.DateTimeField('Gestart op', default=timezone.now)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     stopped = models.DateTimeField('Gestopt op', null=True, default=None, blank=True)
+    last_exec = models.DateTimeField('Laatste uitvoering', null=True, default=None, blank=True)
     status = models.CharField(max_length=20, choices=choices.StatusWithScheduledChoices.choices, default=choices.StatusWithScheduledChoices.starting)
     client_id = models.TextField(default=None, null=True, blank=True)
     secret = models.TextField(default=None, null=True, blank=True)
     percentage_exec = models.IntegerField(default=None, null=True, blank=True)
     status_exec = models.TextField(default=None, null=True, blank=True)
     scheduled = models.BooleanField(default=False)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
 
     def __str__(self):
         return "{} - {}".format(self.started, self.status)
@@ -74,6 +78,19 @@ class ServerRun(models.Model):
 
     def is_running(self):
         return self.status == choices.StatusChoices.running
+
+    def get_execution_result(self):
+        ptr_set = self.postmantestresult_set.all()
+        if len(ptr_set) == 0:
+            success = None
+        else:
+            success = True
+            for ptr in ptr_set:
+                if ptr.is_success() == 0:
+                    success = None
+                elif ptr.is_success() == -1 and success is not None:
+                    success = False
+        return success
 
 
 class ServerHeader(models.Model):

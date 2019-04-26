@@ -696,7 +696,7 @@ class TestRewriteBody(WebTest):
 class TestRewriteUrl(WebTest):
 
     def setUp(self):
-        self.endpoint = VNGEndpointFactory(url='http://www.dummy.com/path/sub/')
+        self.endpoint = VNGEndpointFactory(url='http://www.dummy.com', path='/path/sub')
         self.eu = ExposedUrlFactory(vng_endpoint=self.endpoint)
 
     def test_url(self):
@@ -705,7 +705,7 @@ class TestRewriteUrl(WebTest):
             'relative_url': ''
         }
         url = rt.build_url(self.eu, '')
-        self.assertEqual(url, self.endpoint.url)
+        self.assertEqual(url, self.endpoint.url+'/')
 
     def test_url_sub(self):
         rt = RunTest()

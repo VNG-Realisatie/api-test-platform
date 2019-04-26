@@ -3,7 +3,10 @@ from zds_client import ClientAuth
 
 from django.core.files import File
 from django.utils import timezone
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
 from celery.utils.log import get_task_logger
+from django.conf import settings
 
 from ..celery.celery import app
 from .models import PostmanTest, PostmanTestResult, Endpoint, ServerRun, ServerHeader
@@ -32,17 +35,20 @@ def get_jwt(server_run):
 def execute_test_scheduled():
     server_run = ServerRun.objects.filter(scheduled=True).filter(status=choices.StatusWithScheduledChoices.scheduled)
     for sr in server_run:
-        execute_test(sr.pk, stop=False)
+        execute_test(sr.pk, scheduled=True)
 
 
 @app.task
-def execute_test(server_run_pk, stop=True):
+def execute_test(server_run_pk, scheduled=False):
     server_run = ServerRun.objects.get(pk=server_run_pk)
     server_run.status = choices.StatusWithScheduledChoices.running
     endpoints = Endpoint.objects.filter(server_run=server_run)
 
     file_name = str(uuid.uuid4())
     postman_tests = PostmanTest.objects.filter(test_scenario=server_run.test_scenario).order_by('order')
+    # remove previous results
+    PostmanTestResult.objects.filter(server_run=server_run).delete()
+    failure = False
     try:
         for counter, postman_test in enumerate(postman_tests):
             auth_choice = postman_test.test_scenario.authorization
@@ -79,13 +85,36 @@ def execute_test(server_run_pk, stop=True):
             ptr.save_json(file_name, File(file_json))
             ptr.status = ptr.get_outcome_json()
             ptr.save()
+            failure = failure or (ptr.status == choices.ResultChoices.failed)
 
         server_run.status_exec = 'Completed'
     except Exception as e:
         logger.info(e)
         server_run.status_exec = 'An error occurred'
     server_run.percentage_exec = 100
-    if stop:
+    if not scheduled:
         server_run.status = choices.StatusWithScheduledChoices.stopped
         server_run.stopped = timezone.now()
+    else:
+        server_run.last_exec = timezone.now()
+        server_run.status = choices.StatusWithScheduledChoices.scheduled
     server_run.save()
+    if failure and scheduled:
+        send_email_failure(server_run)
+
+
+def send_email_failure(server_run):
+    from django.contrib.sites.models import Site
+    domain = Site.objects.get_current().domain
+    msg_html = render_to_string('servervalidation/failed_test_email.html', {
+        'server_run': server_run,
+        'domain': domain
+    })
+
+    send_mail(
+        'Failure of scheduled test',
+        msg_html,
+        settings.DEFAULT_FROM_EMAIL,
+        [server_run.user.email],
+        html_message=msg_html
+    )

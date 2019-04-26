@@ -36,18 +36,30 @@
     <td class="table__cell">Status</td>
     <td class="table__cell">{{ server_run.status }}</td>
 </tr>
+{% if server_run.scheduled and not server_run.is_stopped %}
+<tr>
+    <td class="table__cell">Actie</td>
+    <td class="table__cell">
+        <form id="myform" method="POST" action="{% url 'server_run:server-run_stop' server_run.pk %}">
+            {% csrf_token %}
+            <input type="submit" class="form__button button button--primary" value="Stop">
+        </form>
+        <a type="submit" class="button button--primary "  href="{% url 'server_run:server-run_trigger' server_run.pk %}">Uitvoeren</a>
+    </td>
+</tr>
+{% endif %}
 
 <tr>
     <td class="table__cell">Log</td>
-        {% for pr in postman_result %}
-            <td class="table__cell">
+        <td class="table__cell">
+            {% for pr in postman_result %}
                 <ul>
                     <li><a href="{% url 'server_run:server-run_detail_log' pr.pk %}">Visualize HTML log</a></li>
                     <li><a href="{% url 'server_run:server-run_detail_log_json' pr.pk %}">Visualize JSON log</a></li>
                     <li><a href="{% url 'server_run:server-run_detail_pdf' pr.server_run.pk pr.pk %}">Visualize PDF report</a></li>
                 </ul>
-            </td>
-        {% endfor %}
+            {% endfor %}
+        </td>
     </td>
 </tr>
 
@@ -85,11 +97,12 @@
     var gitSnippet = '[![Status badge]\n'
             + '(https://img.shields.io/endpoint.svg?style=for-the-badge&amp;\n'
             + 'url={{request.scheme}}://{{request.get_host}}{% url "apiv1server:provider:api_server-run-shield-detail" server_run.id %})]\n'
-            + '(https://shields.io/)\n'
+            + '({{request.scheme}}://{{request.get_host}}{% url 'server_run:server-run_detail_uuid' server_run.uuid %})\n'
 
     var htmlSnippet = '<span display="block" height="20px" class="common__BadgeWrapper-sc-16zh6vt-3 fagfmg">\n'
-            + '<img style="width:100%" alt="" \nsrc="https://img.shields.io/endpoint.svg?style=for-the-badge&amp;\n '
-            + 'url={{request.scheme}}://{{request.get_host}}{% url "apiv1server:provider:api_server-run-shield-detail" server_run.id %}"></span>'
+            + '<a href="{{request.scheme}}://{{request.get_host}}{% url 'server_run:server-run_detail_uuid' server_run.uuid %}">\n'
+            + '<img style="width:100%" alt="" src="https://img.shields.io/endpoint.svg?style=for-the-badge&amp;\n '
+            + 'url={{request.scheme}}://{{request.get_host}}{% url "apiv1server:provider:api_server-run-shield-detail" server_run.id %}"></span></a>'
 
     function htmlEscape(s) {
         s = s.replace(/&/g, '&amp;')

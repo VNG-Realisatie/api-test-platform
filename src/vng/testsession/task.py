@@ -79,11 +79,11 @@ def start_app_b8s(session, bind_url):
             return ip, None
         except Exception as e:
             pass
-    update_session_status(session, 'Impossible to deploy successfully, try to remove old sessions')
+    update_session_status(session, 'Impossible to deploy successfully, trying to remove old sessions')
     if purge_sessions():
         start_app_b8s(session, bind_url)
     else:
-        update_session_status(session, 'Impossible to deploy successfully, all the resources are being used.')
+        update_session_status(session, 'Impossible to deploy successfully, all the resources are being used')
     ready, message = kuber.get_pods_status(app_name)
     return ready, message
 

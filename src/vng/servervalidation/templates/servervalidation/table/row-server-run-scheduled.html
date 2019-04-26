@@ -12,7 +12,7 @@
             Status: {{ server_run.status }}
         </td>
     {% endif %}
-    <td class="table__cell">{{ server_run.started }}</td>
+    <td class="table__cell">00:01 Elke dag</td>
 
     <td class="table__cell">{{ server_run.test_scenario.name }}</td>
     <td class="table__cell">
@@ -22,6 +22,11 @@
             {% elif not server_run.success  %}
                 <p class='icon icon--cross'></p>
             {% endif %}
+        {% endif %}
+    </td>
+    <td class="table__cell">
+        {% if server_run.last_exec %}
+            {{server_run.last_exec}}
         {% endif %}
     </td>
     <td class="table__cell table__cell--keep_word">
@@ -36,7 +41,9 @@
     </td>
     <td class="table__cell">
         <span display="block" height="20px" class="common__BadgeWrapper-sc-16zh6vt-3 fagfmg">
-            <img style='width:100%' alt="" src="https://img.shields.io/endpoint.svg?style=for-the-badge&amp;url={{request.scheme}}://{{request.get_host}}{% url 'apiv1server:provider:api_server-run-shield-detail' server_run.id %}">
+            <a href="{% url 'server_run:server-run_detail_uuid' server_run.uuid %}">
+                <img style='width:100%' alt="" src="https://img.shields.io/endpoint.svg?style=for-the-badge&amp;url={{request.scheme}}://{{request.get_host}}{% url 'apiv1server:provider:api_server-run-shield-detail' server_run.id %}">
+            </a>
         </span>
     </td>
 </tr>

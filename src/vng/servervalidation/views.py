@@ -2,6 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
+from django.db.utils import IntegrityError
 from django.utils import timezone
 from django.views import View
 from django.views.generic import DetailView, CreateView, FormView
@@ -38,18 +39,10 @@ class TestScenarioSelect(LoginRequiredMixin, FormView, MultipleObjectMixin, Mult
         data = super().get_context_data(**kwargs)
         server_list = self.get_queryset()
         for sr in data['server_run_list']:
-            ptr_set = sr.postmantestresult_set.all()
-            if len(ptr_set) == 0:
-                sr.success = None
-            else:
-                success = True
-                for ptr in ptr_set:
-                    if ptr.is_success() == 0:
-                        success = None
-                    elif ptr.is_success() == -1 and success is not None:
-                        success = False
-
-                sr.success = success
+            sr.success = sr.get_execution_result()
+        if 'server_run_scheduled' in self.request.session:
+            data['second_tab'] = self.request.session['server_run_scheduled']
+            del self.request.session['server_run_scheduled']
         return data
 
     def get(self, request, *args, **kwargs):
@@ -67,7 +60,9 @@ class CreateEndpoint(LoginRequiredMixin, CreateView):
     form_class = CreateEndpointForm
 
     def get_success_url(self):
-        return reverse('server_run:server-run_list')
+        return reverse('server_run:server-run_detail', kwargs={
+            'pk': self.server.pk
+        })
 
     def fetch_server(self):
         ts = get_object_or_404(TestScenario, pk=self.kwargs['test_id'])
@@ -105,6 +100,7 @@ class CreateEndpoint(LoginRequiredMixin, CreateView):
         self.server.save()
         self.endpoints = []
         tsu = list(TestScenarioUrl.objects.filter(test_scenario=self.server.test_scenario))
+
         for key, value in form.data.items():
             entry = list(filter(lambda x: x.name == key, tsu))
             if len(entry) == 1:
@@ -121,10 +117,13 @@ class CreateEndpoint(LoginRequiredMixin, CreateView):
         else:
             self.server.status = choices.StatusWithScheduledChoices.running
         self.server.save()
-
-        ep = form.instance
-        ep.server_run = self.server
-        ep.save()
+        try:
+            ep = form.instance
+            ep.server_run = self.server
+            ep.save()
+        except IntegrityError as e:
+            form.add_error('url', 'asds')
+            return super().form_invalid(form)
         self.endpoints.append(ep)
         if not self.server.scheduled:
             execute_test.delay(self.server.pk)
@@ -145,6 +144,21 @@ class ServerRunOutput(OwnerSingleObject, DetailView):
         return context
 
 
+class ServerRunOutputUuid(DetailView):
+
+    model = ServerRun
+    template_name = 'servervalidation/server-run_detail.html'
+    slug_field = 'uuid'
+    slug_url_kwarg = 'uuid'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        server_run = context['object']
+        ptr = PostmanTestResult.objects.filter(server_run=server_run)
+        context["postman_result"] = ptr
+        return context
+
+
 class TriggerServerRun(OwnerSingleObject, View):
 
     model = ServerRun
@@ -152,7 +166,8 @@ class TriggerServerRun(OwnerSingleObject, View):
 
     def get(self, request, *args, **kwargs):
         server = self.get_object()
-        execute_test(server.pk, stop=False)
+        self.request.session['server_run_scheduled'] = server.scheduled
+        execute_test.delay(server.pk, scheduled=True)
         return redirect(reverse('server_run:server-run_list'))
 
 
@@ -163,6 +178,7 @@ class StopServer(OwnerSingleObject, View):
 
     def post(self, request, *args, **kwargs):
         server = self.get_object()
+        self.request.session['server_run_scheduled'] = server.scheduled
         server.stopped = timezone.now()
         server.status = choices.StatusWithScheduledChoices.stopped
         server.save()

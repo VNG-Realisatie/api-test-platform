@@ -11,8 +11,7 @@ from ..utils import choices
 from ..utils.views import OwnerSingleObject, PDFGenerator
 from .forms import CreateServerRunForm, CreateEndpointForm
 from .models import (
-    ServerRun, Endpoint, TestScenarioUrl, TestScenario, PostmanTest, PostmanTestResult, ExpectedPostmanResult,
-    ServerHeader
+    ServerRun, Endpoint, TestScenarioUrl, TestScenario, PostmanTest, PostmanTestResult, ServerHeader
 )
 from .task import execute_test
 
@@ -189,18 +188,14 @@ class ServerRunPdfView(PDFGenerator, ServerRunOutput):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         server_run = context['object']
-        epr = ExpectedPostmanResult.objects.filter(postman_test__test_scenario=server_run.test_scenario)
         for postman in context['postman_result']:
-            epr = ExpectedPostmanResult.objects.filter(postman_test=postman.postman_test).order_by('order')
             postman.json = postman.get_json_obj()
-            for calls, ep in zip(postman.json, epr):
-                calls['ep'] = ep
+            for calls in postman.json:
                 if 'response' in calls:
                     calls['response']['code'] = str(calls['response']['code'])
                 else:
                     calls['response'] = 'Error occurred call the resource'
 
-        context['expect_result'] = epr
         self.filename = 'Server run {} report.pdf'.format(server_run.pk)
         return context
 

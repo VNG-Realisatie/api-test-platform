@@ -53,16 +53,6 @@ class PostmanTest(OrderedModel):
         return '{} {}'.format(self.test_scenario, self.validation_file)
 
 
-class ExpectedPostmanResult(OrderedModel):
-
-    order_with_respect_to = 'postman_test'
-    postman_test = models.ForeignKey(PostmanTest, on_delete=models.CASCADE)
-    expected_response = models.CharField(max_length=20, choices=choices.HTTPResponseStatus.choices)
-
-    def __str__(self):
-        return '{} {}'.format(self.postman_test, self.expected_response)
-
-
 class ServerRun(models.Model):
 
     test_scenario = models.ForeignKey(TestScenario, on_delete=models.CASCADE)
@@ -163,14 +153,7 @@ class PostmanTestResult(models.Model):
 
     def get_outcome_json(self):
         with open(self.log_json.path) as jfile:
-            json_obj = json.load(jfile)
-            if json_obj['run']['failures'] != []:
-                return choices.ResultChoices.failed
-            epr = ExpectedPostmanResult.objects.filter(postman_test=self.postman_test).order_by('order')
-            for call, expected in zip(json_obj['run']['executions'], epr):
-                if str(call['response']['code']) not in expected.expected_response:
-                    return choices.ResultChoices.failed
-            return choices.ResultChoices.success
+            return postman.get_outcome_json(jfile)
 
 
 class Endpoint(models.Model):

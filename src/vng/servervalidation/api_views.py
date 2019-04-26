@@ -21,7 +21,7 @@ from drf_yasg.utils import swagger_auto_schema
 # from ..permissions.UserPermissions import isOwner
 from .serializers import ServerRunSerializer, ServerRunPayloadExample, ServerRunResultShield
 from .models import ServerRun, PostmanTestResult
-from ..utils import postman
+from ..utils import postman as ptm
 
 
 class ServerRunViewSet(
@@ -139,7 +139,7 @@ class ResultServerView(LoginRequiredMixin, views.APIView):
                 else:
                     _call['assertions'] = []
 
-                if call['response']['code'] in postman.get_error_codes():
+                if call['response']['code'] in ptm.get_error_codes():
                     _call['status'] = 'Error'
                 else:
                     _call['status'] = 'Success'

@@ -1,5 +1,5 @@
-
 {% load staticfiles %}
+{% load tag_library %}
 {% with red="bgcolor='#FF0000' style='color:#ffffff' " %}
 {% with green="bgcolor='#1d8719' style='color:#ffffff'" %}
 <!DOCTYPE html>
@@ -16,7 +16,7 @@
     <div>
         <h1>Server Report</h1>
 
-        <h2>Server detail</h2>
+        <h2>Server details</h2>
         <table class='table-t'>
             <tbody>
                 <tr>
@@ -61,10 +61,10 @@
                 <tr>
                     <td class="table__cell">{{calls.request.method}}</td>
                     <td class="table__cell">{{calls.request.url.url}}</td>
-                    {% if calls.response.code in calls.ep.expected_response %}
-                        <td class='cell-success cell-content-fix'>{{calls.response.code}} {{calls.response.status}}</td>
-                    {% else %}
+                    {% if calls.response.code|to_int in error_codes %}
                         <td class='cell-fail cell-content-fix'>{{calls.response.code}} {{calls.response.status}}</td>
+                    {% else %}
+                        <td class='cell-success cell-content-fix'>{{calls.response.code}} {{calls.response.status}}</td>
                     {% endif %}
                     <td class="table__cell">{{ calls.ep.expected_response }}</td>
                 </tr>

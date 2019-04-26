@@ -139,7 +139,7 @@ class ResultServerView(LoginRequiredMixin, views.APIView):
                 else:
                     _call['assertions'] = []
 
-                elif call['response']['code'] in expected_response:
+                if call['response']['code'] in postman.get_error_codes():
                     _call['status'] = 'Error'
                 else:
                     _call['status'] = 'Success'

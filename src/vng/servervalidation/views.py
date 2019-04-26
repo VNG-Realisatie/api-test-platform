@@ -7,7 +7,7 @@ from django.views import View
 from django.views.generic import DetailView, CreateView, FormView
 from django.views.generic.list import MultipleObjectMixin, MultipleObjectTemplateResponseMixin
 
-from ..utils import choices
+from ..utils import choices, postman
 from ..utils.views import OwnerSingleObject, PDFGenerator
 from .forms import CreateServerRunForm, CreateEndpointForm
 from .models import (
@@ -188,15 +188,16 @@ class ServerRunPdfView(PDFGenerator, ServerRunOutput):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         server_run = context['object']
-        for postman in context['postman_result']:
-            postman.json = postman.get_json_obj()
-            for calls in postman.json:
+        for ptm in context['postman_result']:
+            ptm.json = ptm.get_json_obj()
+            for calls in ptm.json:
                 if 'response' in calls:
                     calls['response']['code'] = str(calls['response']['code'])
                 else:
                     calls['response'] = 'Error occurred call the resource'
 
         self.filename = 'Server run {} report.pdf'.format(server_run.pk)
+        context['error_codes'] = postman.get_error_codes()
         return context
 
 

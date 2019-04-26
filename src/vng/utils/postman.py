@@ -4,6 +4,10 @@ from .choices import ResultChoices
 error_codes = range(400, 600)
 
 
+def get_error_codes():
+    return error_codes
+
+
 def get_outcome_json(_json, file=False):
 
     if file:

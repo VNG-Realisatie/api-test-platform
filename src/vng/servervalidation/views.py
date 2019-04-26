@@ -47,6 +47,9 @@ class TestScenarioSelect(LoginRequiredMixin, FormView, MultiplePaginator, Multip
         if 'server_run_scheduled' in self.request.session:
             data['second_tab'] = self.request.session['server_run_scheduled']
             del self.request.session['server_run_scheduled']
+        if 'second_tab' not in data:
+            if self.request.GET.get('second_tab'):
+                data['second_tab'] = self.request.GET.get('second_tab') == 'true'
         return data
 
     def get(self, request, *args, **kwargs):

@@ -51,7 +51,6 @@
                                     {% endif %}
                                 {% endfor %}
                             </table>
-
                             {% include 'components/pagination/multiple_pagination.html' with index=0 paginator=paginators|index:0|index:0 page_obj=paginators|index:0|index:1 %}
                         </div>
                         <div id="tab-news-items" class="tabs__tab">
@@ -61,7 +60,7 @@
                                     {% include 'components/table/row-server-run-scheduled.html' with server_run=server_run %}
                                 {% endfor %}
                             </table>
-                            {% include 'components/pagination/multiple_pagination.html'  with index=1 paginator=paginators|index:1|index:0 page_obj=paginators|index:1|index:1 %}
+                            {% include 'components/pagination/multiple_pagination.html'  with index=1 paginator=paginators|index:1|index:0 page_obj=paginators|index:1|index:1 params='second_tab=true' %}
                         </div>
                     </div>
                 </div>

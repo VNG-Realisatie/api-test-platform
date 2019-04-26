@@ -161,7 +161,10 @@ class IntegrationTest(WebTest):
 
     def setUp(self):
         self.server = ServerRunFactory()
-        self.server_s = ServerRunFactory(test_scenario=PostmanTestFactory().test_scenario, scheduled=True)
+        self.test_scenario = TestScenarioUrlFactory().test_scenario
+        PostmanTestFactory(test_scenario=self.test_scenario)
+        self.server_s = ServerRunFactory(test_scenario=self.test_scenario, scheduled=True)
+        self.user = self.server_s.user
 
     def test_access(self):
         call = self.app.get(reverse('server_run:server-run_detail_uuid', kwargs={
@@ -177,3 +180,21 @@ class IntegrationTest(WebTest):
             }), user=self.server_s.user
         )
         self.assertEqual(prev, len(PostmanTestResult.objects.all()) - 1)
+
+    def test_badge(self):
+        call = self.app.get(reverse('server_run:server-run_list'), user=self.user)
+        form = call.forms[0]
+        form['test_scenario'].select(text=self.server_s.test_scenario.name)
+        form['scheduled'] = True
+        res = form.submit().follow()
+        form = res.forms[0]
+        form['url'] = 'https://ref.tst.vng.cloud/drc/api/v1/'
+        form['Client ID'] = 'client id'
+        form['Secret'] = 'secret'
+        form.submit()
+        new_server = ServerRun.objects.latest('id')
+
+        call = self.app.get(reverse('server_run:server-run_detail', kwargs={
+            'pk': new_server.id
+        }))
+        self.assertIn(str(new_server.uuid), call.text)

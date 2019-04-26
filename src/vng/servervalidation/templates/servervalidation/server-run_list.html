@@ -46,8 +46,9 @@
                             <table class="table">
                                 {% include 'components/table/header-server-run.html' only %}
                                 {% for server_run in object_list.0 %}
+
                                     {% if not server_run.scheduled %}
-                                        {% include 'components/table/row-server-run.html' with server_run=server_run %}
+                                        {% include 'servervalidation/table/row-server-run.html' with server_run=server_run %}
                                     {% endif %}
                                 {% endfor %}
                             </table>

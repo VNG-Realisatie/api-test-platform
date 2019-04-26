@@ -34,13 +34,6 @@
             </h3>
 
             <table class="table">
-                <thead>
-                    <tr>
-                        <th class="table__heading">Tijd</th>
-                        <th class="table__heading">Name</th>
-                        <th class="table__heading">Resultaat</th>
-                    </tr>
-                </thead>
                 <tbody>
                     {% for calls in postman.get_json_obj %}
                         <tr>
@@ -133,13 +126,6 @@
 
             <h4>Assertions</h4>
             <table class="table">
-                <thead>
-                    <tr>
-                        <th class="table__heading">Name</th>
-                        <th class="table__heading">Request</th>
-                        <th class="table__heading">Assertion</th>
-                    </tr>
-                </thead>
                 <tbody>
                     {% for exec in postman.get_json_obj%}
                         {% if 'assertions' in exec %}

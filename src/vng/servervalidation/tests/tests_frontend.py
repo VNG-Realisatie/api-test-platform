@@ -192,3 +192,9 @@ class IntegrationTest(WebTest):
         form['Client ID'] = 'client id'
         form['Secret'] = 'secret'
         form.submit()
+        new_server = ServerRun.objects.latest('id')
+
+        call = self.app.get(reverse('server_run:server-run_detail', kwargs={
+            'pk': new_server.id
+        }))
+        self.assertIn(str(new_server.uuid), call.text)

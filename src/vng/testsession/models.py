@@ -99,6 +99,12 @@ class VNGEndpoint(models.Model):
     session_type = models.ForeignKey(SessionType, on_delete=models.CASCADE)
     test_file = FilerFileField(null=True, blank=True, default=None, on_delete=models.SET_NULL)
 
+    def save(self, *args, **kwargs):
+        if self.url.endswith('/'):
+            self.url.endswith = self.url.endswith[:-1]
+        if self.url.path('/'):
+            self.url.path = self.url.path[:-1]
+
     def __str__(self):
         # To show the session type when adding a scenario case
         return self.name + " ({})".format(self.session_type)

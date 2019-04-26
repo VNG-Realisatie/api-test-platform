@@ -2,8 +2,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
+from django.db.utils import IntegrityError
 from django.utils import timezone
 from django.views import View
+from django.core.exceptions import ValidationError
 from django.views.generic import DetailView, CreateView, FormView
 from django.views.generic.list import MultipleObjectMixin, MultipleObjectTemplateResponseMixin
 
@@ -100,6 +102,7 @@ class CreateEndpoint(LoginRequiredMixin, CreateView):
         self.server.save()
         self.endpoints = []
         tsu = list(TestScenarioUrl.objects.filter(test_scenario=self.server.test_scenario))
+
         for key, value in form.data.items():
             entry = list(filter(lambda x: x.name == key, tsu))
             if len(entry) == 1:
@@ -116,10 +119,13 @@ class CreateEndpoint(LoginRequiredMixin, CreateView):
         else:
             self.server.status = choices.StatusWithScheduledChoices.running
         self.server.save()
-
-        ep = form.instance
-        ep.server_run = self.server
-        ep.save()
+        try:
+            ep = form.instance
+            ep.server_run = self.server
+            ep.save()
+        except IntegrityError as e:
+            form.add_error('url', 'asds')
+            return super().form_invalid(form)
         self.endpoints.append(ep)
         if not self.server.scheduled:
             execute_test.delay(self.server.pk)

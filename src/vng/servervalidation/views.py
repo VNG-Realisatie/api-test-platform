@@ -5,7 +5,6 @@ from django.urls import reverse
 from django.db.utils import IntegrityError
 from django.utils import timezone
 from django.views import View
-from django.core.exceptions import ValidationError
 from django.views.generic import DetailView, CreateView, FormView
 from django.views.generic.list import MultipleObjectMixin, MultipleObjectTemplateResponseMixin
 

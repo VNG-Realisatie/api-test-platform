@@ -8,6 +8,7 @@ app_name = apps.AppConfig.__name__
 
 urlpatterns = [
     url('postman/(?P<pk>[0-9]+)', views.PostmanDownloadView.as_view(), name='postman_download'),
+    url('scheduled$', views.TestScenarioSelectScheduled.as_view(), name='server-run_list_scheduled'),
     url('(?P<server_id>[0-9]+)/stop', views.StopServer.as_view(), name='server-run_stop'),
     url('(?P<server_id>[0-9]+)/trigger', views.TriggerServerRun.as_view(), name='server-run_trigger'),
     url('(?P<test_id>[0-9]+)/create', views.CreateEndpoint.as_view(), name='server-run_create'),

@@ -27,11 +27,52 @@ class TestScenarioSelect(LoginRequiredMixin, FormView, MultipleObjectMixin, Mult
     model = ServerRun
 
     def get_queryset(self):
-        return self.model.objects.filter(user=self.request.user).order_by('-started')
+        return self.model.objects.filter(user=self.request.user).filter(scheduled=False).order_by('-started')
 
     def form_valid(self, form):
         ts_id = form.instance.test_scenario.id
-        self.request.session['server_run_scheduled'] = form.instance.scheduled
+        self.request.session['server_run_scheduled'] = False
+        return redirect(reverse('server_run:server-run_create', kwargs={
+            "test_id": ts_id
+        }))
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        server_list = self.get_queryset()
+        for sr in data['server_run_list']:
+            sr.success = sr.get_execution_result()
+        if 'server_run_scheduled' in self.request.session:
+            data['second_tab'] = self.request.session['server_run_scheduled']
+            del self.request.session['server_run_scheduled']
+        return data
+
+    def get(self, request, *args, **kwargs):
+        self.object_list = self.get_queryset()
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.object_list = self.get_queryset()
+        return super().post(request, *args, **kwargs)
+
+
+class TestScenarioSelectScheduled(
+        LoginRequiredMixin,
+        FormView,
+        MultipleObjectMixin,
+        MultipleObjectTemplateResponseMixin):
+
+    template_name = 'servervalidation/server-run_list_scheduled.html'
+    form_class = CreateServerRunForm
+    context_object_name = 'server_run_list'
+    paginate_by = 10
+    model = ServerRun
+
+    def get_queryset(self):
+        return self.model.objects.filter(user=self.request.user).filter(scheduled=True).order_by('-started')
+
+    def form_valid(self, form):
+        ts_id = form.instance.test_scenario.id
+        self.request.session['server_run_scheduled'] = True
         return redirect(reverse('server_run:server-run_create', kwargs={
             "test_id": ts_id
         }))

@@ -69,7 +69,7 @@
         {% reuse '_label' %}
 
         <select name="{{ html_name }}" id="{{ id }}"
-                class="form__select{{ errors|yesno:" form__select--error," }}" {{ widget.attrs|flatattrs }}>
+                class="form-control{{ errors|yesno:" form__select--error," }}" {{ widget.attrs|flatattrs }}>
             {% for choice in choices %}
                 {% if choice.is_group %}
                     <optgroup label="{{ choice.value }}">
@@ -152,11 +152,11 @@
 
 
 {% block CheckboxInput %}
-    <div class="form__control" role="group">
-        {% reuse '_label' %}
-        <div class="form-container">
-            <input name="{{ html_name }}" class="form__check" type="checkbox" id="{{ id_for_label }}" value="{{ id }}">
-        </div>
+    <div class="form-check">
+        <input class="form-check-input" name="{{ html_name }}"  id="{{ id_for_label }}" type="checkbox" value="{{id}}">
+        <label class="form-check-label" for="{{ id_for_label }}">
+            {{ label }}
+        </label>
         {% reuse '_help' %}
         {% reuse '_errors' %}
     </div>

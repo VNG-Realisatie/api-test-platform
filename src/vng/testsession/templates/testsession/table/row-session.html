@@ -25,19 +25,21 @@
         </td>
 
         {% if session.is_starting and session.deploy_status %}
-        <td id='starting' session_id='{{session.id}}' >
-          {{session.deploy_status}} - {{session.deploy_percentage}}%
+            <td id='starting' session_id='{{session.id}}' >
+            {{session.deploy_status}} - {{session.deploy_percentage}}%
             {% else %}
-                <td class="table__cell table__cell--keep_word">
+                <td>
                 {% for eu in session.exposedurl_set.all %}
                     {% if eu.test_session %}
-                        {% if eu.test_session.is_success_test %}
-                            <p class='icon icon--checkmark'></p>
-                        {% else %}
-                            <p class='icon icon--cross'></p>
-                        {% endif %}
+                            {% if eu.test_session.is_success_test %}
+                                <i class="cui-check h2"></i>
+                            {% else %}
+                                <i class="cui-circle-x 3 h2"></i>
+                            {% endif %}
+                        </li>
                     {% endif %}
                 {% endfor %}
+                </td>
             {% endif %}
         </td>
         <td>

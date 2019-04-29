@@ -21,7 +21,7 @@
             <div class="form-group">
                 {% comment %} <label for="name">{{ html_name }}</label> {% endcomment %}
                 <input  id="{{ id }}"
-                        name="{{ html_name }}s"
+                        name="{{ html_name }}"
                         type="{{ input_type }}"
                         value="{{ raw_value|default:"" }}"
                         class="form-control {{ errors|yesno:"is-invalid, " }}"

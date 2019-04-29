@@ -1,33 +1,31 @@
 {% load subdomainurls %}
 {% spaceless %}
     <tr>
-        <td class="table__cell table_cell--nowrap">
+        <td>
             <a href="{% url 'testsession:session_log' session.id %}">#{{ session.id }}</a>
             ({{ session.get_status_display }})
         </td>
-        <td class="table__cell">
+        <td>
             {{ session.started|date }}<br />{{ session.started|time }}
         </td>
-        <td class="table__cell">{{ session.session_type.name }}</td>
+        <td>{{ session.session_type.name }}</td>
 
-        <td class="table__cell">
-            <table>
+        <td>
+            <ul class="list-group">
                 {% for endpoint in session.exposedurl_set.all %}
-                    <tr>
-                        <td>
-                            {% if endpoint.subdomain %}
-                                <a href="{% url_sub 'serverproxy:run_test' endpoint.subdomain endpoint.vng_endpoint.path|slice:"1:" %}">
-                                    {{endpoint.vng_endpoint.name}}
-                                </a>
-                            {% endif %}
-                        <td>
-                    </tr>
+                    {% if endpoint.subdomain %}
+                        <li class="list-group-item">
+                            <a href="{% url_sub 'serverproxy:run_test' endpoint.subdomain endpoint.vng_endpoint.path|slice:"1:" %}">
+                                {{endpoint.vng_endpoint.name}}
+                            </a>
+                        </li>
+                    {% endif %}
                 {% endfor %}
-            </table>
+            </ul>
         </td>
 
-            {% if session.is_starting and session.deploy_status %}
-        <td class="table__cell table__cell--keep_word" style='max-width: 130px;' id='starting' session_id='{{session.id}}' >
+        {% if session.is_starting and session.deploy_status %}
+        <td id='starting' session_id='{{session.id}}' >
           {{session.deploy_status}} - {{session.deploy_percentage}}%
             {% else %}
                 <td class="table__cell table__cell--keep_word">
@@ -42,11 +40,11 @@
                 {% endfor %}
             {% endif %}
         </td>
-        <td class="table__cell">
+        <td>
             {% if not session.is_stopped and not session.is_shutting_down %}
                 <form method="POST" action="{% url 'testsession:stop_session' session.id %}">
                     {% csrf_token %}
-                    <input type="submit" type="button" class="button button--primary" value="Stop">
+                    <input type="submit" type="button" class="btn btn-primary" value="Stop">
                 </form>
             {% else %}
                 <table>
@@ -55,7 +53,7 @@
                     <tr>
                         <td>
                             {% if endpoint.test_session %}
-                            <input type="button" class="button button--primary" value="{{endpoint.vng_endpoint.name}} Data test report" onclick="location.href = '{% url 'testsession:session-test_report' endpoint.session.id endpoint.test_session.id %}';">
+                            <input type="button" class="btn btn-primary" value="{{endpoint.vng_endpoint.name}} Data test report" onclick="location.href = '{% url 'testsession:session-test_report' endpoint.session.id endpoint.test_session.id %}';">
                             {% endif %}
                         <td>
                     </tr>

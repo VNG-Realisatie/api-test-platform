@@ -8,75 +8,83 @@
 
 
 {% block content %}
-<article class="article">
-    <div class="article__section">
-        <h1>Test consumer</h1>
-        <h2>Start een nieuwe consumer test-sessie</h2>
+<div id="ui-view">
+    <div class="row">
+        <div class="col-sm-12">
+            <form class="" method="post">{% csrf_token %}
+                <div class="card">
+                    <div class="card-header">
+                        Test consumer
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">Start een nieuwe consumer test-sessie</h5>
+                        {% load_widgets form='forms.html' %}
 
-        <form class="form" method="post">{% csrf_token %}
-            {% load_widgets form='forms.html' %}
-
-            {% if form.non_field_errors %}
-            <ul class="form__error-list">
-                {% for error in form.non_field_errors %}
-                <li class="form__error">{{ error }}</li>
-                {% endfor %}
-            </ul>
+                        {% for field in form %}
+                        {% form_field field %}
+                        {% endfor %}
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-sm btn-primary" type="submit">
+                            <i class="fa fa-dot-circle-o"></i> Submit</button>
+                        <button class="btn btn-sm btn-danger" type="reset">
+                            <i class="fa fa-ban"></i> Reset</button>
+                    </div>
+                </div>
+            </form>
+            {% if object_list %}
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-header">
+                            Consumer test-sessies
+                        </div>
+                        <div class="card-body">
+                            <table class="table">
+                                {% include 'testsession/table/header-session.html' only %}
+                                {% for session in object_list %}
+                                {% include 'testsession/table/row-session.html' with session=session %}
+                                {% endfor %}
+                            </table>
+                            {% include 'components/pagination/pagination.html' %}
+                        </div>
+                    </div>
+                </div>
+            </div>
             {% endif %}
 
-            {% for field in form %}
-            {% form_field field %}
-            {% endfor %}
+            {% endblock %}
 
-            <input type="submit" class="button button--primary" value="Start nieuwe test-sessie">
+            {% block script %}
+            obj = $("#starting")
+            const Http = new XMLHttpRequest();
+            const url= window.location.origin+"/api/v1/status/" + obj.attr('session_id')+'/';
 
-        </form>
-
-        {% if object_list %}
-        <h2>Consumer test-sessies</h2>
-        <table class="table table--auto">
-            {% include 'testsession/table/header-session.html' only %}
-            {% for session in object_list %}
-            {% include 'testsession/table/row-session.html' with session=session %}
-            {% endfor %}
-        </table>
-        {% include 'components/pagination/pagination.html' %}
-        {% endif %}
-    </div>
-
-</article>
-{% endblock %}
-
-{% block script %}
-obj = $("#starting")
-const Http = new XMLHttpRequest();
-const url=  window.location.origin+"/api/v1/status/" + obj.attr('session_id')+'/';
-
-function update(){
-    $.ajax({
-        url: window.location.origin+"/api/v1/status/" + obj.attr('session_id')+'/',
-        success: (data, textStatus, jqXHR)=>{
+            function update(){
+            $.ajax({
+            url: window.location.origin+"/api/v1/status/" + obj.attr('session_id')+'/',
+            success: (data, textStatus, jqXHR)=>{
             session = data
             if (session.deploy_status) {
-            obj.html(`${session.deploy_status}: ${session.deploy_percentage}%<br /><div style='background-color: green; width: ${ session.deploy_percentage}%; height: 20px;'></div>`)
-            if (session.deploy_percentage<100)
-                setTimeout(() => {
-                    update();
+            obj.html(`${session.deploy_status}: ${session.deploy_percentage}%<br />
+            <div style='background-color: green; width: ${ session.deploy_percentage}%; height: 20px;'></div>`)
+            if (session.deploy_percentage<100) setTimeout(()=> {
+                update();
                 }, 1000);
-            if (session.deploy_percentage == 100) {
+                if (session.deploy_percentage == 100) {
                 setTimeout(() => {
                 location.reload();
                 }, 2000);
-            }
-            }
-        }
-    })
-}
+                }
+                }
+                }
+                })
+                }
 
 
 
-if(obj.length ==1){
-    update()
-}
+                if(obj.length ==1){
+                update()
+                }
 
-{% endblock %}
+                {% endblock %}

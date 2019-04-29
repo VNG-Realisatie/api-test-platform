@@ -3,20 +3,38 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
-    <article class="article">
-        <div class="article__section">
-            <h1>Login</h1>
+    <div id="ui-view">
+        <div class="row">
+            <div class="col-sm-6 offset-sm-3">
+                <form class="" method="post">{% csrf_token %}
+                    <div class="card">
+                        <div class="card-header">
+                            Login
+                        </div>
 
-            <form class="form" method="post">{% csrf_token %}
-                {% load_widgets form='forms.html' %}
+                        <div class="card-body">
+                            {% load_widgets form='forms.html' %}
 
-                {% for field in form %}
-                    {% form_field field %}
-                {% endfor %}
+                            {% for field in form %}
+                                {% form_field field %}
+                            {% endfor %}
 
-                <input type="submit" class="button button--primary" value="Login">
-                <a type="submit" class="button button--primary" href="{% url 'auth_password_reset' %}">Wachtwoord vergeten?</a>
-            </form>
+                            {% comment %} <input type="submit" class="button button--primary" value="Login"> {% endcomment %}
+                        </div>
+                        <div class="card-footer">
+                            <button class="btn btn-sm btn-primary" type="submit">
+                            <i class="fa fa-dot-circle-o"></i> Submit</button>
+                            <button class="btn btn-sm btn-danger" type="reset">
+                            <i class="fa fa-ban"></i> Reset</button>
+                        </div>
+                        {% comment %} <div class="card-footer">
+                            <button class="btn btn-sm btn-primary" type="submit">
+                            <i class="fa fa-dot-circle-o"></i> Submit</button>
+                            <a type="submit" class="btn btn-sm btn-primary" href="{% url 'auth_password_reset' %}">Wachtwoord vergeten?</a>
+                        </div> {% endcomment %}
+                    </div>
+                </form>
+            </div>
         </div>
-    </article>
+    </div>
 {% endblock %}

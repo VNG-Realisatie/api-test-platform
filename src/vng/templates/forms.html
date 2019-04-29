@@ -3,26 +3,39 @@
 
 {% block _errors %}
     {% if errors %}
-        <ul class="form__error-list">
+        <div class="invalid-feedback">
+            <ul>
             {% for error in errors %}
-                <li class="form__error">{{ error }}</li>
+                <li>{{ error }}</li>
             {% endfor %}
-        </ul>
+            </ul>
+        </div>
     {% endif %}
 {% endblock %}
 
 
 {% block input %}
     {% with input_type=input_type|default:"text" %}
-        <input type="{{ input_type }}"
-               name="{{ html_name }}"
-               id="{{ id }}"
-               value="{{ raw_value|default:"" }}"
-               class="{{ css_classes }}{{ errors|yesno:" form__input--error," }}"
-            {{ widget.attrs|flatattrs }}
-            {{ required|yesno:"required," }}
-               {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
-        >
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="form-group">
+                {% comment %} <label for="name">{{ html_name }}</label> {% endcomment %}
+                <input  id="{{ id }}"
+                        name="{{ html_name }}s"
+                        type="{{ input_type }}"
+                        value="{{ raw_value|default:"" }}"
+                        class="form-control {{ errors|yesno:"is-invalid, " }}"
+                        {{ widget.attrs|flatattrs }}
+                        {{ required|yesno:"required," }}
+                        {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
+
+                >
+                    {% comment %} <div class="invalid-feedback">{{ placeholder }}</div>
+                {% endif %} {% endcomment %}
+                {% reuse '_errors' %}
+            </div>
+        </div>
+    </div>
     {% endwith %}
 {% endblock %}
 
@@ -41,7 +54,7 @@
 
 
 {% block _label %}
-    {% if label %}<label class="form__label" for="{{ id_for_label }}">{{ label }}</label>{% endif %}
+    {% if label %}<label for="{{ id_for_label }}">{{ label }}</label>{% endif %}
 {% endblock %}
 
 {% block _help %}

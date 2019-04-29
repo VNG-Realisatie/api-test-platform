@@ -1,27 +1,33 @@
 {% load staticfiles %}
 {% load static %}
+{% load django_bootstrap_breadcrumbs %}
 {% spaceless %}
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <title>{% block title %}VNG Test-Platform{% endblock %}</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="">
-        <meta name="author" content="">
 
-        <link href="{{ get_media_prefix }}{% static 'css/screen.css' %}"
-            media="screen" rel="stylesheet" />
-        <link href="https://coreui.io/docs/assets/css/coreui-icons.css"
-            rel="stylesheet">
-            <link rel="stylesheet" href="https://unpkg.com/@coreui/coreui/dist/css/coreui.min.css">
-        <script type="text/javascript"
-            src="https://www.jqueryscript.net/demo/Lightweight-jQuery-Plugin-For-JSON-Beautifier-Viewer-jjsonviewer/js/jjsonviewer.js"></script>
-    </head>
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}VNG Test-Platform{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link href="{{ get_media_prefix }}{% static 'css/screen.css' %}" media="screen" rel="stylesheet" />
+    <link href="https://coreui.io/docs/assets/css/coreui-icons.css" rel="stylesheet">
+    <link href="https://coreui.io/demo/vendors/@coreui/icons/css/coreui-icons.min.css" rel="stylesheet">
+    <link href="https://coreui.io/demo/vendors/simple-line-icons/css/simple-line-icons.css" rel="stylesheet">
+    <link href="https://coreui.io/demo/vendors/flag-icon-css/css/flag-icon.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://unpkg.com/@coreui/coreui/dist/css/coreui.min.css">
+    <script type="text/javascript"
+        src="https://www.jqueryscript.net/demo/Lightweight-jQuery-Plugin-For-JSON-Beautifier-Viewer-jjsonviewer/js/jjsonviewer.js">
+    </script>
+</head>
 
 </head>
+
 <body class="app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show">
-        {% include 'components/header/header.html' %}
+    {% include 'components/header/header.html' %}
     <div class="app-body">
         <div class="sidebar">
             <nav class="sidebar-nav">
@@ -54,53 +60,57 @@
                             </li>
                         </ul>
                     </li>
-                        
-                    </ul>
-                </nav>
-                <button class="sidebar-minimizer brand-minimizer" type="button"></button>
-            </div>
-            <main class="main">
 
-                <!-- Include here the breadcrumbs.html -->
-                <div class="container-fluid">
-                    <div id="ui-view"></div>
-                </div>
-            </main>
-            <aside class="aside-menu">
-                <ul class="nav nav-tabs" role="tablist">
-                    <li class="nav-item">
-                        <a class="nav-link active" data-toggle="tab"
-                            href="#timeline" role="tab">
-                            <i class="icon-list"></i>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#messages"
-                            role="tab">
-                            <i class="icon-speech"></i>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#settings"
-                            role="tab">
-                            <i class="icon-settings"></i>
-                        </a>
-                    </li>
                 </ul>
-
-                <div class="tab-content">
-                    <div class="tab-pane p-3" id="settings" role="tabpanel">
-                    </div>
-                </div>
-            </aside>
+            </nav>
+            <button class="sidebar-minimizer brand-minimizer" type="button"></button>
         </div>
+        <main class="main">
 
-        <script src="{% static 'js/vng.js' %}"></script>
-        <script>
-        {% block script %}
-        {% endblock %}
+            <!-- Include here the breadcrumbs.html -->
+            <div class="container-fluid">
+                {% block content %}
+                {% endblock%}
+            </div>
+        </main>
+        <aside class="aside-menu">
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="tab" href="#timeline" role="tab">
+                        <i class="icon-list"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#messages" role="tab">
+                        <i class="icon-speech"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#settings" role="tab">
+                        <i class="icon-settings"></i>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane p-3" id="settings" role="tabpanel">
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script src="{% static 'js/vng.js' %}"></script>
+    <script>
+        {
+            %
+            block script %
+        } {
+            %
+            endblock %
+        }
 
     </script>
-    </body>
+</body>
+
 </html>
 {% endspaceless %}

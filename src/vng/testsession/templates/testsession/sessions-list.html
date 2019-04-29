@@ -57,36 +57,33 @@
 
             {% endblock %}
 
-            {% block script %}
-            obj = $("#starting")
-            const Http = new XMLHttpRequest();
-            const url= window.location.origin+"/api/v1/status/" + obj.attr('session_id')+'/';
+{% block script %}
+    obj = $("#starting")
+    const Http = new XMLHttpRequest();
+    const url = window.location.origin + "/api/v1/status/" + obj.attr('session_id') + '/';
 
-            function update(){
-            $.ajax({
-            url: window.location.origin+"/api/v1/status/" + obj.attr('session_id')+'/',
-            success: (data, textStatus, jqXHR)=>{
-            session = data
-            if (session.deploy_status) {
-            obj.html(`${session.deploy_status}: ${session.deploy_percentage}%<br />
-            <div style='background-color: green; width: ${ session.deploy_percentage}%; height: 20px;'></div>`)
-            if (session.deploy_percentage<100) setTimeout(()=> {
-                update();
-                }, 1000);
-                if (session.deploy_percentage == 100) {
-                setTimeout(() => {
-                location.reload();
-                }, 2000);
+    function update() {
+        $.ajax({
+            url: window.location.origin + "/api/v1/status/" + obj.attr('session_id') + '/',
+            success: (data, textStatus, jqXHR) => {
+                session = data
+                if (session.deploy_status) {
+                    obj.html(`${session.deploy_status}: ${session.deploy_percentage}%<br />
+<div style='background-color: green; width: ${ session.deploy_percentage}%; height: 20px;'></div>`)
+                    if (session.deploy_percentage < 100) setTimeout(() => {
+                        update();
+                    }, 1000);
+                    if (session.deploy_percentage == 100) {
+                        setTimeout(() => {
+                            location.reload();
+                        }, 2000);
+                    }
                 }
-                }
-                }
-                })
-                }
+            }
+        })
+    }
 
-
-
-                if(obj.length ==1){
-                update()
-                }
-
-                {% endblock %}
+    if (obj.length == 1) {
+        update()
+    }
+{% endblock %}

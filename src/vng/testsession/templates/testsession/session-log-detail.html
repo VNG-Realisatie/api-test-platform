@@ -4,17 +4,15 @@
 {% block title %}Test consumer - Detailweergave test-sessie{% endblock%}
 
 {% block content %}
-<script type="text/javascript">
-    $(document).ready(function(){
-        try{
-        var jjson = $('#json-content').text();
-        $('#translate').jJsonViewer(jjson);
-        }catch{
-            console.log('JSON Syntax error')
-            $('#json-content').removeAttr('hidden')
-        }
-    })
-</script>
+<div id="ui-view">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    Test consumers - {{ object.session }}
+                </div>
+                <div class="card-body">
+                    <div class="row">
 
 
 
@@ -59,4 +57,19 @@
     </div>
 
 </article>
+{% endblock %}
+
+
+{% block script%}
+<script type="text/javascript">
+    $(document).ready(function(){
+        try{
+        var jjson = $('#json-content').text();
+        $('#translate').jJsonViewer(jjson);
+        }catch{
+            console.log('JSON Syntax error')
+            $('#json-content').removeAttr('hidden')
+        }
+    })
+</script>
 {% endblock %}

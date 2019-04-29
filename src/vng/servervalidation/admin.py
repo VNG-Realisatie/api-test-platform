@@ -23,21 +23,10 @@ class PostmanTestInline(admin.TabularInline):
     model = model.PostmanTest
 
 
-class ExpectedPostmanResultInline(admin.TabularInline):
-    model = model.ExpectedPostmanResult
-
-
 @admin.register(model.PostmanTest)
 class PostmanTestAdmin(AdminChangeLinksMixin, OrderedModelAdmin):
     list_display = ['test_scenario', 'move_up_down_links', 'validation_file']
     changelist_links = ['expectedpostmanresult']
-    inlines = [ExpectedPostmanResultInline]
-
-
-@admin.register(model.ExpectedPostmanResult)
-class ExpectedPostmanResult(OrderedModelAdmin):
-    list_display = ['postman_test', 'move_up_down_links', 'expected_response']
-    list_filter = ['postman_test']
 
 
 @admin.register(model.PostmanTestResult)

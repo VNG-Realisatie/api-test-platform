@@ -1,16 +1,27 @@
 {% spaceless %}
-<ul class="breadcrumb">
+<ol class="breadcrumb">
     {% for url, label in breadcrumbs %}
-        <li class="breadcrumb__list-item">
-            {% ifnotequal forloop.counter breadcrumbs_total %}
-                <a class="breadcrumb__link" href="{{ url }}">{{ label|safe }}</a>
-            {% else %}
-                <span>{{ label|safe }}<span>
-            {% endifnotequal %}
-            {% if not forloop.last %}
-                <span class="breadcrumb__divider"></span>
-            {% endif %}
-        </li>
+        {% ifnotequal forloop.counter breadcrumbs_total %}
+            <li class="breadcrumb-item">
+                <a href="{{ url }}">{{ label|safe }}</a>
+            </li>
+        {% else %}
+            <li class="breadcrumb-item active">
+                {{ label|safe }}
+            </li>
+        {% endifnotequal %}
     {% endfor %}
-</ul>
+    {% comment %} <li class="breadcrumb-menu d-md-down-none">
+        <div class="btn-group" role="group" aria-label="Button
+            group">
+            <a class="btn" href="#">
+                <i class="icon-speech"></i>
+            </a>
+            <a class="btn" href="./">
+                <i class="icon-graph"></i> &nbsp;Dashboard</a>
+            <a class="btn" href="#">
+                <i class="icon-settings"></i> &nbsp;Settings</a>
+        </div>
+    </li> Eventually other elements on the right {% endcomment %}
+</ol>
 {% endspaceless %}

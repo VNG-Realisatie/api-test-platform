@@ -17,6 +17,7 @@
     "license": "UNLICENSED",
     "homepage": "https://maykinmedia.nl",
     "dependencies": {
+        "@coreui/coreui": "^2.1.9",
         "bem.js": "^1.0.10",
         "bourbon-neat": "^1.8.0",
         "clipboard": "^2.0.4",

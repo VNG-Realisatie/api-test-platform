@@ -10,82 +10,80 @@
 {% block content %}
 <div id="ui-view">
     <div class="row">
-        <div class="col-sm-6 offset-sm-3">
-            <form class="" method="post">{% csrf_token %}
+        {% if object_list %}
+            <div class="col-sm-10">
                 <div class="card">
                     <div class="card-header">
-                        Test consumer
+                        Consumer test-sessies
                     </div>
                     <div class="card-body">
-                        <h5 class="card-title">Start een nieuwe consumer test-sessie</h5>
-                        {% load_widgets form='forms.html' %}
-
-                        {% for field in form %}
-                        {% form_field field %}
-                        {% endfor %}
-                    </div>
-                    <div class="card-footer">
-                        <button class="btn btn-sm btn-primary" type="submit">
-                            <i class="fa fa-dot-circle-o"></i> Submit</button>
-                        <button class="btn btn-sm btn-danger" type="reset">
-                            <i class="fa fa-ban"></i> Reset</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-        <div class="col-sm-12">
-            {% if object_list %}
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="card">
-                        <div class="card-header">
-                            Consumer test-sessies
-                        </div>
-                        <div class="card-body">
-                            <table class="table">
-                                {% include 'testsession/table/header-session.html' only %}
-                                {% for session in object_list %}
-                                {% include 'testsession/table/row-session.html' with session=session %}
-                                {% endfor %}
-                            </table>
-                            {% include 'components/pagination/pagination.html' %}
-                        </div>
+                        <table class="table">
+                            {% include 'testsession/table/header-session.html' only %}
+                            {% for session in object_list %}
+                            {% include 'testsession/table/row-session.html' with session=session %}
+                            {% endfor %}
+                        </table>
+                        {% include 'components/pagination/pagination.html' %}
                     </div>
                 </div>
             </div>
             {% endif %}
+            <div class="col-sm-2">
+                <form class="" method="post">{% csrf_token %}
+                    <div class="card">
+                        <div class="card-header">
+                            Test consumer
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Start een nieuwe consumer test-sessie</h5>
+                            {% load_widgets form='forms.html' %}
+
+                            {% for field in form %}
+                            {% form_field field %}
+                            {% endfor %}
+                        </div>
+                        <div class="card-footer">
+                            <button class="btn btn-sm btn-primary" type="submit">
+                                <i class="fa fa-dot-circle-o"></i> Submit</button>
+                            <button class="btn btn-sm btn-danger" type="reset">
+                                <i class="fa fa-ban"></i> Reset</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
 
             {% endblock %}
 
-{% block script %}
-<script>
-    obj = $("#starting")
-    const Http = new XMLHttpRequest();
-    const url = window.location.origin + "/api/v1/status/" + obj.attr('session_id') + '/';
+            {% block script %}
+            <script>
+                obj = $("#starting")
+                const Http = new XMLHttpRequest();
+                const url = window.location.origin + "/api/v1/status/" + obj.attr('session_id') + '/';
 
-    function update() {
-        $.ajax({
-            url: window.location.origin + "/api/v1/status/" + obj.attr('session_id') + '/',
-            success: (data, textStatus, jqXHR) => {
-                session = data
-                if (session.deploy_status) {
-                    obj.html(`${session.deploy_status}: ${session.deploy_percentage}%<br />
+                function update() {
+                    $.ajax({
+                        url: window.location.origin + "/api/v1/status/" + obj.attr('session_id') + '/',
+                        success: (data, textStatus, jqXHR) => {
+                            session = data
+                            if (session.deploy_status) {
+                                obj.html(`${session.deploy_status}: ${session.deploy_percentage}%<br />
 <div style='background-color: green; width: ${ session.deploy_percentage}%; height: 20px;'></div>`)
-                    if (session.deploy_percentage < 100) setTimeout(() => {
-                        update();
-                    }, 1000);
-                    if (session.deploy_percentage == 100) {
-                        setTimeout(() => {
-                            location.reload();
-                        }, 2000);
-                    }
+                                if (session.deploy_percentage < 100) setTimeout(() => {
+                                    update();
+                                }, 1000);
+                                if (session.deploy_percentage == 100) {
+                                    setTimeout(() => {
+                                        location.reload();
+                                    }, 2000);
+                                }
+                            }
+                        }
+                    })
                 }
-            }
-        })
-    }
 
-    if (obj.length == 1) {
-        update()
-    }
-    <script>
-{% endblock %}
+                if (obj.length == 1) {
+                    update()
+                }
+
+            </script>
+            {% endblock %}

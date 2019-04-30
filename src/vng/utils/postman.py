@@ -1,12 +1,19 @@
 import json
 from .choices import ResultChoices
 
-
 error_codes = range(400, 600)
 
+def get_error_codes():
+    return error_codes
 
-def get_outcome_json(_json):
-    json_obj = json.loads(_json)
+
+def get_outcome_json(_json, file=False):
+
+    if file:
+        json_obj = json.load(_json)
+    else:
+        json_obj = json.loads(_json)
+
     if json_obj['run']['failures'] != []:
         return ResultChoices.failed
     for call in json_obj['run']['executions']:

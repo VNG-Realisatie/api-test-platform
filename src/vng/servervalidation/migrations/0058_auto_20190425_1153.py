@@ -12,6 +12,9 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.DeleteModel(
+            name='ExpectedPostmanResult',
+        ),
         migrations.AddField(
             model_name='serverrun',
             name='last_exec',

@@ -11,7 +11,17 @@
     <td class="table__cell" >
         {% for qps in report.scenario_case.queryparamsscenario_set.all %}
             {{qps.name}}: {{qps.expected_value}}
-        {% endfor %}
+ <ul class="list-group">
+                {% for endpoint in session.exposedurl_set.all %}
+                    {% if endpoint.subdomain %}
+                        <li class="list-group-item">
+                            <a href="{% url_sub 'serverproxy:run_test' endpoint.subdomain endpoint.vng_endpoint.path|slice:"1:" %}">
+                                {{endpoint.vng_endpoint.name}}
+                            </a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>       {% endfor %}
     </td>
     <td class="table__cell">{{ report.result }}</td>
     <td class="table__cell" >{{ report.session_log.response_status }}</td>

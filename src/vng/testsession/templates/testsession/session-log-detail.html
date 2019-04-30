@@ -3,6 +3,13 @@
 
 {% block title %}Test consumer - Detailweergave test-sessie{% endblock%}
 
+{% block breadcrumb %}
+{% breadcrumb "Home" 'testsession:sessions' %}
+{% breadcrumb 'Log' 'testsession:session_log' object.session.pk %}
+{% breadcrumb 'Detail call' 'testsession:sessions' %}
+{% render_breadcrumbs 'components/breadcrumbs/breadcrumbs.html' %}
+{% endblock %}
+
 {% block content %}
 <div id="ui-view">
     <div class="row">
@@ -12,64 +19,70 @@
                     Test consumers - {{ object.session }}
                 </div>
                 <div class="card-body">
-                    <div class="row">
-
-
-
-
-<article class="article">
-    <div class="article__section">
-
-        {% breadcrumb "Home" 'testsession:sessions' %}
-        {% breadcrumb 'Log' 'testsession:session_log' object.session.pk %}
-        {% breadcrumb 'Detail call' 'testsession:sessions' %}
-        {% render_breadcrumbs 'components/breadcrumbs/breadcrumbs.html' %}
-
-        <h2>Test consumers - {{ object.session }}</h2>
-
-        <p>{{ object.date }}</p>
+                    <h5 class="card-title">{{ object.date }}</h5>
+                    <p class="card-text">
+                        <strong>Request: {{ object.request_path }}</strong>
+                    </p>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Key</th>
+                                <th scope="col">Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for key, value in object.request_headers.items %}
+                            <tr>
+                                <th scope="row">{{forloop.counter}}</th>
+                                <td>{{key}}</td>
+                                <td>{{value}}</td>
+                            </tr>
+                            {%endfor%}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="article__section">
-        <p>
-            <strong>Request: {{ object.request_path }}</strong><br />
-            {% for key, value in object.request_headers.items %}
-            {{key }}: {{ value }}<br />
-            {% endfor %}
-        </p>
-        {% with object.request_body as request_body %}
-        {% if request_body %}
-        <p>
-            <strong>Request Body:</strong>
-            <br />{{ object.request_body }}
-        </p>
-        {% endif %}
-        {% endwith %}
-        <p>
-            <strong>Response status: {{ object.response_status }}</strong>
-        </p>
-        <p>
-            <strong>Response status: {{ object.response_status }}</strong>
-        </p>
-        <p id="translate"></p>
-        <p id="json-content" hidden="True">
-            {{ object.response_body|safe  }}
-        </p>
+    {% if object.request_body %}
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    Request body
+                </div>
+                <div class="card-body">
+                    <p class="card-text">
+                        {{ object.request_body }}
+                    </p>
+                </div>
+            </div>
+        </div>
     </div>
+    {%endif%}
+    {% if object.response_body %}
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    Response status: {{ object.response_status }}
+                </div>
+                <div class="card-body">
+                    <p class="card-text" id="translate"></p>
+                    <p class="card-text" id="json-content" hidden="true">
+                        {{ object.response_body|safe  }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {%endif%}
+    {% endblock %}
 
-</article>
-{% endblock %}
 
+    {% block script%}
+    <script>
+    </script
 
-{% block script%}
-<script type="text/javascript">
-    $(document).ready(function(){
-        try{
-        var jjson = $('#json-content').text();
-        $('#translate').jJsonViewer(jjson);
-        }catch{
-            console.log('JSON Syntax error')
-            $('#json-content').removeAttr('hidden')
-        }
-    })
-</script>
-{% endblock %}
+    {% endblock %}

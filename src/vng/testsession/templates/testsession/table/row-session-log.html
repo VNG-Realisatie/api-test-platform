@@ -2,7 +2,7 @@
 <tr>
     <td>
         {{ log.date|time }}
-        <p style='padding: 4px;'><a class="button" href="{% url 'testsession:session_log-detail' session.pk log.pk %}">Bekijk details</p>
+        <p style='padding: 4px;'><a class="btn btn-primary" href="{% url 'testsession:session_log-detail' session.pk log.pk %}">Bekijk details</p>
     </td>
     <td>{{ log.request_path }}</td>
     <td style="color: {% if log.response_status >= 200 and log.response_status < 400 %}green{% else %}red{% endif %};">

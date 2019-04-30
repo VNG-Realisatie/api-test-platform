@@ -2,3 +2,4 @@
 import './copy';
 import './jwt-formatter';
 import './tabs';
+import './jsonformatter'

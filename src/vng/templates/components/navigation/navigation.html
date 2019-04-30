@@ -3,11 +3,6 @@
     <ul class="nav navbar-nav d-md-down-none">
             {% if user.is_authenticated %}
             {% include './navigation-list-item.html' with view_name='testsession:sessions' label=_('Test consumer') request=request only %}
-            <li class="nav-item px-3">
-                {% url view_name as view_url %}
-                <a class="nav-lin"
-                href="{{ view_url }}">{{ label }}</a>
-            </li>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Test provider

@@ -20,7 +20,8 @@ from drf_yasg.utils import swagger_auto_schema
 
 # from ..permissions.UserPermissions import isOwner
 from .serializers import ServerRunSerializer, ServerRunPayloadExample, ServerRunResultShield
-from .models import ServerRun, PostmanTestResult, ExpectedPostmanResult
+from .models import ServerRun, PostmanTestResult
+from ..utils import postman as ptm
 
 
 class ServerRunViewSet(
@@ -117,18 +118,15 @@ class ResultServerView(LoginRequiredMixin, views.APIView):
             response = HttpResponse(json.dumps(res))
             response['Content-Type'] = 'application/json'
             return response
-        epr = ExpectedPostmanResult.objects.filter(postman_test__test_scenario=server_run.test_scenario)
         postman_res = PostmanTestResult.objects.filter(server_run=server_run)
         response = []
         for postman in postman_res:
-            epr = ExpectedPostmanResult.objects.filter(postman_test=postman.postman_test).order_by('order')
             postman.json = postman.get_json_obj()
             postman_res_output = {
                 'time': postman.get_json_obj_info()['run']['timings']['started'],
                 'calls': []
             }
-            for call, ep in zip_longest(postman.json, epr):
-
+            for call in postman.json:
                 _call = {
                     'name': call['item']['name'],
                     'request': call['request']['method'],
@@ -140,10 +138,11 @@ class ResultServerView(LoginRequiredMixin, views.APIView):
                     _call['assertions'] = call['assertions']
                 else:
                     _call['assertions'] = []
-                if ep is None:
-                    _call['status'] = 'Expected response not specified'
-                elif str(call['response']['code']) in ep.expected_response:
-                    _call['status'] = 'As expected'
+
+                if call['response']['code'] in ptm.get_error_codes():
+                    _call['status'] = 'Error'
+                else:
+                    _call['status'] = 'Success'
                 postman_res_output['calls'].append(_call)
 
             postman_res_output['status'] = postman.status

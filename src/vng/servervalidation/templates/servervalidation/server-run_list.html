@@ -57,6 +57,7 @@
 
 
     {% block script %}
+    <script>
     obj = $("#starting")
 
     function update() {
@@ -84,5 +85,6 @@
     if (obj.length == 1) {
         update()
     }
+    </script>
     {% endblock %}
 

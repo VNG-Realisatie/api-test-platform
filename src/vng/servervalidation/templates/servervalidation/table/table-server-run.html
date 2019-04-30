@@ -40,11 +40,17 @@
 <tr>
     <td class="table__cell">Actie</td>
     <td class="table__cell">
-        <form id="myform" method="POST" action="{% url 'server_run:server-run_stop' server_run.pk %}">
-            {% csrf_token %}
-            <input type="submit" class="form__button button button--primary" value="Stop">
-        </form>
-        <a type="submit" class="button button--primary "  href="{% url 'server_run:server-run_trigger' server_run.pk %}">Uitvoeren</a>
+        <div class='row'>
+        <div class='col-3'>
+            <form id="myform" method="POST" action="{% url 'server_run:server-run_stop' server_run.pk %}">
+                {% csrf_token %}
+                <input type="submit" class="btn btn-primary" value="Stop">
+            </form>
+        </div>
+        <div class='col-3'>
+        <a type="submit" class="btn btn-primary"  href="{% url 'server_run:server-run_trigger' server_run.pk %}">Uitvoeren</a>
+        </div>
+        </div
     </td>
 </tr>
 {% endif %}

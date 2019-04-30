@@ -15,7 +15,8 @@
     <link href="{{ get_media_prefix }}{% static 'css/screen.css' %}" media="screen" rel="stylesheet" />
     <link href="https://coreui.io/demo/vendors/simple-line-icons/css/simple-line-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/@coreui/coreui/dist/css/coreui.min.css">
-     <link href="https://coreui.io/demo/vendors/@coreui/icons/css/coreui-icons.min.css" rel="stylesheet">
+    <link href="https://coreui.io/demo/vendors/@coreui/icons/css/coreui-icons.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
 
 </head>
 
@@ -27,6 +28,7 @@
         <div class="sidebar">
             <nav class="sidebar-nav">
                 <ul class="nav">
+                    {% comment %} Uncomment the following to unlock the navbar on the left {% endcomment %}
                     {% comment %} <li class="nav-title">Components</li>
                     <li class="nav-item nav-dropdown">
                         <a class="nav-link nav-dropdown-toggle" href="#">

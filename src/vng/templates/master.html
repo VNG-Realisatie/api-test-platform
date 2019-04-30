@@ -21,20 +21,13 @@
 
 </head>
 
-<body class="app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show">
+<body class="app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show brand-minimized sidebar-minimized">
     {% include 'components/header/header.html' %}
     <div class="app-body">
         <div class="sidebar">
             <nav class="sidebar-nav">
                 <ul class="nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="main.html">
-                            <i class="nav-icon icon-speedometer"></i> Dashboard
-                            <span class="badge badge-info">NEW</span>
-                        </a>
-                    </li>
-
-                    <li class="nav-title">Components</li>
+                    {% comment %} <li class="nav-title">Components</li>
                     <li class="nav-item nav-dropdown">
                         <a class="nav-link nav-dropdown-toggle" href="#">
                             <i class="nav-icon icon-puzzle"></i> Base</a>
@@ -44,18 +37,8 @@
                                     <i class="nav-icon icon-puzzle"></i>
                                     Breadcrumb</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="base/cards.html">
-                                    <i class="nav-icon icon-puzzle"></i> Cards</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="base/carousel.html">
-                                    <i class="nav-icon icon-puzzle"></i>
-                                    Carousel</a>
-                            </li>
                         </ul>
-                    </li>
-
+                    </li> {% endcomment %}
                 </ul>
             </nav>
             <button class="sidebar-minimizer brand-minimizer" type="button"></button>

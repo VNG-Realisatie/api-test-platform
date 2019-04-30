@@ -1,7 +1,7 @@
 {% spaceless %}
     <li class="nav-item px-3">
         {% url view_name as view_url %}
-        <a class="nav-link{% if request.path == view_url %} {% endif %}"
+        <a class="nav-link"
            href="{{ view_url }}">{{ label }}</a>
     </li>
 {% endspaceless %}

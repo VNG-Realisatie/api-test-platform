@@ -91,20 +91,22 @@
                                 </td>
                                 {% endif %}
                             </tr>
-                            <tr>
+                            <tr >
                                 <td>
                                     {{calls.request.url.url}}
                                 </td>
                                 <td>
                                     {{ calls.response.code }} {{ calls.response.status }}
                                 </td>
-                                <td>
-                                    {% if calls.response.code >= 200 and calls.response.code < 400  %}
+                                {% if calls.response.code >= 200 and calls.response.code < 400  %}
+                                <td class="table-success">
                                     <p class='cui-check h2'></p>
-                                    {% else %}
-                                    <p class='cui-circle-x h2'></p>
-                                    {% endif %}
                                 </td>
+                                {% else %}
+                                <td class="table-danger">
+                                    <p class='cui-circle h2'></p>
+                                </td>
+                                {% endif %}
                             </tr>
                             {% for assertion in calls.assertions %}
                             {% if 'error' in assertion %}
@@ -121,14 +123,14 @@
                                 <td>
                                     {{assertion.assertion}}
                                 </td>
-                                <td>
+                                <td class="table-danger">
                                     {{assertion.error.message}}
                                 </td>
                                 {% else %}
                                 <td>
                                     {{assertion.assertion}}
                                 </td>
-                                <td class="table__cell ">
+                                <td class="table-success">
                                     <p class='cui-check h2'></p>
                                 </td>
                                 {% endif %}

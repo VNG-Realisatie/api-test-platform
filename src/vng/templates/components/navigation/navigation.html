@@ -14,7 +14,7 @@
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <a class="dropdown-item" href="{% url 'server_run:server-run_list' %}">Tests</a>
-                <a class="dropdown-item" href="#">Scheduled</a>
+                <a class="dropdown-item" href="{% url 'server_run:server-run_list_scheduled' %}">Scheduled</a>
                 </div>
             </li>
             {% endif %}

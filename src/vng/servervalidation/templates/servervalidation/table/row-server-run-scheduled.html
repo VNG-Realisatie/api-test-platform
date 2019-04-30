@@ -1,21 +1,21 @@
 {% spaceless %}
 <tr>
     {% if server_run.stopped %}
-        <td class="table__cell">
+        <td>
             <a href="{% url 'server_run:server-run_detail' server_run.pk %}">#{{ server_run.id }}</a>
             Status: {{ server_run.status }}
         </td>
 
     {% else %}
-        <td class="table__cell">
+        <td>
             <a href="{% url 'server_run:server-run_detail' server_run.pk %}">#{{ server_run.id }}</a>
             Status: {{ server_run.status }}
         </td>
     {% endif %}
-    <td class="table__cell">00:01 Elke dag</td>
+    <td>00:01 Elke dag</td>
 
-    <td class="table__cell">{{ server_run.test_scenario.name }}</td>
-    <td class="table__cell">
+    <td>{{ server_run.test_scenario.name }}</td>
+    <td>
         {% if server_run.success != None %}
             {% if server_run.success  %}
                 <p class='icon icon--checkmark'></p>
@@ -24,22 +24,28 @@
             {% endif %}
         {% endif %}
     </td>
-    <td class="table__cell">
+    <td>
         {% if server_run.last_exec %}
             {{server_run.last_exec}}
         {% endif %}
     </td>
-    <td class="table__cell table__cell--keep_word">
-
+    <td>
         {% if not server_run.is_stopped %}
-        <form id="myform" method="POST" action="{% url 'server_run:server-run_stop' server_run.pk %}">
-            {% csrf_token %}
-            <input type="submit" class="button button--primary button--small"  value="Stop">
-        </form>
-        <a type="submit" class="button button--primary button--small"  href="{% url 'server_run:server-run_trigger' server_run.pk %}">Uitvoeren</a>
+            <div class='row'>
+                <div class='col-sm-3'>
+                    <form id="myform" method="POST" action="{% url 'server_run:server-run_stop' server_run.pk %}">
+                        {% csrf_token %}
+                        <input type="submit" class="btn btn-primary"  value="Stop">
+                    </form>
+                </div>
+
+                <div class='col-sm-6'>
+                    <a type="submit" class="btn btn-primary"  href="{% url 'server_run:server-run_trigger' server_run.pk %}">Uitvoeren</a>
+                </div>
+            </div>
         {% endif %}
     </td>
-    <td class="table__cell">
+    <td>
         <span display="block" height="20px" class="common__BadgeWrapper-sc-16zh6vt-3 fagfmg">
             <a href="{% url 'server_run:server-run_detail_uuid' server_run.uuid %}">
                 <img style='width:100%' alt="" src="https://img.shields.io/endpoint.svg?style=for-the-badge&amp;url={{request.scheme}}://{{request.get_host}}{% url 'apiv1server:provider:api_server-run-shield-detail' server_run.id %}">

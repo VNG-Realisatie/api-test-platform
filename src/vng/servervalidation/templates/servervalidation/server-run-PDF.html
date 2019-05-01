@@ -8,6 +8,7 @@
 <head>
     <meta charset="utf-8">
     <title>Server Report</title>
+    <link href="https://coreui.io/demo/vendors/@coreui/icons/css/coreui-icons.min.css" rel="stylesheet">
 </head>
 
 <body>
@@ -23,6 +24,7 @@
                     <th></th>
                     <th>HTTP method</th>
                     <th>HTTP url</th>
+                    <th></th>
                     <th></th>
                 </tr>
             </thead>
@@ -58,13 +60,21 @@
                         <p class='cell-fail cell-content-fix'></p>
                     {% endif %}
                     </td>
+                    <td class="table__cell">
+                        {% if postman.get_call_results_list|index:forloop.counter0 %}
+                            <p class='cui-check h2'></p>
+                        {% else %}
+                            <p class='cui-circle-x h2'></p>
+                        {% endif %}
+
+                    </td>
                 </tr>
                 <tr>
                     <td class="table__cell">
 
                     </td>
                     <td class="table__cell">
-                        {{calls.request.url.url}}
+                        {{calls.request.url.url|truncatechars:30}}
                     </td>
                     <td class="table__cell">
                         {{ calls.response.code }} {{ calls.response.status }}

@@ -8,7 +8,29 @@
 {% block content %}
 <div id="ui-view">
     <div class="row">
-        <div class="col-sm-6 offset-sm-3">
+        {% if object_list %}
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-header">
+                        Server run list
+                    </div>
+                    <div class="card-body">
+                        <table class="table">
+                            {% include 'servervalidation/table/header-server-run.html' only %}
+                            {% for server_run in object_list %}
+                            {% if not server_run.scheduled %}
+                            {% include 'servervalidation/table/row-server-run.html' with server_run=server_run %}
+                            {% endif %}
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% include 'components/pagination/pagination.html' %}
+        {% endif %}
+        <div class="offset-sm-2">
             <form class="" method="post">{% csrf_token %}
                 <div class="card">
                     <div class="card-header">
@@ -32,61 +54,38 @@
             </form>
         </div>
     </div>
-    {% if object_list %}
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="card">
-                <div class="card-header">
-                    Server run list
-                </div>
-                <div class="card-body">
-                    <table class="table">
-                        {% include 'servervalidation/table/header-server-run.html' only %}
-                        {% for server_run in object_list %}
-                        {% if not server_run.scheduled %}
-                        {% include 'servervalidation/table/row-server-run.html' with server_run=server_run %}
-                        {% endif %}
-                        {% endfor %}
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% include 'components/pagination/pagination.html' %}
-    {% endif %}
-</div>
-{% endblock %}
+    {% endblock %}
 
 
     {% block script %}
     <script>
-    obj = $("#starting")
+        obj = $("#starting")
 
-    function update() {
-        $.ajax({
-            url: window.location.origin + "/api/v1/provider-run/" + obj.attr('server_run_id') + '/',
-            success: (data, textStatus, jqXHR) => {
-                server_run = data
-                console.log(data)
-                if (server_run.percentage_exec) {
-                    obj.html(`${server_run.status_exec}: ${server_run.percentage_exec}%<br />
+        function update() {
+            $.ajax({
+                url: window.location.origin + "/api/v1/provider-run/" + obj.attr('server_run_id') + '/',
+                success: (data, textStatus, jqXHR) => {
+                    server_run = data
+                    console.log(data)
+                    if (server_run.percentage_exec) {
+                        obj.html(`${server_run.status_exec}: ${server_run.percentage_exec}%<br />
 <div style='background-color: green; width: ${ server_run.percentage_exec}%; height: 20px;'></div>`)
-                    if (server_run.percentage_exec < 100) setTimeout(() => {
-                        update();
-                    }, 1000);
-                    if (server_run.percentage_exec == 100) {
-                        setTimeout(() => {
-                            location.reload();
-                        }, 2000);
+                        if (server_run.percentage_exec < 100) setTimeout(() => {
+                            update();
+                        }, 1000);
+                        if (server_run.percentage_exec == 100) {
+                            setTimeout(() => {
+                                location.reload();
+                            }, 2000);
+                        }
                     }
                 }
-            }
-        })
-    }
+            })
+        }
 
-    if (obj.length == 1) {
-        update()
-    }
+        if (obj.length == 1) {
+            update()
+        }
+
     </script>
     {% endblock %}
-

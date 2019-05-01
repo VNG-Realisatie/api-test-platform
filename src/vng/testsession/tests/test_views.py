@@ -515,7 +515,7 @@ class TestAllProcedure(WebTest):
     def _test_create_session(self):
         call = self.app.get(reverse('testsession:session_create'), user=self.user)
         form = call.forms[0]
-        form['session_type'].select('2')
+        form['session_type'].select(str(self.session_type.id))
         form.submit()
 
         call = self.app.get(reverse('testsession:sessions'), user=self.user)

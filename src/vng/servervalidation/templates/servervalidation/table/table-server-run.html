@@ -1,12 +1,12 @@
 {% spaceless %}
 <tr>
-    <td class="table__cell">Id</td>
-    <td class="table__cell">{{ server_run.pk }}</td>
+    <td>Id</td>
+    <td>{{ server_run.pk }}</td>
 </tr>
 
 <tr>
-    <td class="table__cell">Test Scenario</td>
-    <td class="table__cell">
+    <td>Test Scenario</td>
+    <td>
         <ul>
             {% for pc in server_run.test_scenario.postmantest_set.all %}
             <li>
@@ -18,28 +18,28 @@
 </tr>
 {% for ep in server_run.endpoint_set.all %}
     <tr>
-        <td class="table__cell">{{ ep.test_scenario_url.name }}</td>
-        <td class="table__cell">{{ ep.url }}</td>
+        <td>{{ ep.test_scenario_url.name }}</td>
+        <td>{{ ep.url }}</td>
     </tr>
 {% endfor %}
 
 <tr>
-    <td class="table__cell">Started</td>
-    <td class="table__cell">{{ server_run.started }}</td>
+    <td>Started</td>
+    <td>{{ server_run.started }}</td>
 </tr>
 <tr>
-    <td class="table__cell">Stopped</td>
-    <td class="table__cell">{{ server_run.stopped }}</td>
+    <td>Stopped</td>
+    <td>{{ server_run.stopped }}</td>
 </tr>
 
 <tr>
-    <td class="table__cell">Status</td>
-    <td class="table__cell">{{ server_run.status }}</td>
+    <td>Status</td>
+    <td>{{ server_run.status }}</td>
 </tr>
 {% if server_run.scheduled and not server_run.is_stopped %}
 <tr>
-    <td class="table__cell">Actie</td>
-    <td class="table__cell">
+    <td>Actie</td>
+    <td>
         <div class='row'>
         <div class='col-3'>
             <form id="myform" method="POST" action="{% url 'server_run:server-run_stop' server_run.pk %}">
@@ -56,8 +56,8 @@
 {% endif %}
 
 <tr>
-    <td class="table__cell">Log</td>
-        <td class="table__cell">
+    <td>Log</td>
+        <td>
             {% for pr in postman_result %}
                 <ul>
                     <li><a href="{% url 'server_run:server-run_detail_log' pr.pk %}">Visualize HTML log</a></li>

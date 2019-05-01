@@ -5,7 +5,7 @@ var obj = $("#starting");
 
 function update() {
     $.ajax({
-        url: window.url + obj.attr('session_id') + '/',
+        url: window.url + obj.attr(window.attr_name) + '/',
         success: (data, textStatus, jqXHR) => {
             var session = data
             if (session.deploy_status) {
@@ -13,11 +13,11 @@ function update() {
                 <div style='background-color: green; width: ${ session.deploy_percentage}%; height: 20px;'></div>`)
                 if (session.deploy_percentage < 100) setTimeout(() => {
                     update();
-                }, 1000);
+                }, 2000);
                 if (session.deploy_percentage == 100) {
                     setTimeout(() => {
                         location.reload();
-                    }, 2000);
+                    }, 500);
                 }
             }
         }
@@ -25,7 +25,7 @@ function update() {
 }
 
 if (obj.length == 1)
-    setInterval(update, 500)
+    setTimeout(update, 500)
 
 
 console.log(window.url)

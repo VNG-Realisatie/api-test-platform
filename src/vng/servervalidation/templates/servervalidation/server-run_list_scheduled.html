@@ -31,32 +31,7 @@
 
 {% block script %}
 <script>
-obj = $("#starting")
-
-function update(){
-    $.ajax({
-        url:  window.location.origin+"/api/v1/provider-run/" + obj.attr('server_run_id')+'/',
-        success: (data, textStatus, jqXHR)=>{
-            server_run = data
-            console.log(data)
-            if (server_run.percentage_exec) {
-            obj.html(`${server_run.status_exec}: ${server_run.percentage_exec}%<br /><div style='background-color: green; width: ${ server_run.percentage_exec}%; height: 20px;'></div>`)
-            if (server_run.percentage_exec<100)
-                setTimeout(() => {
-                    update();
-                }, 1000);
-            if (server_run.percentage_exec == 100) {
-                setTimeout(() => {
-                location.reload();
-                }, 2000);
-            }
-            }
-        }
-    })
-}
-
-if(obj.length ==1){
-    update()
-}
+    window.url = window.location.origin+"/api/v1/provider-run/"
+    window.attr_name = 'server_run_id'
 <script>
 {% endblock %}

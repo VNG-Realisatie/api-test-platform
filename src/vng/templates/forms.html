@@ -40,12 +40,16 @@
 {% endblock %}
 
 {% block Textarea %}
-    <div class="form__control" role="group">
-        {% reuse '_label' %}
-        <textarea name="{{ html_name }}" id="{{ id }}" class="form__textarea{{ css_classes }}{{ errors|yesno:" form__textarea--error," }}"
-            {{ widget.attrs|flatattrs }}
+    <div class="input-group mb-3">
+        {% if label %}
+            <div class="input-group-prepend">
+                <span class="input-group-text">{{label}}</span>
+            </div>
+        {% endif %}
+        <textarea name="{{ html_name }}" id="{{ id }}" class="form-control{{ css_classes }}{{ errors|yesno:" is-invalid," }}"
             {{ required|yesno:"required," }}
             {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
+
         >{{ raw_value|default:'' }}</textarea>
         {% reuse '_help' %}
         {% reuse '_errors' %}

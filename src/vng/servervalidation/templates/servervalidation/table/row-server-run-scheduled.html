@@ -18,9 +18,9 @@
     <td>
         {% if server_run.success != None %}
             {% if server_run.success  %}
-                <p class='icon icon--checkmark'></p>
+                <p class='cui-check h2'></p>
             {% elif not server_run.success  %}
-                <p class='icon icon--cross'></p>
+                <p class='cui-circle-x h2'></p>
             {% endif %}
         {% endif %}
     </td>
@@ -32,7 +32,7 @@
     <td>
         {% if not server_run.is_stopped %}
             <div class='row'>
-                <div class='col-sm-3'>
+                <div class='col-sm-4'>
                     <form id="myform" method="POST" action="{% url 'server_run:server-run_stop' server_run.pk %}">
                         {% csrf_token %}
                         <input type="submit" class="btn btn-primary"  value="Stop">

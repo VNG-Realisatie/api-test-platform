@@ -1,0 +1,36 @@
+{% extends 'master.html' %}
+{% load sniplates %}
+
+
+{% block title %}Providers{% endblock %}
+
+
+{% block content %}
+<div id="ui-view">
+    <div class="row">
+        <div class="offset-sm-2 offset-sm-5">
+            <form class="" method="post">{% csrf_token %}
+                <div class="card">
+                    <div class="card-header">
+                        Providers
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">Start een nieuwe provider-test</h5>
+                        {% load_widgets form='forms.html' %}
+
+                        {% for field in form %}
+                        {% form_field field %}
+                        {% endfor %}
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-sm btn-primary" type="submit">
+                            <i class="fa fa-dot-circle-o"></i> Submit</button>
+                        <button class="btn btn-sm btn-danger" type="reset">
+                            <i class="fa fa-ban"></i> Reset</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endblock %}
+

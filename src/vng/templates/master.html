@@ -26,23 +26,7 @@
     {% include 'components/header/header.html' %}
     <div class="app-body">
         <div class="sidebar">
-            <nav class="sidebar-nav">
-                <ul class="nav">
-                    {% comment %} Uncomment the following to unlock the navbar on the left {% endcomment %}
-                    {% comment %} <li class="nav-title">Components</li>
-                    <li class="nav-item nav-dropdown">
-                        <a class="nav-link nav-dropdown-toggle" href="#">
-                            <i class="nav-icon icon-puzzle"></i> Base</a>
-                        <ul class="nav-dropdown-items">
-                            <li class="nav-item">
-                                <a class="nav-link" href="base/breadcrumb.html">
-                                    <i class="nav-icon icon-puzzle"></i>
-                                    Breadcrumb</a>
-                            </li>
-                        </ul>
-                    </li> {% endcomment %}
-                </ul>
-            </nav>
+            {% include 'components/navigation/navigation-lateral.html' %}
             <button class="sidebar-minimizer brand-minimizer" type="button"></button>
         </div>
         <main class="main">

@@ -13,7 +13,9 @@
 
 <body>
 
-    {% include 'components/logo/logo.html' %}
+    <a class="navbar-brand" href="#">
+        <img class="navbar-brand-full" src="{% static 'ico/favicon.ico' %}"  alt="VNG Logo">
+    </a>
     <div>
         <h1>Server Report</h1>
         <h2>Postman collection</h2>
@@ -34,7 +36,7 @@
                     <td colspan='3'></td>
                 </tr>
             <span class="dot red">{{postman.negative_call_result}}<br> Failed</span>
-            <span class="dot green">{{postman.positive_call_result}}<br> Failed</span>
+            <span class="dot green">{{postman.positive_call_result}}<br> Succes</span>
             {% for calls in postman.json %}
                 <tr>
                     <td class="table__cell">
@@ -163,8 +165,8 @@
         width: 70%
     }
     .dot {
-        height: 50px;
-        width: 50px;
+        height: 55px;
+        width: 55px;
         background-color: None;
         border-radius: 50%;
         display: inline-block;

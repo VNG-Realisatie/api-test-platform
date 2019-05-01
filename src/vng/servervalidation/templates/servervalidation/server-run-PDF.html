@@ -21,15 +21,6 @@
         <h2>Postman collection</h2>
         {% for postman in postman_result %}
             <table class='table-t'>
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>HTTP method</th>
-                    <th>HTTP url</th>
-                    <th></th>
-                    <th></th>
-                </tr>
-            </thead>
             <tbody>
 
                 <tr>
@@ -91,30 +82,35 @@
                 </tr>
                 {% for assertion in calls.assertions %}
                     <tr>
+                        <td class="table__cell">
 
-                    <td class="table__cell">
-
-                    </td>
-                    <td class="table__cell">
+                        </td>
                         {% if forloop.counter == 1 %}
-                            <u>Tests</u>
+                            <td class="table__cell">
+                                <u>Tests</u>
+                        {% elif 'error' in assertion %}
+                            <td class="table__cell" style="text-align=right">
+                                <span class="squared red_back" red></span>
+                        {% else %}
+                            <td class="table__cell" align="text-align=right">
+                                <span class="squared green_back" red></span>
                         {% endif %}
-                    </td>
-                    {% if 'error' in assertion %}
-                        <td class="cell-fail cell-content-fix">
-                            {{assertion.assertion}}
-                        </td>
-                        <td class="table__cell">
-                            {{assertion.error.message}}
-                        </td>
-                    {% else %}
-                        <td class="table__cell">
-                            {{assertion.assertion}}
-                        </td>
-                        <td class="table__cell ">
-                            <p class='cell-success cell-content-fix'></p>
-                        </td>
-                    {% endif %}
+                            </td>
+                        {% if 'error' in assertion %}
+                            <td class="cell-fail cell-content-fix">
+                                {{assertion.assertion}}
+                            </td>
+                            <td class="table__cell">
+                                {{assertion.error.message}}
+                            </td>
+                        {% else %}
+                            <td class="table__cell">
+                                {{assertion.assertion}}
+                            </td>
+                            <td class="table__cell ">
+                                <p class='cell-success cell-content-fix'></p>
+                            </td>
+                        {% endif %}
                     </tr>
                 {% endfor %}
                 <tr>
@@ -135,6 +131,13 @@
         font-family:  Arial, Geneva, Helvetica;
 
     }
+    td{
+        padding: 5px;
+        margin: 5px;
+    }
+    tr{
+        margin-bottom: 20px;
+    }
 
     .cell-success {
         background-color: green;
@@ -142,8 +145,10 @@
     }
 
     .cell-fail {
-        background-color: red;
-        color: white
+        background-color: rgba(255, 0, 0, 0.6);
+        color: white;
+        display: inline-block;
+        border-radius: 5px;
     }
 
     .table-t {
@@ -165,6 +170,7 @@
         width: 70%
     }
     .dot {
+        margin: 5px;
         height: 55px;
         width: 55px;
         background-color: None;
@@ -187,8 +193,8 @@
     }
 
     .squared {
-        height: 25px;
-        width: 25px;
+        height: 20px;
+        width: 20px;
         border-radius: 30%;
         display: inline-block;
         vertical-align: middle;

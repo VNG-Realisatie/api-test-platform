@@ -7,24 +7,33 @@
 
 
 {% block content %}
-    <article class="article">
-        <div class="article__section">
-            <h1>OpenAPI Check</h1>
-            <h2>Controleer de OpenAPI specificatie schema</h2>
+<div id="ui-view">
+    <div class="row">
+        <div class="col-sm-6 offset-sm-3">
+            <form class="" method="post">{% csrf_token %}
+                <div class="card">
+                    <div class="card-header">
+                        OpenAPI Chec
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">Controleer de OpenAPI specificatie schema</h5>
+                        {% load_widgets form='forms.html' %}
 
-            <form class="form" method="post">{% csrf_token %}
-                {% load_widgets form='forms.html' %}
-
-                {% for field in form %}
-                    {% form_field field %}
-                {% endfor %}
-
-                <input type="submit" class="button button--primary" value="Verifieer">
-                <input type="button" class="button" value="Terug"
-                       onclick="location.href = '{% url 'server_run:server-run_list' %}';">
+                        {% for field in form %}
+                        {% form_field field %}
+                        {% endfor %}
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-sm btn-primary" type="submit">
+                            <i class="fa fa-dot-circle-o"></i>Verifieer</button>
+                        <button class="btn btn-sm btn-danger" type="reset"
+                            onclick="location.href = '{% url 'server_run:server-run_list' %}';">
+                            <i class="fa fa-ban"></i> Terug</button>
+                    </div>
+                </div>
             </form>
-
         </div>
+    </div>
+</div>
 
-    </article>
 {% endblock %}

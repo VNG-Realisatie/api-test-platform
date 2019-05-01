@@ -3,37 +3,46 @@
 
 {% block title %}Session Report{% endblock%}
 
+{% block breadcrumb %}
+    {% breadcrumb "Home" "/" %}
+    {% breadcrumb 'Log' 'testsession:session_log' session.pk %}
+    {% breadcrumb 'back' '' %}
+    {% render_breadcrumbs 'components/breadcrumbs/breadcrumbs.html' %}
+{% endblock %}
+
 {% block content %}
-
-
-<article class="article">
-    <div class="article__section">
-
-        {% breadcrumb "Home" "/" %}
-        {% breadcrumb 'Log' 'testsession:session_log' session.pk %}
-        {% breadcrumb 'back' '' %}
-
-        {% render_breadcrumbs 'components/breadcrumbs/breadcrumbs.html' %}
-
-        <h1>Scenario</h1>
-        <table class="table">
-
-            {% include 'testsession/table/header-scenario-report.html' with scenario=session_type only %}
-        </table>
+<div id="ui-view">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    Scenario
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        {% include 'testsession/table/header-scenario-report.html' with scenario=session_type only %}
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="article__section">
-        <h2>Scenario case</h2>
-
-        {% if object_list %}
-        <table class="table">
-            {% include 'testsession/table/header-session-report.html' only %}
-            {% for rp in object_list %}
-                {% include 'testsession/table/row-session-report.html' with report=rp only %}
-            {% endfor %}
-        </table>
-        {% else %}
-        <p>Er zijn geen verzoeken binnengekomen.</p>
-        {% endif %}
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    Scenario case
+                </div>
+                <div class="card-body">
+                {% if object_list %}
+                <table class="table">
+                    {% include 'testsession/table/header-session-report.html' only %}
+                    {% for rp in object_list %}
+                        {% include 'testsession/table/row-session-report.html' with report=rp only %}
+                    {% endfor %}
+                </table>
+                {% else %}
+                <p>Er zijn geen verzoeken binnengekomen.</p>
+                {% endif %}
     </div>
 </article>
 {% endblock %}

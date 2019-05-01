@@ -7,27 +7,31 @@
 
 
 {% block content %}
-    <article class="article">
-        <div class="article__section">
-            <h1>OpenAPI Result</h1>
-            <table class="table">
-                <tr>
-                    <th class="table__heading">Validatie regel</th>
-                    <th class="table__heading">Resultaat</th>
-                </tr>
-                <td class="table__cell">> 3.0</td>
-                <td class="table__cell">
-                    {% if request.session.openapi %}
-                        <p class='icon icon--checkmark'></p>
-                    {% else %}
-                        <p class='icon icon--cross'></p>
-                    {% endif %}
-                </td>
-            </table>
-
-
-
+<div id="ui-view">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    OpenAPI Result
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <tr>
+                            <th class="table__heading">Validatie regel</th>
+                            <th class="table__heading">Resultaat</th>
+                        </tr>
+                        <td class="table__cell">> 3.0</td>
+                        <td class="table__cell">
+                            {% if request.session.openapi %}
+                                <p class='cui-check h2'></p>
+                            {% else %}
+                                <p class='cui-circle-x h2'></p>
+                            {% endif %}
+                        </td>
+                    </table>
+                </div>
+            </div>
         </div>
-
-    </article>
+    </div>
+</div>
 {% endblock %}

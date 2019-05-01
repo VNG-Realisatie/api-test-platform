@@ -6,7 +6,7 @@ from django.db.utils import IntegrityError
 from django.utils import timezone
 from django.views import View
 from django.views.generic import DetailView, CreateView, FormView
-from django.views.generic.list import MultipleObjectMixin, MultipleObjectTemplateResponseMixin
+from django.views.generic.list import ListView
 
 from ..utils import choices, postman
 from ..utils.views import OwnerSingleObject, PDFGenerator
@@ -17,23 +17,15 @@ from .models import (
 from .task import execute_test
 
 
-class TestScenarioSelect(LoginRequiredMixin, FormView, MultipleObjectMixin, MultipleObjectTemplateResponseMixin):
+class TestScenarioSelect(LoginRequiredMixin, ListView):
 
     template_name = 'servervalidation/server-run_list.html'
-    form_class = CreateServerRunForm
     context_object_name = 'server_run_list'
     paginate_by = 10
     model = ServerRun
 
     def get_queryset(self):
-        return self.model.objects.filter(user=self.request.user).order_by('-started')
-
-    def form_valid(self, form):
-        ts_id = form.instance.test_scenario.id
-        self.request.session['server_run_scheduled'] = form.instance.scheduled
-        return redirect(reverse('server_run:server-run_create', kwargs={
-            "test_id": ts_id
-        }))
+        return self.model.objects.filter(user=self.request.user).filter(scheduled=False).order_by('-started')
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
@@ -49,9 +41,26 @@ class TestScenarioSelect(LoginRequiredMixin, FormView, MultipleObjectMixin, Mult
         self.object_list = self.get_queryset()
         return super().get(request, *args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
-        self.object_list = self.get_queryset()
-        return super().post(request, *args, **kwargs)
+
+class ServerRunForm(CreateView):
+
+    template_name = 'servervalidation/server-run-form.html'
+    form_class = CreateServerRunForm
+
+    def form_valid(self, form):
+        ts_id = form.instance.test_scenario.id
+        self.request.session['server_run_scheduled'] = False
+        return redirect(reverse('server_run:server-run_create', kwargs={
+            "test_id": ts_id
+        }))
+
+
+class TestScenarioSelectScheduled(TestScenarioSelect):
+
+    template_name = 'servervalidation/server-run_list_scheduled.html'
+
+    def get_queryset(self):
+        return self.model.objects.filter(user=self.request.user).filter(scheduled=True).order_by('-started')
 
 
 class CreateEndpoint(LoginRequiredMixin, CreateView):

@@ -1,49 +1,77 @@
 {% load staticfiles %}
 {% load static %}
+{% load django_bootstrap_breadcrumbs %}
 {% spaceless %}
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <title>{% block title %}VNG Test-Platform{% endblock %}</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="">
-        <meta name="author" content="">
+<!DOCTYPE html>
+<html lang="en">
 
-        <link href="{{ get_media_prefix }}{% static 'css/screen.css' %}" media="screen" rel="stylesheet"/>
-        {% block extra_css %}{% endblock %}
-        <link rel="shortcut icon" href="{% static 'ico/favicon.ico' %}">
-        <script src="https://code.jquery.com/jquery-1.11.1.min.js" crossorigin="anonymous"></script>
-        <script src="{% static 'js/prettify.js' %}" ></script>
-        <script type="text/javascript" src="https://www.jqueryscript.net/demo/Lightweight-jQuery-Plugin-For-JSON-Beautifier-Viewer-jjsonviewer/js/jjsonviewer.js"></script>
-        <link href="https://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
-        <link href="https://www.jqueryscript.net/demo/Lightweight-jQuery-Plugin-For-JSON-Beautifier-Viewer-jjsonviewer/css/jjsonviewer.css" rel="stylesheet" type="text/css">
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}VNG Test-Platform{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
 
-    </head>
+    <link href="{{ get_media_prefix }}{% static 'css/screen.css' %}" media="screen" rel="stylesheet" />
+    <link href="https://coreui.io/demo/vendors/simple-line-icons/css/simple-line-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/@coreui/coreui/dist/css/coreui.min.css">
+    <link href="https://coreui.io/demo/vendors/@coreui/icons/css/coreui-icons.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
 
-    <body class="view {% block body-class %}{% endblock %}">
+</head>
 
-    <main>
-        {% include 'components/header/header.html' %}
-{#        {% include 'components/hero/hero.html' %}#}
+</head>
 
-        <div class="content">
-        {% block content %}
-            {% block breadcrumbs %}
-                as
-            {% endblock %}
-            Override <code>{% verbatim %}{% block content %}{% endverbatim %}</code>
-            to get some actual content.
-        {% endblock %}
+<body class="app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show ">
+    {% include 'components/header/header.html' %}
+    <div class="app-body">
+        <div class="sidebar">
+            {% include 'components/navigation/navigation-lateral.html' %}
+            <button class="sidebar-minimizer brand-minimizer" type="button"></button>
         </div>
-    </main>
+        <main class="main">
 
+            <!-- Include here the breadcrumbs.html -->
+            {% block breadcrumb %}
+            {% endblock %}
+            <div class="container-fluid">
+                {% block content %}
+                {% endblock%}
+            </div>
+        </main>
+        <aside class="aside-menu">
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="tab" href="#timeline" role="tab">
+                        <i class="icon-list"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#messages" role="tab">
+                        <i class="icon-speech"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#settings" role="tab">
+                        <i class="icon-settings"></i>
+                    </a>
+                </li>
+            </ul>
 
+            <div class="tab-content">
+                <div class="tab-pane p-3" id="settings" role="tabpanel">
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    </script>
     <script src="{% static 'js/vng.js' %}"></script>
-    </body>
-    <script>
     {% block script %}
     {% endblock %}
-    </script>
-    </html>
+
+</body>
+
+</html>
 {% endspaceless %}
+

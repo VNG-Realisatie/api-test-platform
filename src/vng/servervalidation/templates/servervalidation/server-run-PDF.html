@@ -8,58 +8,39 @@
 <head>
     <meta charset="utf-8">
     <title>Server Report</title>
+    <link href="https://coreui.io/demo/vendors/@coreui/icons/css/coreui-icons.min.css" rel="stylesheet">
 </head>
 
 <body>
 
-    {% include 'components/logo/logo.html' %}
+    <a class="navbar-brand" href="#">
+        <img class="navbar-brand-full" src="{% static 'ico/favicon.ico' %}"  alt="VNG Logo">
+    </a>
     <div>
         <h1>Server Report</h1>
-
-        <h2>Server details</h2>
-        <table class='table-t'>
-            <tbody>
-                <tr>
-        <td class="table__cell">Id</td>
-        <td class="table__cell">{{ object.pk }}</td>
-        </tr>
-
-        <tr>
-            <td class="table__cell">Test Scenario</td>
-            <td class="table__cell">{{ object.test_scenario }}</td>
-        </tr>
-        <tr>
-            <td class="table__cell">Started</td>
-            <td class="table__cell">{{ object.started }}</td>
-        </tr>
-        <tr>
-            <td class="table__cell">Stopped</td>
-            <td class="table__cell">{{ object.stopped }}</td>
-        </tr>
-
-        <tr>
-            <td class="table__cell">Status</td>
-            <td class="table__cell">{{ object.status }}</td>
-        </tr>
-            </tbody>
-        </table>
         <h2>Postman collection</h2>
         {% for postman in postman_result %}
             <table class='table-t'>
-            <thead>
-                <tr>
-                    <th>HTTP method</th>
-                    <th>HTTP url</th>
-                    <th></th>
-                </tr>
-            </thead>
             <tbody>
 
                 <tr>
                     <td colspan='3'></td>
                 </tr>
+            <span class="dot red">{{postman.negative_call_result}}<br> Failed</span>
+            <span class="dot green">{{postman.positive_call_result}}<br> Succes</span>
             {% for calls in postman.json %}
                 <tr>
+                    <td class="table__cell">
+                        {% if postman.get_call_results_list|index:forloop.counter0 %}
+                            <span class="squared green_back" red></span>
+                        {% else %}
+                            <span class="squared red_back" red></span>
+                        {% endif %}
+                    </td>
+
+                    <td class="table__cell">
+                        <p class="{{calls.item.request.method|lower}}">{{calls.item.request.method}}</p>
+                    </td>
                     <td class="table__cell">
                         <b>{{calls.item.name}}</b>
                     </td>
@@ -72,10 +53,21 @@
                         <p class='cell-fail cell-content-fix'></p>
                     {% endif %}
                     </td>
+                    <td class="table__cell">
+                        {% if postman.get_call_results_list|index:forloop.counter0 %}
+                            <p class='cui-check h2'></p>
+                        {% else %}
+                            <p class='cui-circle-x h2'></p>
+                        {% endif %}
+
+                    </td>
                 </tr>
                 <tr>
                     <td class="table__cell">
-                        {{calls.request.url.url}}
+
+                    </td>
+                    <td class="table__cell">
+                        {{calls.request.url.url|truncatechars:30}}
                     </td>
                     <td class="table__cell">
                         {{ calls.response.code }} {{ calls.response.status }}
@@ -90,26 +82,35 @@
                 </tr>
                 {% for assertion in calls.assertions %}
                     <tr>
-                    <td class="table__cell">
+                        <td class="table__cell">
+
+                        </td>
                         {% if forloop.counter == 1 %}
-                            <u>Tests</u>
+                            <td class="table__cell">
+                                <u>Tests</u>
+                        {% elif 'error' in assertion %}
+                            <td class="table__cell" style="text-align=right">
+                                <span class="squared red_back" red></span>
+                        {% else %}
+                            <td class="table__cell" align="text-align=right">
+                                <span class="squared green_back" red></span>
                         {% endif %}
-                    </td>
-                    {% if 'error' in assertion %}
-                        <td class="cell-fail cell-content-fix">
-                            {{assertion.assertion}}
-                        </td>
-                        <td class="table__cell">
-                            {{assertion.error.message}}
-                        </td>
-                    {% else %}
-                        <td class="table__cell">
-                            {{assertion.assertion}}
-                        </td>
-                        <td class="table__cell ">
-                            <p class='cell-success cell-content-fix'></p>
-                        </td>
-                    {% endif %}
+                            </td>
+                        {% if 'error' in assertion %}
+                            <td class="cell-fail cell-content-fix">
+                                {{assertion.assertion}}
+                            </td>
+                            <td class="table__cell">
+                                {{assertion.error.message}}
+                            </td>
+                        {% else %}
+                            <td class="table__cell">
+                                {{assertion.assertion}}
+                            </td>
+                            <td class="table__cell ">
+                                <p class='cell-success cell-content-fix'></p>
+                            </td>
+                        {% endif %}
                     </tr>
                 {% endfor %}
                 <tr>
@@ -130,6 +131,13 @@
         font-family:  Arial, Geneva, Helvetica;
 
     }
+    td{
+        padding: 5px;
+        margin: 5px;
+    }
+    tr{
+        margin-bottom: 20px;
+    }
 
     .cell-success {
         background-color: green;
@@ -137,8 +145,10 @@
     }
 
     .cell-fail {
-        background-color: red;
-        color: white
+        background-color: rgba(255, 0, 0, 0.6);
+        color: white;
+        display: inline-block;
+        border-radius: 5px;
     }
 
     .table-t {
@@ -159,7 +169,57 @@
     .cell-content {
         width: 70%
     }
+    .dot {
+        margin: 5px;
+        height: 55px;
+        width: 55px;
+        background-color: None;
+        border-radius: 50%;
+        display: inline-block;
+        vertical-align: middle;
+        text-align: center;
+    }
+    .red{
+        border: solid 5px red;
+    }
+    .green{
+        border: solid 5px green;
+    }
+    .green_back{
+        background-color: green;
+    }
+    .red_back{
+        background-color: red;
+    }
 
+    .squared {
+        height: 20px;
+        width: 20px;
+        border-radius: 30%;
+        display: inline-block;
+        vertical-align: middle;
+        text-align: center;
+    }
+    .post{
+        color: yellow;
+        font-weight: bold;
+    }
+    .get{
+        color: green;
+        font-weight: bold;
+    }
+    .put{
+        color: brown;
+        font-weight: bold;
+    }
+    .delete{
+        color: red;
+        font-weight: bold;
+    }
+    .patch{
+        color: purple;
+        font-weight: bold;
+    }
 </style>
 
 {% endwith %}

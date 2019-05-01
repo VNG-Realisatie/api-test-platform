@@ -1,0 +1,37 @@
+{% extends 'master.html' %}
+{% load sniplates %}
+
+
+{% block title %}Providers{% endblock %}
+
+
+{% block content %}
+<div id="ui-view">
+    {% if object_list %}
+    <div class="row">
+        <div class="col-sm-8 offset-sm-2">
+            <div class="card">
+                <div class="card-header">
+                    Server run list
+                </div>
+                <table class="table">
+                    {% include 'servervalidation/table/header-server-run-scheduled.html' only %}
+                    {% for server_run in object_list %}
+                        {% include 'servervalidation/table/row-server-run-scheduled.html' with server_run=server_run %}
+                    {% endfor %}
+                </table>
+                {% include 'components/pagination/pagination.html' %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+
+{% block script %}
+<script>
+    window.url = window.location.origin+"/api/v1/provider-run/"
+    window.attr_name = 'server_run_id'
+<script>
+{% endblock %}

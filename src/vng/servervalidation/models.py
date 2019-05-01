@@ -110,7 +110,7 @@ class PostmanTestResult(models.Model):
 
     def __str__(self):
         if self.status is None:
-            return '{}'.format(self.pk)
+            return '{}'.format(self.__dict__)
         else:
             return '{} - {}'.format(self.pk, self.status)
 
@@ -171,6 +171,24 @@ class PostmanTestResult(models.Model):
     def get_outcome_json(self):
         with open(self.log_json.path) as jfile:
             return postman.get_outcome_json(jfile)
+
+    def get_call_results(self):
+        positive, negative = 0, 0
+        for call in self.get_json_obj():
+            if postman.get_call_result(call):
+                positive += 1
+            else:
+                negative += 1
+        return positive, negative
+
+    def positive_call_result(self):
+        return self.get_call_results()[0]
+
+    def negative_call_result(self):
+        return self.get_call_results()[1]
+
+    def get_call_results_list(self):
+        return [postman.get_call_result(call) for call in self.get_json_obj()]
 
 
 class Endpoint(models.Model):

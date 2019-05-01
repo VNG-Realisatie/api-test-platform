@@ -417,7 +417,7 @@ class TestSandboxMode(WebTest):
         self.session_type = self.sc.vng_endpoint.session_type
 
     def test_sandbox(self):
-        call = self.app.get(reverse('testsession:sessions'), user=self.user)
+        call = self.app.get(reverse('testsession:session_create'), user=self.user)
         form = call.forms[0]
         form['session_type'].select(form['session_type'].options[-1][0])
         form['sandbox'] = True
@@ -441,7 +441,7 @@ class TestSandboxMode(WebTest):
         self.assertEqual(choices.HTTPCallChoiches.success, report.result)
 
     def test_no_sandbox(self):
-        call = self.app.get(reverse('testsession:sessions'), user=self.user)
+        call = self.app.get(reverse('testsession:session_create'), user=self.user)
         form = call.forms[0]
         form['session_type'].select(form['session_type'].options[-1][0])
         form['sandbox'] = False
@@ -513,9 +513,9 @@ class TestAllProcedure(WebTest):
         self.session_type = SessionTypeFactory()
 
     def _test_create_session(self):
-        call = self.app.get(reverse('testsession:sessions'), user=self.user)
+        call = self.app.get(reverse('testsession:session_create'), user=self.user)
         form = call.forms[0]
-        form['session_type'].select('1')
+        form['session_type'].select(str(self.session_type.id))
         form.submit()
 
         call = self.app.get(reverse('testsession:sessions'), user=self.user)
@@ -705,7 +705,7 @@ class TestRewriteUrl(WebTest):
             'relative_url': ''
         }
         url = rt.build_url(self.eu, '')
-        self.assertEqual(url, self.endpoint.url+'/')
+        self.assertEqual(url, self.endpoint.url + '/')
 
     def test_url_sub(self):
         rt = RunTest()

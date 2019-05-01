@@ -17,15 +17,21 @@
     "license": "UNLICENSED",
     "homepage": "https://maykinmedia.nl",
     "dependencies": {
+        "@coreui/coreui": "^2.1.9",
         "bem.js": "^1.0.10",
+        "bootstrap": "^4.3.1",
         "bourbon-neat": "^1.8.0",
         "clipboard": "^2.0.4",
         "font-awesome": "^4.6.3",
+        "jquery": "^3.4.0",
         "jshint-stylish": "^2.2.1",
+        "json-formatter-js": "^2.2.1",
         "material-design-icons": "2.2.3",
         "newman": "^4.2.2",
         "newman-reporter-html": "^1.0.2",
-        "normalize.css": "^4.0.0"
+        "normalize.css": "^4.0.0",
+        "perfect-scrollbar": "^1.4.0",
+        "popper.js": "^1.15.0"
     },
     "devDependencies": {
         "babel-core": "^6.14.0",

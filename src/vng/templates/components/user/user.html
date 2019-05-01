@@ -1,15 +1,28 @@
-<div class="user">
-    {% if user.is_authenticated %}
-    <p class="user__name">
-        {{ request.user.username }}
-    </p>
-    {% else %}
-        <a class="user__login" href="{% url 'auth_login' %}">Login</a>
-        <br />
-        <a class="user__logout" href="{% url 'registration_register' %}">Registreer</a>
-    {% endif %}
-
-    {% if user.is_authenticated %}
-        <div class="user__dropdown">&nbsp;&nbsp;<a class="user__logout" href="{% url 'auth_logout' %}">Logout</a></div>
-    {% endif %}
-</div>
+<li class="nav-item dropdown">
+    <a class="nav-link nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
+        aria-expanded="false">
+        {% if user.is_authenticated %}
+            <i class="cui-user h2"></i>
+        {% else %}
+            <i class="cui-share h2"></i>
+        {% endif %}
+    </a>
+    <div class="dropdown-menu dropdown-menu-right">
+        <div class="dropdown-header text-center">
+            {% if user.is_authenticated %}
+            <strong>{{ request.user.username }}</strong>
+            {% else %}
+            <strong>Account</strong>
+            {% endif %}
+        </div>
+        {% if user.is_authenticated %}
+        <a class="dropdown-item" href="{% url 'auth_logout' %}">
+            <i class="cui-account-logout "></i>Logout</a>
+        {% else %}
+        <a class="dropdown-item" href="{% url 'auth_login' %}">
+            <i class="cui-arrow-right"></i>Login</a>
+        <a class="dropdown-item" href="{% url 'registration_register' %}">
+            <i class="cui-user-follow "></i>Registreer</a>
+        {% endif %}
+    </div>
+</li>

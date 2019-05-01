@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 class CreateServerRunForm(forms.ModelForm):
     class Meta:
         model = ServerRun
-        fields = ['test_scenario', 'scheduled']
+        fields = ['test_scenario']
 
     def clean(self):
         """

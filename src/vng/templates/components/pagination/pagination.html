@@ -1,32 +1,41 @@
 {% load i18n %}
 {% spaceless %}
     {% if is_paginated %}
-        <nav class="pagination" role="doc-pagelist">
-            <ol class="pagination__list">
+        <nav aria-label="...">
+            <ul class="pagination">
                 {% if page_obj.has_previous %}
-                    <li class="pagination__list-item">
-                        <a class="pagination__link" href="?page={{ page_obj.previous_page_number }}">{{ _('Previous') }}</a>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">{{ _('Previous') }}</a>
                     </li>
                 {% else %}
-                    <li class="pagination__list-item pagination__list-item--disabled">{{ _('Previous') }}</li>
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">{{ _('Previous') }}</a>
+                    </li>
                 {% endif %}
 
                 {% for i in paginator.page_range %}
                     {% if page_obj.number == i %}
-                        <li class="pagination__list-item pagination__list-item--active">{{ i }}</li>
+                        <li class="page-item active">
+                            <span class="page-link">
+                                {{ i }}
+                                <span class="sr-only">(current)</span>
+                            </span>
+                        </li>
                     {% else %}
-                        <li class="pagination__list-item"><a class="pagination__link" href="?page={{ i }}">{{ i }}</a>
+                        <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
                         </li>
                     {% endif %}
                 {% endfor %}
 
                 {% if page_obj.has_next %}
-                    <li class="pagination__list-item">
-                        <a class="pagination__link" href="?page={{ page_obj.next_page_number }}">{{ _('Next') }}</a>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">{{ _('Next') }}</a>
                     </li>
                 {% else %}
 
-                    <li class="pagination__list-item pagination__list-item--disabled">{{ _('Next') }}</li>
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">{{ _('Next') }}</a>
+                    </li>
                 {% endif %}
             </ol>
         </nav>

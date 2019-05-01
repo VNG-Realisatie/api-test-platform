@@ -5,24 +5,34 @@
 {% block title %}{% trans "Register for an account" %}{% endblock %}
 
 {% block content %}
-<article class="article">
-    <div class="article__section">
-        <h1>Registratieformulier</h1>
-        <form method="post" action="" class="form">
-            {% csrf_token %}
-            {% load_widgets form='forms.html' %}
-            {% for field in form %}
-                {% if field.name == 'captcha' %}
-                    <div class="form__control" role="group">
-                            {{field}}
+<div id="ui-view">
+    <div class="row">
+        <div class="col-sm-6 offset-sm-3">
+            <form class="" method="post">{% csrf_token %}
+                <div class="card">
+                    <div class="card-header">
+                        Registratieformulier
                     </div>
-                {% else %}
-                {% form_field field %}
-                {% endif %}
-            {% endfor %}
-
-            <input type="submit" value="{% trans 'Submit' %}" class="button button--primary"/>
-        </form>
+                    <div class="card-body">
+                        {% load_widgets form='forms.html' %}
+                        {% for field in form %}
+                            {% if field.name == 'captcha' %}
+                                <div class="form__control" role="group">
+                                        {{field}}
+                                </div>
+                            {% else %}
+                            {% form_field field %}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <div class="card-footer">
+                        <input type="submit" value="{% trans 'Submit' %}" class="btn btn-sm btn-primary"/>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 

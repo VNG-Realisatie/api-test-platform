@@ -1,0 +1,57 @@
+{% spaceless %}
+<nav class="sidebar-nav">
+    <ul class="nav">
+        {% if user.is_authenticated %}
+        <li class="nav-title">Components</li>
+        <li class="nav-item nav-dropdown">
+            <a class="nav-link nav-dropdown-toggle" href="{% url 'testsession:sessions' %}">
+                <i class="nav-icon icon-puzzle"></i>Test Consumer</a>
+            <ul class="nav-dropdown-items">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'testsession:sessions' %}">
+                        <i class="nav-icon icon-puzzle"></i>
+                        Sessies</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'testsession:session_create' %}">
+                        <i class="nav-icon icon-puzzle"></i>
+                        Start sessie</a>
+                </li>
+            </ul>
+        </li>
+
+        <li class="nav-item nav-dropdown">
+            <a class="nav-link nav-dropdown-toggle" href="{% url 'testsession:sessions' %}">
+                <i class="nav-icon icon-puzzle"></i>Test provider</a>
+            <ul class="nav-dropdown-items">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'server_run:server-run_list' %}">
+                        <i class="nav-icon icon-puzzle"></i>
+                        Tests</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'server_run:server-run_list_scheduled' %}">
+                        <i class="nav-icon icon-puzzle"></i>
+                        Scheduled</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'server_run:server-run_create_item' %}">
+                        <i class="nav-icon icon-puzzle"></i>
+                        Create</a>
+                </li>
+            </ul>
+        </li>
+        {% endif %}
+        <li class="nav-item ">
+            <a class="nav-link" href="{% url 'open_api_inspector:openapi-inspection' %}">
+                <i class="nav-icon icon-puzzle"></i>OpenAPI Inspection</a>
+        </li>
+        {% if user.is_authenticated %}
+        <li class="nav-item ">
+            <a class="nav-link" href="{% url 'admin:index' %}">
+                <i class="nav-icon icon-puzzle"></i>Admin</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endspaceless %}

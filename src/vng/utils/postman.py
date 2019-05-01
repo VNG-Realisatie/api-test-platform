@@ -3,6 +3,7 @@ from .choices import ResultChoices
 
 error_codes = range(400, 600)
 
+
 def get_error_codes():
     return error_codes
 
@@ -28,7 +29,8 @@ def get_json_obj_file(filename):
 
 
 def get_call_result(call):
-    return str(call['response']['code']) not in error_codes
+    return str(call['response']['code']) not in error_codes \
+        and 'error_test' not in call['item']
 
 
 def get_json_obj(content, file=False):

@@ -1,26 +1,32 @@
-{% with red="bgcolor='#FF0000' style='color:#ffffff' " %}
-    {% with green="bgcolor='#1d8719' style='color:#ffffff'" %}
-
+{% load subdomainurls %}
 {% spaceless %}
-<tr>
-    <td class="table__cell" >{{ report.scenario_case.http_method }}</td>
-    <td class="table__cell" >{{ report.scenario_case.url }}</td>
-    <td class="table__cell" >
-        {% for qps in report.scenario_case.queryparamsscenario_set.all %}
-            {{qps.name}}: {{qps.expected_value}}
-        {% endfor %}
-    </td>
-    {% if report.is_success %}
-        <td class="table__cell" {{ green }}>{{ report.result }}</td>
-    {% elif report.is_failed %}
-        <td class="table__cell" {{ red }} >{{ report.result }}</td>
-    {% else %}
-        <td class="table__cell">{{ report.result }}</td>
-    {% endif %}
-    <td class="table__cell" >{{ report.session_log.response_status }}</td>
-</tr>
+{% if report.is_success %}
+    <tr class='table-success'>
+{% elif report.is_failed %}
+    <tr class='table-danger'>
+{% else %}
+    <tr>
+{% endif %}
+        <td>{{ report.scenario_case.http_method }}</td>
+        <td>{{ report.scenario_case.url }}</td>
+        <td>
+            {% for qps in report.scenario_case.queryparamsscenario_set.all %}
+                {{qps.name}}: {{qps.expected_value}}
+                <ul class="list-group">
+                    {% for endpoint in session.exposedurl_set.all %}
+                        {% if endpoint.subdomain %}
+                            <li class="list-group-item">
+                                <a href="{% url_sub 'serverproxy:run_test' endpoint.subdomain endpoint.vng_endpoint.path|slice:"1:" %}">
+                                    {{endpoint.vng_endpoint.name}}
+                                </a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>       {% endfor %}
+        </td>
+        <td>{{ report.result }}</td>
+        <td>{{ report.session_log.response_status }}</td>
+    </tr>
 {% endspaceless %}
 
 
-    {% endwith %}
-{% endwith %}

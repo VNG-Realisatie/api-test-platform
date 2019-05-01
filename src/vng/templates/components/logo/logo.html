@@ -1,7 +1,16 @@
 {% load i18n static %}
 {% spaceless %}
-    <a href="{% url 'testsession:sessions' %}" class="logo" role="banner">
-        {% static 'img/components/logo/logo.svg' as src %}
-        {% include 'components/image/image.html' with src=src alt=_('VNG Realisatie') only %}
+    <button class="navbar-toggler sidebar-toggler d-lg-none mr-auto"
+            type="button" data-toggle="sidebar-show">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand" href="#">
+        <img class="navbar-brand-full" src="{% static 'ico/favicon.ico' %}"  alt="VNG Logo">
+        <img class="navbar-brand-minimized" src="{% static 'ico/favicon.ico' %}"
+            width="30" height="30" alt="VNG Logo">
     </a>
+    <button class="navbar-toggler sidebar-toggler d-md-down-none"
+        type="button" data-toggle="sidebar-lg-show">
+        <span class="navbar-toggler-icon"></span>
+    </button>
 {% endspaceless %}

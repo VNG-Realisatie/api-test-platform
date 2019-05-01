@@ -4,221 +4,240 @@
 
 {% block title %}Test consumer - Detailweergave test-sessie{% endblock%}
 
+{% block breadcrumb %}
+{% breadcrumb "Home" "testsession:sessions" %}
+{% breadcrumb "test consumer" "" %}
+{% render_breadcrumbs 'components/breadcrumbs/breadcrumbs.html' %}
+{% endblock %}
+
 {% block content %}
+<div id="ui-view">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card-deck">
+                <div class="card">
+                    <div class="card-header">
+                        Gestart op: {{ session.started|date }}
+                    </div>
+                    <div class="card-body">
+                        <h4 class="card-title">Test consumer {{session}}</h4>
 
-
-
-
-
-<article class="article">
-    <div class="article__section">
-
-        {% breadcrumb "Home" "testsession:sessions" %}
-        {% breadcrumb "test consumer" "" %}
-        {% render_breadcrumbs 'components/breadcrumbs/breadcrumbs.html' %}
-
-        <h2>Test consumer - {{ session }}</h2>
-
-        <h3>Gestart op: {{ session.started|date }}</h3>
-        <h3>Endpoints</h3>
-        <table class="table">
-            <tr>
-                <th class="table__heading">Naam</th>
-                <th class="table__heading">Url</th>
-            </tr>
-            {% for endpoint in session.exposedurl_set.all %}
-                {% if endpoint.subdomain %}
-                <tr>
-                    <td class="table__cell">{{endpoint.vng_endpoint.name }}</td>
-                    <td class="table__cell">
-                        <a href="{% url_sub 'serverproxy:run_test' endpoint.subdomain '' %}">
-                            {% url_sub 'serverproxy:run_test' endpoint.subdomain '' %}
-                        </a>
-                    </td>
-                <tr>
-                {% endif %}
-            {% endfor %}
-        </table>
-        <input type="button" class="button button--primary" value="Rapport" onclick="location.href = '{% url 'testsession:session_report' session.id %}';">
-        <input type="button" class="button button--primary" value="Rapport (PDF)" onclick="location.href = '{% url 'testsession:session_report-pdf' session.id %}';">
-
-        {% if session.is_stopped %}
-            {% for postman in session.exposedurl_set.all %}
-                {% if postman.test_session.get_json_obj %}
-                    <h3>Postman Collection</h3>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th class="table__heading">Tijd</th>
-                                <th class="table__heading">Name</th>
-                                <th class="table__heading">Resultaat</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                {% endif %}
-                        {% for calls in postman.test_session.get_json_obj %}
-                            <tr>
-                                {% if calls.response.code >= 200 and calls.response.code < 400 and not calls.item.error_test %}
-                                    <td class="table__cell">
+                        {% if session.is_stopped %}
+                        {% for postman in session.exposedurl_set.all %}
+                        {% if postman.test_session.get_json_obj %}
+                        <!-- TODO: finish for the postman -->
+                        <h3>Postman Collection</h3>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Tijd</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Resultaat</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% endif %}
+                                {% for calls in postman.test_session.get_json_obj %}
+                                <tr>
+                                    {% if calls.response.code >= 200 and calls.response.code < 400 and not calls.item.error_test %}
+                                    <td>
                                         <b>{{calls.item.name}}</b>
                                     </td>
-                                    <td class="table__cell">
+                                    <td>
                                     </td>
-                                    <td class="table__cell">
-                                        <p class='icon icon--checkmark'></p>
+                                    <td>
+                                        <p class='cui-check h2'></p>
                                     </td>
-                                {% else %}
-                                    <td class="table__cell">
+                                    {% else %}
+                                    <td>
                                         <b>{{calls.item.name}}</b>
                                     </td>
-                                    <td class="table__cell">
+                                    <td>
                                     </td>
-                                    <td class="table__cell">
-                                        <p class='icon icon--cross'></p>
+                                    <td>
+                                        <p class='cui-circle h2'></p>
                                     </td>
-                                {% endif %}
-                            </tr>
-                            <tr>
-                                <td class="table__cell">
-                                    {{calls.request.url.url}}
-                                </td>
-                                <td class="table__cell">
-                                    {{ calls.response.code }} {{ calls.response.status }}
-                                </td>
-                                <td class="table__cell">
-                                {% if calls.response.code >= 200 and calls.response.code < 400  %}
-                                    <p class='icon icon--checkmark'></p>
-                                {% else %}
-                                    <p class='icon icon--cross'></p>
-                                {% endif %}
-                                </td>
-                            </tr>
-                            {% for assertion in calls.assertions %}
-                            <tr>
-                                <td class="table__cell">
-                                    {% if forloop.counter == 1 %}
-                                        <u>Tests</u>
                                     {% endif %}
-                                </td>
-                                {% if 'error' in assertion %}
+                                </tr>
+                                <tr>
+                                    <td>
+                                        {{calls.request.url.url}}
+                                    </td>
+                                    <td>
+                                        {{ calls.response.code }} {{ calls.response.status }}
+                                    </td>
+                                    <td>
+                                        {% if calls.response.code >= 200 and calls.response.code < 400  %}
+                                        <p class='cui-check h2'></p>
+                                        {% else %}
+                                        <p class='cui-circle-x h2'></p>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% for assertion in calls.assertions %}
+                                <tr>
+                                    <td>
+                                        {% if forloop.counter == 1 %}
+                                        <u>Tests</u>
+                                        {% endif %}
+                                    </td>
+                                    {% if 'error' in assertion %}
                                     <td class="table__cell table__cell--error">
                                         {{assertion.assertion}}
                                     </td>
-                                    <td class="table__cell">
+                                    <td>
                                         {{assertion.error.message}}
                                     </td>
-                                {% else %}
-                                    <td class="table__cell">
+                                    {% else %}
+                                    <td>
                                         {{assertion.assertion}}
                                     </td>
                                     <td class="table__cell ">
                                         <p class='icon icon--checkmark'></p>
                                     </td>
-                                {% endif %}
-                            </tr>
-                            {% endfor %}
-                        {% endfor %}
-                    </tbody>
-                </table>
-
-                {% if postman.get_json_obj_info.run.failures %}
-                <h4>Failures</h4>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th class="table__heading">Name</th>
-                            <th class="table__heading">Error</th>
-                            <th class="table__heading">Test</th>
-                            <th class="table__heading">Message</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for failure in postman.get_json_obj_info.run.failures %}
-                            <tr>
-                                <td class="table__cell">{{ failure.source.name }}</td>
-                                <td class="table__cell">{{ failure.error.name }}</td>
-                                <td class="table__cell">{{ failure.error.test }}</td>
-                                <td class="table__cell">{{ failure.error.message }}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                {% endif %}
-                {% if postman.get_json_obj %}
-                <h4>Assertions</h4>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th class="table__heading">Name</th>
-                            <th class="table__heading">Request</th>
-                            <th class="table__heading">Assertion</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                {% endif %}
-                        {% for exec in postman.get_json_obj %}
-                            {% if 'assertions' in exec %}
-                                {% for assertion in exec.assertions %}
-                                    {% if 'error' not in assertion %}
-                                        <tr>
-                                            <td class="table__cell">{{ exec.item.name }}</td>
-                                            <td class="table__cell">{{ exec.request.url.url  }}</td>
-                                            <td class="table__cell">{{ assertion.assertion }}</td>
-                                        </tr>
                                     {% endif %}
+                                </tr>
                                 {% endfor %}
-                            {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                        {% if postman.get_json_obj_info.run.failures %}
+                        <h4>Failures</h4>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Error</th>
+                                    <th>Test</th>
+                                    <th>Message</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for failure in postman.get_json_obj_info.run.failures %}
+                                <tr>
+                                    <td>{{ failure.source.name }}</td>
+                                    <td>{{ failure.error.name }}</td>
+                                    <td>{{ failure.error.test }}</td>
+                                    <td>{{ failure.error.message }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% endif %}
+                        {% if postman.get_json_obj %}
+                        <h4>Assertions</h4>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Request</th>
+                                    <th>Assertion</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% endif %}
+                                {% for exec in postman.get_json_obj %}
+                                {% if 'assertions' in exec %}
+                                {% for assertion in exec.assertions %}
+                                {% if 'error' not in assertion %}
+                                <tr>
+                                    <td>{{ exec.item.name }}</td>
+                                    <td>{{ exec.request.url.url  }}</td>
+                                    <td>{{ assertion.assertion }}</td>
+                                </tr>
+                                {% endif %}
+                                {% endfor %}
+                                {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
                         {% endfor %}
-                    </tbody>
-                </table>
-            {% endfor %}
-        {% endif %}
+                        {% endif %}
 
-        {% if log_list %}
-
-
-        <table class="table">
-            {% include 'testsession/table/header-session-log.html' only %}
-            {% for log in log_list %}
-            {% include 'testsession/table/row-session-log.html' with log=log session=session only %}
-            {% endfor %}
-        </table>
-        {% else %}
-        <p>
-            Er zijn geen verzoeken binnengekomen.
-            Volg deze links om de API te gebruiken:
-        </p>
-        {% endif %}
+                        {% if log_list %}
+                        <table class="table">
+                            {% include 'testsession/table/header-session-log.html' only %}
+                            {% for log in log_list %}
+                            {% include 'testsession/table/row-session-log.html' with log=log session=session only %}
+                            {% endfor %}
+                        </table>
+                        {% else %}
+                        <p>
+                            Er zijn geen verzoeken binnengekomen.
+                            Volg deze links om de API te gebruiken:
+                        </p>
+                        {% endif %}
 
 
-    </div>
+                    </div>
 
-    {% if is_paginated %}
-    <nav aria-label="Page navigation example">
-        <ul class="pagination">
+                    {% if is_paginated %}
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination">
 
-            {% if page_obj.has_previous %}
-            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
-            {% else %}
-            <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
-            {% endif %}
+                            {% if page_obj.has_previous %}
+                            <li class="page-item"><a class="page-link"
+                                    href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+                            {% else %}
+                            <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+                            {% endif %}
 
-            {% for i in paginator.page_range %}
-            {% if page_obj.number == i %}
-            <li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
-            {% else %}
-            <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
-            {% endif %}
-            {% endfor %}
+                            {% for i in paginator.page_range %}
+                            {% if page_obj.number == i %}
+                            <li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
+                            {% else %}
+                            <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                            {% endif %}
+                            {% endfor %}
 
-            {% if page_obj.has_next %}
-            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
-            {% else %}
+                            {% if page_obj.has_next %}
+                            <li class="page-item"><a class="page-link"
+                                    href="?page={{ page_obj.next_page_number }}">Next</a>
+                            </li>
+                            {% else %}
 
-            <li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
-            {% endif %}
-        </ul>
-    </nav>
-    {% endif %}
-</article>
-{% endblock %}
+                            <li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        Endpoints
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-5">
+                                <ul class="list-group">
+                                    {% for endpoint in session.exposedurl_set.all %}
+                                    {% if endpoint.subdomain %}
+                                    <li class="list-group-item">
+                                        {{endpoint.vng_endpoint.name }} -
+                                        <a
+                                            href="{% url_sub 'serverproxy:run_test' endpoint.subdomain endpoint.vng_endpoint.path|slice:"1:" %}">
+                                            {{endpoint.vng_endpoint.name}}
+                                        </a>
+                                    </li>
+                                    {% endif %}
+                                    {% endfor %}
+                                </ul>
+                            </div>
+
+                            <div class="col-sm-2">
+                                <input type="button" class="btn btn-primary" value="Rapport"
+                                    onclick="location.href = '{% url 'testsession:session_report' session.id %}';">
+                            </div>
+                            <div class="col-sm-2">
+                                <input type="button" class="btn btn-primary" value="Rapport (PDF)"
+                                    onclick="location.href = '{% url 'testsession:session_report-pdf' session.id %}';">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% endblock %}

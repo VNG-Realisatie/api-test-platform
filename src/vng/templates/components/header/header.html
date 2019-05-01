@@ -1,9 +1,11 @@
 {% spaceless %}
-    <header class="header" role="heading">
-        <div class="header__body">
-            {% include 'components/logo/logo.html' %}
-            {% include 'components/navigation/navigation.html' %}
+    <header class="app-header navbar">
+        {% include 'components/logo/logo.html' %}
+        {% include 'components/navigation/navigation.html' %}
+
+        <ul class="nav navbar-nav ml-auto">
             {% include 'components/user/user.html' %}
-        </div>
+        </ul>
     </header>
 {% endspaceless %}
+

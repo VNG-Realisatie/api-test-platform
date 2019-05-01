@@ -3,140 +3,256 @@
 
 {% block title %}Server-run detail{% endblock%}
 
+{% block breadcrumb %}
+{% breadcrumb "Home" 'server_run:server-run_list' %}
+{% breadcrumb 'Detail' 'testsession:sessions' %}
+{% render_breadcrumbs 'components/breadcrumbs/breadcrumbs.html' %}
+{% endblock  %}
 
 {% block content %}
+<div id="ui-view">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    View the detail of a provider test
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th scope="col">Property</th>
+                                <th scope="col">Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% include 'servervalidation/table/table-server-run.html' with server_run=object postman_result=postman_result request=request only %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% if object.scheduled %}
+    <div class="card-deck">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Git snippet</h5>
+                  <?prettify lang=html linenums=true?>
+                <pre class="prettyprint" id='gitSnippet'>
+                    <xmp>
 
-<article class="article">
-    <div class="article__section">
-        {% breadcrumb "Home" 'server_run:server-run_list' %}
-        {% breadcrumb 'Detail' 'testsession:sessions' %}
-        {% render_breadcrumbs 'components/breadcrumbs/breadcrumbs.html' %}
-        <h1>View the detail of a provider test</h1>
-
-
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">Property</th>
-                    <th scope="col">Value</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% include 'servervalidation/table/table-server-run.html' with server_run=object postman_result=postman_result request=request only %}
-            </tbody>
-        </table>
-
-
-
-        {% for postman in postman_result %}
-            <h3>Postman Collection
-            <a href="{% url 'server_run:postman_download' postman.postman_test.pk %}">#{{ forloop.counter }}</a>
-            </h3>
-
-            <table class="table">
-                <tbody>
-                    {% for calls in postman.get_json_obj %}
-                        <tr>
-                            <td class="table__cell">
-                                <b>{{calls.item.name}}</b>
-                            </td>
-                            <td class="table__cell">
-                            </td>
-                            <td class="table__cell">
-                            {% if calls.response.code >= 200 and calls.response.code < 400 and not calls.item.error_test %}
-                                <p class='icon icon--checkmark'></p>
-                            {% else %}
-                                <p class='icon icon--cross'></p>
-                            {% endif %}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="table__cell">
-                                {{calls.request.url.url}}
-                            </td>
-                            <td class="table__cell">
-                                {{ calls.response.code }} {{ calls.response.status }}
-                            </td>
-                            <td class="table__cell">
-                            {% if calls.response.code >= 200 and calls.response.code < 400  %}
-                                <p class='icon icon--checkmark'></p>
-                            {% else %}
-                                <p class='icon icon--cross'></p>
-                            {% endif %}
-                            </td>
-                        </tr>
-                        {% for assertion in calls.assertions %}
-                        <tr>
-                            <td class="table__cell">
-                                {% if forloop.counter == 1 %}
-                                    <u>Tests</u>
+                    </xmp>
+                </pre>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Html snippet</h5>
+                <?prettify lang=html linenums=true?>
+            <pre class="prettyprint" id='htmlSnippet'>
+                <xmp>
+                </xmp>
+            </pre>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% for postman in postman_result %}
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    Postman collection <a
+                        href="{% url 'server_run:postman_download' postman.postman_test.pk %}">#{{ forloop.counter }}</a>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <tbody>
+                            {% for calls in postman.get_json_obj %}
+                            <tr class="table-active">
+                                {% if calls.response.code >= 200 and calls.response.code < 400 and not calls.item.error_test %}
+                                <td>
+                                    <b>{{calls.item.name}}</b>
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                    <p class='cui-check h2'></p>
+                                </td>
+                                {% else %}
+                                <td>
+                                    <b>{{calls.item.name}}</b>
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                    <p class='cui-circle-x h2'></p>
+                                </td>
                                 {% endif %}
-                            </td>
+                            </tr>
+                            <tr >
+                                <td>
+                                    {{calls.request.url.url}}
+                                </td>
+                                <td>
+                                    {{ calls.response.code }} {{ calls.response.status }}
+                                </td>
+                                {% if calls.response.code >= 200 and calls.response.code < 400  %}
+                                <td class="table-success">
+                                    <p class='cui-check h2'></p>
+                                </td>
+                                {% else %}
+                                <td class="table-danger">
+                                    <p class='cui-circle h2'></p>
+                                </td>
+                                {% endif %}
+                            </tr>
+                            {% for assertion in calls.assertions %}
                             {% if 'error' in assertion %}
-                                <td class="table__cell table__cell--error">
+                            <tr class="table-danger">
+                                {% else %}
+                            <tr>
+                                {% endif %}
+                                <td>
+                                    {% if forloop.counter == 1 %}
+                                    <u>Tests</u>
+                                    {% endif %}
+                                </td>
+                                {% if 'error' in assertion %}
+                                <td>
                                     {{assertion.assertion}}
                                 </td>
-                                <td class="table__cell">
+                                <td class="table-danger">
                                     {{assertion.error.message}}
                                 </td>
-                            {% else %}
-                                <td class="table__cell">
+                                {% else %}
+                                <td>
                                     {{assertion.assertion}}
                                 </td>
-                                <td class="table__cell ">
-                                    <p class='icon icon--checkmark'></p>
+                                <td class="table-success">
+                                    <p class='cui-check h2'></p>
                                 </td>
-                            {% endif %}
-                        </tr>
-                        {% endfor %}
-                    {% endfor %}
-                </tbody>
-            </table>
-
-            {% if postman.get_json_obj_info.run.failures %}
-            <h4>Failures</h4>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th class="table__heading">Name</th>
-                        <th class="table__heading">Error</th>
-                        <th class="table__heading">Test</th>
-                        <th class="table__heading">Message</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for failure in postman.get_json_obj_info.run.failures %}
-                        <tr>
-                            <td class="table__cell">{{ failure.source.name }}</td>
-                            <td class="table__cell">{{ failure.error.name }}</td>
-                            <td class="table__cell">{{ failure.error.test }}</td>
-                            <td class="table__cell">{{ failure.error.message }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            {% endif %}
-
-            <h4>Assertions</h4>
-            <table class="table">
-                <tbody>
-                    {% for exec in postman.get_json_obj%}
-                        {% if 'assertions' in exec %}
-                            {% for assertion in exec.assertions %}
-                                {% if 'error' not in assertion %}
-                                    <tr>
-                                        <td class="table__cell">{{ exec.item.name }}</td>
-                                        <td class="table__cell">{{ exec.request.url.url  }}</td>
-                                        <td class="table__cell">{{ assertion.assertion }}</td>
-                                    </tr>
                                 {% endif %}
+                            </tr>
                             {% endfor %}
-                        {% endif %}
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% endfor %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
-</article>
+    {% if postman.get_json_obj_info.run.failures %}
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    Failure
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Error</th>
+                                <th>Test</th>
+                                <th>Message</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for failure in postman.get_json_obj_info.run.failures %}
+                            <tr>
+                                <td>{{ failure.source.name }}</td>
+                                <td>{{ failure.error.name }}</td>
+                                <td>{{ failure.error.test }}</td>
+                                <td>{{ failure.error.message }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    Assertions
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Name call</th>
+                                <th>Name assertion</th>
+                                <th>Assertion</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for exec in postman.get_json_obj%}
+                            {% if 'assertions' in exec %}
+                            {% for assertion in exec.assertions %}
+                            {% if 'error' not in assertion %}
+                            <tr>
+                                <td>{{ exec.item.name }}</td>
+                                <td>{{ exec.request.url.url  }}</td>
+                                <td>{{ assertion.assertion }}</td>
+                            </tr>
+                            {% endif %}
+                            {% endfor %}
+                            {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
 
+
+{% block script %}
+    <script>
+    var gitSnippet = '[![Status badge]\n'
+            + '(https://img.shields.io/endpoint.svg?style=for-the-badge&amp;\n'
+            + 'url={{request.scheme}}://{{request.get_host}}{% url "apiv1server:provider:api_server-run-shield-detail" object.id %})]\n'
+            + '({{request.scheme}}://{{request.get_host}}{% url 'server_run:server-run_detail_uuid' object.uuid %})\n'
+
+    var htmlSnippet = '<span display="block" height="20px" class="common__BadgeWrapper-sc-16zh6vt-3 fagfmg">\n'
+            + '<a href="{{request.scheme}}://{{request.get_host}}{% url 'server_run:server-run_detail_uuid' object.uuid %}">\n'
+            + '<img style="width:100%" alt="" src="https://img.shields.io/endpoint.svg?style=for-the-badge&amp;\n '
+            + 'url={{request.scheme}}://{{request.get_host}}{% url "apiv1server:provider:api_server-run-shield-detail" object.id %}"></span></a>'
+
+    function htmlEscape(s) {
+        s = s.replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+        return s
+    }
+
+    function htmlReplace(s){
+        s=s.replace(
+        /&lt;script src[\s\S]*?&gt;&lt;\/script&gt;|&lt;!--\?[\s\S]*?--&gt;|&lt;pre\b[\s\S]*?&lt;\/pre&gt;/g,
+        '<span class="operative">$&<\/span>');
+        return s;
+    }
+
+    // this page's own source code
+    gitSnippet = htmlEscape(gitSnippet);
+    gitSnippet = htmlReplace(gitSnippet);
+
+
+    htmlSnippet = htmlEscape(htmlSnippet);
+    htmlSnippet = htmlReplace(htmlSnippet);
+
+
+    // insert into PRE
+    document.getElementById("gitSnippet").innerHTML = gitSnippet;
+    document.getElementById("htmlSnippet").innerHTML = htmlSnippet;
+  </script>
 {% endblock %}

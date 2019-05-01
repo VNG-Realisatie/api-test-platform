@@ -20,6 +20,7 @@
             <table class='table-t'>
             <thead>
                 <tr>
+                    <th></th>
                     <th>HTTP method</th>
                     <th>HTTP url</th>
                     <th></th>
@@ -40,6 +41,10 @@
                         {% else %}
                             <span class="squared red_back" red></span>
                         {% endif %}
+                    </td>
+
+                    <td class="table__cell">
+                        <p class="{{calls.item.request.method|lower}}">{{calls.item.request.method}}</p>
                     </td>
                     <td class="table__cell">
                         <b>{{calls.item.name}}</b>
@@ -177,8 +182,26 @@
         vertical-align: middle;
         text-align: center;
     }
-
-
+    .post{
+        color: yellow;
+        font-weight: bold;
+    }
+    .get{
+        color: green;
+        font-weight: bold;
+    }
+    .put{
+        color: brown;
+        font-weight: bold;
+    }
+    .delete{
+        color: red;
+        font-weight: bold;
+    }
+    .patch{
+        color: purple;
+        font-weight: bold;
+    }
 </style>
 
 {% endwith %}

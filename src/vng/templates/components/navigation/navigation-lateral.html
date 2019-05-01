@@ -1,6 +1,7 @@
 {% spaceless %}
 <nav class="sidebar-nav">
     <ul class="nav">
+        {% if user.is_authenticated %}
         <li class="nav-title">Components</li>
         <li class="nav-item nav-dropdown">
             <a class="nav-link nav-dropdown-toggle" href="{% url 'testsession:sessions' %}">
@@ -40,6 +41,17 @@
                 </li>
             </ul>
         </li>
+        {% endif %}
+        <li class="nav-item ">
+            <a class="nav-link" href="{% url 'open_api_inspector:openapi-inspection' %}">
+                <i class="nav-icon icon-puzzle"></i>OpenAPI Inspection</a>
+        </li>
+        {% if user.is_authenticated %}
+        <li class="nav-item ">
+            <a class="nav-link" href="{% url 'admin:index' %}">
+                <i class="nav-icon icon-puzzle"></i>Admin</a>
+        </li>
+        {% endif %}
     </ul>
 </nav>
 {% endspaceless %}

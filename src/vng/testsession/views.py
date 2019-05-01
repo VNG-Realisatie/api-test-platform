@@ -4,6 +4,8 @@ import logging
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, HttpResponseRedirect
+from django.views.generic.edit import CreateView
+from django.views.generic.list import ListView
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
@@ -24,13 +26,12 @@ from ..utils.views import (
 logger = logging.getLogger(__name__)
 
 
-class SessionListView(LoginRequiredMixin, ListAppendView):
+class SessionListView(LoginRequiredMixin, ListView):
 
     template_name = 'testsession/sessions-list.html'
     context_object_name = 'sessions_list'
     paginate_by = 10
     model = Session
-    fields = ['session_type', 'sandbox']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -44,6 +45,13 @@ class SessionListView(LoginRequiredMixin, ListAppendView):
         Group all the exposed url by the session in order to display later all related url together
         '''
         return Session.objects.filter(user=self.request.user).order_by('-started')
+
+
+class SessionForm(CreateView):
+
+    model = Session
+    template_name = 'testsession/session-form.html'
+    fields = ['session_type', 'sandbox']
 
     def get_success_url(self):
         return reverse('testsession:sessions')

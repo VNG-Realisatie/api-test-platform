@@ -28,14 +28,14 @@ class SessionCreation(WebTest):
         SessionTypeFactory()
 
     def test(self):
-        call = self.app.get('/', user='admin')
+        call = self.app.get(reverse('testsession:session_create'), user='admin')
         self.app.reset()
         form = call.forms[0]
         form['session_type'].force_value(value='1')
         response = form.submit(expect_errors=True)
 
     def test2(self):
-        call = self.app.get('/', user='admin')
+        call = self.app.get(reverse('testsession:session_create'), user='admin')
         form = call.forms[0]
         form['session_type'].force_value(value='1')
         form.submit()
@@ -44,12 +44,12 @@ class SessionCreation(WebTest):
 
     def test3(self):
         SessionTypeFactory()
-        call = self.app.get('/', user='admin')
+        call = self.app.get(reverse('testsession:session_create'), user='admin')
         form = call.forms[0]
         form.submit(expect_errors=True)
 
     def test4(self):
-        call = self.app.get('/', user='admin')
+        call = self.app.get(reverse('testsession:session_create'), user='admin')
         form = call.forms[0]
         form['session_type'].force_value('2')
         form.submit(expect_errors=True)

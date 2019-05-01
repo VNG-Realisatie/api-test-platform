@@ -21,7 +21,7 @@ class TestMultipleEndpoint(WebTest):
         TestScenarioUrlFactory(test_scenario=self.ts)
 
     def test_run_collection(self):
-        call = self.app.get(reverse('server_run:server-run_list'), user=self.user)
+        call = self.app.get(reverse('server_run:server-run_create_item'), user=self.user)
         form = call.forms[0]
         form['test_scenario'].select(text=self.ts.name)
         res = form.submit().follow()
@@ -56,7 +56,7 @@ class TestCreation(WebTest):
         call = self.app.get(reverse('server_run:server-run_list'), user='test')
         assert 'Started' not in str(call.body)
 
-        call = self.app.get(reverse('server_run:server-run_list'), user='test')
+        call = self.app.get(reverse('server_run:server-run_create_item'), user='test')
         form = call.forms[0]
         form['test_scenario'].force_value('9')
         form.submit()
@@ -64,7 +64,7 @@ class TestCreation(WebTest):
         assert 'Started' not in str(call.body)
 
     def test_scenarios(self):
-        call = self.app.get(reverse('server_run:server-run_list'), user=self.user)
+        call = self.app.get(reverse('server_run:server-run_create_item'), user=self.user)
         form = call.forms[0]
         form['test_scenario'].select(text=self.tsf.test_scenario.name)
 
@@ -182,10 +182,9 @@ class IntegrationTest(WebTest):
         self.assertEqual(prev, len(PostmanTestResult.objects.all()) - 1)
 
     def test_badge(self):
-        call = self.app.get(reverse('server_run:server-run_list'), user=self.user)
+        call = self.app.get(reverse('server_run:server-run_create_item'), user=self.user)
         form = call.forms[0]
         form['test_scenario'].select(text=self.server_s.test_scenario.name)
-        form['scheduled'] = True
         res = form.submit().follow()
         form = res.forms[0]
         form['url'] = 'https://ref.tst.vng.cloud/drc/api/v1/'

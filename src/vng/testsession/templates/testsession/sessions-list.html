@@ -11,10 +11,11 @@
 <div id="ui-view">
     <div class="row">
         {% if object_list %}
-            <div class="col-sm-8 offset-sm-2">
+            <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        Consumer test-sessies
+                      Consumer test-sessies
+		      <a href="{% url 'testsession:session_create' %}" class="btn btn-success float-right"><i class="icon-note"></i> Start sessie</a>
                     </div>
                     <div class="card-body">
                         <table class="table">

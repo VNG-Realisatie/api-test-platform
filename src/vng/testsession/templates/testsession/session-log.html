@@ -13,7 +13,7 @@
 {% block content %}
 <div id="ui-view">
     <div class="row">
-        <div class="col-sm-12">
+        <div class="col-sm-9">
             <div class="card-deck">
                 <div class="card">
                     <div class="card-header">
@@ -202,15 +202,19 @@
                         </ul>
                     </nav>
                     {% endif %}
-                </div>
+              </div>
+             </div>
+           </div>
 
+           <div class="col-sm-3">
+              <div class="card-deck">
                 <div class="card">
                     <div class="card-header">
-                        Endpoints
+                        Endpoints & Rapports
                     </div>
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-sm-5">
+                            <div class="col-sm-12">
                                 <ul class="list-group">
                                     {% for endpoint in session.exposedurl_set.all %}
                                     {% if endpoint.subdomain %}
@@ -225,14 +229,17 @@
                                     {% endfor %}
                                 </ul>
                             </div>
-
-                            <div class="col-sm-2">
+			</div>
+			<div class="row">
+                          <div class="col-sm-12">
+			    <br />
+			    <p>
                                 <input type="button" class="btn btn-primary" value="Rapport"
                                     onclick="location.href = '{% url 'testsession:session_report' session.id %}';">
-                            </div>
-                            <div class="col-sm-2">
+			    </p><p>
                                 <input type="button" class="btn btn-primary" value="Rapport (PDF)"
-                                    onclick="location.href = '{% url 'testsession:session_report-pdf' session.id %}';">
+                                       onclick="location.href = '{% url 'testsession:session_report-pdf' session.id %}';">
+				</p>
                             </div>
                         </div>
                     </div>

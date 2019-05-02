@@ -9,10 +9,11 @@
 <div id="ui-view">
     {% if object_list %}
     <div class="row">
-        <div class="col-sm-8 offset-sm-2">
+        <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
-                    Server run list
+                  Scheduled tests
+		  <a href="{% url 'server_run:server-run_create_item' %}" class="btn btn-success float-right"><i class="icon-note"></i> Start testrun</a>
                 </div>
                 <table class="table">
                     {% include 'servervalidation/table/header-server-run-scheduled.html' only %}

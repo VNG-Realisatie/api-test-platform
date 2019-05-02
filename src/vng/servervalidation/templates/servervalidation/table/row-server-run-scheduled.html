@@ -31,18 +31,12 @@
     </td>
     <td>
         {% if not server_run.is_stopped %}
-            <div class='row'>
-                <div class='col-sm-4'>
-                    <form id="myform" method="POST" action="{% url 'server_run:server-run_stop' server_run.pk %}">
-                        {% csrf_token %}
-                        <input type="submit" class="btn btn-primary"  value="Stop">
-                    </form>
-                </div>
+             <form id="myform" method="POST" action="{% url 'server_run:server-run_stop' server_run.pk %}">
+                {% csrf_token %}
+                <input type="submit" class="btn btn-danger"  value="Stop">
+             </form>
 
-                <div class='col-sm-6'>
-                    <a type="submit" class="btn btn-primary"  href="{% url 'server_run:server-run_trigger' server_run.pk %}">Uitvoeren</a>
-                </div>
-            </div>
+             <a type="submit" class="btn btn-primary"  href="{% url 'server_run:server-run_trigger' server_run.pk %}">Uitvoeren</a>
         {% endif %}
     </td>
     <td>

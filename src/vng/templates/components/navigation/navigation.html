@@ -4,6 +4,9 @@
             {% if user.is_authenticated %}
             {% include './navigation-list-item.html' with view_name='testsession:sessions' label=_('Test consumer') request=request only %}
 	    {% include './navigation-list-item.html' with view_name='server_run:server-run_list' label=_('Test provider') request=request only %}
+	    {% else %}
+	    {% include './navigation-list-item.html' with view_name='auth_login' label=_('Login') request=request only %}	    
+	    {% include './navigation-list-item.html' with view_name='registration_register' label=_('Registreer') request=request only %}	    
             {% endif %}
             {% include './navigation-list-item.html' with view_name='open_api_inspector:openapi-inspection' label=_('OpenAPI inspection') request=request only %}
             {% if user.is_superuser %}

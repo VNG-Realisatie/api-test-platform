@@ -117,7 +117,7 @@ class ScenarioCase(OrderedModel):
     ''')
     http_method = models.CharField(max_length=20, choices=choices.HTTPMethodChoiches.choices, default=choices.HTTPMethodChoiches.GET)
     vng_endpoint = models.ForeignKey(VNGEndpoint, on_delete=models.CASCADE)
-    order_with_respect_to = 'vng_endpoint'
+    order_with_respect_to = 'vng_endpoint__session_type'
 
     class Meta(OrderedModel.Meta):
         pass

@@ -51,6 +51,9 @@ class PostmanTest(OrderedModel):
     test_scenario = models.ForeignKey(TestScenario, on_delete=models.CASCADE)
     validation_file = FilerFileField(null=True, blank=True, default=None, on_delete=models.SET_NULL)
 
+    class Meta(OrderedModel.Meta):
+        pass
+
     def __str__(self):
         return '{} {}'.format(self.test_scenario, self.validation_file)
 

@@ -120,6 +120,9 @@ class ScenarioCase(OrderedModel):
 
     order_with_respect_to = 'vng_endpoint'
 
+    class Meta(OrderedModel.Meta):
+        pass
+
     def __str__(self):
         return '{} - {}'.format(self.http_method, self.url)
 

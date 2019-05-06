@@ -81,6 +81,7 @@ class ScenarioCaseAdmin(OrderedModelAdmin):
     list_display = [
         'url',
         'move_up_down_links',
+        'order',
         'http_method',
         'vng_endpoint'
     ]

@@ -117,7 +117,6 @@ class ScenarioCase(OrderedModel):
     ''')
     http_method = models.CharField(max_length=20, choices=choices.HTTPMethodChoiches.choices, default=choices.HTTPMethodChoiches.GET)
     vng_endpoint = models.ForeignKey(VNGEndpoint, on_delete=models.CASCADE)
-
     order_with_respect_to = 'vng_endpoint'
 
     class Meta(OrderedModel.Meta):

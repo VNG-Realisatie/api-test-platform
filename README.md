@@ -2,6 +2,8 @@
 
 [![Build Status](https://jenkins.nlx.io/job/gemma-zaken-build-and-test/badge/icon?style=plastic)](https://jenkins.nlx.io/) ![Repo Status](https://img.shields.io/badge/status-concept-lightgrey.svg?style=plastic)
 
+[![Status badge](https://img.shields.io/endpoint.svg?style=for-the-badge&amp;url=https://vng-staging.maykin.nl/api/v1/provider-run-shield/100/)](https://vng-staging.maykin.nl/server/a1660a86-3312-48f6-8106-4fa9dec1e8f7)
+
 ## Visie 
  
 Om de doelen van de Common Ground te bereiken hebben we een testvoorziening nodig die je kunt aanroepen om zowel client- als provider-api's te kunnen testen, met de mogelijkheid deze te integreren in eigen automatische software tests (continuous integration). Daarbij spelen de volgende punten een belangrijke rol:

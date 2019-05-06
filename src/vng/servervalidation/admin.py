@@ -25,7 +25,7 @@ class PostmanTestInline(admin.TabularInline):
 
 @admin.register(model.PostmanTest)
 class PostmanTestAdmin(AdminChangeLinksMixin, OrderedModelAdmin):
-    list_display = ['test_scenario', 'move_up_down_links', 'order',
+    list_display = ['test_scenario', 'move_up_down_links',
                     'validation_file']
     changelist_links = ['expectedpostmanresult']
 

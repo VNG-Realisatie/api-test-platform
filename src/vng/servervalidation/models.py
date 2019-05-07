@@ -173,7 +173,7 @@ class PostmanTestResult(models.Model):
 
     def get_outcome_json(self):
         with open(self.log_json.path) as jfile:
-            return postman.get_outcome_json(jfile)
+            return postman.get_outcome_json(jfile, file=True)
 
     def get_call_results(self):
         positive, negative = 0, 0

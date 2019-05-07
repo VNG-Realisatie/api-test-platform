@@ -49,7 +49,7 @@ class ServerRunForm(CreateView):
 
     def form_valid(self, form):
         ts_id = form.instance.test_scenario.id
-        self.request.session['server_run_scheduled'] = False
+        self.request.session['server_run_scheduled'] = form.instance.scheduled
         return redirect(reverse('server_run:server-run_create', kwargs={
             "test_id": ts_id
         }))

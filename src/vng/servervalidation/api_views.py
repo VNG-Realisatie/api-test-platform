@@ -76,13 +76,14 @@ class ResultServerViewShield(
     def retrieve(self, request, pk=None):
         server = ServerRun.objects.get(pk=pk)
         res = server.get_execution_result()
-
+        is_error = True
         if res is None:
-            message = 'No yet run'
+            message = 'No results'
             color = 'inactive'
         elif res:
             message = 'Success'
             color = 'green'
+            is_error = False
         else:
             message = 'Failed'
             color = 'red'
@@ -91,6 +92,7 @@ class ResultServerViewShield(
             'label': 'VNG test platform',
             'message': message,
             'color': color,
+            'isError': is_error,
         }
 
         return JsonResponse(result)

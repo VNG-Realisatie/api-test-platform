@@ -1,6 +1,6 @@
 {% spaceless %}
 <tr>
-    <td>Id</td>
+    <td>Sessie</td>
     <td>{{ server_run.pk }}</td>
 </tr>
 
@@ -36,7 +36,7 @@
     <td>Status</td>
     <td>{{ server_run.status }}</td>
 </tr>
-{% if server_run.scheduled and not server_run.is_stopped %}
+{% if server_run.scheduled and not server_run.is_stopped and request.user.is_authenticated and server_run.user == request.user %}
 <tr>
     <td>Actie</td>
     <td>
@@ -47,10 +47,11 @@
                 <input type="submit" class="btn btn-primary" value="Stop">
             </form>
         </div>
-        <div class='col-3'>
-        <a type="submit" class="btn btn-primary"  href="{% url 'server_run:server-run_trigger' server_run.pk %}">Uitvoeren</a>
+        <div class='col-6'>
+          <a type="submit" class="btn btn-primary"  href="{% url 'server_run:server-run_trigger' server_run.pk %}">Uitvoeren</a>
+	  <p>Wordt dagelijks uitgevoerd om: 00:01</p>
         </div>
-        </div
+        </div>
     </td>
 </tr>
 {% endif %}

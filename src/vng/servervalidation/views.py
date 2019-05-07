@@ -177,6 +177,8 @@ class TriggerServerRun(OwnerSingleObject, View):
         server = self.get_object()
         self.request.session['server_run_scheduled'] = server.scheduled
         execute_test.delay(server.pk, scheduled=True)
+        if server.scheduled:
+            return redirect(reverse('server_run:server-run_list_scheduled'))
         return redirect(reverse('server_run:server-run_list'))
 
 
@@ -191,6 +193,8 @@ class StopServer(OwnerSingleObject, View):
         server.stopped = timezone.now()
         server.status = choices.StatusWithScheduledChoices.stopped
         server.save()
+        if server.scheduled:
+            return redirect(reverse('server_run:server-run_list_scheduled'))
         return redirect(reverse('server_run:server-run_list'))
 
 

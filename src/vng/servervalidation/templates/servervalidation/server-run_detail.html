@@ -19,12 +19,6 @@
                 </div>
                 <div class="card-body">
                     <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th scope="col">Property</th>
-                                <th scope="col">Value</th>
-                            </tr>
-                        </thead>
                         <tbody>
                             {% include 'servervalidation/table/table-server-run.html' with server_run=object postman_result=postman_result request=request only %}
                         </tbody>
@@ -36,7 +30,10 @@
 	<div class="col-sm-6">
 	  {% if object.scheduled %}
 	  <div class="card">
-	<div class="card-body">
+	    <div class="card-body">
+	      <p>
+	    Note: Shields.io caches the badge result for 5 minutes. Check the <a href="{% url 'apiv1server:provider:api_server-run-shield-detail' object.id %}">API</a> for direct access.</p>
+
 	    <span display="block" style='width: 250px;' class="common__BadgeWrapper-sc-16zh6vt-3 fagfmg">
             <a href="{% url 'server_run:server-run_detail_uuid' object.uuid %}">
                 <img style='width:250px' alt="" src="https://img.shields.io/endpoint.svg?style=for-the-badge&amp;url={{request.scheme}}://{{request.get_host}}{% url 'apiv1server:provider:api_server-run-shield-detail' object.id %}">
@@ -47,6 +44,7 @@
       <div class="card">
         <div class="card-body">
           <h5 class="card-title">Markdown snippet</h5>
+	  <p>Paste the following in your README.md to show your badge on Github.</p>
           <?prettify lang=html linenums=true?>
           <pre class="prettyprint" id='gitSnippet'>
             <xmp>
@@ -57,7 +55,8 @@
       </div>
       <div class="card">
         <div class="card-body">
-          <h5 class="card-title">Html snippet</h5>
+          <h5 class="card-title">HTML snippet</h5>
+	  <p>Paste the following in your HTML page to show your badge.</p>
           <?prettify lang=html linenums=true?>
           <pre class="prettyprint" id='htmlSnippet'>
             <xmp>
@@ -229,10 +228,7 @@
 
 {% block script %}
     <script>
-    var gitSnippet = '[![Status badge]\n'
-            + '(https://img.shields.io/endpoint.svg?style=for-the-badge&amp;\n'
-            + 'url={{request.scheme}}://{{request.get_host}}{% url "apiv1server:provider:api_server-run-shield-detail" object.id %})]\n'
-            + '({{request.scheme}}://{{request.get_host}}{% url 'server_run:server-run_detail_uuid' object.uuid %})\n'
+    var gitSnippet = '[![Status badge](https://img.shields.io/endpoint.svg?style=for-the-badge&amp;url={{request.scheme}}://{{request.get_host}}{% url "apiv1server:provider:api_server-run-shield-detail" object.id %})]({{request.scheme}}://{{request.get_host}}{% url 'server_run:server-run_detail_uuid' object.uuid %})'
 
     var htmlSnippet = '<span display="block" height="20px" class="common__BadgeWrapper-sc-16zh6vt-3 fagfmg">\n'
             + '<a href="{{request.scheme}}://{{request.get_host}}{% url 'server_run:server-run_detail_uuid' object.uuid %}">\n'

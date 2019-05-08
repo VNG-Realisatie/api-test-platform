@@ -66,10 +66,10 @@
 
                     </td>
                     <td class="table__cell">
-                        {{calls.request.url.url|truncatechars:30}}
+                        {{ calls.response.code }} {{ calls.response.status }}
                     </td>
                     <td class="table__cell">
-                        {{ calls.response.code }} {{ calls.response.status }}
+                        {{calls.request.url.url|truncatechars:60}}
                     </td>
                     <td class="table__cell">
                     {% if calls.response.code|to_int in error_codes %}
@@ -200,7 +200,7 @@
         text-align: center;
     }
     .post{
-        color: yellow;
+        color: #ddd606;
         font-weight: bold;
     }
     .get{

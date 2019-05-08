@@ -30,7 +30,7 @@ def get_json_obj_file(filename):
 
 def get_call_result(call):
     return str(call['response']['code']) not in error_codes \
-        and 'error_test' not in call['item']
+        and ('error_test' not in call['item'] or not call['item']['error_test'])
 
 
 def get_json_obj(content, file=False):

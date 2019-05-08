@@ -8,7 +8,6 @@
 <head>
     <meta charset="utf-8">
     <title>Server Report</title>
-    <link href="https://coreui.io/demo/vendors/@coreui/icons/css/coreui-icons.min.css" rel="stylesheet">
 </head>
 
 <body>
@@ -54,11 +53,11 @@
                     {% endif %}
                     </td>
                     <td class="table__cell">
-                        {% if postman.get_call_results_list|index:forloop.counter0 %}
+                        {% comment %} {% if postman.get_call_results_list|index:forloop.counter0 %}
                             <p class='cui-check h2'></p>
                         {% else %}
                             <p class='cui-circle-x h2'></p>
-                        {% endif %}
+                        {% endif %} {% endcomment %}
 
                     </td>
                 </tr>

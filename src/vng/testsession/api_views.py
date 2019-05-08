@@ -14,7 +14,7 @@ from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.http import (
-    Http404, HttpResponse, HttpResponseForbidden
+    Http404, HttpResponse, HttpResponseForbidden, JsonResponse
 )
 
 from rest_framework import generics, permissions, viewsets, views, mixins
@@ -471,20 +471,28 @@ class RunTest(CSRFExemptMixin, View):
                 reply[h] = response.headers[h]
         return reply
 
+    def build_method_handler(self, request_method_name, request, body=False):
+        try:
+            return self.build_method(request_method_name, request, body=False)
+        except Http404:
+            return JsonResponse({
+                'info': 'The resource requested has been already turned off.'
+            })
+
     def get(self, request, *args, **kwargs):
-        return self.build_method('get', request)
+        return self.build_method_handler('get', request)
 
     def post(self, request, *args, **kwargs):
-        return self.build_method('post', request, body=True)
+        return self.build_method_handler('post', request, body=True)
 
     def put(self, request, *args, **kwargs):
-        return self.build_method('put', request, body=True)
+        return self.build_method_handler('put', request, body=True)
 
     def delete(self, request, *args, **kwargs):
-        return self.build_method('delete', request)
+        return self.build_method_handler('delete', request)
 
     def patch(self, request, *args, **kwargs):
-        return self.build_method('patch', request, body=True)
+        return self.build_method_handler('patch', request, body=True)
 
     def build_session_log(self, request, header):
         session = self.session

@@ -12,7 +12,7 @@ admin.site.site_header = 'vng admin'
 admin.site.site_title = 'vng admin'
 admin.site.index_title = 'Welcome to the vng admin'
 
-urlpatterns = [
+base_urlpatterns = [
     # url(r'^admin_tools/', include('admin_tools.urls')),
     url(r'^admin/password_reset/$', auth_views.PasswordResetView.as_view(), name='admin_password_reset'),
     url(r'^admin/password_reset/done/$', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
@@ -28,10 +28,10 @@ urlpatterns = [
 
 # NOTE: The staticfiles_urlpatterns also discovers static files (ie. no need to run collectstatic). Both the static
 # folder and the media folder are only served via Django if DEBUG = True.
-urlpatterns += staticfiles_urlpatterns() + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+base_urlpatterns += staticfiles_urlpatterns() + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG and 'debug_toolbar' in settings.INSTALLED_APPS:
     import debug_toolbar
-    urlpatterns += [
+    base_urlpatterns += [
         url(r'^__debug__/', include(debug_toolbar.urls)),
     ]

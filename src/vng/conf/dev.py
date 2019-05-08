@@ -8,7 +8,7 @@ from .base import *
 # Standard Django settings.
 #
 
-DEBUG = False
+DEBUG = True
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 ADMINS = ()
@@ -33,15 +33,15 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.localhost']
 
 LOGGING['loggers'].update({
     'vng': {
-        'handlers': ['project'],
+        'handlers': ['console'],
         'level': 'DEBUG',
         'propagate': True,
     },
-    # 'django': {
-    #     'handlers': ['console'],
-    #     'level': 'DEBUG',
-    #     'propagate': True,
-    # },
+    'django': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+        'propagate': True,
+    },
     'django.db.backends': {
         'handlers': ['django'],
         'level': 'DEBUG',
@@ -114,20 +114,3 @@ try:
     from .local import *  # noqa
 except ImportError:
     pass
-
-INSTALLED_APPS = INSTALLED_APPS + [
-    'raven.contrib.django.raven_compat',
-]
-RAVEN_CONFIG = {
-    'dsn': 'https://e95a42127e6042c59d19376e566f027a:216cdab1ea4f40d0bd0dd8a74e2eef57@sentry.maykinmedia.nl/104',
-    'public_dsn': 'https://e95a42127e6042c59d19376e566f027a@sentry.maykinmedia.nl/104',
-    'release': raven.fetch_git_sha(BASE_DIR),
-}
-
-LOGGING['handlers'].update({
-    'sentry': {
-        'level': 'WARNING',
-        'class': 'raven.handlers.logging.SentryHandler',
-        'dsn': RAVEN_CONFIG['dsn']
-    },
-})

@@ -90,7 +90,7 @@ class SessionViewSet(
     permission_classes = (permissions.IsAuthenticated, IsOwner)
 
     def get_queryset(self):
-        return Session.objects.all().prefetch_related('exposedurl_set')
+        return Session.objects.all().prefetch_related('exposedurl_set').filter(user=self.request.user)
 
     def perform_create(self, serializer):
         session = serializer.save(

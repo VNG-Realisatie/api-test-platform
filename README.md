@@ -4,6 +4,8 @@
 
 [![Status badge](https://img.shields.io/endpoint.svg?style=for-the-badge&amp;url=https://vng-staging.maykin.nl/api/v1/provider-run-shield/100/)](https://vng-staging.maykin.nl/server/a1660a86-3312-48f6-8106-4fa9dec1e8f7)
 
+[![Status badge](https://img.shields.io/endpoint.svg?style=for-the-badge&amp;url=https://vng-staging.maykin.nl/api/v1/provider-run-shield/134/)](https://vng-staging.maykin.nl/server/ed749136-cc93-4169-9fc2-3482871966e9)
+
 ## Visie 
  
 Om de doelen van de Common Ground te bereiken hebben we een testvoorziening nodig die je kunt aanroepen om zowel client- als provider-api's te kunnen testen, met de mogelijkheid deze te integreren in eigen automatische software tests (continuous integration). Daarbij spelen de volgende punten een belangrijke rol:

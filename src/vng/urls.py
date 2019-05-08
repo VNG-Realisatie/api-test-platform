@@ -25,7 +25,6 @@ urlpatterns = [
     # Simply show the master template.
     url(r'accounts/', include('registration.backends.default.urls')),
 
-
     # redirect the request to the testession
     url(r'^api/auth/', include('vng.apiAuthentication.urls', namespace='apiv1_auth')),
     url(r'^api/v1/', include('vng.testsession.urls_api', namespace='apiv1session')),

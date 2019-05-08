@@ -15,7 +15,7 @@
                             {% load_widgets form='forms.html' %}
 
                             {% for field in form %}
-                                {% form_field field %}
+                                {% form_field field n=forloop.counter0 %}
                             {% endfor %}
                         </div>
                         <div class="card-footer">

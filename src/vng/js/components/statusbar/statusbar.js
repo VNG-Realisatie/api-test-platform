@@ -2,6 +2,9 @@ import $ from 'jquery';
 
 
 var obj = $("#starting");
+var pro = $("#progressbar");
+var proInd = $("#progressbar-indicator");
+var statusLabel = $("#statuslabel");
 
 function update() {
     $.ajax({
@@ -9,8 +12,9 @@ function update() {
         success: (data, textStatus, jqXHR) => {
             var session = data;
             if (session[window.percentage]) {
-                obj.html(`${session[window.status]}: ${session[window.percentage]}%<br />
-                <div style='background-color: green; width: ${session[window.percentage]}%; height: 20px;'></div>`)
+                pro.css('width', `${session[window.percentage]}%`);
+                proInd.text(session[window.percentage] + '%');
+                statusLabel.text(session[window.status]);
                 if (session[window.percentage] < 100) setTimeout(() => {
                     update();
                 }, 2000);

@@ -1,5 +1,9 @@
 from django.conf import settings as django_settings
 
+from ..testsession.models import Session
+from ..servervalidation.models import ServerRun
+from .choices import StatusChoices
+
 
 def settings(request):
     public_settings = ('GOOGLE_ANALYTICS_ID', 'ENVIRONMENT',
@@ -10,8 +14,9 @@ def settings(request):
             (k, getattr(django_settings, k, None)) for k in public_settings
         ]),
     }
-    
+
     if hasattr(django_settings, 'RAVEN_CONFIG'):
         context.update(dsn=django_settings.RAVEN_CONFIG.get('public_dsn', ''))
-        
+    context['session_active'] = Session.objects.filter(status=StatusChoices.running).count()
+    context['server_scheduled'] = ServerRun.objects.filter(scheduled=True).count()
     return context

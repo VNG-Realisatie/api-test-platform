@@ -38,7 +38,7 @@ LOGGING['loggers'].update({
     },
     'django': {
         'handlers': ['console'],
-        'level': 'DEBUG',
+        'level': 'WARNING',
         'propagate': True,
     },
     'django.db.backends': {

@@ -510,7 +510,7 @@ class TestAllProcedure(WebTest):
 
     def setUp(self):
         self.user = UserFactory()
-        self.session_type = SessionTypeFactory()
+        self.session_type = VNGEndpointFactory().session_type
 
     def _test_create_session(self):
         call = self.app.get(reverse('testsession:session_create'), user=self.user)
@@ -522,7 +522,6 @@ class TestAllProcedure(WebTest):
         self.assertIn(self.session_type.name, call.text)
 
     def _test_stop_session(self):
-        self._test_create_session()
         self.session = Session.objects.filter(user=self.user).filter(status=choices.StatusChoices.running)[0]
         url = reverse('testsession:stop_session', kwargs={
             'session_id': self.session.pk,
@@ -543,6 +542,18 @@ class TestAllProcedure(WebTest):
             'session_id': self.session.pk,
         })
         call = self.app.get(url, user=self.session.user)
+
+    def test_postman(self):
+        self._test_create_session()
+        self.session = Session.objects.filter(user=self.user).filter(status=choices.StatusChoices.running)[0]
+        url = reverse('testsession:stop_session', kwargs={
+            'session_id': self.session.pk,
+        })
+        call = self.app.post(url, user=self.session.user).follow()
+        call = self.app.get(reverse('testsession:session_log', kwargs={
+            'session_id': self.session.pk
+        }))
+        self.assertIn('200 OK', call.text)
 
 
 class TestLogNewman(WebTest):

@@ -35,8 +35,9 @@ class SessionListView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        _choices = dict(choices.StatusChoices.choices)
         context.update({
-            'stop': choices.StatusChoices.stopped,
+            'choices': _choices,
         })
         return context
 

@@ -473,7 +473,7 @@ class RunTest(CSRFExemptMixin, View):
 
     def build_method_handler(self, request_method_name, request, body=False):
         try:
-            return self.build_method(request_method_name, request, body=False)
+            return self.build_method(request_method_name, request, body)
         except Http404:
             return JsonResponse({
                 'info': 'The resource requested has been already turned off.'

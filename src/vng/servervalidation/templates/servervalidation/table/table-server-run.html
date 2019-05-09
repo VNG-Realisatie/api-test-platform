@@ -27,16 +27,21 @@
     <td>Started</td>
     <td>{{ server_run.started }}</td>
 </tr>
-<tr>
-    <td>Stopped</td>
-    <td>{{ server_run.stopped }}</td>
-</tr>
+{% if server_run.stopped %}
+    <tr>
+        <td>Stopped</td>
+        <td>{{ server_run.stopped }}</td>
+    </tr>
+{% endif %}
 
 {% if server_run.scheduled and not server_run.is_stopped and request.user.is_authenticated and server_run.user == request.user %}
 <tr>
     <td>Status</td>
     <td>{{ server_run.status }}
-    <p>Wordt automatisch uitgevoerd om: 00:01</p>
+    <p>Wordt automatisch uitgevoerd om: <span class="badge badge-secondary">00:01</span></p>
+    {% if server_run.last_exec %}
+        <p>Laatste uitvoering om: <span class="badge badge-secondary">{{server_run.last_exec}}</span></p>
+    {% endif %}
     </td>
 </tr>
 <tr>

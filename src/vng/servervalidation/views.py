@@ -1,5 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.db.utils import IntegrityError
@@ -175,6 +175,8 @@ class TriggerServerRun(OwnerSingleObject, View):
 
     def get(self, request, *args, **kwargs):
         server = self.get_object()
+        if server.status == choices.StatusWithScheduledChoices.stopped:
+            raise Http404("Server already stopped")
         self.request.session['server_run_scheduled'] = server.scheduled
         execute_test.delay(server.pk, scheduled=True)
         if server.scheduled:

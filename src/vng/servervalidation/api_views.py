@@ -3,12 +3,11 @@ import json
 from itertools import zip_longest
 
 from django.shortcuts import get_object_or_404
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, Http404
 from django.utils import timezone
 
 from django.db import transaction
 from django.db.models import Prefetch
-from django.contrib.auth.mixins import LoginRequiredMixin
 
 from rest_framework import permissions, viewsets, mixins, views
 # from rest_framework.exceptions import bad_request
@@ -18,14 +17,15 @@ from rest_framework.authentication import (
 )
 from drf_yasg.utils import swagger_auto_schema
 
-# from ..permissions.UserPermissions import isOwner
 from .serializers import ServerRunSerializer, ServerRunPayloadExample, ServerRunResultShield
 from .models import ServerRun, PostmanTestResult
+from .task import execute_test
+from ..permissions.UserPermissions import isOwner
 from ..utils import postman as ptm
+from ..utils import choices
 
 
 class ServerRunViewSet(
-        LoginRequiredMixin,
         mixins.CreateModelMixin,
         mixins.ListModelMixin,
         mixins.RetrieveModelMixin,
@@ -68,6 +68,18 @@ class ServerRunViewSet(
             server = serializer.save(user=self.request.user, pk=None, started=timezone.now())
 
 
+class TriggerServerRunView(viewsets.ViewSet):
+    authentication_classes = (TokenAuthentication, SessionAuthentication)
+    permission_classes = (permissions.IsAuthenticated, )
+
+    def update(self, request, pk):
+        server = get_object_or_404(ServerRun, pk=pk)
+        if server.status == choices.StatusWithScheduledChoices.stopped:
+            raise Http404("Server already stopped")
+        execute_test.delay(server.pk, scheduled=True)
+        return JsonResponse({"asd": pk})
+
+
 class ResultServerViewShield(
         mixins.RetrieveModelMixin,
         viewsets.GenericViewSet):
@@ -98,7 +110,7 @@ class ResultServerViewShield(
         return JsonResponse(result)
 
 
-class ResultServerView(LoginRequiredMixin, views.APIView):
+class ResultServerView(views.APIView):
     """
     Result of a Session
 

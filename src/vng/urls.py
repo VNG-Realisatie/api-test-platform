@@ -8,7 +8,7 @@ from django.views.generic.base import TemplateView
 from .decorators import anonymous_required
 from .base_url import *
 
-urlpatterns = base_urlpatterns + [-
+urlpatterns = base_urlpatterns + [
     # redirect the request to the testession
     url(r'^api/auth/', include('vng.apiAuthentication.urls', namespace='apiv1_auth')),
     url(r'^api/v1/', include('vng.testsession.urls_api', namespace='apiv1session')),

@@ -379,6 +379,6 @@ CELERY_BEAT_SCHEDULE = {
     },
     'scheduled-test-provider': {
         'task': 'vng.servervalidation.task.execute_test_scheduled',
-        'schedule': crontab(hour=0, minute=0),
+        'schedule': 300,
     },
 }

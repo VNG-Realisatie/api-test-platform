@@ -6,6 +6,7 @@
 #
 -e git+https://github.com/maykinmedia/gemma-zds-client-3.4.git@e826a2fa111100d33d7c164a7bdf95d07c3b916c#egg=gemma-zds-client
 -e git+https://github.com/maykinmedia/django-subdomains.git@master#egg=django-subdomains
+-e git+https://github.com/maykinmedia/django-admin-index#egg=django-admin-index
 amqp==2.4.1               # via kombu
 billiard==3.5.0.5         # via celery
 cachetools==3.0.0         # via google-auth
@@ -20,7 +21,6 @@ coreschema==0.0.4         # via coreapi, drf-yasg
 cssselect2==0.2.1         # via cairosvg, weasyprint
 defusedxml==0.5.0         # via cairosvg
 diff-match-patch==20121119
-django-admin-index==1.0.1
 django-admin-relation-links==0.0.5
 django-appconf==1.0.2     # via django-axes
 django-axes==4.4.2

@@ -38,7 +38,7 @@ LOGGING['loggers'].update({
     },
     'django': {
         'handlers': ['console'],
-        'level': 'WARNING',
+        'level': 'INFO',
         'propagate': True,
     },
     'django.db.backends': {
@@ -47,7 +47,7 @@ LOGGING['loggers'].update({
         'propagate': False,
     },
     'performance': {
-        'handlers': ['console'],
+        'handlers': ['performance'],
         'level': 'INFO',
         'propagate': True,
     },

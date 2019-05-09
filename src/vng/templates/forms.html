@@ -2,7 +2,7 @@
 {% load i18n sniplates %}
 {% load tag_library %}
 {% block _errors %}
-    {% if errors or form.non_field_errors and errors or n == 0 %}
+    {% if errors or form.non_field_errors and errors or index == 0 %}
         <div class="invalid-feedback">
             <ul>
             {% for error in errors %}
@@ -31,7 +31,7 @@
                         {{ widget.attrs|flatattrs }}
                         {{ required|yesno:"required," }}
                         {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}>
-                {% reuse '_errors' n=n %}
+                {% reuse '_errors' index=index %}
             </div>
         </div>
     </div>

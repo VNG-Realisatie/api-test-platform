@@ -7,14 +7,14 @@ function update() {
     $.ajax({
         url: window.url + obj.attr(window.attr_name) + '/',
         success: (data, textStatus, jqXHR) => {
-            var session = data
-            if (session.deploy_status) {
-                obj.html(`${session.deploy_status}: ${session.deploy_percentage}%<br />
-                <div style='background-color: green; width: ${ session.deploy_percentage}%; height: 20px;'></div>`)
-                if (session.deploy_percentage < 100) setTimeout(() => {
+            var session = data;
+            if (session[window.percentage]) {
+                obj.html(`${session[window.status]}: ${session[window.percentage]}%<br />
+                <div style='background-color: green; width: ${session[window.percentage]}%; height: 20px;'></div>`)
+                if (session[window.percentage] < 100) setTimeout(() => {
                     update();
                 }, 2000);
-                if (session.deploy_percentage == 100) {
+                if (session[window.percentage] == 100) {
                     setTimeout(() => {
                         location.reload();
                     }, 500);

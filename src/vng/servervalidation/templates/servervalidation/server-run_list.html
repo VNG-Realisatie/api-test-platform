@@ -35,8 +35,10 @@
 
 
 {% block script %}
-<script>
-        window.url = "/api/v1/provider-run/"
+    <script>
+        window.url = window.location.origin +  "/api/v1/provider-run/"
         window.attr_name = 'server_run_id'
+        window.status = 'status_exec'
+        window.percentage = 'percentage_exec'
     </script>
 {% endblock %}

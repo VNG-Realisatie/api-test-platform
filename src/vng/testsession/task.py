@@ -142,8 +142,6 @@ def run_tests(session_pk):
                                             vng_endpoint__session_type=session.session_type)
 
     # stop the session for each exposed url, and eventually run the tests
-    import pdb
-    pdb.set_trace()
     for eu in exposed_url:
         ep = eu.vng_endpoint
         if not ep.test_file:

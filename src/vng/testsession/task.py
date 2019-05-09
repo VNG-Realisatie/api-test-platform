@@ -148,7 +148,7 @@ def run_tests(session_pk):
             continue
         newman = NewmanManager(ep.test_file, ep.url)
         newman.replace_parameters({
-            'demo-api': ep.url
+            ep.vng_endpoint.name: ep.url
         })
         result = newman.execute_test()
         ts = TestSession()

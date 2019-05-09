@@ -510,7 +510,7 @@ class TestAllProcedure(WebTest):
 
     def setUp(self):
         self.user = UserFactory()
-        self.session_type = VNGEndpointFactory().session_type
+        self.session_type = VNGEndpointFactory(name='demo-api').session_type
 
     def _test_create_session(self):
         call = self.app.get(reverse('testsession:session_create'), user=self.user)

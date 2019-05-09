@@ -36,7 +36,7 @@
 <tr>
     <td>Status</td>
     <td>{{ server_run.status }}
-    <p>Wordt ook uitgevoerd om: 00:01</p>
+    <p>Wordt automatisch uitgevoerd om: 00:01</p>
     </td>
 </tr>
 <tr>
@@ -55,11 +55,12 @@
         </div>
     </td>
 </tr>
-{% endif %}
+{% else %}
 <tr>
     <td>Status</td>
     <td>{{ server_run.status }}</td>
 </tr>
+{% endif %}
 <tr>
     <td>Log</td>
         <td>

@@ -33,9 +33,13 @@ def get_jwt(server_run):
 
 @app.task
 def execute_test_scheduled():
-    server_run = ServerRun.objects.filter(scheduled=True).filter(status=choices.StatusWithScheduledChoices.scheduled)
-    for sr in server_run:
-        execute_test(sr.pk, scheduled=True)
+    server_run = ServerRun.objects.filter(scheduled=True).filter(status=choices.StatusWithScheduledChoices.scheduled).order_by('user')
+    s_list = []
+    for i, sr in enumerate(server_run):
+        s_list.append((sr, execute_test(sr.pk, scheduled=True)))
+        if i == len(server_run) - 1 or sr.user != server_run[i + 1].user and s_list != []:
+            send_email_failure(s_list)
+            s_list = []
 
 
 @app.task
@@ -99,15 +103,15 @@ def execute_test(server_run_pk, scheduled=False):
         server_run.last_exec = timezone.now()
         server_run.status = choices.StatusWithScheduledChoices.scheduled
     server_run.save()
-    if failure and scheduled:
-        send_email_failure(server_run)
+    return failure
 
 
-def send_email_failure(server_run):
+def send_email_failure(sl):
     from django.contrib.sites.models import Site
     domain = Site.objects.get_current().domain
     msg_html = render_to_string('servervalidation/failed_test_email.html', {
-        'server_run': server_run,
+        'successfull': [s for s in sl if not s[1]],
+        'failure': [s for s in sl if s[1]],
         'domain': domain
     })
 
@@ -115,6 +119,6 @@ def send_email_failure(server_run):
         'Failure of scheduled test',
         msg_html,
         settings.DEFAULT_FROM_EMAIL,
-        [server_run.user.email],
+        [sl[0][0].user.email],
         html_message=msg_html
     )

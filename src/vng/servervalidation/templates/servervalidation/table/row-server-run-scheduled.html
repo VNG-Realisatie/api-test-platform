@@ -5,7 +5,7 @@
     </td>
 
     <td>
-        {% if server_run.status == choices.scheduled %}
+        {% if server_run.status == choices.running %}
             <span class="badge badge-pill badge-success">Running</span>
         {% elif server_run.status == choices.starting %}
             <span class="badge badge-pill badge-light">Starting</span>

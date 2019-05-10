@@ -210,7 +210,7 @@ class ServerRunLogJsonView(LoginRequiredMixin, DetailView):
     template_name = 'servervalidation/server-run_log_json.html'
 
 
-class ServerRunPdfView(PDFGenerator, ServerRunOutput):
+class ServerRunPdfView(PDFGenerator, ServerRunOutputUuid):
 
     template_name = 'servervalidation/server-run-PDF.html'
 

@@ -1,13 +1,15 @@
 {% extends "sniplates/django.html" %}
 {% load i18n sniplates %}
-
+{% load tag_library %}
 {% block _errors %}
-    {% if errors %}
+    {% if errors or form.non_field_errors and errors or index == 0 %}
         <div class="invalid-feedback">
             <ul>
             {% for error in errors %}
                 <li>{{ error }}</li>
             {% endfor %}
+
+            {{ form.non_field_errors }}
             </ul>
         </div>
     {% endif %}
@@ -24,15 +26,11 @@
                         name="{{ html_name }}"
                         type="{{ input_type }}"
                         value="{{ raw_value|default:"" }}"
-                        class="form-control {{ errors|yesno:"is-invalid, " }}"
+                        class="form-control {{ errors|yesno:"is-invalid, " }}{{ form.non_field_errors|yesno:"is-invalid, " }}"
                         {{ widget.attrs|flatattrs }}
                         {{ required|yesno:"required," }}
-                        {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
-
-                >
-                    {% comment %} <div class="invalid-feedback">{{ placeholder }}</div>
-                {% endif %} {% endcomment %}
-                {% reuse '_errors' %}
+                        {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}>
+                {% reuse '_errors' index=index %}
             </div>
         </div>
     </div>

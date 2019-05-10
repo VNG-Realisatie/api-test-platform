@@ -184,6 +184,7 @@
         </div>
     </div>
     {% endif %}
+    {% if postman.get_json_obj.0.assertions %}
     <div class="row">
         <div class="col-sm-12">
             <div class="card">
@@ -215,11 +216,12 @@
                             {% endfor %}
                         </tbody>
                     </table>
-                    {% endfor %}
                 </div>
             </div>
         </div>
     </div>
+    {% endif %}
+    {% endfor %}
 </div>
 {% endblock %}
 

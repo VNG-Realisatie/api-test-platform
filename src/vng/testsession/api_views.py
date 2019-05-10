@@ -394,6 +394,14 @@ class RunTest(CSRFExemptMixin, View):
             parsed = self.sub_url_response(parsed, host, ep)
         return parsed
 
+    def parse_response_text(self, text, endpoints):
+        for ep in endpoints:
+            host = reverse_sub('serverproxy:run_test', ep.subdomain, kwargs={
+                'relative_url': ''
+            })
+            parsed = self.sub_url_response(text, host, ep)
+        return parsed
+
     def rewrite_request_body(self, request, exposed):
         """
         Rewrites the request body's to replace the ATV URL endpoints to the VNG Reference endpoints
@@ -461,7 +469,7 @@ class RunTest(CSRFExemptMixin, View):
         white_headers = ['Content-type', 'location']
         for h in white_headers:
             if h in response.headers:
-                reply[h] = response.headers[h]
+                reply[h] = self.parse_response_text(response.headers[h], endpoints)
         return reply
 
     def build_method_handler(self, request_method_name, request, body=False):

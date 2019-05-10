@@ -38,15 +38,26 @@
 
         {% if session.is_starting and session.deploy_status %}
             <td id='starting' session_id='{{session.id}}' >
-            {{session.deploy_status}} - {{session.deploy_percentage}}%
+            <div class="progress-group">
+                <div class="progress-group-header">
+                    <i class="cui-cloud progress-group-icon"></i>
+                    <div id="statuslabel"></div>
+                    <div class="ml-auto font-weight-bold" id="progressbar-indicator"></div>
+                </div>
+                <div class="progress-group-bars">
+                    <div class="progress progress-xs">
+                    <div class="progress-bar bg-success" id="progressbar" role="progressbar"  aria-valuenow="43" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+            </div>
             {% else %}
                 <td>
                 {% for eu in session.exposedurl_set.all %}
                     {% if eu.test_session %}
                             {% if eu.test_session.is_success_test %}
-                                <i class="cui-check h2"></i>
+                                <i class="cui-check icon-green h2"></i>
                             {% else %}
-                                <i class="cui-circle-x h2"></i>
+                                <i class="cui-circle-x icon-red h2"></i>
                             {% endif %}
                         </li>
                     {% endif %}

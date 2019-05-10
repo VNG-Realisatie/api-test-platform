@@ -18,17 +18,18 @@
                     Provider test details
                 </div>
                 <div class="card-body">
-                    <table class="table table-striped">
-                        <tbody>
-                            {% include 'servervalidation/table/table-server-run.html' with server_run=object postman_result=postman_result request=request only %}
-                        </tbody>
-                    </table>
+                    <div class='table-responsive'>
+                        <table class="table table-striped">
+                            <tbody>
+                                {% include 'servervalidation/table/table-server-run.html' with server_run=object postman_result=postman_result request=request only %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
 
 	<div class="col-sm-6">
-	  {% if object.scheduled %}
 	  <div class="card">
 	    <div class="card-body">
 	      <p>
@@ -48,7 +49,7 @@
           <?prettify lang=html linenums=true?>
           <pre class="prettyprint" id='gitSnippet'>
             <xmp>
-	      
+
             </xmp>
           </pre>
         </div>
@@ -64,7 +65,6 @@
           </pre>
         </div>
       </div>
-      {% endif %}
       </div>
     </div>
 
@@ -186,6 +186,7 @@
         </div>
     </div>
     {% endif %}
+    {% if postman.get_json_obj.0.assertions %}
     <div class="row">
         <div class="col-sm-12">
             <div class="card">
@@ -217,11 +218,12 @@
                             {% endfor %}
                         </tbody>
                     </table>
-                    {% endfor %}
                 </div>
             </div>
         </div>
     </div>
+    {% endif %}
+    {% endfor %}
 </div>
 {% endblock %}
 

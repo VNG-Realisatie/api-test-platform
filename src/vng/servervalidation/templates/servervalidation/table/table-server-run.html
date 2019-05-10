@@ -27,16 +27,23 @@
     <td>Started</td>
     <td>{{ server_run.started }}</td>
 </tr>
-<tr>
-    <td>Stopped</td>
-    <td>{{ server_run.stopped }}</td>
-</tr>
+{% if server_run.stopped %}
+    <tr>
+        <td>Stopped</td>
+        <td>{{ server_run.stopped }}</td>
+    </tr>
+{% endif %}
 
+{% if server_run.scheduled and not server_run.is_stopped and request.user.is_authenticated and server_run.user == request.user %}
 <tr>
     <td>Status</td>
-    <td>{{ server_run.status }}</td>
+    <td>{{ server_run.status }}
+    <p>Wordt automatisch uitgevoerd om: <span class="badge badge-secondary">00:01</span></p>
+    {% if server_run.last_exec %}
+        <p>Laatste uitvoering om: <span class="badge badge-secondary">{{server_run.last_exec}}</span></p>
+    {% endif %}
+    </td>
 </tr>
-{% if server_run.scheduled and not server_run.is_stopped and request.user.is_authenticated and server_run.user == request.user %}
 <tr>
     <td>Actie</td>
     <td>
@@ -48,14 +55,17 @@
             </form>
         </div>
         <div class='col-6'>
-          <a type="submit" class="btn btn-primary"  href="{% url 'server_run:server-run_trigger' server_run.pk %}">Uitvoeren</a>
-	  <p>Wordt dagelijks uitgevoerd om: 00:01</p>
+          <a type="submit" class="btn btn-primary"  href="{% url 'server_run:server-run_trigger' server_run.pk %}">Nu Uitvoeren</a>
         </div>
         </div>
     </td>
 </tr>
+{% else %}
+<tr>
+    <td>Status</td>
+    <td>{{ server_run.status }}</td>
+</tr>
 {% endif %}
-
 <tr>
     <td>Log</td>
         <td>

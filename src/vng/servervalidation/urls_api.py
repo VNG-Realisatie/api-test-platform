@@ -16,6 +16,7 @@ router.register('provider-run-shield', api_views.ResultServerViewShield, base_na
 
 urlpatterns = [
     url('schema', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+    url('provider-run/(?P<pk>[0-9]+)/trigger', api_views.TriggerServerRunView.as_view({'put': 'update'}), name='provider'),
     url('provider-run/(?P<pk>[0-9]+)/result', api_views.ResultServerView.as_view(), name='provider_result'),
-    url('', include((router.urls, 'session-api'), namespace='provider')),
+    url('', include((router.urls, 'server-api'), namespace='provider')),
 ]

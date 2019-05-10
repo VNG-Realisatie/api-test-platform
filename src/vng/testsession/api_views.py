@@ -406,7 +406,6 @@ class RunTest(CSRFExemptMixin, View):
             host = reverse_sub('serverproxy:run_test', ep.subdomain, kwargs={
                 'relative_url': ''
             })
-            logger.info("Rewriting response text:")
             parsed = self.sub_url_response(text, host, ep)
         return parsed
 

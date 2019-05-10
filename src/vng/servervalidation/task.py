@@ -110,7 +110,7 @@ def send_email_failure(sl):
     from django.contrib.sites.models import Site
     domain = Site.objects.get_current().domain
     msg_html = render_to_string('servervalidation/failed_test_email.html', {
-        'successfull': [s for s in sl if not s[1]],
+        'successful': [s for s in sl if not s[1]],
         'failure': [s for s in sl if s[1]],
         'domain': domain
     })

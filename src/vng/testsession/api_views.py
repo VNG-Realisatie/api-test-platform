@@ -11,7 +11,6 @@ from django.urls import reverse
 from django.views import View
 from django.utils import timezone
 from django.conf import settings
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.http import (
     Http404, HttpResponse, HttpResponseForbidden, JsonResponse
@@ -64,7 +63,6 @@ class SessionViewStatusSet(
 
 
 class SessionViewSet(
-        LoginRequiredMixin,
         mixins.CreateModelMixin,
         mixins.ListModelMixin,
         mixins.RetrieveModelMixin,
@@ -134,7 +132,7 @@ class StopSessionView(generics.ListAPIView):
         return scenarios
 
 
-class ResultSessionView(LoginRequiredMixin, views.APIView):
+class ResultSessionView(views.APIView):
     """
     Result of a Session
 
@@ -152,17 +150,12 @@ class ResultSessionView(LoginRequiredMixin, views.APIView):
         report = list(Report.objects.filter(session_log__session=session))
 
         def check(scenario_cases, report):
-            not_called = False
             if len(report) == 0:
                 return {'result': 'Geen oproep uitgevoerd'}
             for rp in report:
-                for sc in scenario_cases:
-                    if rp.scenario_case == sc:
-                        if rp.result == choices.HTTPCallChoiches.not_called:
-                            not_called = True
-                        elif rp.result == choices.HTTPCallChoiches.failed:
-                            return {'result': 'mislukt'}
-            if not_called:
+                if rp.result == choices.HTTPCallChoiches.failed:
+                    return {'result': 'mislukt'}
+            if len(report) < len(scenario_cases):
                 return {'result': 'Gedeeltelijk succesvol'}
             else:
                 return {'result': 'Succesvol'}

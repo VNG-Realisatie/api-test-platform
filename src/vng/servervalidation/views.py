@@ -69,8 +69,8 @@ class CreateEndpoint(LoginRequiredMixin, CreateView):
     form_class = CreateEndpointForm
 
     def get_success_url(self):
-        return reverse('server_run:server-run_detail', kwargs={
-            'pk': self.server.pk
+        return reverse('server_run:server-run_detail_uuid', kwargs={
+            'uuid': self.server.uuid
         })
 
     def fetch_server(self):

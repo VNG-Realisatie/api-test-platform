@@ -2,13 +2,13 @@
 <tr>
     {% if server_run.stopped %}
         <td>
-            <a href="{% url 'server_run:server-run_detail' server_run.pk %}">#{{ server_run.id }}</a>
+            <a href="{% url 'server_run:server-run_detail_uuid' server_run.uuid %}">#{{ server_run.id }}</a>
             Status: {{ server_run.status }}
         </td>
 
     {% else %}
         <td>
-            <a href="{% url 'server_run:server-run_detail' server_run.pk %}">#{{ server_run.id }}</a>
+            <a href="{% url 'server_run:server-run_detail_uuid' server_run.uuid %}">#{{ server_run.id }}</a>
             Status: {{ server_run.status }}
         </td>
     {% endif %}

@@ -37,7 +37,7 @@ class FilerField(Dmf):
     class Meta:
         model = File
 
-    file = factory.django.FileField(from_path=settings.POSTMAN_ROOT + '/google.postman_collection.json')
+    file = factory.django.FileField(from_path=settings.POSTMAN_ROOT + '/google-variable.postman_collection.json')
 
 
 class VNGEndpointFactory(Dmf):

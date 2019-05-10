@@ -14,7 +14,7 @@
 <article class="article">
     <div class="article__section">
         <h1>Log view</h1>
-        <input type="button" class="button button--primary" value="Back to the details" onclick="location.href = '{% url 'server_run:server-run_detail' object.server_run.pk %}';">
+        <input type="button" class="button button--primary" value="Back to the details" onclick="location.href = '{% url 'server_run:server-run_detail_uuid' object.server_run.uuid %}';">
         <p id="translate"></p>
         <p id="json-content" hidden=>
         {{ object.display_log_json|safe }}

@@ -30,6 +30,7 @@ class TestScenarioSelect(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         server_list = self.get_queryset()
+        data['choices'] = dict(choices.StatusWithScheduledChoices.choices)
         for sr in data['server_run_list']:
             sr.success = sr.get_execution_result()
         if 'server_run_scheduled' in self.request.session:

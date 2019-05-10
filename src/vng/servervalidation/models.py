@@ -197,6 +197,6 @@ class PostmanTestResult(models.Model):
 class Endpoint(models.Model):
 
     test_scenario_url = models.ForeignKey(TestScenarioUrl, on_delete=models.CASCADE)
-    url = models.URLField(max_length=200)
+    url = models.TextField()
     jwt = models.TextField(null=True, default=None)
     server_run = models.ForeignKey(ServerRun, on_delete=models.CASCADE)

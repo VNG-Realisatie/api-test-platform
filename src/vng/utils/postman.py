@@ -43,21 +43,22 @@ def get_json_obj(content, file=False):
         f = json.loads(content)
     res = f['run']['executions']
     for execution in res:
-        req = execution['request']['url']
-        url = '.'.join(req['host'])
-        path = ''
-        if 'path' in req:
-            path = '/'.join(req['path'])
-        if 'protocol' in req:
-            req['url'] = '{}://{}/{}'.format(req['protocol'], url, path)
-        else:
-            req['url'] = '{}/{}'.format(url, path)
+        if 'host' in execution['request']['url']:
+            req = execution['request']['url']
+            url = '.'.join(req['host'])
+            path = ''
+            if 'path' in req:
+                path = '/'.join(req['path'])
+            if 'protocol' in req:
+                req['url'] = '{}://{}/{}'.format(req['protocol'], url, path)
+            else:
+                req['url'] = '{}/{}'.format(url, path)
 
-        execution['item']['error_test'] = False
-        if 'assertions' in execution:
-            for assertion in execution['assertions']:
-                if 'error' in assertion:
-                    execution['item']['error_test'] = True
-                    break
+            execution['item']['error_test'] = False
+            if 'assertions' in execution:
+                for assertion in execution['assertions']:
+                    if 'error' in assertion:
+                        execution['item']['error_test'] = True
+                        break
 
     return res

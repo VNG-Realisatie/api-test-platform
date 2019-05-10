@@ -46,8 +46,8 @@ class CreateEndpointForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         for i in range(quantity):
             if isinstance(field_name, str):
-                self.fields['{}-{}'.format(field_name, i + 1)] = forms.URLField()
+                self.fields['{}-{}'.format(field_name, i + 1)] = forms.CharField(widget=forms.Textarea)
             else:
-                self.fields[field_name[i]] = forms.URLField()
+                self.fields[field_name[i]] = forms.CharField(widget=forms.Textarea)
         for e in text_area:
             self.fields[e] = forms.CharField(widget=forms.Textarea)

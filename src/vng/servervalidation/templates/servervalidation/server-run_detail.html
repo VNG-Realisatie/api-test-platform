@@ -18,11 +18,13 @@
                     Provider test details
                 </div>
                 <div class="card-body">
-                    <table class="table table-striped">
-                        <tbody>
-                            {% include 'servervalidation/table/table-server-run.html' with server_run=object postman_result=postman_result request=request only %}
-                        </tbody>
-                    </table>
+                    <div class='table-responsive'>
+                        <table class="table table-striped">
+                            <tbody>
+                                {% include 'servervalidation/table/table-server-run.html' with server_run=object postman_result=postman_result request=request only %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

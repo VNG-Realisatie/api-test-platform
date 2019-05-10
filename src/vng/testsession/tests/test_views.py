@@ -528,7 +528,7 @@ class TestAllProcedure(WebTest):
             'session_id': self.session.pk,
         })
         call = self.app.post(url, user=self.session.user).follow()
-        self.assertIn('stopped', call.text)
+        self.assertIn('Stopped', call.text)
 
     def test_report(self):
         self._test_create_session()

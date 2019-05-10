@@ -3,7 +3,19 @@
     <tr>
         <td>
             <a href="{% url 'testsession:session_log' session.id %}">#{{ session.id }}</a>
-            ({{ session.get_status_display }})
+        </td>
+        <td>
+            {% if session.status == choices.running %}
+                <span class="badge badge-pill badge-success">Running</span>
+            {% elif session.status == choices.starting %}
+                <span class="badge badge-pill badge-light">Starting</span>
+            {% elif session.status == choices.stopped %}
+                <span class="badge badge-pill badge-secondary">Stopped</span>
+            {% elif session.status == choices.shutting_down %}
+                <span class="badge badge-pill badge-dark">Shutting down</span>
+            {% elif session.status == choices.error_deploy %}
+                <span class="badge badge-pill badge-danger">Error during deployment</span>
+            {% endif %}
         </td>
         <td>
             {{ session.started|date }}<br />{{ session.started|time }}

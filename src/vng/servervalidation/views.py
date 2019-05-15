@@ -207,6 +207,10 @@ class ServerRunLogView(LoginRequiredMixin, DetailView):
     model = PostmanTestResult
     template_name = 'servervalidation/server-run_log.html'
 
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return HttpResponse(content=self.object.log)
+
 
 class ServerRunLogJsonView(LoginRequiredMixin, DetailView):
 
@@ -216,8 +220,9 @@ class ServerRunLogJsonView(LoginRequiredMixin, DetailView):
 
 class ServerRunPdfView(PDFGenerator, ServerRunOutputUuid):
 
-    template_name = 'servervalidation/server-run-PDF.html'
+    template_name = 'servervalidation/server-run-PDF_v2.0.html'
 
+    '''
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         server_run = context['object']
@@ -232,6 +237,7 @@ class ServerRunPdfView(PDFGenerator, ServerRunOutputUuid):
         self.filename = 'Server run {} report.pdf'.format(server_run.pk)
         context['error_codes'] = postman.get_error_codes()
         return context
+    '''
 
 
 class PostmanDownloadView(View):

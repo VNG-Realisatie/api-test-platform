@@ -88,8 +88,9 @@ class CreateEndpoint(LoginRequiredMixin, CreateView):
         test_scenario_url = TestScenarioUrl.objects.filter(test_scenario=self.server.test_scenario)
         url_names = [tsu.name for tsu in test_scenario_url]
         data['form'] = CreateEndpointForm(
-            quantity=len(data['test_scenario']) - 1,
-            field_name=url_names[1:]
+            quantity=len(data['test_scenario'].filter(url=True)) - 1,
+            field_name=url_names[1:],
+            text_area=data['test_scenario'].filter(url=False)
         )
         if ts.jwt_enabled():
             data['form'].add_text_area(['Client ID', 'Secret'])

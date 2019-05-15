@@ -1,5 +1,6 @@
 $icomoon-font-path: '../fonts/icomoon/fonts';
 @import '../static/fonts/icomoon/style';
+@import 'custom/all';
 
 @import '@coreui/coreui/scss/coreui';
 @import 'components/form/all';

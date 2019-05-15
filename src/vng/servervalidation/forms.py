@@ -42,7 +42,7 @@ class CreateEndpointForm(forms.ModelForm):
         for e in text_area:
             self.fields[e] = forms.CharField(widget=forms.Textarea)
 
-    def __init__(self, quantity=0, field_name='field', text_area=[], *args, **kwargs):
+    def __init__(self, quantity=0, field_name='field', text_area=[], text_area_field_name=[], *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Override the field type since in the model is charfield
         self.fields['url'] = forms.URLField()
@@ -51,5 +51,5 @@ class CreateEndpointForm(forms.ModelForm):
                 self.fields['{}-{}'.format(field_name, i + 1)] = forms.URLField()
             else:
                 self.fields[field_name[i]] = forms.URLField()
-        for e in text_area:
-            self.fields[e] = forms.CharField(widget=forms.Textarea)
+        for i, e in enumerate(text_area):
+            self.fields[text_area_field_name[i]] = forms.CharField(widget=forms.Textarea)

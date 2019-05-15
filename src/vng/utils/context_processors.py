@@ -17,6 +17,7 @@ def settings(request):
 
     if hasattr(django_settings, 'RAVEN_CONFIG'):
         context.update(dsn=django_settings.RAVEN_CONFIG.get('public_dsn', ''))
-    context['session_active'] = Session.objects.filter(status=StatusChoices.running).count()
-    context['server_scheduled'] = ServerRun.objects.filter(scheduled=True).count()
+    if request.user.is_authenticated:
+        context['session_active'] = Session.objects.filter(user=request.user, status=StatusChoices.running).count()
+        context['server_scheduled'] = ServerRun.objects.filter(user=request.user, scheduled=True).count()
     return context

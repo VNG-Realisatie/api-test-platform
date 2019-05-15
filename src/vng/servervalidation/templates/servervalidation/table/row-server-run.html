@@ -16,7 +16,11 @@
                 <span class="badge badge-pill badge-dark">{{ server_run.status }}</span>
             {% endif %}
         </td>
-        <td>{{ server_run.stopped }}</td>
+        {% if server_run.stopped %}
+            <td>{{ server_run.stopped }}</td>
+        {% else %}
+            <td></td>
+        {% endif %}
     <td>{{ server_run.test_scenario.name }}</td>
     <td>
         {% if server_run.success is not None %}

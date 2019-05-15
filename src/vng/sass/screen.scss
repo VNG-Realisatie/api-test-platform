@@ -1,2 +1,6 @@
-@import 'custom/icon';
+$icomoon-font-path: '../fonts/icomoon/fonts';
+@import '../static/fonts/icomoon/style';
+
 @import '@coreui/coreui/scss/coreui';
+@import 'components/form/all';
+@import 'components/icon/all';

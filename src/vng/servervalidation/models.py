@@ -40,6 +40,7 @@ class TestScenarioUrl(models.Model):
 
     name = models.CharField('Naam', max_length=200)
     test_scenario = models.ForeignKey(TestScenario, on_delete=models.CASCADE)
+    url = models.BooleanField(default=True, help_text='Uncheck it if this variable is not a url but will be still injected in the postman collection.')
 
     def __str__(self):
         return '{} {}'.format(self.name, self.test_scenario)

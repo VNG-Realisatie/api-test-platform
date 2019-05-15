@@ -29,6 +29,7 @@
         "material-design-icons": "2.2.3",
         "newman": "^4.2.2",
         "newman-reporter-html": "^1.0.2",
+        "newman-reporter-htmlextra": "^1.7.2",
         "normalize.css": "^4.0.0",
         "perfect-scrollbar": "^1.4.0",
         "popper.js": "^1.15.0"

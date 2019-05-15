@@ -20,10 +20,16 @@
                     {% endfor %}
                     </div>
                     <div class="card-footer">
-                        <button class="btn btn-sm btn-primary" type="submit">
-                            <i class="fa fa-dot-circle-o"></i> Submit</button>
-                        <button class="btn btn-sm btn-danger" type="reset" onclick="location.href = {% url 'server_run:server-run_list' %};">
-                            <i class="fa fa-ban"></i> Cancel</button>
+                        <div class="row">
+                            <div class="col-auto mr-auto">
+                                <button class="btn btn-sm btn-primary" type="submit">
+                                    <i class="fa fa-dot-circle-o"></i>Start</button>
+                            </div>
+                            <div class="col-auto">
+                                <button class="btn btn-sm btn-danger" type="reset" onclick="location.href = {% url 'server_run:server-run_list' %};">
+                                    <i class="fa fa-ban"></i> Cancel</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </form>

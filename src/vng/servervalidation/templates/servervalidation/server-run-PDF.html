@@ -11125,7 +11125,8 @@
 
                 {% for postman in postman_result %}
                 <div class="row">
-                    <div class="col-md-12">
+                    <div class="col-sm-12">
+                        <h2>Results</h2>
                         <table class="table">
                             <tbody>
                                 {% for calls in postman.get_json_obj %}
@@ -11202,6 +11203,66 @@
                         </table>
                     </div>
 
+                    </div>
+
+                    {% if postman.get_json_obj_info.run.failures %}
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h2>Failures</h2>
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Error</th>
+                                        <th>Test</th>
+                                        <th>Message</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for failure in postman.get_json_obj_info.run.failures %}
+                                    <tr>
+                                        <td>{{ failure.source.name }}</td>
+                                        <td>{{ failure.error.name }}</td>
+                                        <td>{{ failure.error.test }}</td>
+                                        <td>{{ failure.error.message }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if postman.get_json_obj.0.assertions %}
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h2>Assertions</h2>
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Name call</th>
+                                        <th>Name assertion</th>
+                                        <th>Assertion</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for exec in postman.get_json_obj%}
+                                    {% if 'assertions' in exec %}
+                                    {% for assertion in exec.assertions %}
+                                    {% if 'error' not in assertion %}
+                                    <tr>
+                                        <td>{{ exec.item.name }}</td>
+                                        <td>{{ exec.request.url.url  }}</td>
+                                        <td>{{ assertion.assertion }}</td>
+                                    </tr>
+                                    {% endif %}
+                                    {% endfor %}
+                                    {% endif %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    {% endif %}
                     {% endfor %}
                 </div>
             </div>

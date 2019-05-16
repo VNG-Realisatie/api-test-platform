@@ -85,7 +85,7 @@ class TestCreation(WebTest):
 
         ptr = PostmanTestResult.objects.get(postman_test__test_scenario=server.test_scenario)
         url = reverse('server_run:server-run_detail_log', kwargs={
-            'pk': ptr.pk
+            'uuid': ptr.server_run.uuid
         })
         call = self.app.get(url, user=self.user)
 

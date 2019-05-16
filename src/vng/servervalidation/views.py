@@ -220,11 +220,10 @@ class ServerRunLogJsonView(LoginRequiredMixin, DetailView):
     template_name = 'servervalidation/server-run_log_json.html'
 
 
-class ServerRunPdfView(ServerRunLogView):
+class ServerRunPdfView(ServerRunOutputUuid):
 
-    template_name = 'servervalidation/server-run-PDF_v2.0.html'
+    template_name = 'servervalidation/server-run-PDF.html'
 
-    '''
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         server_run = context['object']
@@ -239,15 +238,10 @@ class ServerRunPdfView(ServerRunLogView):
         self.filename = 'Server run {} report.pdf'.format(server_run.pk)
         context['error_codes'] = postman.get_error_codes()
         return context
-    '''
 
     def get(self, request, *args, **kwargs):
-        import ipdb
-        ipdb.set_trace()
-        self.kwargs['pk'] = kwargs['postman_res_id']
-        response = super().get(request, {
-            'pk': kwargs['postman_res_id']
-        }).content.decode('utf-8')
+        # return super().get(request, *args, **kwargs)
+        response = super().get(request, *args, **kwargs).render().content.decode('utf-8')
         pdf = HTML(string=response, base_url=request.build_absolute_uri('/')).write_pdf()
         response = HttpResponse(pdf, content_type='application/pdf')
         if hasattr(self, 'filename'):

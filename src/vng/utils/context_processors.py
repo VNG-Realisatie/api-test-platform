@@ -2,7 +2,7 @@ from django.conf import settings as django_settings
 
 from ..testsession.models import Session
 from ..servervalidation.models import ServerRun
-from .choices import StatusChoices
+from .choices import StatusChoices, StatusWithScheduledChoices
 
 
 def settings(request):
@@ -19,5 +19,5 @@ def settings(request):
         context.update(dsn=django_settings.RAVEN_CONFIG.get('public_dsn', ''))
     if request.user.is_authenticated():
         context['session_active'] = Session.objects.filter(user=request.user, status=StatusChoices.running).count()
-        context['server_scheduled'] = ServerRun.objects.filter(user=request.user, scheduled=True).count()
+        context['server_scheduled'] = ServerRun.objects.filter(user=request.user, scheduled=True, status=StatusWithScheduledChoices.scheduled).count()
     return context

@@ -1,8 +1,7 @@
 {% spaceless %}
-<tr>
-    {% if server_run.stopped %}
+    <tr>
         <td>
-            <a href="{% url 'server_run:server-run_detail_uuid' server_run.uuid %}">#{{ server_run.id }}</a>
+        <a href="{% url 'server_run:server-run_detail_uuid' server_run.uuid %}">#{{ server_run.id }}</a>
         </td>
         <td>
             {% if server_run.status == choices.running %}
@@ -17,15 +16,11 @@
                 <span class="badge badge-pill badge-dark">{{ server_run.status }}</span>
             {% endif %}
         </td>
-        <td>{{ server_run.stopped }}</td>
-    {% else %}
-        <td>
-            #{{ server_run.id }}
-            Status: {{ server_run.status }}
-        </td>
-        <td></td>
-    {% endif %}
-
+        {% if server_run.stopped %}
+            <td>{{ server_run.stopped }}</td>
+        {% else %}
+            <td></td>
+        {% endif %}
     <td>{{ server_run.test_scenario.name }}</td>
     <td>
         {% if server_run.success is not None %}

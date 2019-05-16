@@ -67,7 +67,8 @@ def start_app_b8s(session, bind_url):
     for trial in range(N_TRIALS):
         try:
             time.sleep(10)                      # Waiting for the load balancer to be loaded
-            update_session_status(session, 'Installatie voortgang {}'.format(trial), 28 + (12 * trial))
+            percentage = 28 + (12 * trial)
+            update_session_status(session, 'Installatie voortgang {}'.format(trial + 1), percentage if percentage < 95 else 94)
             ip = kuber.status(app_name)
 
             update_session_status(session, 'Status controle van pod', 95)

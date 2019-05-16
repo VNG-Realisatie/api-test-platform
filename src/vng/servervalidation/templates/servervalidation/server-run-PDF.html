@@ -9,12 +9,6 @@
     <meta charset="utf-8">
     <title>Server Report</title>
     <style type="text/css">
-        /*!
- * Bootstrap v4.3.1 (https://getbootstrap.com/)
- * Copyright 2011-2019 The Bootstrap Authors
- * Copyright 2011-2019 Twitter, Inc.
- * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
- */
         :root {
             --blue: #007bff;
             --indigo: #6610f2;
@@ -11019,19 +11013,41 @@
         /*# sourceMappingURL=bootstrap.min.css.map */
 
     </style>
+    <style type="text/css">
+    .squared {
+        height: 20px;
+        width: 20px;
+        border-radius: 30%;
+        display: inline-block;
+        vertical-align: middle;
+        text-align: center;
+    }
+    .green_back{
+        background-color: green;
+    }
+    .red_back{
+        background-color: red;
+    }
+    </style>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 
 <body>
     <div class="container">
         <div class="row">
+            <div class="col-md-2">
+                <img src="{% static 'ico/favicon.ico' %}" alt="VNG Logo">
+            </div>
+            <div class="col-md-2">
+                <h3 class="mt-5">Server Report</h3>
+            </div>
             <div class="col-md-12">
                 <div class='table-responsive'>
                     <table class="table table-striped">
                         <tbody>
                             <tr>
                                 <td>Sessie</td>
-                                <td>{{ object.pk }}</td>
+                                <td>{{ object.uuid }}</td>
                             </tr>
 
                             <tr>
@@ -11055,7 +11071,7 @@
                             {% endfor %}
 
                             <tr>
-                                <td>Started</td>
+                                <td>Started </td>
                                 <td>{{ object.started }}</td>
                             </tr>
                             {% if object.stopped %}
@@ -11112,8 +11128,7 @@
                     <div class="col-md-12">
                         <table class="table">
                             <tbody>
-                                <tr style="background-color: red">
-                                    {% for calls in postman.get_json_obj %}
+                                {% for calls in postman.get_json_obj %}
                                 <tr class="table-active">
                                     {% if calls.response.code >= 200 and calls.response.code < 400 and not calls.item.error_test %}
                                     <td>
@@ -11122,7 +11137,7 @@
                                     <td>
                                     </td>
                                     <td>
-                                        <p class='icon icon--checkmark'></p>
+                                        <i class="material-icons">check</i>
                                     </td>
                                     {% else %}
                                     <td>
@@ -11131,7 +11146,7 @@
                                     <td>
                                     </td>
                                     <td>
-                                        <p class='icon icon--cross'></p>
+                                        <i class="material-icons">clear</i>
                                     </td>
                                     {% endif %}
                                 </tr>
@@ -11143,13 +11158,13 @@
                                         {{ calls.response.code }} {{ calls.response.status }} 200
                                     </td>
                                     {% if calls.response.code >= 200 and calls.response.code < 400  %}
-                                    <td>
-                                        <i class="material-icons">add</i>
-                                        <p class='icon icon--checkmark'></p>
+                                    <td class="table-success">
+                                        <i class="material-icons">check</i>
                                     </td>
                                     {% else %}
                                     <td class="table-danger">
-                                        <p class='icon icon--cross'></p>
+
+                                        <i class="material-icons">clear</i>
                                     </td>
                                     {% endif %}
                                 </tr>
@@ -11176,7 +11191,7 @@
                                         {{assertion.assertion}}
                                     </td>
                                     <td class="table-success">
-                                        <p class='icon icon--checkmark'></p>
+                                        <i class="material-icons">check</i>
                                     </td>
                                     {% endif %}
                                 </tr>

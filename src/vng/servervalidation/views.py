@@ -204,20 +204,24 @@ class StopServer(OwnerSingleObject, View):
         return redirect(reverse('server_run:server-run_list'))
 
 
-class ServerRunLogView(LoginRequiredMixin, DetailView):
+class ServerRunLogView(DetailView):
 
-    model = PostmanTestResult
+    model = ServerRun
     template_name = 'servervalidation/server-run_log.html'
+    slug_field = 'uuid'
+    slug_url_kwarg = 'uuid'
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
-        return HttpResponse(content=self.object.log)
+        return HttpResponse(content=self.object.postmantestresult_set.first().log)
 
 
-class ServerRunLogJsonView(LoginRequiredMixin, DetailView):
+class ServerRunLogJsonView(DetailView):
 
-    model = PostmanTestResult
+    model = ServerRun
     template_name = 'servervalidation/server-run_log_json.html'
+    slug_field = 'uuid'
+    slug_url_kwarg = 'uuid'
 
 
 class ServerRunPdfView(PDFGenerator, ServerRunOutputUuid):

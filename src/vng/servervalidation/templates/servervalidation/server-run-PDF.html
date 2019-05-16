@@ -11019,93 +11019,177 @@
         /*# sourceMappingURL=bootstrap.min.css.map */
 
     </style>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 
 <body>
     <div class="container">
-        {% for postman in postman_result %}
         <div class="row">
-            <div class="col-xs-8">
-                <table class="table">
-                    <tbody>
-                        <tr style="background-color: red">
-                            {% for calls in postman.get_json_obj %}
-                        <tr class="table-active">
-                            {% if calls.response.code >= 200 and calls.response.code < 400 and not calls.item.error_test %}
-                            <td>
-                                <b>{{calls.item.name}}</b>
-                            </td>
-                            <td>
-                            </td>
-                            <td>
-                                <p class='icon icon--checkmark'></p>
-                            </td>
-                            {% else %}
-                            <td>
-                                <b>{{calls.item.name}}</b>
-                            </td>
-                            <td>
-                            </td>
-                            <td>
-                                <p class='icon icon--cross'></p>
-                            </td>
-                            {% endif %}
-                        </tr>
-                        <tr>
-                            <td>
-                                {{calls.request.url.url}}
-                            </td>
-                            <td>
-                                {{ calls.response.code }} {{ calls.response.status }} 200
-                            </td>
-                            {% if calls.response.code >= 200 and calls.response.code < 400  %}
-                            <td style="background-color:red">
-                                S
-                                <p class='icon icon--checkmark'></p>
-                            </td>
-                            {% else %}
-                            <td class="table-danger">
-                                <p class='icon icon--cross'></p>
-                            </td>
-                            {% endif %}
-                        </tr>
-                        {% for assertion in calls.assertions %}
-                        {% if 'error' in assertion %}
-                        <tr class="table-danger">
-                            {% else %}
-                        <tr>
-                            {% endif %}
-                            <td>
-                                {% if forloop.counter == 1 %}
-                                <u>Tests</u>
-                                {% endif %}
-                            </td>
-                            {% if 'error' in assertion %}
-                            <td>
-                                {{assertion.assertion}}
-                            </td>
-                            <td class="table-danger">
-                                {{assertion.error.message}}
-                            </td>
-                            {% else %}
-                            <td>
-                                {{assertion.assertion}}
-                            </td>
-                            <td class="table-success">
-                                <p class='icon icon--checkmark'></p>
-                            </td>
-                            {% endif %}
-                        </tr>
-                        {% endfor %}
-                        {% endfor %}
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <div class="col-md-12">
+                <div class='table-responsive'>
+                    <table class="table table-striped">
+                        <tbody>
+                            <tr>
+                                <td>Sessie</td>
+                                <td>{{ object.pk }}</td>
+                            </tr>
 
-            {% endfor %}
-        </div>
-    </div>
+                            <tr>
+                                <td>Test Scenario</td>
+                                <td>
+                                    <ul>
+                                        {% for pc in object.test_scenario.postmantest_set.all %}
+                                        <li>
+                                            <a
+                                                href="{% url 'server_run:postman_download' pc.pk %}">{{ object.test_scenario }}</a>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                </td>
+                            </tr>
+                            {% for ep in object.endpoint_set.all %}
+                            <tr>
+                                <td>{{ ep.test_scenario_url.name }}</td>
+                                <td>{{ ep.url }}</td>
+                            </tr>
+                            {% endfor %}
+
+                            <tr>
+                                <td>Started</td>
+                                <td>{{ object.started }}</td>
+                            </tr>
+                            {% if object.stopped %}
+                            <tr>
+                                <td>Stopped</td>
+                                <td>{{ object.stopped }}</td>
+                            </tr>
+                            {% endif %}
+
+                            {% if object.scheduled and not object.is_stopped and request.user.is_authenticated and object.user == request.user %}
+                            <tr>
+                                <td>Status</td>
+                                <td>{{ object.status }}
+                                    <p>Wordt automatisch uitgevoerd om: <span class="badge badge-secondary">00:01</span>
+                                    </p>
+                                    {% if object.last_exec %}
+                                    <p>Laatste uitvoering om: <span
+                                            class="badge badge-secondary">{{object.last_exec}}</span></p>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Actie</td>
+                                <td>
+                                    <div class='row'>
+                                        <div class='col-3'>
+                                            <form id="myform" method="POST"
+                                                action="{% url 'server_run:server_run_stop' object.pk %}">
+                                                {% csrf_token %}
+                                                <input type="submit" class="btn btn-primary" value="Stop">
+                                            </form>
+                                        </div>
+                                        <div class='col-6'>
+                                            <a type="submit" class="btn btn-primary"
+                                                href="{% url 'server_run:server_run_trigger' object.pk %}">Nu
+                                                Uitvoeren</a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td>Status</td>
+                                <td>{{ object.status }}</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+
+
+                {% for postman in postman_result %}
+                <div class="row">
+                    <div class="col-md-12">
+                        <table class="table">
+                            <tbody>
+                                <tr style="background-color: red">
+                                    {% for calls in postman.get_json_obj %}
+                                <tr class="table-active">
+                                    {% if calls.response.code >= 200 and calls.response.code < 400 and not calls.item.error_test %}
+                                    <td>
+                                        <b>{{calls.item.name}}</b>
+                                    </td>
+                                    <td>
+                                    </td>
+                                    <td>
+                                        <p class='icon icon--checkmark'></p>
+                                    </td>
+                                    {% else %}
+                                    <td>
+                                        <b>{{calls.item.name}}</b>
+                                    </td>
+                                    <td>
+                                    </td>
+                                    <td>
+                                        <p class='icon icon--cross'></p>
+                                    </td>
+                                    {% endif %}
+                                </tr>
+                                <tr>
+                                    <td>
+                                        {{calls.request.url.url}}
+                                    </td>
+                                    <td>
+                                        {{ calls.response.code }} {{ calls.response.status }} 200
+                                    </td>
+                                    {% if calls.response.code >= 200 and calls.response.code < 400  %}
+                                    <td>
+                                        <i class="material-icons">add</i>
+                                        <p class='icon icon--checkmark'></p>
+                                    </td>
+                                    {% else %}
+                                    <td class="table-danger">
+                                        <p class='icon icon--cross'></p>
+                                    </td>
+                                    {% endif %}
+                                </tr>
+                                {% for assertion in calls.assertions %}
+                                {% if 'error' in assertion %}
+                                <tr class="table-danger">
+                                    {% else %}
+                                <tr>
+                                    {% endif %}
+                                    <td>
+                                        {% if forloop.counter == 1 %}
+                                        <u>Tests</u>
+                                        {% endif %}
+                                    </td>
+                                    {% if 'error' in assertion %}
+                                    <td>
+                                        {{assertion.assertion}}
+                                    </td>
+                                    <td class="table-danger">
+                                        {{assertion.error.message}}
+                                    </td>
+                                    {% else %}
+                                    <td>
+                                        {{assertion.assertion}}
+                                    </td>
+                                    <td class="table-success">
+                                        <p class='icon icon--checkmark'></p>
+                                    </td>
+                                    {% endif %}
+                                </tr>
+                                {% endfor %}
+                                {% endfor %}
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {% endfor %}
+                </div>
+            </div>
 </body>
 
 </html>

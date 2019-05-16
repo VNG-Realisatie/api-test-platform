@@ -27,6 +27,7 @@ class NewmanManager:
                              '--reporter-htmlextra-export ' + REPORT_FOLDER + '/{}.html {}')
 
     RUN_HTML_REPORT = ('{} run {} -r html '
+                       '--reporter-html-template ' + REPORT_FOLDER + '/default_reporter.hbs '
                        '--reporter-html-export ' + REPORT_FOLDER + '/{}.html {}')
 
     RUN_JSON_REPORT = '{} run  {} -r json --reporter-json-export ' + REPORT_FOLDER + '/{}.json {}'

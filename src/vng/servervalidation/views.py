@@ -16,6 +16,8 @@ from .models import (
 )
 from .task import execute_test
 
+from weasyprint import HTML
+
 
 class TestScenarioSelect(LoginRequiredMixin, ListView):
 
@@ -218,7 +220,7 @@ class ServerRunLogJsonView(LoginRequiredMixin, DetailView):
     template_name = 'servervalidation/server-run_log_json.html'
 
 
-class ServerRunPdfView(PDFGenerator, ServerRunOutputUuid):
+class ServerRunPdfView(ServerRunLogView):
 
     template_name = 'servervalidation/server-run-PDF_v2.0.html'
 
@@ -238,6 +240,19 @@ class ServerRunPdfView(PDFGenerator, ServerRunOutputUuid):
         context['error_codes'] = postman.get_error_codes()
         return context
     '''
+
+    def get(self, request, *args, **kwargs):
+        import ipdb
+        ipdb.set_trace()
+        self.kwargs['pk'] = kwargs['postman_res_id']
+        response = super().get(request, {
+            'pk': kwargs['postman_res_id']
+        }).content.decode('utf-8')
+        pdf = HTML(string=response, base_url=request.build_absolute_uri('/')).write_pdf()
+        response = HttpResponse(pdf, content_type='application/pdf')
+        if hasattr(self, 'filename'):
+            response['Content-Disposition'] = 'attachment; filename="{}"'.format(self.filename)
+        return response
 
 
 class PostmanDownloadView(View):

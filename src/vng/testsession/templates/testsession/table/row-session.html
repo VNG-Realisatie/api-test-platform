@@ -37,7 +37,7 @@
         </td>
 
         {% if session.is_starting and session.deploy_status %}
-            <td id='starting' session_id='{{session.id}}' >
+            <td id='starting' class='td-20' session_id='{{session.id}}' >
             <div class="progress-group">
                 <div class="progress-group-header">
                     <i class="cui-cloud progress-group-icon"></i>
@@ -55,9 +55,9 @@
                 {% for eu in session.exposedurl_set.all %}
                     {% if eu.test_session %}
                             {% if eu.test_session.is_success_test %}
-                                <i class="cui-check icon-green h2"></i>
+                                <i class="icon icon--checkmark"></i>
                             {% else %}
-                                <i class="cui-circle-x icon-red h2"></i>
+                                <i class="icon icon--cross"></i>
                             {% endif %}
                         </li>
                     {% endif %}

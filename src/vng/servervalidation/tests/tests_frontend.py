@@ -197,3 +197,11 @@ class IntegrationTest(WebTest):
             'pk': new_server.id
         }))
         self.assertIn(str(new_server.uuid), call.text)
+
+    def test_session_number_no_user(self):
+        # simply check that with no user it raises no errors
+        call = self.app.get(reverse('server_run:server-run_list'), status=[200, 302])
+
+    def test_session_number_user(self):
+        call = self.app.get(reverse('server_run:server-run_list'), user=self.user)
+        self.assertIn(str(ServerRun.objects.filter(user=self.user, scheduled=True).count()), call.text)

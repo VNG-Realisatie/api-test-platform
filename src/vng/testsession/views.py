@@ -99,6 +99,7 @@ class SessionLogView(OwnerMultipleObjects):
             'success': stats[0],
             'failed': stats[1],
             'not_called': stats[2],
+            'total': sum(stats)
         })
         return context
 

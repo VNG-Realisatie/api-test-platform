@@ -73,8 +73,7 @@
 
     <div class="row">
         {% for postman in postman_result %}
-        {% with postman.get_call_results as results %}
-        {% with postman.get_assertions_details as assertions %}
+        {% with postman.get_aggregate_results as results %}
 
         <div class="col-sm-6">
             <div class="card">
@@ -94,7 +93,7 @@
                                         Total calls
                                     </td>
                                     <td>
-                                        {{ results.0|add:results.1 }}
+                                        {{ results.calls.total }}
                                     </td>
                                 </tr>
                                 <tr>
@@ -102,7 +101,7 @@
                                         Calls failed
                                     </td>
                                     <td class="table-danger">
-                                        {{ results.1 }}
+                                        {{ results.calls.failed }}
                                     </td>
                                 </tr>
                                 <tr>
@@ -110,7 +109,7 @@
                                         Calls successful
                                     </td>
                                     <td class="table-success">
-                                        {{ results.0 }}
+                                        {{ results.calls.success }}
                                     </td>
                                 </tr>
                                 <tr class="table-active">
@@ -118,7 +117,7 @@
                                         Total assertions
                                     </td>
                                     <td>
-                                        {{ assertions.0|add:results.1 }}
+                                        {{ results.assertions.total }}
                                     </td>
                                 </tr>
                                 <tr>
@@ -126,7 +125,7 @@
                                         Assertions failed
                                     </td>
                                     <td class="table-danger">
-                                        {{ assertions.1 }}
+                                        {{ results.assertions.passed }}
                                     </td>
                                 </tr>
                                 <tr>
@@ -134,7 +133,7 @@
                                         Assertions passed
                                     </td>
                                     <td class="table-success">
-                                        {{ assertions.0 }}
+                                        {{ results.assertions.failed }}
                                     </td>
                                 </tr>
                             </tbody>
@@ -144,7 +143,6 @@
             </div>
         </div>
 
-        {% endwith %}
         {% endwith %}
         {% endfor %}
 

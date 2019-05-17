@@ -39,6 +39,19 @@ class SessionListView(LoginRequiredMixin, ListView):
         context.update({
             'choices': _choices,
         })
+        sessions_related = []
+        for session in context['object_list']:
+            # reports = Report.objects.filter()
+            success, failed, not_called = 0, 0, 0
+            for report in Report.objects.filter(session_log__in=session.sessionlog_set.all()):
+                if report.is_success():
+                    success += 1
+                elif report.is_failed():
+                    failed += 1
+                elif report.is_not_called():
+                    not_called += 1
+            sessions_related.append((session, success, failed, not_called))
+        context['object_list'] = sessions_related
         return context
 
     def get_queryset(self):

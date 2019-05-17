@@ -1,5 +1,6 @@
 {% load subdomainurls %}
 {% spaceless %}
+{% with session_related.0 as session %}
     <tr>
         <td>
             <a href="{% url 'testsession:session_log' session.id %}">#{{ session.id }}</a>
@@ -52,6 +53,10 @@
             </div>
             {% else %}
                 <td>
+                    {{session_related.1}} <i class="cui-circle-check "></i>
+                    {{session_related.2}} <i class="cui-circle-x"></i>
+                </td>
+                <td>
                 {% for eu in session.exposedurl_set.all %}
                     {% if eu.test_session %}
                             {% if eu.test_session.is_success_test %}
@@ -88,4 +93,5 @@
             {% endif %}
         </td>
     </tr>
+{% endwith %}
 {% endspaceless %}

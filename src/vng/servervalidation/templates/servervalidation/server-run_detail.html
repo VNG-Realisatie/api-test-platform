@@ -27,9 +27,56 @@
                     </div>
                 </div>
             </div>
-            {% for postman in postman_result %}
-            {% with postman.get_call_results as results %}
-            {% with postman.get_assertions_details as assertions %}
+        </div>
+
+        <div class="col-sm-6">
+            <div class="card">
+                <div class="card-body">
+                    <p>
+                        Note: Shields.io caches the badge result for 5 minutes. Check the <a
+                            href="{% url 'apiv1server:provider:api_server-run-shield-detail' object.id %}">API</a> for
+                        direct access.</p>
+
+                    <span display="block" style='width: 250px;' class="common__BadgeWrapper-sc-16zh6vt-3 fagfmg">
+                        <a href="{% url 'server_run:server-run_detail_uuid' object.uuid %}">
+                            <img style='width:250px' alt=""
+                                src="https://img.shields.io/endpoint.svg?style=for-the-badge&amp;url={{request.scheme}}://{{request.get_host}}{% url 'apiv1server:provider:api_server-run-shield-detail' object.id %}">
+                        </a>
+                    </span>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Markdown snippet</h5>
+                    <p>Paste the following in your README.md to show your badge on Github.</p>
+                    <?prettify lang=html linenums=true?>
+                    <pre class="prettyprint" id='gitSnippet'>
+            <xmp>
+
+            </xmp>
+          </pre>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">HTML snippet</h5>
+                    <p>Paste the following in your HTML page to show your badge.</p>
+                    <?prettify lang=html linenums=true?>
+                    <pre class="prettyprint" id='htmlSnippet'>
+            <xmp>
+            </xmp>
+          </pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for postman in postman_result %}
+        {% with postman.get_call_results as results %}
+        {% with postman.get_assertions_details as assertions %}
+
+        <div class="col-sm-6">
             <div class="card">
                 <div class="card-header">
                     Postman collection #{{forloop.counter}} results details
@@ -71,7 +118,7 @@
                                         Total assertions
                                     </td>
                                     <td>
-                                    {{ assertions.0|add:results.1 }}
+                                        {{ assertions.0|add:results.1 }}
                                     </td>
                                 </tr>
                                 <tr>
@@ -79,7 +126,7 @@
                                         Assertions failed
                                     </td>
                                     <td>
-                                    {{ assertions.1 }}
+                                        {{ assertions.1 }}
                                     </td>
                                 </tr>
                                 <tr>
@@ -87,7 +134,7 @@
                                         Assertions passed
                                     </td>
                                     <td>
-                                    {{ assertions.0 }}
+                                        {{ assertions.0 }}
                                     </td>
                                 </tr>
                             </tbody>
@@ -95,49 +142,12 @@
                     </div>
                 </div>
             </div>
-
-            {% endwith %}
-            {% endwith %}
-            {% endfor %}
         </div>
 
-	<div class="col-sm-6">
-	  <div class="card">
-	    <div class="card-body">
-	      <p>
-	    Note: Shields.io caches the badge result for 5 minutes. Check the <a href="{% url 'apiv1server:provider:api_server-run-shield-detail' object.id %}">API</a> for direct access.</p>
+        {% endwith %}
+        {% endwith %}
+        {% endfor %}
 
-	    <span display="block" style='width: 250px;' class="common__BadgeWrapper-sc-16zh6vt-3 fagfmg">
-            <a href="{% url 'server_run:server-run_detail_uuid' object.uuid %}">
-                <img style='width:250px' alt="" src="https://img.shields.io/endpoint.svg?style=for-the-badge&amp;url={{request.scheme}}://{{request.get_host}}{% url 'apiv1server:provider:api_server-run-shield-detail' object.id %}">
-            </a>
-            </span>
-	</div>
-      </div>
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">Markdown snippet</h5>
-	  <p>Paste the following in your README.md to show your badge on Github.</p>
-          <?prettify lang=html linenums=true?>
-          <pre class="prettyprint" id='gitSnippet'>
-            <xmp>
-
-            </xmp>
-          </pre>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">HTML snippet</h5>
-	  <p>Paste the following in your HTML page to show your badge.</p>
-          <?prettify lang=html linenums=true?>
-          <pre class="prettyprint" id='htmlSnippet'>
-            <xmp>
-            </xmp>
-          </pre>
-        </div>
-      </div>
-      </div>
     </div>
 
     {% for postman in postman_result %}
@@ -173,7 +183,7 @@
                                 </td>
                                 {% endif %}
                             </tr>
-                            <tr >
+                            <tr>
                                 <td>
                                     {{calls.request.url.url}}
                                 </td>
@@ -191,33 +201,33 @@
                                 {% endif %}
                             </tr>
                             {% for assertion in calls.assertions %}
+                            {% if 'error' in assertion %}
+                            <tr class="table-danger">
+                                {% else %}
+                            <tr>
+                                {% endif %}
+                                <td>
+                                    {% if forloop.counter == 1 %}
+                                    <u>Tests</u>
+                                    {% endif %}
+                                </td>
                                 {% if 'error' in assertion %}
-                                <tr class="table-danger">
-                                    {% else %}
-                                <tr>
-                                    {% endif %}
-                                    <td>
-                                        {% if forloop.counter == 1 %}
-                                        <u>Tests</u>
-                                        {% endif %}
-                                    </td>
-                                    {% if 'error' in assertion %}
-                                    <td>
-                                        {{assertion.assertion}}
-                                    </td>
-                                    <td class="table-danger">
-                                        {{assertion.error.message}}
-                                    </td>
-                                    {% else %}
-                                    <td>
-                                        {{assertion.assertion}}
-                                    </td>
-                                    <td class="table-success">
-                                        <p class='icon icon--checkmark'></p>
-                                    </td>
-                                    {% endif %}
-                                </tr>
-                                {% endfor %}
+                                <td>
+                                    {{assertion.assertion}}
+                                </td>
+                                <td class="table-danger">
+                                    {{assertion.error.message}}
+                                </td>
+                                {% else %}
+                                <td>
+                                    {{assertion.assertion}}
+                                </td>
+                                <td class="table-success">
+                                    <p class='icon icon--checkmark'></p>
+                                </td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
                             {% endfor %}
                         </tbody>
                     </table>
@@ -301,7 +311,7 @@
 
 
 {% block script %}
-    <script>
+<script>
     var gitSnippet = '[![Status badge](https://img.shields.io/endpoint.svg?style=for-the-badge&amp;url={{request.scheme}}://{{request.get_host}}{% url "apiv1server:provider:api_server-run-shield-detail" object.id %})]({{request.scheme}}://{{request.get_host}}{% url 'server_run:server-run_detail_uuid' object.uuid %})'
 
     var htmlSnippet = '<span display="block" height="20px" class="common__BadgeWrapper-sc-16zh6vt-3 fagfmg">\n'
@@ -335,5 +345,6 @@
     // insert into PRE
     document.getElementById("gitSnippet").innerHTML = gitSnippet;
     document.getElementById("htmlSnippet").innerHTML = htmlSnippet;
-  </script>
+
+</script>
 {% endblock %}

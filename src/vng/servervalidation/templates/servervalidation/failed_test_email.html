@@ -1,21 +1,36 @@
 <p>
 Dear Sir/Mrs,
-the scheduled test has failed, you can find all the details here:
+the scheduled test has failed, you can find all the details below.
+You are receivin gthis e-mail because you configured one or more scheduled provider tests in the VNG API Test platform.
 <br>
 Failed
 <ul>
     {% for s in failure %}
         <li>
-            https://{{domain}}{% url 'server_run:server-run_detail_uuid' s.0.uuid %}
+            <a href="https://{{domain}}{% url 'server_run:server-run_detail_uuid' s.0.uuid %}">
+                {{s.0.test_scenario.name}}
+            </a>, started at {{s.0.started}}.
+            <ul>
+                {% for pr in s.postmantestresult_set.all %}
+                    <li>
+                        Postaman collection #{{forloop.counter}}, {{pr.positive_call_result}} calls succeeded, {{pr.negative_call_result}} calls failed.
+                    </li>
+                {% endfor %}
+            </ul>
         </li>
     {% endfor %}
 </ul>
 <br>
+{% if successful %}
 Successful:
-<ul>
-    {% for s in successful %}
-        <li>
-            https://{{domain}}{% url 'server_run:server-run_detail_uuid' s.0.uuid %}
-        </li>
-    {% endfor %}
-</ul>
+    <ul>
+        {% for s in successful %}
+            <li>
+                <a href="https://{{domain}}{% url 'server_run:server-run_detail_uuid' s.0.uuid %}">
+                    {{s.0.test_scenario.name}}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+You can find further details by loggin in the <a href="https://{{domain}}">VNG API Test-platform</a> . If you stop your scheduled tests you will no longer receive these e-mails.

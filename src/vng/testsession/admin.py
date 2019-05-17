@@ -65,7 +65,7 @@ class SessionAdmin(admin.ModelAdmin):
         'build_version',
     ]
     list_filter = ['user']
-    search_fields = ['user', 'api_endpoint']
+    search_fields = ['name', 'id', 'user__username']
     inlines = [ExposedUrlInline]
 
 

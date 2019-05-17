@@ -27,6 +27,78 @@
                     </div>
                 </div>
             </div>
+            {% for postman in postman_result %}
+            {% with postman.get_call_results as results %}
+            {% with postman.get_assertions_details as assertions %}
+            <div class="card">
+                <div class="card-header">
+                    Postman collection #{{forloop.counter}} results details
+                </div>
+                <div class="card-body">
+                    <div class='table-responsive'>
+                        <table class="table">
+                            <thead>
+                                <th>Property</th>
+                                <th>Value</th>
+                            </thead>
+                            <tbody>
+                                <tr class="table-active">
+                                    <td>
+                                        Total calls
+                                    </td>
+                                    <td>
+                                        {{ results.0|add:results.1 }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Calls failed
+                                    </td>
+                                    <td>
+                                        {{ results.1 }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Calls successful
+                                    </td>
+                                    <td>
+                                        {{ results.0 }}
+                                    </td>
+                                </tr>
+                                <tr class="table-active">
+                                    <td>
+                                        Total assertions
+                                    </td>
+                                    <td>
+                                    {{ assertions.0|add:results.1 }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Assertions failed
+                                    </td>
+                                    <td>
+                                    {{ assertions.1 }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Assertions passed
+                                    </td>
+                                    <td>
+                                    {{ assertions.0 }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            {% endwith %}
+            {% endwith %}
+            {% endfor %}
         </div>
 
 	<div class="col-sm-6">
@@ -119,33 +191,33 @@
                                 {% endif %}
                             </tr>
                             {% for assertion in calls.assertions %}
-                            {% if 'error' in assertion %}
-                            <tr class="table-danger">
-                                {% else %}
-                            <tr>
-                                {% endif %}
-                                <td>
-                                    {% if forloop.counter == 1 %}
-                                    <u>Tests</u>
-                                    {% endif %}
-                                </td>
                                 {% if 'error' in assertion %}
-                                <td>
-                                    {{assertion.assertion}}
-                                </td>
-                                <td class="table-danger">
-                                    {{assertion.error.message}}
-                                </td>
-                                {% else %}
-                                <td>
-                                    {{assertion.assertion}}
-                                </td>
-                                <td class="table-success">
-                                    <p class='icon icon--checkmark'></p>
-                                </td>
-                                {% endif %}
-                            </tr>
-                            {% endfor %}
+                                <tr class="table-danger">
+                                    {% else %}
+                                <tr>
+                                    {% endif %}
+                                    <td>
+                                        {% if forloop.counter == 1 %}
+                                        <u>Tests</u>
+                                        {% endif %}
+                                    </td>
+                                    {% if 'error' in assertion %}
+                                    <td>
+                                        {{assertion.assertion}}
+                                    </td>
+                                    <td class="table-danger">
+                                        {{assertion.error.message}}
+                                    </td>
+                                    {% else %}
+                                    <td>
+                                        {{assertion.assertion}}
+                                    </td>
+                                    <td class="table-success">
+                                        <p class='icon icon--checkmark'></p>
+                                    </td>
+                                    {% endif %}
+                                </tr>
+                                {% endfor %}
                             {% endfor %}
                         </tbody>
                     </table>

@@ -185,6 +185,16 @@ class PostmanTestResult(models.Model):
                 negative += 1
         return positive, negative
 
+    def get_assertions_details(self):
+        passed, error = 0, 0
+        for call in self.get_json_obj():
+            for assertion in call['assertions']:
+                if 'error' in assertion:
+                    error += 1
+                else:
+                    passed += 1
+        return passed, error
+
     def positive_call_result(self):
         return self.get_call_results()[0]
 

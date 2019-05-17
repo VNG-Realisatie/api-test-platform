@@ -1,11 +1,34 @@
 import json
+import os
+
+from kubernetes import client, config
+from google.cloud import container_v1
 
 from ..utils.commands import run_command
+
+'''
+Set with the location where the credentials are.
+For further info visit: https://cloud.google.com/docs/authentication/getting-started
+'''
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/home/projects/env/VNG_Test_platform-d71b9ef79195.json"
+
+'''
+The configuration of the kubectl has to be already performed.
+By default it tries to fetch the resource located in $HOME/.kube/config or the environment variable KUBECONFIG.
+For further info check https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/
+and https://cloud.google.com/kubernetes-engine/docs/quickstart
+'''
+config.load_kube_config()
+
+# TODO: set as global variable, maybe in the setting file?
+# TODO: use library to execute commands instead of command line
+project_id = 'vng-test-platform'
+zone = 'europe-west4-a'
 
 
 class K8S():
 
-    def __init__(self):
+    def __init__(self, app_name=None):
         set_zone = [
             'gcloud',
             'config',
@@ -22,6 +45,8 @@ class K8S():
         ]
         run_command(set_zone)
         run_command(set_project)
+
+        v1 = client.CoreV1Api()
 
     def fetch_resource(self, resource):
         fetch = [
@@ -49,6 +74,12 @@ class K8S():
             'get-credentials',
             'test-sessions',
         ]
+        # Create a general cluster (will error if it already exists)
+        run_command(create_cluster)
+
+        # Get the credentials to use kubectl for the correct cluster
+        run_command(get_credentials)
+
         deploy_image = [
             'kubectl',
             'run',
@@ -65,12 +96,6 @@ class K8S():
             '--port={}'.format(access_port),
             '--target-port={}'.format(port)
         ]
-
-        # Create a general cluster (will error if it already exists)
-        run_command(create_cluster)
-
-        # Get the credentials to use kubectl for the correct cluster
-        run_command(get_credentials)
 
         # Create a workload with pods
         run_command(deploy_image)
@@ -135,3 +160,12 @@ class K8S():
                 if ip_list:
                     return ip_list[0].get('ip')
         raise Exception('Application {} not found in the deployed cluster'.format(app_name))
+
+    def exec(self, app_name, command):
+        exec_command = [
+            'kubectl',
+            'exec',
+            app_name,
+            *command
+        ]
+        run_command(exec_command)

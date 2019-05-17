@@ -107,6 +107,12 @@ class VNGEndpoint(models.Model):
         return self.name + " ({})".format(self.session_type)
 
 
+class EnvironmentBoostrap(models.Model):
+
+    vng_endpoint = models.ForeignKey(VNGEndpoint)
+    command = models.TextField()
+
+
 class ScenarioCase(OrderedModel):
 
     url = models.CharField(max_length=200, help_text='''

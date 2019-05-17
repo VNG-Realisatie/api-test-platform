@@ -184,6 +184,18 @@ class Session(models.Model):
     def is_shutting_down(self):
         return self.status == choices.StatusChoices.shutting_down
 
+    def get_report_stats(self):
+        success, failed, not_called = 0, 0, 0
+        reports = Report.objects.filter(session_log__in=self.sessionlog_set.all())
+        for report in reports:
+            if report.is_success():
+                success += 1
+            elif report.is_failed():
+                failed += 1
+            elif report.is_not_called():
+                not_called += 1
+        return success, failed, not_called + (ScenarioCase.objects.filter(vng_endpoint__session_type=self.session_type).count() - reports.count())
+
 
 class ExposedUrl(models.Model):
 

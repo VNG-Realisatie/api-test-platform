@@ -261,7 +261,7 @@
                                         Total scenario cases
                                     </td>
                                     <td>
-                                        {{ success }}
+                                        {{ success|add:failed|add:not_called }}
                                     </td>
                                 </tr>
                                 <tr>

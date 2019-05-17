@@ -31,6 +31,14 @@
             {% endif %}
         {% endif %}
     </td>
+    <td>
+        {% with server_run.postmantestresult_set.first.get_call_results as results %}
+            {% if server_run.success is not None %}
+                {{results.0}}<i class="cui-circle-check "></i>
+                {{results.1}}<i class="cui-circle-x "></i>
+            {% endif %}
+        {% endwith %}
+    </td>
     {% if server_run.is_running %}
         <td id='starting' server_run_id='{{server_run.id}}'>
     {% else %}

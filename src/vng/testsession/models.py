@@ -109,7 +109,7 @@ class VNGEndpoint(models.Model):
 
 class EnvironmentBoostrap(models.Model):
 
-    vng_endpoint = models.ForeignKey(VNGEndpoint)
+    vng_endpoint = models.ForeignKey(VNGEndpoint, on_delete=models.CASCADE())
     command = models.TextField()
 
 

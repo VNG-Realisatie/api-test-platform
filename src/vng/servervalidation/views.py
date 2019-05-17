@@ -182,7 +182,7 @@ class TriggerServerRun(OwnerSingleObject, View):
         if server.status == choices.StatusWithScheduledChoices.stopped:
             raise Http404("Server already stopped")
         self.request.session['server_run_scheduled'] = server.scheduled
-        execute_test.delay(server.pk, scheduled=True)
+        execute_test.delay(server.pk, scheduled=True, email=True)
         if server.scheduled:
             return redirect(reverse('server_run:server-run_list_scheduled'))
         return redirect(reverse('server_run:server-run_list'))

@@ -36,6 +36,8 @@ def execute_test_scheduled():
     server_run = ServerRun.objects.filter(scheduled=True).filter(status=choices.StatusWithScheduledChoices.scheduled).order_by('user')
     s_list = []
     for i, sr in enumerate(server_run):
+        sr.status = choices.StatusWithScheduledChoices.running
+        sr.save()
         s_list.append((sr, execute_test(sr.pk, scheduled=True)))
         if i == len(server_run) - 1 or sr.user != server_run[i + 1].user and s_list != []:
             send_email_failure(s_list)
@@ -43,7 +45,7 @@ def execute_test_scheduled():
 
 
 @app.task
-def execute_test(server_run_pk, scheduled=False):
+def execute_test(server_run_pk, scheduled=False, email=False):
     server_run = ServerRun.objects.get(pk=server_run_pk)
     server_run.status = choices.StatusWithScheduledChoices.running
     endpoints = Endpoint.objects.filter(server_run=server_run)
@@ -102,6 +104,8 @@ def execute_test(server_run_pk, scheduled=False):
     else:
         server_run.last_exec = timezone.now()
         server_run.status = choices.StatusWithScheduledChoices.scheduled
+    if email:
+        send_email_failure([(server_run, failure)])
     server_run.save()
     return failure
 

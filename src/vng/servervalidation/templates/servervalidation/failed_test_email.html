@@ -12,9 +12,9 @@ Failed
                 {{s.0.test_scenario.name}}
             </a>, started at {{s.0.started}}.
             <ul>
-                {% for pr in s.postmantestresult_set.all %}
+                {% for pr in s.0.postmantestresult_set.all %}
                     <li>
-                        Postaman collection #{{forloop.counter}}, {{pr.positive_call_result}} calls succeeded, {{pr.negative_call_result}} calls failed.
+                        Postman collection #{{forloop.counter}}, {{pr.positive_call_result}} calls succeeded, {{pr.negative_call_result}} calls failed.
                     </li>
                 {% endfor %}
             </ul>

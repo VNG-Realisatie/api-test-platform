@@ -3,6 +3,7 @@ Dear Sir/Mrs,
 the scheduled test has failed, you can find all the details below.
 You are receivin gthis e-mail because you configured one or more scheduled provider tests in the VNG API Test platform.
 <br>
+{% if failure %}
 Failed
 <ul>
     {% for s in failure %}
@@ -21,6 +22,7 @@ Failed
     {% endfor %}
 </ul>
 <br>
+{% endif %}
 {% if successful %}
 Successful:
     <ul>

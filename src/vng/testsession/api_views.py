@@ -293,7 +293,7 @@ class RunTest(CSRFExemptMixin, View):
         logger.info(request_method_name)
         logger.info(url)
         logger.info(relative_url)
-        scenario_cases = ScenarioCase.objects.filter(vng_endpoint__session_type=session.session_type).annotate(count=Count('queryparamsscenario_set__id')).order_by('count')
+        scenario_cases = ScenarioCase.objects.filter(vng_endpoint__session_type=session.session_type).annotate(count=Count('queryparamsscenario')).order_by('-count')
         for case in scenario_cases:
             logger.info(case)
             if case.http_method.lower() == request_method_name.lower():
@@ -315,6 +315,7 @@ class RunTest(CSRFExemptMixin, View):
                         report.result = choices.HTTPCallChoiches.success
                     logger.info("Saving report: %s", report.result)
                     report.save()
+                    break
 
     def sub_url_response(self, content, host, endpoint):
         '''

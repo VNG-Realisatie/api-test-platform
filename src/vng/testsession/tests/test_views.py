@@ -733,3 +733,36 @@ class TestRewriteUrl(WebTest):
         }
         url = rt.build_url(self.eu, '')
         self.assertEqual(url, 'http://www.dummy.com/path/sub/a')
+
+
+class TestMultipleParams(WebTest):
+    csrf_checks = False
+
+    def setUp(self):
+        self.user = UserFactory()
+        self.ep = VNGEndpointFactory()
+        self.sc1 = ScenarioCaseFactory(vng_endpoint=self.ep)
+        self.sc2 = ScenarioCaseFactory(vng_endpoint=self.ep)
+        QueryParamsScenarioFactory(scenario_case=self.sc1, name='tparam1')
+        QueryParamsScenarioFactory(scenario_case=self.sc2, name='tparam1')
+        QueryParamsScenarioFactory(scenario_case=self.sc2, name='tparam2')
+
+    def test(self):
+        resp = self.app.post_json(reverse('apiv1session:test_session-list'), {
+            'session_type': self.ep.session_type.name
+        }, user=self.user)
+
+        http_host = get_subdomain(resp.json['exposedurl_set'][0]['subdomain'])
+        self.app.get(resp.json['exposedurl_set'][0]['subdomain'] + 'unknown/23?tparam1=test&tparam2=test',
+                     extra_environ={'HTTP_HOST': '{}-example.com'.format(http_host)}, expect_errors=True)
+        report1 = Report.objects.filter(scenario_case=self.sc1).count()
+        report2 = Report.objects.filter(scenario_case=self.sc2).count()
+        self.assertEqual(report1, 0)
+        self.assertEqual(report2, 1)
+
+        self.app.get(resp.json['exposedurl_set'][0]['subdomain'] + 'unknown/23?tparam1=test&',
+                     extra_environ={'HTTP_HOST': '{}-example.com'.format(http_host)}, expect_errors=True)
+        report1 = Report.objects.filter(scenario_case=self.sc1).count()
+        report2 = Report.objects.filter(scenario_case=self.sc2).count()
+        self.assertEqual(report1, 1)
+        self.assertEqual(report2, 1)

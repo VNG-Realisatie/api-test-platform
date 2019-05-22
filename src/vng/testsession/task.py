@@ -148,7 +148,7 @@ def run_tests(session_pk):
         if not ep.test_file:
             continue
         newman = NewmanManager(ep.test_file, ep.url)
-        if session.url is not None:
+        if ep.url is not None:
             newman.replace_parameters({
                 ep.name: ep.url
             })

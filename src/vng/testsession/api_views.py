@@ -112,7 +112,7 @@ class StopSessionView(generics.ListAPIView):
     Stop the session and retrieve all the scenario cases related to it.
     """
     authentication_classes = (TokenAuthentication, SessionAuthentication)
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated, IsOwner)
     serializer_class = ScenarioCaseSerializer
 
     def perform_operations(self, session):

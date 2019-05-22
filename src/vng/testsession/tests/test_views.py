@@ -562,8 +562,9 @@ class TestAllProcedure(WebTest):
 
         call = self.app.get(url[:-1], user=self.user)
         self.assertIn('301', call.status)
-        call = self.app.get(url, user=self.user)
+        call = self.app.get(url, user=self.user, status=[404])
         self.assertIn('404', call.status)
+
 
 class TestLogNewman(WebTest):
 

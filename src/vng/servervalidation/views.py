@@ -182,7 +182,7 @@ class TriggerServerRun(OwnerSingleObject, View):
         if server.status == choices.StatusWithScheduledChoices.stopped:
             raise Http404("Server already stopped")
         self.request.session['server_run_scheduled'] = server.scheduled
-        execute_test.delay(server.pk, scheduled=True)
+        execute_test.delay(server.pk, scheduled=True, email=True)
         if server.scheduled:
             return redirect(reverse('server_run:server-run_list_scheduled'))
         return redirect(reverse('server_run:server-run_list'))
@@ -204,20 +204,24 @@ class StopServer(OwnerSingleObject, View):
         return redirect(reverse('server_run:server-run_list'))
 
 
-class ServerRunLogView(LoginRequiredMixin, DetailView):
+class ServerRunLogView(DetailView):
 
-    model = PostmanTestResult
+    model = ServerRun
     template_name = 'servervalidation/server-run_log.html'
+    slug_field = 'uuid'
+    slug_url_kwarg = 'uuid'
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
-        return HttpResponse(content=self.object.log)
+        return HttpResponse(content=self.object.postmantestresult_set.first().log)
 
 
-class ServerRunLogJsonView(LoginRequiredMixin, DetailView):
+class ServerRunLogJsonView(DetailView):
 
-    model = PostmanTestResult
+    model = ServerRun
     template_name = 'servervalidation/server-run_log_json.html'
+    slug_field = 'uuid'
+    slug_url_kwarg = 'uuid'
 
 
 class ServerRunPdfView(PDFGenerator, ServerRunOutputUuid):

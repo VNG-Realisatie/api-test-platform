@@ -10,17 +10,22 @@
     })
 
 </script>
-
-<article class="article">
-    <div class="article__section">
-        <h1>Log view</h1>
-        <input type="button" class="button button--primary" value="Back to the details" onclick="location.href = '{% url 'server_run:server-run_detail_uuid' object.server_run.uuid %}';">
-        <p id="translate"></p>
-        <p id="json-content" hidden=>
-        {{ object.display_log_json|safe }}
-        </p>
-
-
+<div id="ui-view">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    Log view
+                </div>
+                <div class="card-body">
+                <input type="button" class="btn btn-primary" value="Back to the details" onclick="location.href = '{% url 'server_run:server-run_detail_uuid' object.uuid %}';">
+                    <p id="translate"></p>
+                    <p id="json-content" hidden=>
+                    {{ object.postmantestresult_set.first.display_log_json|safe }}
+                    </p>
+                </div>
+            </div>
+        </div>
     </div>
-</article>
+</div>
 {% endblock %}

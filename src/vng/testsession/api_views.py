@@ -11,6 +11,7 @@ from django.urls import reverse
 from django.views import View
 from django.utils import timezone
 from django.conf import settings
+from django.db.models import Count
 from django.core.exceptions import PermissionDenied
 from django.http import (
     Http404, HttpResponse, HttpResponseForbidden, JsonResponse
@@ -292,7 +293,7 @@ class RunTest(CSRFExemptMixin, View):
         logger.info(request_method_name)
         logger.info(url)
         logger.info(relative_url)
-        scenario_cases = ScenarioCase.objects.filter(vng_endpoint__session_type=session.session_type)
+        scenario_cases = ScenarioCase.objects.filter(vng_endpoint__session_type=session.session_type).annotate(count=Count('queryparamsscenario_set__id')).order_by('count')
         for case in scenario_cases:
             logger.info(case)
             if case.http_method.lower() == request_method_name.lower():
@@ -387,7 +388,7 @@ class RunTest(CSRFExemptMixin, View):
         """
         parsed = response.text
         for ep in endpoints:
-            host = reverse_sub('serverproxy:run_test', ep.subdomain, kwargs={
+            host = reverse_sub('run_test', ep.subdomain, kwargs={
                 'relative_url': ''
             })
             logger.info("Rewriting response body:")
@@ -396,7 +397,7 @@ class RunTest(CSRFExemptMixin, View):
 
     def parse_response_text(self, text, endpoints):
         for ep in endpoints:
-            host = reverse_sub('serverproxy:run_test', ep.subdomain, kwargs={
+            host = reverse_sub('run_test', ep.subdomain, kwargs={
                 'relative_url': ''
             })
             parsed = self.sub_url_response(text, host, ep)
@@ -411,7 +412,7 @@ class RunTest(CSRFExemptMixin, View):
         """
         parsed = request.body.decode('utf-8')
         for eu in exposed:
-            host = reverse_sub('serverproxy:run_test', eu.subdomain, kwargs={
+            host = reverse_sub('run_test', eu.subdomain, kwargs={
                 'relative_url': ''
             })
             parsed = self.sub_url_request(parsed, host, eu)

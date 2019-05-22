@@ -206,7 +206,7 @@ class TestLog(WebTest):
         self.assertTrue('Er zijn nog geen verzoeken' in call.text)
 
     def test_retrieve_no_entry(self):
-        url = reverse_sub('serverproxy:run_test', self.exp_url.subdomain, kwargs={
+        url = reverse_sub('run_test', self.exp_url.subdomain, kwargs={
             'relative_url': ''
         })
         call = self.app.get(url, extra_environ={'HTTP_HOST': '{}-example.com'.format(self.exp_url.subdomain)}, user=self.session.user)
@@ -262,7 +262,7 @@ class TestLog(WebTest):
         self.assertEqual(call['result'], 'No scenario cases available')
 
     def test_hard_matching(self):
-        url = reverse_sub('serverproxy:run_test', self.exp_url.subdomain, kwargs={
+        url = reverse_sub('run_test', self.exp_url.subdomain, kwargs={
             'relative_url': 'test/xxx/t'
         })
         call = self.app.get(url, extra_environ={'HTTP_HOST': '{}-example.com'.format(self.exp_url.subdomain)}, user=self.session.user, status=[404])
@@ -288,7 +288,7 @@ class TestLog(WebTest):
 
     @mock.patch('vng.testsession.api_views.logger')
     def test_rewrite_body(self, mock_logger):
-        url = reverse_sub('serverproxy:run_test', self.endpoint_echo_e.subdomain, kwargs={
+        url = reverse_sub('run_test', self.endpoint_echo_e.subdomain, kwargs={
             'relative_url': 'post/'
         })
         call = self.app.post(url, url, extra_environ={'HTTP_HOST': '{}-example.com'.format(self.endpoint_echo_e.subdomain)}, user=self.endpoint_echo_e.session.user)
@@ -296,7 +296,7 @@ class TestLog(WebTest):
         self.assertIn(url, call.text)
 
     def test_no_rewrite_header(self):
-        url = reverse_sub('serverproxy:run_test', self.endpoint_echo_h.subdomain, kwargs={
+        url = reverse_sub('run_test', self.endpoint_echo_h.subdomain, kwargs={
             'relative_url': ''
         })
         headers = {'authorization': 'dummy'}
@@ -328,7 +328,7 @@ class TestUrlParam(WebTest):
 
     def test_query_params_no_match(self):
         report = len(Report.objects.filter(scenario_case=self.scenario_case))
-        url = reverse_sub('serverproxy:run_test', self.exposed_url.subdomain, kwargs={
+        url = reverse_sub('run_test', self.exposed_url.subdomain, kwargs={
             'relative_url': self.scenario_case.url
         })
         call = self.app.get(url, extra_environ={'HTTP_HOST': '{}-example.com'.format(self.exposed_url.subdomain)},
@@ -337,7 +337,7 @@ class TestUrlParam(WebTest):
 
     def test_query_params_match_wild(self):
         report = len(Report.objects.filter(scenario_case=self.scenario_case))
-        url = reverse_sub('serverproxy:run_test', self.exposed_url.subdomain, kwargs={
+        url = reverse_sub('run_test', self.exposed_url.subdomain, kwargs={
             'relative_url': self.scenario_case.url
         })
         call = self.app.get(url,
@@ -350,7 +350,7 @@ class TestUrlParam(WebTest):
     def test_query_params_match(self):
         qp = QueryParamsScenarioFactory(scenario_case=self.scenario_case, expected_value='dummy', name='strict')
         report = len(Report.objects.filter(scenario_case=self.scenario_case))
-        url = reverse_sub('serverproxy:run_test', self.exposed_url.subdomain, kwargs={
+        url = reverse_sub('run_test', self.exposed_url.subdomain, kwargs={
             'relative_url': self.scenario_case.url
         })
         call = self.app.get(url,
@@ -362,7 +362,7 @@ class TestUrlParam(WebTest):
 
     def test_query_params_put(self):
         report = len(Report.objects.filter(scenario_case=self.scenario_case_p))
-        url = reverse_sub('serverproxy:run_test', self.exposed_url_p.subdomain, kwargs={
+        url = reverse_sub('run_test', self.exposed_url_p.subdomain, kwargs={
             'relative_url': self.scenario_case_p.url
         })
         call = self.app.put(url + '?{}=dummy'.format(self.qp_p.name),
@@ -426,14 +426,14 @@ class TestSandboxMode(WebTest):
         eu = ExposedUrl.objects.get(session=session)
 
         all_rep = Report.objects.all()
-        url = reverse_sub('serverproxy:run_test', eu.subdomain, kwargs={
+        url = reverse_sub('run_test', eu.subdomain, kwargs={
             'relative_url': 'status/404'
         })
         call = self.app.get(url, extra_environ={'HTTP_HOST': '{}-example.com'.format(eu.subdomain)}, user=session.user, status=[404])
         report = Report.objects.get(scenario_case=self.sc)
 
         self.assertEqual(choices.HTTPCallChoiches.failed, report.result)
-        url = reverse_sub('serverproxy:run_test', eu.subdomain, kwargs={
+        url = reverse_sub('run_test', eu.subdomain, kwargs={
             'relative_url': 'status/200'
         })
         call = self.app.get(url, extra_environ={'HTTP_HOST': '{}-example.com'.format(eu.subdomain)}, user=session.user)
@@ -450,14 +450,14 @@ class TestSandboxMode(WebTest):
         eu = ExposedUrl.objects.get(session=session)
 
         all_rep = Report.objects.all()
-        url = reverse_sub('serverproxy:run_test', eu.subdomain, kwargs={
+        url = reverse_sub('run_test', eu.subdomain, kwargs={
             'relative_url': 'status/404'
         })
         call = self.app.get(url, extra_environ={'HTTP_HOST': '{}-example.com'.format(eu.subdomain)}, user=session.user, status=[404])
         report = Report.objects.get(scenario_case=self.sc)
 
         self.assertEqual(choices.HTTPCallChoiches.failed, report.result)
-        url = reverse_sub('serverproxy:run_test', eu.subdomain, kwargs={
+        url = reverse_sub('run_test', eu.subdomain, kwargs={
             'relative_url': 'status/200'
         })
         call = self.app.get(url, extra_environ={'HTTP_HOST': '{}-example.com'.format(eu.subdomain)}, user=session.user)

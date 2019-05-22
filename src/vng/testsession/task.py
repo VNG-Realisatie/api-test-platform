@@ -7,7 +7,7 @@ from celery.utils.log import get_task_logger
 from django.utils.timezone import make_aware
 
 from ..celery.celery import app
-from .models import ExposedUrl, Session, TestSession, VNGEndpoint
+from .models import ExposedUrl, Session, TestSession, VNGEndpoint, EnvironmentBoostrap
 from ..utils import choices
 from ..utils.newman import NewmanManager
 from .container_manager import K8S
@@ -85,6 +85,10 @@ def start_app_b8s(session, bind_url):
         start_app_b8s(session, bind_url)
     else:
         update_session_status(session, 'Impossible to deploy successfully, all the resources are being used')
+    eb = EnvironmentBoostrap.objects.filter(vng_endpoint=endpoint)
+    if len(eb) > 0:
+        pass
+        # TODO: run the command
     ready, message = kuber.get_pods_status(app_name)
     return ready, message
 
@@ -148,9 +152,14 @@ def run_tests(session_pk):
         if not ep.test_file:
             continue
         newman = NewmanManager(ep.test_file, ep.url)
-        newman.replace_parameters({
-            ep.name: ep.url
-        })
+        if session.url is not None:
+            newman.replace_parameters({
+                ep.name: ep.url
+            })
+        else:
+            newman.replace_parameters({
+                ep.name: eu.docker_url
+            })
         result = newman.execute_test()
         ts = TestSession()
         ts.save_test(result)

@@ -99,7 +99,7 @@ class VNGEndpoint(models.Model):
         ]
     )
     docker_image = models.CharField(max_length=200, blank=True, null=True, default=None)
-    session_type = models.ForeignKey(SessionType, on_delete=models.CASCADE)
+    session_type = models.ForeignKey(SessionType, on_delete=models.PROTECT)
     test_file = FilerFileField(null=True, blank=True, default=None, on_delete=models.SET_NULL)
 
     def __str__(self):
@@ -116,7 +116,7 @@ class ScenarioCase(OrderedModel):
     will match the URL '/test/c5429dcc-6955-4e22-9832-08d52205f633/stop'.
     ''')
     http_method = models.CharField(max_length=20, choices=choices.HTTPMethodChoiches.choices, default=choices.HTTPMethodChoiches.GET)
-    vng_endpoint = models.ForeignKey(VNGEndpoint, on_delete=models.CASCADE)
+    vng_endpoint = models.ForeignKey(VNGEndpoint, on_delete=models.PROTECT)
     order_with_respect_to = 'vng_endpoint__session_type'
 
     class Meta(OrderedModel.Meta):
@@ -128,7 +128,7 @@ class ScenarioCase(OrderedModel):
 
 class QueryParamsScenario(models.Model):
 
-    scenario_case = models.ForeignKey(ScenarioCase, on_delete=models.CASCADE)
+    scenario_case = models.ForeignKey(ScenarioCase, on_delete=models.PROTECT)
     name = models.CharField(max_length=50)
     expected_value = models.CharField(max_length=50, default='*')
 
@@ -142,7 +142,7 @@ class QueryParamsScenario(models.Model):
 class Session(models.Model):
 
     name = models.CharField('Naam', max_length=30, unique=True, null=True)
-    session_type = models.ForeignKey(SessionType, verbose_name='Sessie type', on_delete=models.CASCADE)
+    session_type = models.ForeignKey(SessionType, verbose_name='Sessie type', on_delete=models.PROTECT)
     started = models.DateTimeField('Gestart op', default=timezone.now)
     stopped = models.DateTimeField('Gestopt op', null=True, blank=True)
     status = models.CharField(max_length=20, choices=choices.StatusChoices.choices, default=choices.StatusChoices.starting)

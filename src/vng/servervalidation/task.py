@@ -35,13 +35,19 @@ def get_jwt(server_run):
 def execute_test_scheduled():
     server_run = ServerRun.objects.filter(scheduled=True).filter(status=choices.StatusWithScheduledChoices.scheduled).order_by('user')
     s_list = []
+    failed = False
     for i, sr in enumerate(server_run):
         sr.status = choices.StatusWithScheduledChoices.running
         sr.save()
-        s_list.append((sr, execute_test(sr.pk, scheduled=True)))
+        result = execute_test(sr.pk, scheduled=True)
+        failed = failed or result
+        s_list.append((sr, result))
         if i == len(server_run) - 1 or sr.user != server_run[i + 1].user and s_list != []:
-            send_email_failure(s_list)
+            # Send email only if there is at least one failure
+            if result:
+                send_email_failure(s_list)
             s_list = []
+            failed = False
 
 
 @app.task
@@ -104,7 +110,7 @@ def execute_test(server_run_pk, scheduled=False, email=False):
     else:
         server_run.last_exec = timezone.now()
         server_run.status = choices.StatusWithScheduledChoices.scheduled
-    if email:
+    if email and not failure:
         send_email_failure([(server_run, failure)])
     server_run.save()
     return failure

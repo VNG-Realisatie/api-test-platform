@@ -17,5 +17,4 @@ urlpatterns = base_urlpatterns + [
     url(r'^server/', include('vng.servervalidation.urls', namespace='server_run')),
     url(r'^inspector/', include('vng.openApiInspector.urls', namespace='open_api_inspector')),
     url(r'^', include('vng.testsession.urls', namespace='testsession')),
-    url(r'^', include('vng.testsession.urls_api_sub', namespace='serverproxy')),
 ]

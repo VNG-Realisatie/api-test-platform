@@ -555,6 +555,15 @@ class TestAllProcedure(WebTest):
         }))
         self.assertIn('200 OK', call.text)
 
+    def test_url_slash(self):
+        url = reverse('testsession:session_log', kwargs={
+            'session_id': 555
+        })
+
+        call = self.app.get(url[:-1], user=self.user)
+        self.assertIn('301', call.status)
+        call = self.app.get(url, user=self.user)
+        self.assertIn('404', call.status)
 
 class TestLogNewman(WebTest):
 

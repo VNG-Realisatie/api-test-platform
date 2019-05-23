@@ -117,12 +117,12 @@ class K8S():
     def create_configmap(self, name, variables):
         filename = uuid.uuid4()
         with open('kubernetes/general-configmap.yaml', 'r') as infile:
-            service = yaml.safe_load(infile)
-            service['metadata']['name'] = self.app_name
-            service['metadata']['labels']['app'] = self.app_name
-            service['data'] = variables
+            config = yaml.safe_load(infile)
+            config['metadata']['name'] = self.app_name
+            config['metadata']['labels']['app'] = self.app_name
+            config['data'] = variables
         with open('kubernetes/{}'.format(filename), 'w') as outfile:
-            outfile.write(yaml.dump(service))
+            outfile.write(yaml.dump(config))
         create_config = [
             'kubectl',
             'create',
@@ -133,9 +133,40 @@ class K8S():
         return filename
 
     def flush(self):
+        filename = uuid.uuid4()
         for image, in_port, out_port, env in self.containers:
             if len(env.items()) != 0:
                 self.create_configmap(image, env)
+            self.create_service(in_port, out_port)
+
+        with open('kubernetes/general-deployment.yaml', 'r') as infile:
+            deploy = yaml.safe_load(infile)
+            deploy['metadata']['name'] = self.app_name
+            deploy['spec']['template']['metadata']['labels']['app'] = self.app_name
+            deploy['spec']['template']['spec']['containers'] = []
+            for image, in_port, out_port, env in self.containers:
+                container = {
+                    'name': self.app_name,
+                    'image': image,
+                    'imagePullPolicy': "IfNotPresent",
+                    'ports': [{
+                        'containerPort': 8080
+                    }],
+                    'envFrom': [{
+                        'configMapRef': {
+                            'name': self.app_name
+                        }
+                    }],
+                }
+        with open('kubernetes/{}'.format(filename), 'w') as outfile:
+            outfile.write(yaml.dump(deploy))
+        create_config = [
+            'kubectl',
+            'create',
+            '-f',
+            'kubernetes/{}'.format(filename)
+        ]
+        run_command(create_config)
 
     def deploy(self, image, port=8080, access_port=8080, env_variables={}):
         self.containers.append((

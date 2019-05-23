@@ -1,4 +1,6 @@
 import json
+import yaml
+import uuid
 import os
 
 from ..utils.commands import run_command
@@ -62,6 +64,25 @@ class K8S():
         ]
         res = run_command(fetch).decode('utf-8')
         return json.loads(res)
+
+    def create_service(self, in_port, out_port):
+        filename = uuid.uuid4()
+        with open('kubernetes/general-service.yaml', 'r') as infile:
+            service = yaml.safe_load(infile)
+            service['metadata']['name'] = self.app_name
+            service['spec']['selector']['app'] = self.app_name
+            service['spec']['ports'][0]['port'] = in_port
+            service['spec']['ports'][0]['targetPort'] = in_port
+        with open('kubernetes/{}'.format(filename), 'w') as outfile:
+            outfile.write(yaml.dump(service))
+        create_config = [
+            'kubectl',
+            'create',
+            '-f',
+            'kubernetes/{}'.format(filename)
+        ]
+        run_command(create_config)
+        return filename
 
     def deploy_postgres_no_persistent(self, cluster):
         if self.db_deployed:

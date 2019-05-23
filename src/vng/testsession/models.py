@@ -154,6 +154,7 @@ class Session(models.Model):
     status = models.CharField(max_length=20, choices=choices.StatusChoices.choices, default=choices.StatusChoices.starting)
     user = models.ForeignKey(User, verbose_name='Gebruiker', on_delete=models.SET_NULL, null=True)
     build_version = models.TextField(blank=True, null=True, default=None)
+    cluster = models.CharField(max_length=50, unique=True, editable=False, default=uuid.uuid4)
     error_message = models.TextField(blank=True, null=True, default=None)
     deploy_status = models.TextField(blank=True, null=True, default=None)
     deploy_percentage = models.IntegerField(default=None, null=True, blank=True)

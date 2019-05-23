@@ -1,34 +1,12 @@
 import json
 import os
 
-from kubernetes import client, config
-from google.cloud import container_v1
-
 from ..utils.commands import run_command
-
-'''
-Set with the location where the credentials are.
-For further info visit: https://cloud.google.com/docs/authentication/getting-started
-'''
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/home/projects/env/VNG_Test_platform-d71b9ef79195.json"
-
-'''
-The configuration of the kubectl has to be already performed.
-By default it tries to fetch the resource located in $HOME/.kube/config or the environment variable KUBECONFIG.
-For further info check https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/
-and https://cloud.google.com/kubernetes-engine/docs/quickstart
-'''
-config.load_kube_config()
-
-# TODO: set as global variable, maybe in the setting file?
-# TODO: use library to execute commands instead of command line
-project_id = 'vng-test-platform'
-zone = 'europe-west4-a'
 
 
 class K8S():
 
-    def __init__(self, app_name=None):
+    def __init__(self, cluster='test-sessions', app_name=None):
         set_zone = [
             'gcloud',
             'config',
@@ -43,10 +21,28 @@ class K8S():
             'core/project',
             'vng-test-platform'
         ]
+        create_cluster = [
+            'gcloud',
+            'container',
+            'clusters',
+            'create',
+            cluster,
+            '--num-nodes=1',
+        ]
+        get_credentials = [
+            'gcloud',
+            'container',
+            'clusters',
+            'get-credentials',
+            cluster,
+        ]
         run_command(set_zone)
         run_command(set_project)
+        # Create a general cluster (will error if it already exists)
+        run_command(create_cluster)
 
-        v1 = client.CoreV1Api()
+        # Get the credentials to use kubectl for the correct cluster
+        run_command(get_credentials)
 
     def fetch_resource(self, resource):
         fetch = [
@@ -58,28 +54,33 @@ class K8S():
         res = run_command(fetch).decode('utf-8')
         return json.loads(res)
 
-    def deploy(self, app_name, image, port=8080, access_port=8080):
-        create_cluster = [
-            'gcloud',
-            'container',
-            'clusters',
+    def deploy_postgres_no_persistent(self, cluster):
+        create_config = [
+            'kubectl',
             'create',
-            'test-sessions',
-            '--num-nodes=1',
+            '-f',
+            'postgres-configmap.yaml'
         ]
-        get_credentials = [
-            'gcloud',
-            'container',
-            'clusters',
-            'get-credentials',
-            'test-sessions',
+        create_deployment = [
+            'kubectl',
+            'create',
+            '-f',
+            'postgres-deployment.yaml'
         ]
-        # Create a general cluster (will error if it already exists)
-        run_command(create_cluster)
+        create_service = [
+            'kubectl',
+            'create',
+            '-f',
+            'postgres-service.yaml'
+        ]
+        run_command(create_config)
+        run_command(create_deployment)
+        run_command(create_service)
+        # fetching the IP
+        resource = self.fetch_resource('svc postgres')
+        return resource['spec']['clusterIp'], resource['spec']['ports']['nodePort']
 
-        # Get the credentials to use kubectl for the correct cluster
-        run_command(get_credentials)
-
+    def deploy(self, app_name, image, port=8080, access_port=8080):
         deploy_image = [
             'kubectl',
             'run',

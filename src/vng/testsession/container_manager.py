@@ -7,6 +7,14 @@ from ..utils.commands import run_command
 class K8S():
 
     def __init__(self, cluster='test-sessions', app_name=None):
+        self.initialized = False
+        self.cluster = cluster
+        self.db_deployed = False
+        self.app_name = app_name
+
+    def initialize(self):
+        if self.initialized:
+            return
         set_zone = [
             'gcloud',
             'config',
@@ -26,7 +34,7 @@ class K8S():
             'container',
             'clusters',
             'create',
-            cluster,
+            self.cluster,
             '--num-nodes=1',
         ]
         get_credentials = [
@@ -34,15 +42,16 @@ class K8S():
             'container',
             'clusters',
             'get-credentials',
-            cluster,
+            self.cluster,
         ]
         run_command(set_zone)
         run_command(set_project)
         # Create a general cluster (will error if it already exists)
         run_command(create_cluster)
-
         # Get the credentials to use kubectl for the correct cluster
         run_command(get_credentials)
+
+        self.initialized = True
 
     def fetch_resource(self, resource):
         fetch = [
@@ -55,6 +64,8 @@ class K8S():
         return json.loads(res)
 
     def deploy_postgres_no_persistent(self, cluster):
+        if self.db_deployed:
+            return
         create_config = [
             'kubectl',
             'create',
@@ -78,6 +89,7 @@ class K8S():
         run_command(create_service)
         # fetching the IP
         resource = self.fetch_resource('svc postgres')
+        self.db_deployed = True
         return resource['spec']['clusterIp'], resource['spec']['ports']['nodePort']
 
     def deploy(self, app_name, image, port=8080, access_port=8080, env_variables={}):

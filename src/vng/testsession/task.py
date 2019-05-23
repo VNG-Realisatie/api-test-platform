@@ -55,13 +55,18 @@ def align_sessions_data():
         session.save()
 
 
-def start_app_b8s(session, bind_url):
+def start_app_b8s(kuber, session, bind_url):
+    kuber.initialize()
+    if session.session_type.database:
+        kuber.deploy_postgres_no_persistent()
     update_session_status(session, 'Verbinding maken met Kubernetes', 1)
-    kuber = K8S()
     endpoint = bind_url.vng_endpoint
     app_name = get_app_name(session, bind_url)
     update_session_status(session, 'Docker image installatie op Kubernetes', 10)
-    kuber.deploy(app_name, endpoint.docker_image, endpoint.port)
+    # TODO: add environmental variables
+    env_var = bind_url.vng_endpoint.environmentalvariables_set.all()
+    e_vars = {e.key: e.value for e in env_var}
+    kuber.deploy(app_name, endpoint.docker_image, endpoint.port, env_variables=e_vars)
     update_session_status(session, 'Installatie voortgang', 22)
     N_TRIALS = 10
     for trial in range(N_TRIALS):
@@ -82,7 +87,7 @@ def start_app_b8s(session, bind_url):
             pass
     update_session_status(session, 'Impossible to deploy successfully, trying to remove old sessions')
     if purge_sessions():
-        start_app_b8s(session, bind_url)
+        start_app_b8s(kuber, session, bind_url)
     else:
         update_session_status(session, 'Impossible to deploy successfully, all the resources are being used')
     eb = EnvironmentBoostrap.objects.filter(vng_endpoint=endpoint)
@@ -113,7 +118,7 @@ def bootstrap_session(session_pk):
     endpoint = VNGEndpoint.objects.filter(session_type=session.session_type)
     try:
         error_deployment = False
-
+        k8s = K8S()
         for ep in endpoint:
             bind_url = ExposedUrl.objects.create(
                 session=session,
@@ -121,7 +126,7 @@ def bootstrap_session(session_pk):
                 subdomain='{}'.format(int(time.time()) * 100 + random.randint(0, 99))
             )
             if ep.docker_image:
-                ip, message = start_app_b8s(session, bind_url)
+                ip, message = start_app_b8s(k8s, session, bind_url)
                 if message is None:
                     bind_url.docker_url = ip
                 else:

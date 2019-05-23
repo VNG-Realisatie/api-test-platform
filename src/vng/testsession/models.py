@@ -30,6 +30,7 @@ class SessionType(models.Model):
     client_id = models.TextField(default=None, null=True, blank=True)
     secret = models.TextField(default=None, null=True, blank=True)
     header = models.TextField(default=None, null=True, blank=True)
+    database = models.BooleanField(help_text='Check if the a postgres db is needed in the Kubernetes cluster', default=False)
 
     class Meta:
         verbose_name = 'Sessie type'
@@ -109,8 +110,15 @@ class VNGEndpoint(models.Model):
 
 class EnvironmentBoostrap(models.Model):
 
-    vng_endpoint = models.ForeignKey(VNGEndpoint, on_delete=models.CASCADE())
+    vng_endpoint = models.ForeignKey(VNGEndpoint, on_delete=models.CASCADE)
     command = models.TextField()
+
+
+class EnvironmentalVariables(model.Model):
+
+    vng_endpoint = models.ForeignKey(VNGEndpoint, on_delete=models.CASCADE)
+    key = models.CharField(max_length=50)
+    value = models.CharField(max_length=100)
 
 
 class ScenarioCase(OrderedModel):

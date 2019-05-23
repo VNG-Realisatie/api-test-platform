@@ -13,6 +13,7 @@ class K8S():
         self.cluster = cluster
         self.db_deployed = False
         self.app_name = app_name
+        self.containers = []
 
     def initialize(self):
         if self.initialized:
@@ -113,7 +114,35 @@ class K8S():
         self.db_deployed = True
         return resource['spec']['clusterIp'], resource['spec']['ports']['nodePort']
 
-    def deploy(self, app_name, image, port=8080, access_port=8080, env_variables={}):
+    def create_configmap(self, name, variables):
+        filename = uuid.uuid4()
+        with open('kubernetes/general-configmap.yaml', 'r') as infile:
+            service = yaml.safe_load(infile)
+            service['metadata']['name'] = self.app_name
+            service['metadata']['labels']['app'] = self.app_name
+            service['data'] = variables
+        with open('kubernetes/{}'.format(filename), 'w') as outfile:
+            outfile.write(yaml.dump(service))
+        create_config = [
+            'kubectl',
+            'create',
+            '-f',
+            'kubernetes/{}'.format(filename)
+        ]
+        run_command(create_config)
+        return filename
+
+    def flush(self):
+        for image, in_port, out_port, env in self.containers:
+            if len(env.items()) != 0:
+                self.create_configmap(image, env)
+
+    def deploy(self, image, port=8080, access_port=8080, env_variables={}):
+        self.containers.append((
+            image, port, access_port, env_variables
+        ))
+        return
+        self.
         deploy_image = [
             'kubectl',
             'run',

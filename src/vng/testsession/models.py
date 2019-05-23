@@ -125,6 +125,9 @@ class ScenarioCase(OrderedModel):
     def __str__(self):
         return '{} - {}'.format(self.http_method, self.url)
 
+    def query_params(self):
+        return [qp.name for qp in self.queryparamsscenario_set.all()]
+
 
 class QueryParamsScenario(models.Model):
 
@@ -133,6 +136,7 @@ class QueryParamsScenario(models.Model):
     expected_value = models.CharField(max_length=50, default='*')
 
     def __str__(self):
+        self
         if self.expected_value:
             return '{} - {}: {}'.format(self.scenario_case, self.name, self.expected_value)
         else:

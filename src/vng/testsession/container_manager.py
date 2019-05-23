@@ -80,7 +80,7 @@ class K8S():
         resource = self.fetch_resource('svc postgres')
         return resource['spec']['clusterIp'], resource['spec']['ports']['nodePort']
 
-    def deploy(self, app_name, image, port=8080, access_port=8080):
+    def deploy(self, app_name, image, port=8080, access_port=8080, env_variables={}):
         deploy_image = [
             'kubectl',
             'run',
@@ -88,6 +88,8 @@ class K8S():
             '--image={}'.format(image),
             '--port={}'.format(port),
         ]
+        for k, v in env_variables.items():
+            deploy_image.append('--env="{}={}"'.format(k, v))
         load_balancer = [
             'kubectl',
             'expose',

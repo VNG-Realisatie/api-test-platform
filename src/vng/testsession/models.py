@@ -114,7 +114,7 @@ class EnvironmentBoostrap(models.Model):
     command = models.TextField()
 
 
-class EnvironmentalVariables(model.Model):
+class EnvironmentalVariables(models.Model):
 
     vng_endpoint = models.ForeignKey(VNGEndpoint, on_delete=models.CASCADE)
     key = models.CharField(max_length=50)

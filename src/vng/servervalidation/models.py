@@ -39,7 +39,7 @@ class TestScenario(models.Model):
 class TestScenarioUrl(models.Model):
 
     name = models.CharField('Naam', max_length=200)
-    test_scenario = models.ForeignKey(TestScenario, on_delete=models.CASCADE)
+    test_scenario = models.ForeignKey(TestScenario, on_delete=models.PROTECT)
     url = models.BooleanField(default=True, help_text='When enabled a single-line field is shown to the user when starting a session. When disabled a multi-line field is shown.')
 
     def __str__(self):
@@ -49,7 +49,7 @@ class TestScenarioUrl(models.Model):
 class PostmanTest(OrderedModel):
 
     order_with_respect_to = 'test_scenario'
-    test_scenario = models.ForeignKey(TestScenario, on_delete=models.CASCADE)
+    test_scenario = models.ForeignKey(TestScenario, on_delete=models.PROTECT)
     validation_file = FilerFileField(null=True, blank=True, default=None, on_delete=models.SET_NULL)
 
     class Meta(OrderedModel.Meta):
@@ -61,7 +61,7 @@ class PostmanTest(OrderedModel):
 
 class ServerRun(models.Model):
 
-    test_scenario = models.ForeignKey(TestScenario, on_delete=models.CASCADE)
+    test_scenario = models.ForeignKey(TestScenario, on_delete=models.PROTECT)
     started = models.DateTimeField('Gestart op', default=timezone.now)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     stopped = models.DateTimeField('Gestopt op', null=True, default=None, blank=True)

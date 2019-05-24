@@ -134,6 +134,7 @@ class K8S():
             deploy['spec']['template']['metadata']['labels']['app'] = self.app_name
             deploy['spec']['template']['spec']['containers'] = []
             for i, (image, in_port, out_port, env) in enumerate(self.containers):
+                # Create ConfigMap object in order to pass the variable to the deployment
                 if len(env) != 0:
                     name = self.create_configmap(image, env, i)
                 container = {
@@ -144,7 +145,7 @@ class K8S():
                         'containerPort': 8080
                     }],
                 }
-
+                # Link the ConfigMap to the deployment object
                 if len(env) != 0:
                     container['envFrom'] = [{
                         'configMapRef': {
@@ -175,6 +176,18 @@ class K8S():
         for image, in_port, out_port, env in self.containers:
             if not (in_port is None or out_port is None):
                 self.create_service(in_port, out_port)
+        # Enable external access via LoadBalancer
+        load_balancer = [
+            'kubectl',
+            'expose',
+            'deployment',
+            self.app_name,
+            '--type=LoadBalancer',
+            '--port={}'.format(8080),
+            '--target-port={}'.format(8000),
+            '--name={}-loadBalancer'.format(self.app_name)
+        ]
+        run_command(load_balancer)
 
     def deploy(self, image, port=8080, access_port=8080, env_variables={}):
         self.containers.append((
@@ -191,7 +204,7 @@ class K8S():
 
         # Delete the workload
         run_command(clean_up)
-        # TODO: remove unused resources
+        # TODO: remove unused resources, remember that Kubernetes has a Garbage Collector integrated
 
     def get_pods_status(self, app_name):
         status_command = [
@@ -225,7 +238,7 @@ class K8S():
         items = services.get('items')
         for item in items:
             metadata = item.get('metadata')
-            if metadata and metadata.get('name') == app_name:
+            if metadata and metadata.get('name') == '{}-loadBalancer'.format(app_name):
                 ip_list = item.get('status').get('loadBalancer').get('ingress')
                 if ip_list:
                     return ip_list[0].get('ip')

@@ -28,9 +28,9 @@ def stop_session(session_pk):
     eu = ExposedUrl.objects.filter(session=session)
     for e_url in eu:
         if e_url.vng_endpoint.url is None:
-            kuber = K8S()
             app_name = get_app_name(session, e_url)
-            kuber.delete(app_name)
+            kuber = K8S(app_name=app_name)
+            kuber.delete()
     session.status = choices.StatusChoices.stopped
     session.save()
 

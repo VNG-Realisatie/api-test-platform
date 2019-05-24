@@ -131,12 +131,12 @@ class K8S():
             deploy['metadata']['name'] = self.app_name
             deploy['spec']['template']['metadata']['labels']['app'] = self.app_name
             deploy['spec']['template']['spec']['containers'] = []
-            for i, (image, in_port, out_port, env) in enumerate(self.containers):
+            for i, (id, image, in_port, out_port, env) in enumerate(self.containers):
                 # Create ConfigMap object in order to pass the variable to the deployment
                 if len(env) != 0:
                     name = self.create_configmap(image, env, i)
                 container = {
-                    'name': '{}-{}'.format(self.app_name, i),
+                    'name': '{}-{}'.format(self.app_name, id),
                     'image': image,
                     'imagePullPolicy': "IfNotPresent",
                     'ports': [{
@@ -169,25 +169,25 @@ class K8S():
         ]
         run_command(create_config)
 
-        for image, in_port, out_port, env in self.containers:
+        for id, image, in_port, out_port, env in self.containers:
             if not (in_port is None or out_port is None):
                 self.create_service(in_port, out_port)
-        # Enable external access via LoadBalancer
-        load_balancer = [
-            'kubectl',
-            'expose',
-            'deployment',
-            self.app_name,
-            '--type=LoadBalancer',
-            '--port={}'.format(8080),
-            '--target-port={}'.format(8000),
-            '--name={}-loadbalancer'.format(self.app_name)
-        ]
+            # Enable external access via LoadBalancer
+            load_balancer = [
+                'kubectl',
+                'expose',
+                'deployment',
+                self.app_name,
+                '--type=LoadBalancer',
+                '--port={}'.format(8080),
+                '--target-port={}'.format(8000),
+                '--name={}-loadbalancer-{}'.format(self.app_name, id)
+            ]
         run_command(load_balancer)
 
-    def deploy(self, image, port=8080, access_port=8080, env_variables={}):
+    def deploy(self, id, image, port=8080, access_port=8080, env_variables={}):
         self.containers.append((
-            image, port, access_port, env_variables
+            id, image, port, access_port, env_variables
         ))
 
     def delete(self):
@@ -223,7 +223,7 @@ class K8S():
                     return True, None
         raise Exception('Application {} not found in the deployed cluster'.format(self.app_name))
 
-    def status(self):
+    def status(self, id):
         # TODO: filter through the command the resource
         status_command = [
             'kubectl',
@@ -236,7 +236,7 @@ class K8S():
         items = services.get('items')
         for item in items:
             metadata = item.get('metadata')
-            if metadata and metadata.get('name') == '{}-loadbalancer'.format(self.app_name):
+            if metadata and metadata.get('name') == '{}-loadbalancer{}'.format(self.app_name, id):
                 ip_list = item.get('status').get('loadBalancer').get('ingress')
                 if ip_list:
                     return ip_list[0].get('ip')

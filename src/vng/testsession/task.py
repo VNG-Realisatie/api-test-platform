@@ -78,6 +78,7 @@ def bootstrap_session(session_pk):
     k8s = K8S(app_name=session.name)
     # Init of the procedure
     k8s.initialize()
+    to_check = []
     if session.session_type.database:
         k8s.deploy_postgres_no_persistent_lazy()
     for ep in endpoint:
@@ -87,22 +88,29 @@ def bootstrap_session(session_pk):
             subdomain='{}'.format(int(time.time()) * 100 + random.randint(0, 99))
         )
         if ep.docker_image:
+            to_check.append(bind_url)
             app_name = get_app_name(session, bind_url)
             # TODO: add environmental variables
             env_var = bind_url.vng_endpoint.environmentalvariables_set.all()
             variables = {v.key: v.value for v in env_var}
-            k8s.deploy(ep.docker_image, ep.port, env_variables=variables)
+            k8s.deploy(bind_url.pk, ep.docker_image, ep.port, env_variables=variables)
 
     k8s.flush()
     N_TRIAL = 10
     for trial in range(N_TRIAL):
-        time.sleep(10)
-        ip = k8s.status()
-        ready, message = k8s.get_pods_status()
-        if not ready:
-            # Raise error
-            continue
-        return ip, None
+        try:
+            time.sleep(10)
+            for bu in to_check:
+                ip = k8s.status(bu.pk)
+                ready, message = k8s.get_pods_status()
+                if not ready:
+                    # Raise error
+                    continue
+                bu.docker_url = ip
+                bu.save()
+
+        except Exception as e:
+            err = e
     # Remove previous allocated local resources
     ExposedUrl.objects.filter(session=session).delete()
     # No resource available

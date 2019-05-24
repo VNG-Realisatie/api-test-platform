@@ -119,6 +119,7 @@ class EnvironmentalVariables(models.Model):
     vng_endpoint = models.ForeignKey(VNGEndpoint, on_delete=models.CASCADE)
     key = models.CharField(max_length=50)
     value = models.CharField(max_length=100)
+    args = models.BooleanField(default=False)
 
 
 class ScenarioCase(OrderedModel):

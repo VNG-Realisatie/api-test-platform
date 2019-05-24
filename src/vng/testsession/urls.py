@@ -12,7 +12,6 @@ urlpatterns = [
     url('^$', views.SessionListView.as_view(), name='sessions'),
     url('^create', views.SessionForm.as_view(), name='session_create'),
     url(r'^postman/(?P<pk>[0-9]+)', views.PostmanDownloadView.as_view(), name='postman_download'),
-    # url(r'^runtest/(?P<relative_url>[-\w|/|.]*)$', api_views.RunTest.as_view(), name='run_test'),
     url(r'^(?P<session_id>[0-9]+)/stop', views.StopSession.as_view(), name='stop_session'),
     url(r'^(?P<session_id>[0-9]+)/report-pdf', views.SessionReportPdf.as_view(), name='session_report-pdf'),
     url(r'^(?P<session_id>[0-9]+)/report', views.SessionReport.as_view(), name='session_report'),

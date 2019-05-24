@@ -21,7 +21,7 @@
                         <table class="table">
                             {% include 'testsession/table/header-session.html' only %}
                             {% for session in object_list %}
-                            {% include 'testsession/table/row-session.html' with session=session %}
+                            {% include 'testsession/table/row-session.html' with session_related=session %}
                             {% endfor %}
                         </table>
                         {% include 'components/pagination/pagination.html' %}

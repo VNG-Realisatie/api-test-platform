@@ -99,7 +99,7 @@ class VNGEndpoint(models.Model):
         ]
     )
     docker_image = models.CharField(max_length=200, blank=True, null=True, default=None)
-    session_type = models.ForeignKey(SessionType, on_delete=models.CASCADE)
+    session_type = models.ForeignKey(SessionType, on_delete=models.PROTECT)
     test_file = FilerFileField(null=True, blank=True, default=None, on_delete=models.SET_NULL)
 
     def __str__(self):
@@ -116,7 +116,7 @@ class ScenarioCase(OrderedModel):
     will match the URL '/test/c5429dcc-6955-4e22-9832-08d52205f633/stop'.
     ''')
     http_method = models.CharField(max_length=20, choices=choices.HTTPMethodChoiches.choices, default=choices.HTTPMethodChoiches.GET)
-    vng_endpoint = models.ForeignKey(VNGEndpoint, on_delete=models.CASCADE)
+    vng_endpoint = models.ForeignKey(VNGEndpoint, on_delete=models.PROTECT)
     order_with_respect_to = 'vng_endpoint__session_type'
 
     class Meta(OrderedModel.Meta):
@@ -125,14 +125,18 @@ class ScenarioCase(OrderedModel):
     def __str__(self):
         return '{} - {}'.format(self.http_method, self.url)
 
+    def query_params(self):
+        return [qp.name for qp in self.queryparamsscenario_set.all()]
+
 
 class QueryParamsScenario(models.Model):
 
-    scenario_case = models.ForeignKey(ScenarioCase, on_delete=models.CASCADE)
+    scenario_case = models.ForeignKey(ScenarioCase, on_delete=models.PROTECT)
     name = models.CharField(max_length=50)
     expected_value = models.CharField(max_length=50, default='*')
 
     def __str__(self):
+        self
         if self.expected_value:
             return '{} - {}: {}'.format(self.scenario_case, self.name, self.expected_value)
         else:
@@ -142,7 +146,7 @@ class QueryParamsScenario(models.Model):
 class Session(models.Model):
 
     name = models.CharField('Naam', max_length=30, unique=True, null=True)
-    session_type = models.ForeignKey(SessionType, verbose_name='Sessie type', on_delete=models.CASCADE)
+    session_type = models.ForeignKey(SessionType, verbose_name='Sessie type', on_delete=models.PROTECT)
     started = models.DateTimeField('Gestart op', default=timezone.now)
     stopped = models.DateTimeField('Gestopt op', null=True, blank=True)
     status = models.CharField(max_length=20, choices=choices.StatusChoices.choices, default=choices.StatusChoices.starting)
@@ -183,6 +187,18 @@ class Session(models.Model):
 
     def is_shutting_down(self):
         return self.status == choices.StatusChoices.shutting_down
+
+    def get_report_stats(self):
+        success, failed, not_called = 0, 0, 0
+        reports = Report.objects.filter(session_log__in=self.sessionlog_set.all())
+        for report in reports:
+            if report.is_success():
+                success += 1
+            elif report.is_failed():
+                failed += 1
+            elif report.is_not_called():
+                not_called += 1
+        return success, failed, not_called + (ScenarioCase.objects.filter(vng_endpoint__session_type=self.session_type).count() - reports.count())
 
 
 class ExposedUrl(models.Model):

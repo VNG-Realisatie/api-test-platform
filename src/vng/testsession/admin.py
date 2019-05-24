@@ -65,7 +65,7 @@ class SessionAdmin(admin.ModelAdmin):
         'build_version',
     ]
     list_filter = ['user']
-    search_fields = ['user', 'api_endpoint']
+    search_fields = ['name', 'id', 'user__username']
     inlines = [ExposedUrlInline]
 
 
@@ -82,7 +82,8 @@ class ScenarioCaseAdmin(OrderedModelAdmin):
         'url',
         'move_up_down_links',
         'http_method',
-        'vng_endpoint'
+        'vng_endpoint',
+        'query_params'
     ]
     list_filter = ['vng_endpoint__session_type']
     search_fields = ['vng_endpoint__id']

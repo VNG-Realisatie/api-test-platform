@@ -55,49 +55,6 @@ def align_sessions_data():
         session.save()
 
 
-def start_app_b8s(kuber, session, bind_url):
-    kuber.initialize()
-    if session.session_type.database:
-        kuber.deploy_postgres_no_persistent_lazy()
-    update_session_status(session, 'Verbinding maken met Kubernetes', 1)
-    endpoint = bind_url.vng_endpoint
-    app_name = get_app_name(session, bind_url)
-    update_session_status(session, 'Docker image installatie op Kubernetes', 10)
-    # TODO: add environmental variables
-    env_var = bind_url.vng_endpoint.environmentalvariables_set.all()
-    e_vars = {e.key: e.value for e in env_var}
-    kuber.deploy(app_name, endpoint.docker_image, endpoint.port, env_variables=e_vars)
-    update_session_status(session, 'Installatie voortgang', 22)
-    N_TRIALS = 10
-    for trial in range(N_TRIALS):
-        try:
-            time.sleep(10)                      # Waiting for the load balancer to be loaded
-            percentage = 28 + (12 * trial)
-            update_session_status(session, 'Installatie voortgang {}'.format(trial + 1), percentage if percentage < 95 else 94)
-            ip = kuber.status(app_name)
-
-            update_session_status(session, 'Status controle van pod', 95)
-            ready, message = kuber.get_pods_status(app_name)
-            if not ready:
-                update_session_status(session, 'An error within the image prevented from a correct deployment')
-                return ready, message
-            update_session_status(session, 'Installatie succesvol uitgevoerd', 100)
-            return ip, None
-        except Exception as e:
-            pass
-    update_session_status(session, 'Impossible to deploy successfully, trying to remove old sessions')
-    if purge_sessions():
-        start_app_b8s(kuber, session, bind_url)
-    else:
-        update_session_status(session, 'Impossible to deploy successfully, all the resources are being used')
-    eb = EnvironmentBoostrap.objects.filter(vng_endpoint=endpoint)
-    if len(eb) > 0:
-        pass
-        # TODO: run the command
-    ready, message = kuber.get_pods_status(app_name)
-    return ready, message
-
-
 @app.task
 def purge_sessions():
     align_sessions_data()
@@ -118,7 +75,11 @@ def bootstrap_session(session_pk):
     endpoint = VNGEndpoint.objects.filter(session_type=session.session_type)
     try:
         error_deployment = False
-        k8s = K8S()
+        k8s = K8S(app_name=session.name)
+        # Init of the procedure
+        k8s.initialize()
+        if session.session_type.database:
+            k8s.deploy_postgres_no_persistent_lazy()
         for ep in endpoint:
             bind_url = ExposedUrl.objects.create(
                 session=session,
@@ -126,19 +87,15 @@ def bootstrap_session(session_pk):
                 subdomain='{}'.format(int(time.time()) * 100 + random.randint(0, 99))
             )
             if ep.docker_image:
-                ip, message = start_app_b8s(k8s, session, bind_url)
-                if message is None:
-                    bind_url.docker_url = ip
-                else:
-                    error_deployment = True
-                    session.status = choices.StatusChoices.error_deploy
-                    session.error_message = message
-            if not error_deployment:
-                bind_url.save()
-            else:
-                bind_url.delete()
-        if not error_deployment:
-            session.status = choices.StatusChoices.running
+                app_name = get_app_name(session, bind_url)
+                # TODO: add environmental variables
+                env_var = bind_url.vng_endpoint.environmentalvariables_set.all()
+                e_vars = {e.key: e.value for e in env_var}
+
+                k8s.deploy(ep.docker_image, ep.port, env_variables=e_vars)
+        # Hard part
+        k8s.flush()
+
         session.save()
     except Exception as e:
         logger.exception(e)

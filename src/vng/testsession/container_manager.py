@@ -16,6 +16,7 @@ class K8S():
         self.db_to_deploy = False
         self.app_name = app_name
         self.containers = []
+        self.script_folder = os.path.dirname(__file__)
 
     def initialize(self):
         if self.initialized:
@@ -70,7 +71,7 @@ class K8S():
 
     def create_service(self, in_port, out_port):
         filename = uuid.uuid4()
-        with open('kubernetes/general-service.yaml', 'r') as infile:
+        with open(os.path.join(self.script_folder, 'kubernetes/general-service.yaml'), 'r') as infile:
             service = yaml.safe_load(infile)
             service['metadata']['name'] = '{}-{}'.format(self.app_name, str(random.randint(1, 1000)))
             service['spec']['selector']['app'] = self.app_name
@@ -82,33 +83,42 @@ class K8S():
             'kubectl',
             'create',
             '-f',
-            'kubernetes/{}'.format(filename)
+            os.path.join(self.script_folder, 'kubernetes/{}'.format(filename))
         ]
         run_command(create_config)
         return filename
 
-    def deploy_postgres_no_persistent_lazy(self):
+    def deploy_postgres_no_persistent_lazy(self, db_name='postgresdb', db_user='postgresadmin', db_pwd='k8spwd'):
         if self.db_deployed:
             return
         else:
+            self.db_name = db_name
+            self.db_user = db_user
+            self.db_pwd = db_pwd
             self.containers.append((
-                'mdillon/postgis:11', False, False, {}
+                'mdillon/postgis:11', False, False, {
+                    'POSTGRES_DB': db_name,
+                    'POSTGRES_USER': db_user,
+                    'POSTGRES_PASSWORD': db_pwd
+                }
             ))
 
     def create_configmap(self, name, variables):
         filename = uuid.uuid4()
-        with open('kubernetes/general-configmap.yaml', 'r') as infile:
+
+        config_file_path = 'kubernetes/general-configmap.yaml'
+        with open(os.path.join(self.script_folder, config_file_path), 'r') as infile:
             config = yaml.safe_load(infile)
             config['metadata']['name'] = '{}-{}'.format(self.app_name, str(random.randint(1, 1000)))
             config['metadata']['labels']['app'] = self.app_name
             config['data'] = variables
-        with open('kubernetes/{}'.format(filename), 'w') as outfile:
+        with open(os.path.join(self.script_folder, 'kubernetes/{}'.format(filename)), 'w') as outfile:
             outfile.write(yaml.dump(config))
         create_config = [
             'kubectl',
             'create',
             '-f',
-            'kubernetes/{}'.format(filename)
+            os.path.join(self.script_folder, 'kubernetes/{}'.format(filename))
         ]
         run_command(create_config)
         return filename
@@ -121,7 +131,7 @@ class K8S():
             if not in_port and not out_port:
                 self.create_service(in_port, out_port)
 
-        with open('kubernetes/general-deployment.yaml', 'r') as infile:
+        with open(os.path.join(self.script_folder, 'kubernetes/general-deployment.yaml'), 'r') as infile:
             deploy = yaml.safe_load(infile)
             deploy['metadata']['name'] = self.app_name
             deploy['spec']['template']['metadata']['labels']['app'] = self.app_name
@@ -140,13 +150,13 @@ class K8S():
                         }
                     }],
                 }
-        with open('kubernetes/{}'.format(filename), 'w') as outfile:
+        with open(os.path.join(self.script_folder, 'kubernetes/{}'.format(filename)), 'w') as outfile:
             outfile.write(yaml.dump(deploy))
         create_config = [
             'kubectl',
             'create',
             '-f',
-            'kubernetes/{}'.format(filename)
+            os.path.join(self.script_folder, 'kubernetes/{}'.format(filename))
         ]
         run_command(create_config)
 

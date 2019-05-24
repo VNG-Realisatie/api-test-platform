@@ -95,6 +95,7 @@ class K8S():
             self.db_user = db_user
             self.db_pwd = db_pwd
             self.containers.append((
+                0,
                 'mdillon/postgis:11', None, None, {
                     'POSTGRES_DB': db_name,
                     'POSTGRES_USER': db_user,
@@ -236,7 +237,7 @@ class K8S():
         items = services.get('items')
         for item in items:
             metadata = item.get('metadata')
-            if metadata and metadata.get('name') == '{}-loadbalancer{}'.format(self.app_name, id):
+            if metadata and metadata.get('name') == '{}-loadbalancer-{}'.format(self.app_name, id):
                 ip_list = item.get('status').get('loadBalancer').get('ingress')
                 if ip_list:
                     return ip_list[0].get('ip')

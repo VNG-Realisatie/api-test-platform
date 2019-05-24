@@ -1,5 +1,6 @@
 import time
 import random
+import copy
 
 from datetime import timedelta, datetime
 from celery.utils.log import get_task_logger
@@ -100,7 +101,7 @@ def bootstrap_session(session_pk):
     for trial in range(N_TRIAL):
         try:
             time.sleep(10)
-            for bu in to_check:
+            for bu in copy.deepcopy(to_check):
                 ip = k8s.status(bu.pk)
                 ready, message = k8s.get_pods_status()
                 if not ready:
@@ -108,9 +109,10 @@ def bootstrap_session(session_pk):
                     continue
                 bu.docker_url = ip
                 bu.save()
-
+                to_check.remove(bu)
+            break
         except Exception as e:
-            err = e
+            pass
     # Remove previous allocated local resources
     ExposedUrl.objects.filter(session=session).delete()
     # No resource available

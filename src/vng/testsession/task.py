@@ -80,6 +80,7 @@ def bootstrap_session(session_pk, purged=False):
     # Init of the procedure
     k8s.initialize()
     to_check = []
+    external_ports = random.sample(range(9000, 10000), len(endpoint))
     if session.session_type.database:
         k8s.deploy_postgres_no_persistent_lazy()
     for ep in endpoint:
@@ -93,10 +94,10 @@ def bootstrap_session(session_pk, purged=False):
             # TODO: add environmental variables
             env_var = bind_url.vng_endpoint.environmentalvariables_set.all()
             variables = {v.key: v.value for v in env_var}
-            external_port = random.sample(range(9000, 10000), 3)
-            bind_url.port = external_port
+            port = external_ports.pop()
+            bind_url.port = port
             bind_url.save()
-            k8s.deploy(bind_url.pk, ep.docker_image, ep.port, external_port, env_variables=variables)
+            k8s.deploy(bind_url.pk, ep.docker_image, ep.port, port, env_variables=variables)
 
     k8s.flush()
     N_TRIAL = 10
@@ -112,7 +113,7 @@ def bootstrap_session(session_pk, purged=False):
                 bu.docker_url = ip
                 bu.save()
                 to_check.remove(bu)
-            break
+            return True
         except Exception as e:
             pass
     # Remove previous allocated local resources
@@ -125,7 +126,7 @@ def bootstrap_session(session_pk, purged=False):
         # Really, no resource available, trust me
         pass
     session.save()
-    return ready, message
+    return False
 
 
 @app.task

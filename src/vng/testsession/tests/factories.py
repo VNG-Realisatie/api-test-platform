@@ -1,15 +1,17 @@
-from ...utils import choices
-from ...utils.factories import UserFactory
-from django.utils import timezone
 import factory
 from factory.django import DjangoModelFactory as Dmf
-from vng.accounts.models import User
+from django.utils import timezone
 from django.conf import settings
 from filer.models import File
+
+from vng.accounts.models import User
+
 from ..models import (
     SessionType, Session, ScenarioCase, VNGEndpoint, ExposedUrl,
     SessionLog, TestSession, QueryParamsScenario, InjectHeader
 )
+from ...utils import choices
+from ...utils.factories import UserFactory
 
 
 class SessionTypeFactory(Dmf):

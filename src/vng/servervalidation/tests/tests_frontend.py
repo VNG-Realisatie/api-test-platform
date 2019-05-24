@@ -197,8 +197,6 @@ class IntegrationTest(WebTest):
         }))
         self.assertIn(str(new_server.uuid), call.text)
         call = self.app.get(reverse('server_run:server-run_list'), user=self.user)
-        import ipdb
-        ipdb.set_trace()
         ptr = PostmanTestResult.objects.all()[0]
         self.assertIn(str(ptr.get_assertions_details()[0]), call.text)
 

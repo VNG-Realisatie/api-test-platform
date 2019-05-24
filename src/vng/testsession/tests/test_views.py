@@ -4,6 +4,7 @@ import json
 import copy
 
 import mock
+import factory
 
 from django.conf import settings
 from django.urls import reverse
@@ -15,13 +16,17 @@ from django_webtest import WebTest
 
 from vng.accounts.models import User
 
+from ..task import run_tests
 from ..api_views import RunTest
-from ..models import Session, SessionType, SessionLog, Report, ScenarioCase, VNGEndpoint, ExposedUrl
+from ..models import (
+    Session, SessionType, SessionLog, Report,
+    ScenarioCase, VNGEndpoint, ExposedUrl, TestSession
+)
 
 from .factories import (
     SessionFactory, SessionTypeFactory, VNGEndpointDockerFactory, ExposedUrlEchoFactory, VNGEndpointEchoFactory,
     ScenarioCaseFactory, ExposedUrlFactory, SessionLogFactory, VNGEndpointFactory, QueryParamsScenarioFactory,
-    HeaderInjectionFactory
+    HeaderInjectionFactory, FilerField
 )
 from ...utils import choices
 from ...utils.factories import UserFactory
@@ -744,7 +749,24 @@ class TestRewriteUrl(WebTest):
         url = rt.build_url(self.eu, '')
         self.assertEqual(url, 'http://www.dummy.com/path/sub/a')
 
+        
+class TestPostmanRun(WebTest):
 
+    def setUp(self):
+        self.endpoint = VNGEndpointDockerFactory(name='name', url='www.google.com')
+        self.endpoint.test_file = FilerField(
+            file=factory.django.FileField(
+                from_path=settings.POSTMAN_ROOT + '/test_name.postman_collection.json'
+            ))
+        self.endpoint.save()
+        self.session = SessionFactory(session_type=self.endpoint.session_type)
+        self.eu = ExposedUrlFactory(session=self.session, vng_endpoint=self.endpoint)
+
+    def test_rewrite(self):
+        run_tests(self.session.id)
+        self.assertTrue(ExposedUrl.objects.get(id=self.eu.id).test_session.is_success_test())
+
+        
 class TestMultipleParams(WebTest):
     csrf_checks = False
 
@@ -776,3 +798,4 @@ class TestMultipleParams(WebTest):
         report2 = Report.objects.filter(scenario_case=self.sc2).count()
         self.assertEqual(report1, 1)
         self.assertEqual(report2, 1)
+

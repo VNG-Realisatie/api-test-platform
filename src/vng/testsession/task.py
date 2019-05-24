@@ -71,10 +71,10 @@ def bootstrap_session(session_pk):
     Create all the necessary endpoint and exposes it so they can be used as proxy
     In case there is one or multiple docker images linked, it starts all of them
     '''
+    # TODO: update status during the execution
     session = Session.objects.get(pk=session_pk)
     endpoint = VNGEndpoint.objects.filter(session_type=session.session_type)
 
-    error_deployment = False
     k8s = K8S(app_name=session.name)
     # Init of the procedure
     k8s.initialize()
@@ -92,10 +92,24 @@ def bootstrap_session(session_pk):
             env_var = bind_url.vng_endpoint.environmentalvariables_set.all()
 
             k8s.deploy(ep.docker_image, ep.port, env_variables=env_var)
-    # Hard part
-    k8s.flush()
 
+    k8s.flush()
+    N_TRIAL = 10
+    for trial in range(N_TRIAL):
+        time.sleep(10)
+        ip = k8s.status()
+        ready, message = k8s.get_pods_status()
+        if not ready:
+            # Raise error
+            continue
+        return ip, None
+    # Remove previous allocated local resources
+    ExposedUrl.objects.filter(session=session).delete()
+    # No resource available
+    if purge_sessions():
+        bootstrap_session(session.pk)
     session.save()
+    return ready, message
 
 
 @app.task

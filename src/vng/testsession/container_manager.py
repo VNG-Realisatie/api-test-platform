@@ -206,7 +206,8 @@ class K8S():
         run_command(clean_up)
         # TODO: remove unused resources, remember that Kubernetes has a Garbage Collector integrated
 
-    def get_pods_status(self, app_name):
+    def get_pods_status(self):
+        # TODO: filter through the command the resource
         status_command = [
             'kubectl',
             'get',
@@ -218,15 +219,16 @@ class K8S():
         items = pods.get('items')
         for item in items:
             metadata = item.get('metadata')
-            if metadata and app_name in metadata.get('name'):
+            if metadata and self.app_name in metadata.get('name'):
                 status = item.get('status').get('containerStatuses')[0]
                 if item.get('status').get('phase') == 'Pending':
                     return False, status.get('state').get('waiting').get('message')
                 elif item.get('status').get('phase') == 'Running':
                     return True, None
-        raise Exception('Application {} not found in the deployed cluster'.format(app_name))
+        raise Exception('Application {} not found in the deployed cluster'.format(self.app_name))
 
-    def status(self, app_name):
+    def status(self):
+        # TODO: filter through the command the resource
         status_command = [
             'kubectl',
             'get',
@@ -238,11 +240,11 @@ class K8S():
         items = services.get('items')
         for item in items:
             metadata = item.get('metadata')
-            if metadata and metadata.get('name') == '{}-loadBalancer'.format(app_name):
+            if metadata and metadata.get('name') == '{}-loadBalancer'.format(self.app_name):
                 ip_list = item.get('status').get('loadBalancer').get('ingress')
                 if ip_list:
                     return ip_list[0].get('ip')
-        raise Exception('Application {} not found in the deployed cluster'.format(app_name))
+        raise Exception('Application {} not found in the deployed cluster'.format(self.app_name))
 
     def exec(self, app_name, command):
         exec_command = [

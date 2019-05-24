@@ -90,8 +90,8 @@ def bootstrap_session(session_pk):
             app_name = get_app_name(session, bind_url)
             # TODO: add environmental variables
             env_var = bind_url.vng_endpoint.environmentalvariables_set.all()
-
-            k8s.deploy(ep.docker_image, ep.port, env_variables=env_var)
+            variables = {v.key: v.value for v in env_var}
+            k8s.deploy(ep.docker_image, ep.port, env_variables=variables)
 
     k8s.flush()
     N_TRIAL = 10

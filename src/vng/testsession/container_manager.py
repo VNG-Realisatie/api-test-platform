@@ -104,8 +104,6 @@ class K8S():
 
     def create_configmap(self, name, variables, i):
         filename = uuid.uuid4()
-        if not isinstance(variables, dict):
-            variables = {v.key: v.value for v in variables if not v.args}
         config_file_path = 'kubernetes/general-configmap.yaml'
         with open(os.path.join(self.script_folder, config_file_path), 'r') as infile:
             config = yaml.safe_load(infile)
@@ -153,8 +151,6 @@ class K8S():
                         }
                     }]
                 args_vars = []
-                if not isinstance(env, dict):
-                    args_vars = {v.key: v.value for v in env if v.args}
 
                 if len(args_vars) != 0:
                     args = []
@@ -185,7 +181,7 @@ class K8S():
             '--type=LoadBalancer',
             '--port={}'.format(8080),
             '--target-port={}'.format(8000),
-            '--name={}-loadBalancer'.format(self.app_name)
+            '--name={}-loadbalancer'.format(self.app_name)
         ]
         run_command(load_balancer)
 
@@ -240,7 +236,7 @@ class K8S():
         items = services.get('items')
         for item in items:
             metadata = item.get('metadata')
-            if metadata and metadata.get('name') == '{}-loadBalancer'.format(self.app_name):
+            if metadata and metadata.get('name') == '{}-loadbalancer'.format(self.app_name):
                 ip_list = item.get('status').get('loadBalancer').get('ingress')
                 if ip_list:
                     return ip_list[0].get('ip')

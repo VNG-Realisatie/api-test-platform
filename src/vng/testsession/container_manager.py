@@ -1,7 +1,6 @@
 import json
 import yaml
 import uuid
-import random
 import os
 
 from ..utils.commands import run_command
@@ -77,7 +76,7 @@ class K8S():
             service['spec']['selector']['app'] = self.app_name
             service['spec']['ports'][0]['port'] = in_port
             service['spec']['ports'][0]['targetPort'] = in_port
-        with open('kubernetes/{}'.format(filename), 'w') as outfile:
+        with open(os.path.join(self.script_folder, 'kubernetes/{}'.format(filename)), 'w') as outfile:
             outfile.write(yaml.dump(service))
         create_config = [
             'kubectl',
@@ -96,7 +95,7 @@ class K8S():
             self.db_user = db_user
             self.db_pwd = db_pwd
             self.containers.append((
-                'mdillon/postgis:11', False, False, {
+                'mdillon/postgis:11', None, None, {
                     'POSTGRES_DB': db_name,
                     'POSTGRES_USER': db_user,
                     'POSTGRES_PASSWORD': db_pwd
@@ -109,7 +108,7 @@ class K8S():
         config_file_path = 'kubernetes/general-configmap.yaml'
         with open(os.path.join(self.script_folder, config_file_path), 'r') as infile:
             config = yaml.safe_load(infile)
-            config['metadata']['name'] = '{}-{}'.format(self.app_name, str(random.randint(1, 1000)))
+            config['metadata']['name'] = '{}-{}'.format(self.app_name, 'config')
             config['metadata']['labels']['app'] = self.app_name
             config['data'] = variables
         with open(os.path.join(self.script_folder, 'kubernetes/{}'.format(filename)), 'w') as outfile:
@@ -121,6 +120,7 @@ class K8S():
             os.path.join(self.script_folder, 'kubernetes/{}'.format(filename))
         ]
         run_command(create_config)
+        # TODO: remove file afterward
         return filename
 
     def flush(self):
@@ -128,7 +128,7 @@ class K8S():
         for image, in_port, out_port, env in self.containers:
             if len(env.items()) != 0:
                 self.create_configmap(image, env)
-            if not in_port and not out_port:
+            if not (in_port is None or out_port is None):
                 self.create_service(in_port, out_port)
 
         with open(os.path.join(self.script_folder, 'kubernetes/general-deployment.yaml'), 'r') as infile:
@@ -150,6 +150,7 @@ class K8S():
                         }
                     }],
                 }
+                deploy['spec']['template']['spec']['containers'].append(container)
         with open(os.path.join(self.script_folder, 'kubernetes/{}'.format(filename)), 'w') as outfile:
             outfile.write(yaml.dump(deploy))
         create_config = [

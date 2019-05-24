@@ -39,6 +39,8 @@ class SessionListView(LoginRequiredMixin, ListView):
         context.update({
             'choices': _choices,
         })
+        sessions_related = [(session, *session.get_report_stats()) for session in context['object_list']]
+        context['object_list'] = sessions_related
         return context
 
     def get_queryset(self):
@@ -90,8 +92,14 @@ class SessionLogView(OwnerMultipleObjects):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         session = get_object_or_404(Session, pk=self.kwargs['session_id'])
+        stats = session.get_report_stats()
+
         context.update({
             'session': session,
+            'success': stats[0],
+            'failed': stats[1],
+            'not_called': stats[2],
+            'total': sum(stats)
         })
         return context
 

@@ -13,20 +13,19 @@
 {% block content %}
 <div id="ui-view">
     <div class="row">
-        <div class="col-sm-9">
+        <div class="col-sm-7">
             <div class="card-deck">
                 <div class="card">
                     <div class="card-header">
-                        Gestart op: {{ session.started|date }}
+                        Test consumer {{session}}
                     </div>
                     <div class="card-body">
-                        <h4 class="card-title">Test consumer {{session}}</h4>
+                        <h4 class="card-title">Gestart op: {{ session.started|date }}</h4>
 
                         {% if session.is_stopped %}
                         {% for postman in session.exposedurl_set.all %}
                         {% if postman.test_session.get_json_obj %}
-                        <!-- TODO: finish for the postman -->
-                        <h3>Postman Collection</h3>
+                        <h4>Postman Collection</h4>
                         <table class="table">
                             <thead>
                                 <tr>
@@ -165,8 +164,8 @@
                         {% else %}
                         <p>
                             Er zijn nog geen verzoeken binnengekomen.
-                        </p>
-                        {% endif %}
+                            <p>
+                                {% endif %}
 
 
                     </div>
@@ -201,12 +200,12 @@
                         </ul>
                     </nav>
                     {% endif %}
-              </div>
-             </div>
-           </div>
+                </div>
+            </div>
+        </div>
 
-           <div class="col-sm-3">
-              <div class="card-deck">
+        <div class="col-sm-5">
+            <div class="card-deck">
                 <div class="card">
                     <div class="card-header">
                         Endpoints & Rapports
@@ -228,22 +227,74 @@
                                     {% endfor %}
                                 </ul>
                             </div>
-			</div>
-			<div class="row">
-                          <div class="col-sm-12">
-			    <br />
-			    <p>
-                                <input type="button" class="btn btn-primary" value="Rapport"
-                                    onclick="location.href = '{% url 'testsession:session_report' session.id %}';">
-			    </p><p>
-                                <input type="button" class="btn btn-primary" value="Rapport (PDF)"
-                                       onclick="location.href = '{% url 'testsession:session_report-pdf' session.id %}';">
-				</p>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <br />
+                                <p>
+                                    <input type="button" class="btn btn-primary" value="Rapport"
+                                        onclick="location.href = '{% url 'testsession:session_report' session.id %}';">
+                                </p>
+                                <p>
+                                    <input type="button" class="btn btn-primary" value="Rapport (PDF)"
+                                        onclick="location.href = '{% url 'testsession:session_report-pdf' session.id %}';">
+                                </p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+            <div class="card">
+                <div class="card-header">
+                    Summary in a glance
+                </div>
+                <div class="card-body">
+                    <div class='table-responsive'>
+                        <table class="table">
+                            <thead>
+                                <th>Property</th>
+                                <th>Value</th>
+                            </thead>
+                            <tbody>
+                                <tr class="table-active">
+                                    <td>
+                                        Total scenario cases
+                                    </td>
+                                    <td>
+                                        {{ total }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Cases failed
+                                    </td>
+                                    <td class="table-success">
+                                        {{ failed }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Cases successful
+                                    </td>
+                                    <td class="table-danger">
+                                        {{ success }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Cases not called
+                                    </td>
+                                    <td>
+                                        {{ not_called }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
-        {% endblock %}
+        </div>
+    </div>
+
+    {% endblock %}

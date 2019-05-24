@@ -344,7 +344,7 @@ class RunTest(CSRFExemptMixin, View):
             if not sub.endswith('/'):
                 sub = sub + '/'
             return re.sub(
-                '{}://{}:{}/'.format(query.scheme, endpoint.docker_url, 8080),
+                '{}://{}:{}/'.format(query.scheme, endpoint.docker_url, endpoint.port),
                 sub,
                 content
             )
@@ -376,7 +376,7 @@ class RunTest(CSRFExemptMixin, View):
                 sub = sub + '/'
             return re.sub(
                 sub,
-                '{}://{}:{}/'.format(query.scheme, endpoint.docker_url, 8080),
+                '{}://{}:{}/'.format(query.scheme, endpoint.docker_url, endpoint.port),
                 content
             )
 
@@ -425,7 +425,7 @@ class RunTest(CSRFExemptMixin, View):
         if eu.vng_endpoint.url is not None:
             request_url = '{}/{}?{}'.format(eu.vng_endpoint.url, self.kwargs['relative_url'], arguments)
         else:
-            request_url = 'http://{}:{}/{}?{}'.format(eu.docker_url, 8080, self.kwargs['relative_url'], arguments)
+            request_url = 'http://{}:{}/{}?{}'.format(eu.docker_url, eu.port, self.kwargs['relative_url'], arguments)
         if arguments == '':
             request_url = request_url[:-1]
         return request_url
@@ -457,7 +457,7 @@ class RunTest(CSRFExemptMixin, View):
             response = make_call()
         except Exception as e:
             try:
-                request_header['Host'] = '{}:{}'.format(eu.docker_url, 8080)
+                request_header['Host'] = '{}:{}'.format(eu.docker_url, eu.port)
                 response = make_call()
             except Exception as e:
                 logger.exception(e)

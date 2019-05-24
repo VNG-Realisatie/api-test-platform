@@ -67,7 +67,7 @@ def purge_sessions():
 
 
 @app.task
-def bootstrap_session(session_pk):
+def bootstrap_session(session_pk, purged=False):
     '''
     Create all the necessary endpoint and exposes it so they can be used as proxy
     In case there is one or multiple docker images linked, it starts all of them
@@ -90,11 +90,13 @@ def bootstrap_session(session_pk):
         )
         if ep.docker_image:
             to_check.append(bind_url)
-            app_name = get_app_name(session, bind_url)
             # TODO: add environmental variables
             env_var = bind_url.vng_endpoint.environmentalvariables_set.all()
             variables = {v.key: v.value for v in env_var}
-            k8s.deploy(bind_url.pk, ep.docker_image, ep.port, env_variables=variables)
+            external_port = random.sample(range(9000, 10000), 3)
+            bind_url.port = external_port
+            bind_url.save()
+            k8s.deploy(bind_url.pk, ep.docker_image, ep.port, external_port, env_variables=variables)
 
     k8s.flush()
     N_TRIAL = 10
@@ -116,8 +118,12 @@ def bootstrap_session(session_pk):
     # Remove previous allocated local resources
     ExposedUrl.objects.filter(session=session).delete()
     # No resource available
-    if purge_sessions():
-        bootstrap_session(session.pk)
+    if not purged:
+        if purge_sessions():
+            bootstrap_session(session.pk, purged=True)
+    else:
+        # Really, no resource available, trust me
+        pass
     session.save()
     return ready, message
 

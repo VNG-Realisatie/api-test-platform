@@ -218,6 +218,7 @@ class Session(models.Model):
 
 class ExposedUrl(models.Model):
 
+    port = models.PositiveIntegerField(default=8080)
     subdomain = models.CharField(max_length=200, unique=True, null=True)
     session = models.ForeignKey(Session, on_delete=models.CASCADE)
     vng_endpoint = models.ForeignKey(VNGEndpoint, on_delete=models.CASCADE)

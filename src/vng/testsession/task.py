@@ -58,7 +58,7 @@ def align_sessions_data():
 def start_app_b8s(kuber, session, bind_url):
     kuber.initialize()
     if session.session_type.database:
-        kuber.deploy_postgres_no_persistent()
+        kuber.deploy_postgres_no_persistent_lazy()
     update_session_status(session, 'Verbinding maken met Kubernetes', 1)
     endpoint = bind_url.vng_endpoint
     app_name = get_app_name(session, bind_url)

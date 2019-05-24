@@ -124,3 +124,12 @@ class ReportAdmin(admin.ModelAdmin):
         'session_log',
         'result'
     ]
+
+
+@admin.register(model.EnvironmentalVariables)
+class EnvironmentalVariablesAdmin(admin.ModelAdmin):
+    list_display = [
+        'vng_endpoint',
+        'key',
+        'value'
+    ]

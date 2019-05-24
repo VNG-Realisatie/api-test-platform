@@ -1,6 +1,7 @@
 import json
 import yaml
 import uuid
+import random
 import os
 
 from ..utils.commands import run_command
@@ -12,6 +13,7 @@ class K8S():
         self.initialized = False
         self.cluster = cluster
         self.db_deployed = False
+        self.db_to_deploy = False
         self.app_name = app_name
         self.containers = []
 
@@ -70,7 +72,7 @@ class K8S():
         filename = uuid.uuid4()
         with open('kubernetes/general-service.yaml', 'r') as infile:
             service = yaml.safe_load(infile)
-            service['metadata']['name'] = self.app_name
+            service['metadata']['name'] = '{}-{}'.format(self.app_name, str(random.randint(1, 1000)))
             service['spec']['selector']['app'] = self.app_name
             service['spec']['ports'][0]['port'] = in_port
             service['spec']['ports'][0]['targetPort'] = in_port
@@ -85,40 +87,19 @@ class K8S():
         run_command(create_config)
         return filename
 
-    def deploy_postgres_no_persistent(self, cluster):
+    def deploy_postgres_no_persistent_lazy(self):
         if self.db_deployed:
             return
-        create_config = [
-            'kubectl',
-            'create',
-            '-f',
-            'postgres-configmap.yaml'
-        ]
-        create_deployment = [
-            'kubectl',
-            'create',
-            '-f',
-            'postgres-deployment.yaml'
-        ]
-        create_service = [
-            'kubectl',
-            'create',
-            '-f',
-            'postgres-service.yaml'
-        ]
-        run_command(create_config)
-        run_command(create_deployment)
-        run_command(create_service)
-        # fetching the IP
-        resource = self.fetch_resource('svc postgres')
-        self.db_deployed = True
-        return resource['spec']['clusterIp'], resource['spec']['ports']['nodePort']
+        else:
+            self.containers.append((
+                'mdillon/postgis:11', False, False, {}
+            ))
 
     def create_configmap(self, name, variables):
         filename = uuid.uuid4()
         with open('kubernetes/general-configmap.yaml', 'r') as infile:
             config = yaml.safe_load(infile)
-            config['metadata']['name'] = self.app_name
+            config['metadata']['name'] = '{}-{}'.format(self.app_name, str(random.randint(1, 1000)))
             config['metadata']['labels']['app'] = self.app_name
             config['data'] = variables
         with open('kubernetes/{}'.format(filename), 'w') as outfile:
@@ -137,7 +118,8 @@ class K8S():
         for image, in_port, out_port, env in self.containers:
             if len(env.items()) != 0:
                 self.create_configmap(image, env)
-            self.create_service(in_port, out_port)
+            if not in_port and not out_port:
+                self.create_service(in_port, out_port)
 
         with open('kubernetes/general-deployment.yaml', 'r') as infile:
             deploy = yaml.safe_load(infile)
@@ -172,52 +154,18 @@ class K8S():
         self.containers.append((
             image, port, access_port, env_variables
         ))
-        return
-        self.
-        deploy_image = [
-            'kubectl',
-            'run',
-            '{}'.format(app_name),
-            '--image={}'.format(image),
-            '--port={}'.format(port),
-        ]
-        for k, v in env_variables.items():
-            deploy_image.append('--env="{}={}"'.format(k, v))
-        load_balancer = [
-            'kubectl',
-            'expose',
-            'deployment',
-            '{}'.format(app_name),
-            '--type=LoadBalancer',
-            '--port={}'.format(access_port),
-            '--target-port={}'.format(port)
-        ]
 
-        # Create a workload with pods
-        run_command(deploy_image)
-
-        # Create a load balancer to expose the cluster
-        run_command(load_balancer)
-
-    def delete(self, app_name):
-        delete_service = [
-            'kubectl',
-            'delete',
-            'service',
-            '{}'.format(app_name),
-        ]
+    def delete(self):
         clean_up = [
             'kubectl',
             'delete',
             'deployment',
-            '{}'.format(app_name),
+            '{}'.format(self.app_name),
         ]
-
-        # Delete the load balancer
-        run_command(delete_service)
 
         # Delete the workload
         run_command(clean_up)
+        # TODO: remove unused resources
 
     def get_pods_status(self, app_name):
         status_command = [

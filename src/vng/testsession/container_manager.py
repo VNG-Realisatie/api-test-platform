@@ -72,7 +72,7 @@ class K8S():
         filename = uuid.uuid4()
         with open(os.path.join(self.script_folder, 'kubernetes/general-service.yaml'), 'r') as infile:
             service = yaml.safe_load(infile)
-            service['metadata']['name'] = '{}-{}'.format(self.app_name, str(random.randint(1, 1000)))
+            service['metadata']['name'] = self.app_name
             service['spec']['selector']['app'] = self.app_name
             service['spec']['ports'][0]['port'] = in_port
             service['spec']['ports'][0]['targetPort'] = in_port
@@ -126,30 +126,30 @@ class K8S():
     def flush(self):
         filename = uuid.uuid4()
         for image, in_port, out_port, env in self.containers:
-            if len(env.items()) != 0:
+            if len(env) != 0:
                 self.create_configmap(image, env)
-            if not (in_port is None or out_port is None):
-                self.create_service(in_port, out_port)
 
         with open(os.path.join(self.script_folder, 'kubernetes/general-deployment.yaml'), 'r') as infile:
             deploy = yaml.safe_load(infile)
             deploy['metadata']['name'] = self.app_name
             deploy['spec']['template']['metadata']['labels']['app'] = self.app_name
             deploy['spec']['template']['spec']['containers'] = []
-            for image, in_port, out_port, env in self.containers:
+            for i, (image, in_port, out_port, env) in enumerate(self.containers):
                 container = {
-                    'name': self.app_name,
+                    'name': '{}-{}'.format(self.app_name, i),
                     'image': image,
                     'imagePullPolicy': "IfNotPresent",
                     'ports': [{
                         'containerPort': 8080
                     }],
-                    'envFrom': [{
-                        'configMapRef': {
-                            'name': self.app_name
-                        }
-                    }],
                 }
+
+                if len(env) != 0:
+                    container['envFrom'] = [{
+                        'configMapRef': {
+                            'name': '{}-config'.format(self.app_name)
+                        }
+                    }]
                 deploy['spec']['template']['spec']['containers'].append(container)
         with open(os.path.join(self.script_folder, 'kubernetes/{}'.format(filename)), 'w') as outfile:
             outfile.write(yaml.dump(deploy))
@@ -160,6 +160,10 @@ class K8S():
             os.path.join(self.script_folder, 'kubernetes/{}'.format(filename))
         ]
         run_command(create_config)
+
+        for image, in_port, out_port, env in self.containers:
+            if not (in_port is None or out_port is None):
+                self.create_service(in_port, out_port)
 
     def deploy(self, image, port=8080, access_port=8080, env_variables={}):
         self.containers.append((

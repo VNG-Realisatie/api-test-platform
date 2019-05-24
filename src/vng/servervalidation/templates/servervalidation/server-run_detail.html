@@ -28,44 +28,122 @@
                 </div>
             </div>
         </div>
-
-	<div class="col-sm-6">
-	  <div class="card">
-	    <div class="card-body">
-	      <p>
-	    Note: Shields.io caches the badge result for 5 minutes. Check the <a href="{% url 'apiv1server:provider:api_server-run-shield-detail' object.id %}">API</a> for direct access.</p>
-
-	    <span display="block" style='width: 250px;' class="common__BadgeWrapper-sc-16zh6vt-3 fagfmg">
-            <a href="{% url 'server_run:server-run_detail_uuid' object.uuid %}">
-                <img style='width:250px' alt="" src="https://img.shields.io/endpoint.svg?style=for-the-badge&amp;url={{request.scheme}}://{{request.get_host}}{% url 'apiv1server:provider:api_server-run-shield-detail' object.id %}">
-            </a>
-            </span>
-	</div>
-      </div>
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">Markdown snippet</h5>
-	  <p>Paste the following in your README.md to show your badge on Github.</p>
-          <?prettify lang=html linenums=true?>
-          <pre class="prettyprint" id='gitSnippet'>
+        <div class="col-sm-6">
+            <div class="card">
+                <div class="card-body">
+                    <p>
+                        Note: Shields.io caches the badge result for 5 minutes. Check the <a
+                            href="{% url 'apiv1server:provider:api_server-run-shield-detail' object.id %}">API</a> for
+                        direct access.</p>
+                    <span display="block" style='width: 250px;' class="common__BadgeWrapper-sc-16zh6vt-3 fagfmg">
+                        <a href="{% url 'server_run:server-run_detail_uuid' object.uuid %}">
+                            <img style='width:250px' alt=""
+                                src="https://img.shields.io/endpoint.svg?style=for-the-badge&amp;url={{request.scheme}}://{{request.get_host}}{% url 'apiv1server:provider:api_server-run-shield-detail' object.id %}">
+                        </a>
+                    </span>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Markdown snippet</h5>
+                    <p>Paste the following in your README.md to show your badge on Github.</p>
+                    <?prettify lang=html linenums=true?>
+                    <pre class="prettyprint" id='gitSnippet'>
             <xmp>
 
             </xmp>
           </pre>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">HTML snippet</h5>
-	  <p>Paste the following in your HTML page to show your badge.</p>
-          <?prettify lang=html linenums=true?>
-          <pre class="prettyprint" id='htmlSnippet'>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">HTML snippet</h5>
+                    <p>Paste the following in your HTML page to show your badge.</p>
+                    <?prettify lang=html linenums=true?>
+                    <pre class="prettyprint" id='htmlSnippet'>
             <xmp>
             </xmp>
           </pre>
+                </div>
+            </div>
         </div>
-      </div>
-      </div>
+    </div>
+
+    <div class="row">
+        {% for postman in postman_result %}
+        {% with postman.get_aggregate_results as results %}
+
+        <div class="col-sm-6">
+            <div class="card">
+                <div class="card-header">
+                    Postman collection #{{forloop.counter}} results details
+                </div>
+                <div class="card-body">
+                    <div class='table-responsive'>
+                        <table class="table">
+                            <thead>
+                                <th>Property</th>
+                                <th>Value</th>
+                            </thead>
+                            <tbody>
+                                <tr class="table-active">
+                                    <td>
+                                        Total calls
+                                    </td>
+                                    <td>
+                                        {{ results.calls.total }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Calls failed
+                                    </td>
+                                    <td class="table-danger">
+                                        {{ results.calls.failed }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Calls successful
+                                    </td>
+                                    <td class="table-success">
+                                        {{ results.calls.success }}
+                                    </td>
+                                </tr>
+                                <tr class="table-active">
+                                    <td>
+                                        Total assertions
+                                    </td>
+                                    <td>
+                                        {{ results.assertions.total }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Assertions failed
+                                    </td>
+                                    <td class="table-danger">
+                                        {{ results.assertions.passed }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Assertions passed
+                                    </td>
+                                    <td class="table-success">
+                                        {{ results.assertions.failed }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% endwith %}
+        {% endfor %}
+
     </div>
 
     {% for postman in postman_result %}
@@ -101,7 +179,7 @@
                                 </td>
                                 {% endif %}
                             </tr>
-                            <tr >
+                            <tr>
                                 <td>
                                     {{calls.request.url.url}}
                                 </td>
@@ -229,7 +307,7 @@
 
 
 {% block script %}
-    <script>
+<script>
     var gitSnippet = '[![Status badge](https://img.shields.io/endpoint.svg?style=for-the-badge&amp;url={{request.scheme}}://{{request.get_host}}{% url "apiv1server:provider:api_server-run-shield-detail" object.id %})]({{request.scheme}}://{{request.get_host}}{% url 'server_run:server-run_detail_uuid' object.uuid %})'
 
     var htmlSnippet = '<span display="block" height="20px" class="common__BadgeWrapper-sc-16zh6vt-3 fagfmg">\n'
@@ -263,5 +341,6 @@
     // insert into PRE
     document.getElementById("gitSnippet").innerHTML = gitSnippet;
     document.getElementById("htmlSnippet").innerHTML = htmlSnippet;
-  </script>
+
+</script>
 {% endblock %}

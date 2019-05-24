@@ -39,7 +39,7 @@ class TestScenario(models.Model):
 class TestScenarioUrl(models.Model):
 
     name = models.CharField('Naam', max_length=200)
-    test_scenario = models.ForeignKey(TestScenario, on_delete=models.CASCADE)
+    test_scenario = models.ForeignKey(TestScenario, on_delete=models.PROTECT)
     url = models.BooleanField(default=True, help_text='When enabled a single-line field is shown to the user when starting a session. When disabled a multi-line field is shown.')
 
     def __str__(self):
@@ -49,7 +49,7 @@ class TestScenarioUrl(models.Model):
 class PostmanTest(OrderedModel):
 
     order_with_respect_to = 'test_scenario'
-    test_scenario = models.ForeignKey(TestScenario, on_delete=models.CASCADE)
+    test_scenario = models.ForeignKey(TestScenario, on_delete=models.PROTECT)
     validation_file = FilerFileField(null=True, blank=True, default=None, on_delete=models.SET_NULL)
 
     class Meta(OrderedModel.Meta):
@@ -61,7 +61,7 @@ class PostmanTest(OrderedModel):
 
 class ServerRun(models.Model):
 
-    test_scenario = models.ForeignKey(TestScenario, on_delete=models.CASCADE)
+    test_scenario = models.ForeignKey(TestScenario, on_delete=models.PROTECT)
     started = models.DateTimeField('Gestart op', default=timezone.now)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     stopped = models.DateTimeField('Gestopt op', null=True, default=None, blank=True)
@@ -184,6 +184,44 @@ class PostmanTestResult(models.Model):
             else:
                 negative += 1
         return positive, negative
+
+    def get_aggregate_results(self):
+        passed, error = 0, 0
+        positive, negative = 0, 0
+        for call in self.get_json_obj():
+            if postman.get_call_result(call):
+                positive += 1
+            else:
+                negative += 1
+            if 'assertions' in call:
+                for assertion in call['assertions']:
+                    if 'error' in assertion:
+                        error += 1
+                    else:
+                        passed += 1
+        return {
+            'assertions': {
+                'passed': passed,
+                'failed': error,
+                'total': error + passed
+            },
+            'calls': {
+                'success': positive,
+                'failed': negative,
+                'total': negative + positive
+            }
+        }
+
+    def get_assertions_details(self):
+        passed, error = 0, 0
+        for call in self.get_json_obj():
+            if 'assertions' in call:
+                for assertion in call['assertions']:
+                    if 'error' in assertion:
+                        error += 1
+                    else:
+                        passed += 1
+        return passed, error
 
     def positive_call_result(self):
         return self.get_call_results()[0]

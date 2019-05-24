@@ -73,33 +73,29 @@ def bootstrap_session(session_pk):
     '''
     session = Session.objects.get(pk=session_pk)
     endpoint = VNGEndpoint.objects.filter(session_type=session.session_type)
-    try:
-        error_deployment = False
-        k8s = K8S(app_name=session.name)
-        # Init of the procedure
-        k8s.initialize()
-        if session.session_type.database:
-            k8s.deploy_postgres_no_persistent_lazy()
-        for ep in endpoint:
-            bind_url = ExposedUrl.objects.create(
-                session=session,
-                vng_endpoint=ep,
-                subdomain='{}'.format(int(time.time()) * 100 + random.randint(0, 99))
-            )
-            if ep.docker_image:
-                app_name = get_app_name(session, bind_url)
-                # TODO: add environmental variables
-                env_var = bind_url.vng_endpoint.environmentalvariables_set.all()
-                e_vars = {e.key: e.value for e in env_var}
 
-                k8s.deploy(ep.docker_image, ep.port, env_variables=e_vars)
-        # Hard part
-        k8s.flush()
+    error_deployment = False
+    k8s = K8S(app_name=session.name)
+    # Init of the procedure
+    k8s.initialize()
+    if session.session_type.database:
+        k8s.deploy_postgres_no_persistent_lazy()
+    for ep in endpoint:
+        bind_url = ExposedUrl.objects.create(
+            session=session,
+            vng_endpoint=ep,
+            subdomain='{}'.format(int(time.time()) * 100 + random.randint(0, 99))
+        )
+        if ep.docker_image:
+            app_name = get_app_name(session, bind_url)
+            # TODO: add environmental variables
+            env_var = bind_url.vng_endpoint.environmentalvariables_set.all()
 
-        session.save()
-    except Exception as e:
-        logger.exception(e)
-        session.delete()
+            k8s.deploy(ep.docker_image, ep.port, env_variables=env_var)
+    # Hard part
+    k8s.flush()
+
+    session.save()
 
 
 @app.task

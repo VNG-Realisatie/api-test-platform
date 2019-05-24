@@ -87,7 +87,7 @@ class K8S():
         run_command(create_config)
         return filename
 
-    def deploy_postgres_no_persistent_lazy(self, db_name='postgresdb', db_user='postgresadmin', db_pwd='k8spwd'):
+    def deploy_postgres_no_persistent_lazy(self, db_name='postgres', db_user='postgres', db_pwd='k8spwd'):
         if self.db_deployed:
             return
         else:
@@ -102,13 +102,15 @@ class K8S():
                 }
             ))
 
-    def create_configmap(self, name, variables):
+    def create_configmap(self, name, variables, i):
         filename = uuid.uuid4()
-
+        if not isinstance(variables, dict):
+            variables = {v.key: v.value for v in variables if not v.args}
         config_file_path = 'kubernetes/general-configmap.yaml'
         with open(os.path.join(self.script_folder, config_file_path), 'r') as infile:
             config = yaml.safe_load(infile)
-            config['metadata']['name'] = '{}-{}'.format(self.app_name, 'config')
+            name = '{}-{}-{}'.format(self.app_name, 'config', i)
+            config['metadata']['name'] = name
             config['metadata']['labels']['app'] = self.app_name
             config['data'] = variables
         with open(os.path.join(self.script_folder, 'kubernetes/{}'.format(filename)), 'w') as outfile:
@@ -121,13 +123,10 @@ class K8S():
         ]
         run_command(create_config)
         # TODO: remove file afterward
-        return filename
+        return name
 
     def flush(self):
         filename = uuid.uuid4()
-        for image, in_port, out_port, env in self.containers:
-            if len(env) != 0:
-                self.create_configmap(image, env)
 
         with open(os.path.join(self.script_folder, 'kubernetes/general-deployment.yaml'), 'r') as infile:
             deploy = yaml.safe_load(infile)
@@ -135,6 +134,8 @@ class K8S():
             deploy['spec']['template']['metadata']['labels']['app'] = self.app_name
             deploy['spec']['template']['spec']['containers'] = []
             for i, (image, in_port, out_port, env) in enumerate(self.containers):
+                if len(env) != 0:
+                    name = self.create_configmap(image, env, i)
                 container = {
                     'name': '{}-{}'.format(self.app_name, i),
                     'image': image,
@@ -147,10 +148,20 @@ class K8S():
                 if len(env) != 0:
                     container['envFrom'] = [{
                         'configMapRef': {
-                            'name': '{}-config'.format(self.app_name)
+                            'name': name
                         }
                     }]
+                args_vars = []
+                if not isinstance(env, dict):
+                    args_vars = {v.key: v.value for v in env if v.args}
+
+                if len(args_vars) != 0:
+                    args = []
+                    for k, v in args_vars.items():
+                        args.append('"{}={}"'.format(k, v))
+                    container['args'] = args
                 deploy['spec']['template']['spec']['containers'].append(container)
+
         with open(os.path.join(self.script_folder, 'kubernetes/{}'.format(filename)), 'w') as outfile:
             outfile.write(yaml.dump(deploy))
         create_config = [

@@ -72,7 +72,7 @@ def bootstrap_session(session_pk, purged=False):
     Create all the necessary endpoint and exposes it so they can be used as proxy
     In case there is one or multiple docker images linked, it starts all of them
     '''
-    # TODO: update status during the execution
+    update_session_status(session, 'Verbinding maken met Kubernetes', 1)
     session = Session.objects.get(pk=session_pk)
     endpoint = VNGEndpoint.objects.filter(session_type=session.session_type)
 
@@ -91,31 +91,35 @@ def bootstrap_session(session_pk, purged=False):
         )
         if ep.docker_image:
             to_check.append(bind_url)
-            # TODO: add environmental variables
             env_var = bind_url.vng_endpoint.environmentalvariables_set.all()
             variables = {v.key: v.value for v in env_var}
             port = external_ports.pop()
             bind_url.port = port
             bind_url.save()
             k8s.deploy(bind_url.pk, ep.docker_image, ep.port, port, env_variables=variables)
-
+    update_session_status(session, 'Docker image installatie op Kubernetes', 10)
     k8s.flush()
     N_TRIAL = 10
     for trial in range(N_TRIAL):
         try:
             time.sleep(10)
+            percentage = 28 + (12 * trial)
+            update_session_status(session, 'Installatie voortgang {}'.format(trial + 1), percentage if percentage < 95 else 94)
             for bu in copy.deepcopy(to_check):
                 ip = k8s.status(bu.pk)
+                update_session_status(session, 'Status controle van pod', 95)
                 ready, message = k8s.get_pods_status()
                 if not ready:
-                    # Raise error
-                    continue
+                    update_session_status(session, 'An error within the image prevented from a correct deployment')
+                    return False
+                update_session_status(session, 'Installatie succesvol uitgevoerd', 100)
                 bu.docker_url = ip
                 bu.save()
                 to_check.remove(bu)
             return True
         except Exception as e:
             pass
+    update_session_status(session, 'Impossible to deploy successfully, trying to remove old sessions')
     # Remove previous allocated local resources
     ExposedUrl.objects.filter(session=session).delete()
     # No resource available
@@ -123,9 +127,7 @@ def bootstrap_session(session_pk, purged=False):
         if purge_sessions():
             bootstrap_session(session.pk, purged=True)
     else:
-        # Really, no resource available, trust me
-        pass
-    session.save()
+        update_session_status(session, 'Impossible to deploy successfully, all the resources are being used')
     return False
 
 

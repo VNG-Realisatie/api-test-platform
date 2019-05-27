@@ -33,12 +33,12 @@
                 <div class="card-body">
                     <p>
                         Note: Shields.io caches the badge result for 5 minutes. Check the <a
-                            href="{% url 'apiv1server:provider:api_server-run-shield-detail' object.id %}">API</a> for
+                            href="{% url 'apiv1server:provider:api_server-run-shield-detail' object.uuid %}">API</a> for
                         direct access.</p>
                     <span display="block" style='width: 250px;' class="common__BadgeWrapper-sc-16zh6vt-3 fagfmg">
                         <a href="{% url 'server_run:server-run_detail_uuid' object.uuid %}">
                             <img style='width:250px' alt=""
-                                src="https://img.shields.io/endpoint.svg?style=for-the-badge&amp;url={{request.scheme}}://{{request.get_host}}{% url 'apiv1server:provider:api_server-run-shield-detail' object.id %}">
+                                src="https://img.shields.io/endpoint.svg?style=for-the-badge&amp;url={{request.scheme}}://{{request.get_host}}{% url 'apiv1server:provider:api_server-run-shield-detail' object.uuid %}">
                         </a>
                     </span>
                 </div>
@@ -308,12 +308,12 @@
 
 {% block script %}
 <script>
-    var gitSnippet = '[![Status badge](https://img.shields.io/endpoint.svg?style=for-the-badge&amp;url={{request.scheme}}://{{request.get_host}}{% url "apiv1server:provider:api_server-run-shield-detail" object.id %})]({{request.scheme}}://{{request.get_host}}{% url 'server_run:server-run_detail_uuid' object.uuid %})'
+    var gitSnippet = '[![Status badge](https://img.shields.io/endpoint.svg?style=for-the-badge&amp;url={{request.scheme}}://{{request.get_host}}{% url "apiv1server:provider:api_server-run-shield-detail" object.uuid %})]({{request.scheme}}://{{request.get_host}}{% url 'server_run:server-run_detail_uuid' object.uuid %})'
 
     var htmlSnippet = '<span display="block" height="20px" class="common__BadgeWrapper-sc-16zh6vt-3 fagfmg">\n'
             + '<a href="{{request.scheme}}://{{request.get_host}}{% url 'server_run:server-run_detail_uuid' object.uuid %}">\n'
             + '<img style="width:100%" alt="" src="https://img.shields.io/endpoint.svg?style=for-the-badge&amp;\n '
-            + 'url={{request.scheme}}://{{request.get_host}}{% url "apiv1server:provider:api_server-run-shield-detail" object.id %}"></span></a>'
+            + 'url={{request.scheme}}://{{request.get_host}}{% url "apiv1server:provider:api_server-run-shield-detail" object.uuid %}"></span></a>'
 
     function htmlEscape(s) {
         s = s.replace(/&/g, '&amp;')

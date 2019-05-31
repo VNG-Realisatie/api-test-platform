@@ -1,5 +1,6 @@
 import uuid
 import yaml
+import os
 
 from ..utils.commands import run_command
 
@@ -24,6 +25,7 @@ class KubernetesObject(AutoAssigner):
         self.dump(filename)
         self.create_config.append(str(filename))
         run_command(self.create_config)
+        os.remove(filename)
 
     def dump(self, filename):
         content = self.get_content()
@@ -71,8 +73,15 @@ class Container(AutoAssigner):
     def get_content(self):
         base = {
             'name': self.name,
-            'image': self.image
+            'image': self.image,
+            'imagePullPolicy': 'ifNotPresent'
         }
+        if hasattr(self, 'configMap'):
+            base['envFrom'] = [{
+                'configMapRef': {
+                    'name': self.configMap
+                }
+            }]
         if hasattr(self, 'command'):
             base['command'] = self.command
         return base
@@ -192,11 +201,13 @@ class ConfigMap(KubernetesObject):
     kind = 'configMap'
 
     def get_content(self):
+        name = self.name + str(uuid.uuid4())
+        self.container.configMap = name
         return {
             'apiVersion': self.apiVersion,
             'kind': self.kind,
             'metadata': {
-                'name': self.name,
+                'name': name,
                 'labels': {
                     'app': self.labels
                 }

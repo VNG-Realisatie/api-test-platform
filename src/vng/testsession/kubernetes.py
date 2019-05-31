@@ -97,13 +97,59 @@ class Service(KubernetesObject):
                 }
             },
             'spec': {
-                'type': 'NodePort',
-                'ports': {
-                    'ports': self.public_port,
-                    'targetPort': self.private_port
-                }
+
             }
         }
+
+
+class NodePort(Service):
+    '''
+    name, labels, containers
+    '''
+
+    apiVersion = 'v1'
+    kind = 'Service'
+
+    def get_content(self):
+        service = super().get_content()
+        service['spec']['type'] = 'NodePort'
+        service['ports'] = [{
+            'name': 'http',
+            'ports': c.public_port,
+            'targetPort': c.private_port
+        }for c in self.containers]
+        return service
+
+
+class ClusterIP(Service):
+    '''
+    name, labels, containers
+    '''
+
+    apiVersion = 'v1'
+    kind = 'Service'
+
+    def get_content(self):
+        service = super().get_content()
+        service['spec']['type'] = 'ClusterIP'
+        service['ports'] = [{
+            'name': 'http',
+            'ports': c.public_port,
+            'targetPort': c.private_port
+        }for c in self.containers]
+        return service
+
+
+class LoadBalancer(Service):
+
+    def get_content(self):
+        service = super().get_content()
+        service['spec']['type'] = 'LoadBalancer'
+        service['ports'] = [{
+            'name': 'http',
+            'ports': c.public_port,
+            'targetPort': c.private_port
+        }for c in self.containers]
 
 
 class Deployment(KubernetesObject):
@@ -140,7 +186,7 @@ class Deployment(KubernetesObject):
 
 class ConfigMap(KubernetesObject):
     '''
-    name, labels, data
+    name, labels, container
     '''
     apiVersion = 'v1'
     kind = 'configMap'
@@ -155,5 +201,5 @@ class ConfigMap(KubernetesObject):
                     'app': self.labels
                 }
             },
-            'data': self.data
+            'data': self.container.variables
         }

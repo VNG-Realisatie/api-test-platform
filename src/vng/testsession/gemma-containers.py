@@ -1,9 +1,11 @@
 from .kubernetes import *
 
 postgis = Container(
+    name='postgis',
     image='mdillon/postgis:11',
     public_port=5432,
     private_port=5432,
+    exposed=False,
     variables={},
     command=[
         "echo 'create database AC' | sudo -u postgres psql",
@@ -16,20 +18,25 @@ postgis = Container(
 )
 
 rabbitMQ = Container(
+    name='rabbit',
     image='rabbitmq',
     public_port=5672,
     private_port=5672,
+    exposed=False,
     variables={}
 )
 
 celery = Container(
+    name='celery',
     image='celery',
     public_port=None,
     private_port=None,
+    exposed=False,
     variables={}
 )
 
 NRC = Container(
+    name='NRC',
     image='vngr/gemma-notifications',
     public_port=8004,
     private_port=8004,
@@ -42,6 +49,7 @@ NRC = Container(
 )
 
 ZTC = Container(
+    name='ZTC',
     image='vngr/gemma-ztc',
     public_port=8002,
     private_port=8002,
@@ -54,6 +62,7 @@ ZTC = Container(
 )
 
 ZRC = Container(
+    name='ZRC',
     image='vngr/gemma-zrc',
     public_port=8000,
     private_port=8000,
@@ -66,6 +75,7 @@ ZRC = Container(
 )
 
 BRC = Container(
+    name='BRC',
     image='vngr/gemma-brc',
     public_port=8003,
     private_port=8003,
@@ -78,6 +88,7 @@ BRC = Container(
 )
 
 DRC = Container(
+    name='DRC',
     image='vngr/gemma-drc',
     public_port=8001,
     private_port=8001,

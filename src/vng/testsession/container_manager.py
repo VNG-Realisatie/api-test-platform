@@ -16,6 +16,11 @@ class K8S():
         self.app_name = app_name
         self.containers = []
         self.script_folder = os.path.dirname(__file__)
+        self.garbage = []
+
+    def __del__(self):
+        for gfile in self.garbage:
+            os.remove(gfile)
 
     def initialize(self):
         if self.initialized:
@@ -76,15 +81,17 @@ class K8S():
             service['spec']['selector']['app'] = self.app_name
             service['spec']['ports'][0]['port'] = in_port
             service['spec']['ports'][0]['targetPort'] = in_port
-        with open(os.path.join(self.script_folder, 'kubernetes/{}'.format(filename)), 'w') as outfile:
+        new_file = os.path.join(self.script_folder, 'kubernetes/{}'.format(filename))
+        with open(new_file, 'w') as outfile:
             outfile.write(yaml.dump(service))
         create_config = [
             'kubectl',
             'create',
             '-f',
-            os.path.join(self.script_folder, 'kubernetes/{}'.format(filename))
+            new_file
         ]
         run_command(create_config)
+        self.garbage.append(new_file)
         return filename
 
     def deploy_postgres_no_persistent_lazy(self, db_name='postgres', db_user='postgres', db_pwd='k8spwd'):
@@ -112,16 +119,17 @@ class K8S():
             config['metadata']['name'] = name
             config['metadata']['labels']['app'] = self.app_name
             config['data'] = variables
-        with open(os.path.join(self.script_folder, 'kubernetes/{}'.format(filename)), 'w') as outfile:
+        new_file = os.path.join(self.script_folder, 'kubernetes/{}'.format(filename))
+        with open(new_file, 'w') as outfile:
             outfile.write(yaml.dump(config))
         create_config = [
             'kubectl',
             'create',
             '-f',
-            os.path.join(self.script_folder, 'kubernetes/{}'.format(filename))
+            new_file
         ]
         run_command(create_config)
-        # TODO: remove file afterward
+        self.garbage.append(new_file)
         return name
 
     def flush(self):
@@ -159,16 +167,17 @@ class K8S():
                         args.append('"{}={}"'.format(k, v))
                     container['args'] = args
                 deploy['spec']['template']['spec']['containers'].append(container)
-
-        with open(os.path.join(self.script_folder, 'kubernetes/{}'.format(filename)), 'w') as outfile:
+        new_file = os.path.join(self.script_folder, 'kubernetes/{}'.format(filename))
+        with open(new_file, 'w') as outfile:
             outfile.write(yaml.dump(deploy))
         create_config = [
             'kubectl',
             'create',
             '-f',
-            os.path.join(self.script_folder, 'kubernetes/{}'.format(filename))
+            new_file
         ]
         run_command(create_config)
+        self.garbage.append(new_file)
 
         for id, image, in_port, out_port, env in self.containers:
             if not (in_port is None or out_port is None):

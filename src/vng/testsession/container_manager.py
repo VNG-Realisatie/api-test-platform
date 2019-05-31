@@ -95,7 +95,13 @@ class K8S_2():
                 name=self.app_name,
                 labels=label,
                 containers=pod
-            )
+            ).execute()
+
+            LoadBalancer(
+                name=self.app_name,
+                labels=label,
+                containers=pod
+            ).execute()
 
 
 class K8S():

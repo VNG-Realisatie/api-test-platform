@@ -200,7 +200,12 @@ class ConfigMap(KubernetesObject):
     apiVersion = 'v1'
     kind = 'configMap'
 
+    def execute(self):
+        if len(self.container.variables) != 0:
+            super().get_content()
+
     def get_content(self):
+
         name = self.name + str(uuid.uuid4())
         self.container.configMap = name
         return {

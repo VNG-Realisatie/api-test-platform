@@ -11121,6 +11121,75 @@
                         </tbody>
                     </table>
                 </div>
+                <div class="row">
+                {% for postman in postman_result %}
+                {% with postman.get_aggregate_results as results %}
+
+                <div class="col-sm-6">
+                        <h2>Postman collection #{{forloop.counter}} results details</h2>
+                        <div class='table'>
+                            <table class="table">
+                                <thead>
+                                    <th>Property</th>
+                                    <th>Value</th>
+                                </thead>
+                                <tbody>
+                                    <tr class="table-active">
+                                        <td>
+                                            Total calls
+                                        </td>
+                                        <td>
+                                            {{ results.calls.total }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Calls failed
+                                        </td>
+                                        <td class="table-danger">
+                                            {{ results.calls.failed }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Calls successful
+                                        </td>
+                                        <td class="table-success">
+                                            {{ results.calls.success }}
+                                        </td>
+                                    </tr>
+                                    <tr class="table-active">
+                                        <td>
+                                            Total assertions
+                                        </td>
+                                        <td>
+                                            {{ results.assertions.total }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Assertions failed
+                                        </td>
+                                        <td class="table-danger">
+                                            {{ results.assertions.passed }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Assertions passed
+                                        </td>
+                                        <td class="table-success">
+                                            {{ results.assertions.failed }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                {% endwith %}
+                {% endfor %}
 
 
                 {% for postman in postman_result %}

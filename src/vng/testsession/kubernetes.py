@@ -65,8 +65,17 @@ class Ingress(KubernetesObject):
 
 class Container(AutoAssigner):
     '''
-    Image, public_port, private_port, variables
+    name, image, public_port, private_port, variables
     '''
+
+    def get_content(self):
+        base = {
+            'name': self.name,
+            'image': self.image
+        }
+        if hasattr(self, 'command'):
+            base['command'] = self.command
+        return base
 
 
 class Service(KubernetesObject):
@@ -122,7 +131,7 @@ class Deployment(KubernetesObject):
                         }
                     },
                     'spec': {
-                        'containers': self.containers
+                        'containers': [c.get_content() for c in self.containers]
                     }
                 }
             }

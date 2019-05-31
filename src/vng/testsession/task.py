@@ -63,11 +63,11 @@ def start_app_b8s(session, bind_url):
     update_session_status(session, 'Docker image installatie op Kubernetes', 10)
     kuber.deploy(app_name, endpoint.docker_image, endpoint.port)
     update_session_status(session, 'Installatie voortgang', 22)
-    N_TRIALS = 10
+    N_TRIALS = 20
     for trial in range(N_TRIALS):
         try:
             time.sleep(10)                      # Waiting for the load balancer to be loaded
-            percentage = 28 + (12 * trial)
+            percentage = 28 + (6 * trial)
             update_session_status(session, 'Installatie voortgang {}'.format(trial + 1), percentage if percentage < 95 else 94)
             ip = kuber.status(app_name)
 
@@ -133,7 +133,7 @@ def bootstrap_session(session_pk):
         session.save()
     except Exception as e:
         logger.exception(e)
-        session.delete()
+        # session.delete()
 
 
 @app.task

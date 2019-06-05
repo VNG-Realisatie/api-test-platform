@@ -12,6 +12,8 @@ from .models import ExposedUrl, Session, TestSession, VNGEndpoint, EnvironmentBo
 from ..utils import choices
 from ..utils.newman import NewmanManager
 from .container_manager import K8S
+from .gemma_containers import *
+from .kubernetes import *
 
 logger = get_task_logger(__name__)
 
@@ -66,14 +68,52 @@ def purge_sessions():
     return purged
 
 
+def ZGW_deploy(session):
+
+    # create deployment DB
+    db = copy.deepcopy(postgis)
+    d_db = Deployment(
+        name='db-{}'.format(session.name),
+        labels='db-{}'.format(session.name),
+        containers=[db]
+    )
+    d_db.execute()
+
+    # group all the other containers in the same pod
+    containers = [
+        copy.deepcopy(NRC),
+        copy.deepcopy(ZTC),
+        copy.deepcopy(ZRC),
+        copy.deepcopy(BRC),
+        copy.deepcopy(DRC),
+        copy.deepcopy(AC),
+        copy.deepcopy(rabbitMQ),
+        copy.deepcopy(celery)
+    ]
+    deployment = Deployment(
+        name=session.name,
+        labels=session.name,
+        containers=containers
+    )
+    deployment.execute()
+    lb = LoadBalancer(
+        name='{}-loadBalancer'.format(session.name),
+        app=session.name,
+        containers=containers
+    )
+    lb.execute()
+
+
 @app.task
 def bootstrap_session(session_pk, purged=False):
     '''
     Create all the necessary endpoint and exposes it so they can be used as proxy
     In case there is one or multiple docker images linked, it starts all of them
     '''
-    update_session_status(session, 'Verbinding maken met Kubernetes', 1)
     session = Session.objects.get(pk=session_pk)
+    if session.name == 'ZGW':
+        ZGW_deploy(session)
+    update_session_status(session, 'Verbinding maken met Kubernetes', 1)
     endpoint = VNGEndpoint.objects.filter(session_type=session.session_type)
 
     k8s = K8S(app_name=session.name)

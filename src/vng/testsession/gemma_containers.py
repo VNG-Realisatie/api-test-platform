@@ -42,7 +42,7 @@ NRC = Container(
     private_port=8004,
     variables={
         'DB_HOST': 'localhost',
-        'DB_NAME': 'nrc',
+        'DB_NAME': 'NRC',
         'DB_USER': 'postgres',
         'DB_PASSWORD': 'postgres'
     }
@@ -55,7 +55,7 @@ ZTC = Container(
     private_port=8002,
     variables={
         'DB_HOST': 'localhost',
-        'DB_NAME': 'nrc',
+        'DB_NAME': 'ZTC',
         'DB_USER': 'postgres',
         'DB_PASSWORD': 'postgres'
     }
@@ -68,7 +68,7 @@ ZRC = Container(
     private_port=8000,
     variables={
         'DB_HOST': 'localhost',
-        'DB_NAME': 'zrc',
+        'DB_NAME': 'ZRC',
         'DB_USER': 'postgres',
         'DB_PASSWORD': 'postgres'
     }
@@ -81,7 +81,7 @@ BRC = Container(
     private_port=8003,
     variables={
         'DB_HOST': 'localhost',
-        'DB_NAME': 'brc',
+        'DB_NAME': 'BRC',
         'DB_USER': 'postgres',
         'DB_PASSWORD': 'postgres'
     }
@@ -94,7 +94,21 @@ DRC = Container(
     private_port=8001,
     variables={
         'DB_HOST': 'localhost',
-        'DB_NAME': 'drc',
+        'DB_NAME': 'DRC',
+        'DB_USER': 'postgres',
+        'DB_PASSWORD': 'postgres'
+    }
+)
+
+
+AC = Container(
+    name='AC',
+    image='vngr/gemma-autorisatiecomponent',
+    public_port=8005,
+    private_port=8005,
+    variables={
+        'DB_HOST': 'localhost',
+        'DB_NAME': 'AC',
         'DB_USER': 'postgres',
         'DB_PASSWORD': 'postgres'
     }

@@ -20,7 +20,11 @@ class KubernetesObject(AutoAssigner):
         '-f'
     ]
 
+    def requirements(self):
+        pass
+
     def execute(self):
+        self.requirements()
         filename = uuid.uuid4()
         self.dump(filename)
         self.create_config.append(str(filename))
@@ -70,6 +74,15 @@ class Container(AutoAssigner):
     name, image, public_port, private_port, variables
     '''
 
+    def exec_config(self):
+        cm = ConfigMap(
+            name='{}-configMap'.format(self.name),
+            labels=self.labels,
+            container=self
+        )
+        cm.execute()
+        self.config_map = cm
+
     def get_content(self):
         base = {
             'name': self.name,
@@ -106,14 +119,15 @@ class Service(KubernetesObject):
                 }
             },
             'spec': {
-
+                'selector': {
+                }
             }
         }
 
 
 class NodePort(Service):
     '''
-    name, labels, containers
+    name, app, containers
     '''
 
     apiVersion = 'v1'
@@ -121,6 +135,7 @@ class NodePort(Service):
 
     def get_content(self):
         service = super().get_content()
+        service['spec']['selector']['app'] = self.app
         service['spec']['type'] = 'NodePort'
         service['ports'] = [{
             'name': 'http',
@@ -132,7 +147,7 @@ class NodePort(Service):
 
 class ClusterIP(Service):
     '''
-    name, labels, containers
+    name, app, containers
     '''
 
     apiVersion = 'v1'
@@ -140,6 +155,7 @@ class ClusterIP(Service):
 
     def get_content(self):
         service = super().get_content()
+        service['spec']['selector']['app'] = self.app
         service['spec']['type'] = 'ClusterIP'
         service['ports'] = [{
             'name': 'http',
@@ -153,6 +169,7 @@ class LoadBalancer(Service):
 
     def get_content(self):
         service = super().get_content()
+        service['spec']['selector']['app'] = self.app
         service['spec']['type'] = 'LoadBalancer'
         service['ports'] = [{
             'name': 'http',
@@ -168,6 +185,18 @@ class Deployment(KubernetesObject):
 
     kind = 'Deployment'
     apiVersion = 'extensions/v1beta1'
+
+    def requirements(self):
+        for c in self.containers:
+            c.exec_config()
+
+        to_service = [c for c in self.containers if c.public_port and c.private_port]
+
+        NodePort(
+            name='{}-nodePort'.format(self.name),
+            app=self.name,
+            containers=to_service
+        )
 
     def get_content(self):
         return {
@@ -200,15 +229,17 @@ class ConfigMap(KubernetesObject):
     apiVersion = 'v1'
     kind = 'configMap'
 
+    '''
     def execute(self):
         if len(self.container.variables) != 0:
             super().get_content()
+    '''
 
     def get_content(self):
 
         name = self.name + str(uuid.uuid4())
         self.container.configMap = name
-        return {
+        res = {
             'apiVersion': self.apiVersion,
             'kind': self.kind,
             'metadata': {
@@ -217,5 +248,7 @@ class ConfigMap(KubernetesObject):
                     'app': self.labels
                 }
             },
-            'data': self.container.variables
         }
+        if hasattr(self.container, 'variables') and len(self.container.variables) != 0:
+            res['data'] = self.container.variables
+        return res

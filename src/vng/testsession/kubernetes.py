@@ -8,7 +8,7 @@ from ..utils.commands import run_command
 class AutoAssigner(object):
 
     def __init__(self, *args, **kwargs):
-        for k, v in kwargs:
+        for k, v in kwargs.items():
             setattr(self, k, v)
 
 
@@ -26,7 +26,7 @@ class KubernetesObject(AutoAssigner):
     def execute(self):
         self.requirements()
         filename = uuid.uuid4()
-        self.dump(filename)
+        self.dump(str(filename))
         self.create_config.append(str(filename))
         run_command(self.create_config)
         os.remove(filename)
@@ -75,13 +75,14 @@ class Container(AutoAssigner):
     '''
 
     def exec_config(self):
-        cm = ConfigMap(
-            name='{}-configMap'.format(self.name),
-            labels=self.labels,
-            container=self
-        )
-        cm.execute()
-        self.config_map = cm
+        if len(self.variables) != 0:
+            cm = ConfigMap(
+                name='{}-configMap'.format(self.name),
+                labels=self.name,
+                container=self
+            )
+            cm.execute()
+            self.configMap = cm
 
     def get_content(self):
         base = {
@@ -92,7 +93,7 @@ class Container(AutoAssigner):
         if hasattr(self, 'configMap'):
             base['envFrom'] = [{
                 'configMapRef': {
-                    'name': self.configMap
+                    'name': self.configMap.name
                 }
             }]
         if hasattr(self, 'command'):
@@ -237,7 +238,7 @@ class ConfigMap(KubernetesObject):
 
     def get_content(self):
 
-        name = self.name + str(uuid.uuid4())
+        name = self.name
         self.container.configMap = name
         res = {
             'apiVersion': self.apiVersion,

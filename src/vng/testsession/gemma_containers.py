@@ -3,9 +3,8 @@ from .kubernetes import *
 postgis = Container(
     name='postgis',
     image='mdillon/postgis:11',
-    public_port=5432,
-    private_port=5432,
-    exposed=False,
+    public_port=None,
+    private_port=None,
     variables={},
     command=[
         "echo 'create database AC' | sudo -u postgres psql",
@@ -99,7 +98,6 @@ DRC = Container(
         'DB_PASSWORD': 'postgres'
     }
 )
-
 
 AC = Container(
     name='AC',

@@ -183,12 +183,29 @@ class K8S():
         run_command(clean_up)
         # TODO: remove unused resources, remember that Kubernetes has a Garbage Collector integrated
 
-    def get_pods_status(self):
-        # TODO: filter through the command the resource
+    def get_pod_status(self):
         status_command = [
             'kubectl',
             'get',
             'pods',
+            '--output=json'
+        ]
+        res1 = run_command(status_command).decode('utf-8')
+        pods = json.loads(res1)
+        items = pods.get('items')
+        for item in items:
+            metadata = item.get('metadata')
+            if metadata and self.app_name in metadata.get('name'):
+                return item
+        raise Exception('Application {} not found in the deployed cluster'.format(self.app_name))
+
+    def get_pod_status_deployment(self):
+        status_command = [
+            'kubectl',
+            'get',
+            'pods',
+            '-o',
+            'wide',
             '--output=json'
         ]
         res1 = run_command(status_command).decode('utf-8')

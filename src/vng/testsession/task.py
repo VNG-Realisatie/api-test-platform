@@ -72,24 +72,31 @@ def ZGW_deploy(session):
 
     # create deployment DB
     db = copy.deepcopy(postgis)
+    db.name = 'db-{}'.format(session.name)
     d_db = Deployment(
         name='db-{}'.format(session.name),
         labels='db-{}'.format(session.name),
         containers=[db]
     )
     d_db.execute()
+    k8s = K8S(app_name='db-{}'.format(session.name))
+    time.sleep(3)  # TODO: add loop to check it
+    db_IP_address = k8s.get_pod_status()['status']['podIP']
 
     # group all the other containers in the same pod
     containers = [
-        copy.deepcopy(NRC),
-        copy.deepcopy(ZTC),
+        # copy.deepcopy(NRC),
+        # copy.deepcopy(ZTC),
         copy.deepcopy(ZRC),
-        copy.deepcopy(BRC),
-        copy.deepcopy(DRC),
-        copy.deepcopy(AC),
-        copy.deepcopy(rabbitMQ),
-        copy.deepcopy(celery)
+        # copy.deepcopy(BRC),
+        # copy.deepcopy(DRC),
+        # copy.deepcopy(AC),
+        # copy.deepcopy(rabbitMQ),
+        # copy.deepcopy(celery)
     ]
+    for c in containers:
+        c.name = session.name
+        c.variables['DB_HOST'] = db_IP_address
     deployment = Deployment(
         name=session.name,
         labels=session.name,
@@ -97,7 +104,7 @@ def ZGW_deploy(session):
     )
     deployment.execute()
     lb = LoadBalancer(
-        name='{}-loadBalancer'.format(session.name),
+        name='{}-loadbalancer'.format(session.name),
         app=session.name,
         containers=containers
     )
@@ -113,6 +120,7 @@ def bootstrap_session(session_pk, purged=False):
     session = Session.objects.get(pk=session_pk)
     if session.session_type.name == 'ZGW':
         ZGW_deploy(session)
+        return
     update_session_status(session, 'Verbinding maken met Kubernetes', 1)
     endpoint = VNGEndpoint.objects.filter(session_type=session.session_type)
 

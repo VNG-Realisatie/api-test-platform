@@ -3,9 +3,13 @@ from .kubernetes import *
 postgis = Container(
     name='postgis',
     image='mdillon/postgis:11',
-    public_port=None,
-    private_port=None,
-    variables={},
+    public_port=5432,
+    private_port=5432,
+    exposed=False,
+    variables={
+        'POSTGRES_PASSWORD': 'postgres',
+        'POSTGRES_USER': 'postgres'
+    },
     data=[
         "create database AC;"
         "create database NRC;"
@@ -70,7 +74,9 @@ ZRC = Container(
         'DB_HOST': 'localhost',
         'DB_NAME': 'zrc',
         'DB_USER': 'postgres',
-        'DB_PASSWORD': 'postgres'
+        'DB_PASSWORD': 'postgres',
+        'DJANGO_SETTINGS_MODULE': 'zrc.conf.docker',
+        'SECRET_KEY': 'dtd5g0#bef=sj!ii5@8pl3bkp=@$u7e68&+2p735n4ff1s22a3'
     }
 )
 

@@ -1,6 +1,7 @@
 import uuid
 import yaml
 import os
+from django.conf import settings
 
 from ..utils.commands import run_command
 
@@ -31,7 +32,8 @@ class KubernetesObject(AutoAssigner):
         self.dump(filename)
         self.create_config.append(filename)
         run_command(self.create_config)
-        os.remove(filename)
+        if not settings.DEBUG:
+            os.remove(filename)
 
     def dump(self, filename):
         content = self.get_content()
@@ -76,6 +78,10 @@ class Container(AutoAssigner):
     name, image, public_port, private_port, variables
     '''
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.exposed = True
+
     def exec_config(self):
         if len(self.variables) != 0:
             cm = ConfigMap(
@@ -100,6 +106,10 @@ class Container(AutoAssigner):
             'image': self.image,
             'imagePullPolicy': 'IfNotPresent'
         }
+        if self.public_port and self.private_port and not self.exposed:
+            base['ports'] = [{
+                'containerPort': self.private_port
+            }]
         if hasattr(self, 'configMap'):
             base['envFrom'] = [{
                 'configMapRef': {
@@ -131,7 +141,7 @@ class Service(KubernetesObject):
             'metadata': {
                 'name': self.name,
                 'labels': {
-                    'app': self.labels
+                    'app': self.app
                 }
             },
             'spec': {
@@ -187,11 +197,12 @@ class LoadBalancer(Service):
         service = super().get_content()
         service['spec']['selector']['app'] = self.app
         service['spec']['type'] = 'LoadBalancer'
-        service['ports'] = [{
-            'name': 'http',
-            'ports': c.public_port,
+        service['spec']['ports'] = [{
+            'protocol': 'TCP',
+            'port': c.public_port,
             'targetPort': c.private_port
         }for c in self.containers]
+        return service
 
 
 class Deployment(KubernetesObject):

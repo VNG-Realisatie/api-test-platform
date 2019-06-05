@@ -14,20 +14,22 @@ class AutoAssigner(object):
 
 class KubernetesObject(AutoAssigner):
 
-    create_config = [
-        'kubectl',
-        'create',
-        '-f'
-    ]
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.create_config = [
+            'kubectl',
+            'create',
+            '-f'
+        ]
 
     def requirements(self):
         pass
 
     def execute(self):
         self.requirements()
-        filename = uuid.uuid4()
-        self.dump(str(filename))
-        self.create_config.append(str(filename))
+        filename = str(uuid.uuid4())
+        self.dump(filename)
+        self.create_config.append(filename)
         run_command(self.create_config)
         os.remove(filename)
 
@@ -77,24 +79,37 @@ class Container(AutoAssigner):
     def exec_config(self):
         if len(self.variables) != 0:
             cm = ConfigMap(
-                name='{}-configMap'.format(self.name),
+                name='{}-configmap'.format(self.name),
                 labels=self.name,
                 container=self
             )
             cm.execute()
             self.configMap = cm
+        if hasattr(self, 'data'):
+            data = ConfigMapData(
+                name='{}-configmap-data'.format(self.name),
+                labels=self.name,
+                container=self
+            )
+            data.execute()
+            self.configMap_data = data
 
     def get_content(self):
         base = {
             'name': self.name,
             'image': self.image,
-            'imagePullPolicy': 'ifNotPresent'
+            'imagePullPolicy': 'IfNotPresent'
         }
         if hasattr(self, 'configMap'):
             base['envFrom'] = [{
                 'configMapRef': {
                     'name': self.configMap.name
                 }
+            }]
+        if hasattr(self, 'configMap_data'):
+            base['volumeMounts'] = [{
+                'name': self.configMap_data.get_volume_name(),
+                'mountPath': '/docker-entrypoint-initdb.d',
             }]
         if hasattr(self, 'command'):
             base['command'] = self.command
@@ -193,14 +208,15 @@ class Deployment(KubernetesObject):
 
         to_service = [c for c in self.containers if c.public_port and c.private_port]
 
-        NodePort(
-            name='{}-nodePort'.format(self.name),
-            app=self.name,
-            containers=to_service
-        )
+        if len(to_service) != 0:
+            NodePort(
+                name='{}-nodePort'.format(self.name),
+                app=self.name,
+                containers=to_service
+            )
 
     def get_content(self):
-        return {
+        res = {
             'apiVersion': self.apiVersion,
             'kind': self.kind,
             'metadata': {
@@ -221,6 +237,9 @@ class Deployment(KubernetesObject):
                 }
             }
         }
+        to_volumize = [c for c in self.containers if hasattr(c, 'data')]
+        res['spec']['template']['spec']['volumes'] = [c.configMap_data.get_volume() for c in to_volumize]
+        return res
 
 
 class ConfigMap(KubernetesObject):
@@ -228,18 +247,11 @@ class ConfigMap(KubernetesObject):
     name, labels, container
     '''
     apiVersion = 'v1'
-    kind = 'configMap'
-
-    '''
-    def execute(self):
-        if len(self.container.variables) != 0:
-            super().get_content()
-    '''
+    kind = 'ConfigMap'
 
     def get_content(self):
 
         name = self.name
-        self.container.configMap = name
         res = {
             'apiVersion': self.apiVersion,
             'kind': self.kind,
@@ -252,4 +264,37 @@ class ConfigMap(KubernetesObject):
         }
         if hasattr(self.container, 'variables') and len(self.container.variables) != 0:
             res['data'] = self.container.variables
+        if hasattr(self.container, 'data'):
+            res['data'] = self.container.variables
+        return res
+
+
+class ConfigMapData(ConfigMap):
+
+    def get_volume_name(self):
+        return '{}-volume'.format(self.container.name)
+
+    def get_volume(self):
+        return {
+            'name': self.get_volume_name(),
+            'configMap': {
+                'name': self.name
+            }
+        }
+
+    def get_content(self):
+
+        name = self.name
+        res = {
+            'apiVersion': self.apiVersion,
+            'kind': self.kind,
+            'metadata': {
+                'name': name,
+                'labels': {
+                    'app': self.labels
+                }
+            },
+        }
+        if hasattr(self.container, 'data'):
+            res['data'] = {self.container.filename: '\n '.join(self.container.data)}
         return res

@@ -6,14 +6,15 @@ postgis = Container(
     public_port=None,
     private_port=None,
     variables={},
-    command=[
-        "echo 'create database AC' | sudo -u postgres psql",
-        "echo 'create database NRX' | sudo -u postgres psql",
-        "echo 'create database ZTC' | sudo -u postgres psql",
-        "echo 'create database ZRC' | sudo -u postgres psql",
-        "echo 'create database DRC' | sudo -u postgres psql",
-        "echo 'create database BRC' | sudo -u postgres psql"
-    ]
+    data=[
+        "create database AC;"
+        "create database NRC;"
+        "create database ZTC;"
+        "create database ZRC;"
+        "create database DRC;"
+        "create database BRC;"
+    ],
+    filename='initdb.sql'
 )
 
 rabbitMQ = Container(

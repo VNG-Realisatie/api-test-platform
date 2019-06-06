@@ -221,8 +221,7 @@ class K8S():
                     return True, None
         raise Exception('Application {} not found in the deployed cluster'.format(self.app_name))
 
-    def status(self, id):
-        # TODO: filter through the command the resource
+    def service_status(self):
         status_command = [
             'kubectl',
             'get',
@@ -234,8 +233,9 @@ class K8S():
         items = services.get('items')
         for item in items:
             metadata = item.get('metadata')
-            if metadata and metadata.get('name') == '{}-loadbalancer-{}'.format(self.app_name, id):
+            if metadata and self.app_name in metadata.get('name'):
                 ip_list = item.get('status').get('loadBalancer').get('ingress')
                 if ip_list:
                     return ip_list[0].get('ip')
+                return None
         raise Exception('Application {} not found in the deployed cluster'.format(self.app_name))

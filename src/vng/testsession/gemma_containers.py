@@ -128,3 +128,34 @@ AC = Container(
         'SECRET_KEY': 'l00=^9g$va8nzl8#n1g_2e=8fdq$$38&^x6x$t9-cm6=tg8$hu'
     }
 )
+
+
+ingress = Ingress(
+    name='zgw-ingress',
+    paths=[{
+        'path': '/ac',
+        'serviceName': 'appname-service',
+        'servicePort': 8005
+    }, {
+        'path': '/nrc',
+        'serviceName': 'appname-service',
+        'servicePort': 8004
+    }, {
+        'path': '/ztc',
+        'serviceName': 'appname-service',
+        'servicePort': 8002
+    }, {
+        'path': '/zrc',
+        'serviceName': 'appname-service',
+        'servicePort': 8000
+    }, {
+        'path': '/drc',
+        'serviceName': 'appname-service',
+        'servicePort': 8001
+    }, {
+        'path': '/brc',
+        'serviceName': 'appname-service',
+        'servicePort': 8003
+    }
+    ]
+)

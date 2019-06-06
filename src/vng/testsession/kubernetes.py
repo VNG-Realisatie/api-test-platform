@@ -43,10 +43,33 @@ class KubernetesObject(AutoAssigner):
 
 class Ingress(KubernetesObject):
     '''
+    name, paths
+    paths: [{
+        'path': '/api',
+        'serviceName': 'serviceName'
+        'servicePort': 8080,
+    }]
     '''
 
     apiVersion = 'extensions/v1beta1'
     kind = 'Ingress'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.apply_config = [
+            'kubectl',
+            'apply',
+            '-f'
+        ]
+
+    def execute(self):
+        self.requirements()
+        filename = str(uuid.uuid4())
+        self.dump(filename)
+        self.create_config.append(filename)
+        res = run_command(self.create_config)
+        if not settings.DEBUG:
+            os.remove(filename)
 
     def get_content(self):
         _paths = []
@@ -67,7 +90,9 @@ class Ingress(KubernetesObject):
             },
             'spec': {
                 'rules': [{
-                    'http': _paths
+                    'http': {
+                        'paths': _paths
+                    }
                 }]
             }
         }
@@ -128,13 +153,13 @@ class Container(AutoAssigner):
 
 class Service(KubernetesObject):
     '''
-    name, labels, public_port, private_port,
+    name, app, containers
     '''
 
     apiVersion = 'v1'
     kind = 'Service'
 
-    def get_content(self):
+    def get_base(self):
         return {
             'apiVersion': self.apiVersion,
             'kind': self.kind,
@@ -146,9 +171,18 @@ class Service(KubernetesObject):
             },
             'spec': {
                 'selector': {
+                    'app': self.app
                 }
             }
         }
+
+    def get_content(self):
+        base = self.get_base()
+        base['spec']['ports'] = [{
+            'name': 'port-{}'.format(c.private_port),
+            'port': c.private_port
+        } for c in self.containers]
+        return base
 
 
 class NodePort(Service):
@@ -160,8 +194,7 @@ class NodePort(Service):
     kind = 'Service'
 
     def get_content(self):
-        service = super().get_content()
-        service['spec']['selector']['app'] = self.app
+        service = super().get_base()
         service['spec']['type'] = 'NodePort'
         service['ports'] = [{
             'name': 'http',
@@ -180,8 +213,7 @@ class ClusterIP(Service):
     kind = 'Service'
 
     def get_content(self):
-        service = super().get_content()
-        service['spec']['selector']['app'] = self.app
+        service = super().get_base()
         service['spec']['type'] = 'ClusterIP'
         service['ports'] = [{
             'name': 'http',
@@ -194,8 +226,7 @@ class ClusterIP(Service):
 class LoadBalancer(Service):
 
     def get_content(self):
-        service = super().get_content()
-        service['spec']['selector']['app'] = self.app
+        service = super().get_base()
         service['spec']['type'] = 'LoadBalancer'
         service['spec']['ports'] = [{
             'protocol': 'TCP',

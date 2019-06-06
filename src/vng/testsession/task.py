@@ -79,9 +79,16 @@ def ZGW_deploy(session):
         containers=[db]
     )
     d_db.execute()
-    k8s = K8S(app_name='db-{}'.format(session.name))
-    time.sleep(3)  # TODO: add loop to check it
-    db_IP_address = k8s.get_pod_status()['status']['podIP']
+    db_k8s = K8S(app_name='db-{}'.format(session.name))
+    k8s = K8S(app_name=session.name)
+    for i in range(10):
+        time.sleep(3)
+        # Visualize the new pod can be not immediate, pooling is the way :(
+        try:
+            db_IP_address = db_k8s.get_pod_status()['status']['podIP']
+            break
+        except:
+            pass
 
     # group all the other containers in the same pod
     containers = [
@@ -94,21 +101,51 @@ def ZGW_deploy(session):
         # copy.deepcopy(rabbitMQ),
         # copy.deepcopy(celery)
     ]
+    exposed_urls = []
     for c in containers:
-        c.name = session.name
+        bind_url = ExposedUrl.objects.create(
+            session=session,
+            vng_endpoint=VNGEndpoint.objects.filter(session_type=session.session_type).filter(name__icontains=c.name)[0],
+            subdomain='{}'.format(int(time.time()) * 100 + random.randint(0, 99)),
+            port=c.public_port
+        )
+        exposed_urls.append(bind_url)
+        c.name = '{}-{}'.format(session.name, c.name)
         c.variables['DB_HOST'] = db_IP_address
+
     deployment = Deployment(
         name=session.name,
         labels=session.name,
         containers=containers
     )
     deployment.execute()
+
+    # Crete the service forwarding the right ports
     lb = LoadBalancer(
         name='{}-loadbalancer'.format(session.name),
         app=session.name,
         containers=containers
     )
     lb.execute()
+    ip = external_ip_pooling(k8s)
+    for ex in exposed_urls:
+        ex.docker_url = ip
+        ex.save()
+
+
+def external_ip_pooling(k8s, n_trial=10):
+    for i in range(n_trial):
+        time.sleep(10)
+        res, message = k8s.get_pod_status_deployment()
+        if res:
+            break
+
+    for i in range(n_trial):
+        time.sleep(10)
+        ip = k8s.service_status()
+        if ip is not None:
+            return ip
+    return None
 
 
 @app.task
@@ -154,7 +191,7 @@ def bootstrap_session(session_pk, purged=False):
             percentage = 28 + (12 * trial)
             update_session_status(session, 'Installatie voortgang {}'.format(trial + 1), percentage if percentage < 95 else 94)
             for bu in copy.deepcopy(to_check):
-                ip = k8s.status(bu.pk)
+                ip = k8s.status()
                 update_session_status(session, 'Status controle van pod', 95)
                 ready, message = k8s.get_pods_status()
                 if not ready:

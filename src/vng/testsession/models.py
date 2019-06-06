@@ -84,6 +84,9 @@ class TestSession(models.Model):
 
 class VNGEndpoint(models.Model):
 
+    class Meta:
+        unique_together = ('port', 'session_type')
+
     port = models.PositiveIntegerField(default=8080)
     url = models.URLField(max_length=200, blank=True, null=True, default=None,
                           help_text='Base url (host of the service). E.g. http://ref.tst.vng.cloud, without the ending slash.')

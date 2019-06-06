@@ -105,7 +105,6 @@ class Container(AutoAssigner):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.exposed = True
 
     def exec_config(self):
         if len(self.variables) != 0:
@@ -131,7 +130,7 @@ class Container(AutoAssigner):
             'image': self.image,
             'imagePullPolicy': 'IfNotPresent'
         }
-        if self.public_port and self.private_port and not self.exposed:
+        if self.public_port and self.private_port:
             base['ports'] = [{
                 'containerPort': self.private_port
             }]

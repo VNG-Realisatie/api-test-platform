@@ -3,9 +3,8 @@ from .kubernetes import *
 postgis = Container(
     name='postgis',
     image='mdillon/postgis:11',
-    public_port=5432,
-    private_port=5432,
-    exposed=False,
+    public_port=None,
+    private_port=None,
     variables={
         'POSTGRES_PASSWORD': 'postgres',
         'POSTGRES_USER': 'postgres'
@@ -24,9 +23,8 @@ postgis = Container(
 rabbitMQ = Container(
     name='rabbit',
     image='rabbitmq',
-    public_port=5672,
-    private_port=5672,
-    exposed=False,
+    public_port=None,
+    private_port=None,
     variables={}
 )
 
@@ -35,7 +33,6 @@ celery = Container(
     image='celery',
     public_port=None,
     private_port=None,
-    exposed=False,
     variables={}
 )
 

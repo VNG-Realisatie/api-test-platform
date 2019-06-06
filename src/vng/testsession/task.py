@@ -138,6 +138,7 @@ def ZGW_deploy(session):
     for ex in exposed_urls:
         ex.docker_url = ip
         ex.save()
+    session.status = choices.StatusChoices.running
 
 
 def external_ip_pooling(k8s, session, n_trial=10, purge=True):

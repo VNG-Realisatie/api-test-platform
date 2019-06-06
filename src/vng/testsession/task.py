@@ -237,8 +237,11 @@ def bootstrap_session(session_pk, purged=False):
         for ex in exposed_urls:
             ex.docker_url = ip
             ex.save()
-        session.status = choices.StatusChoices.running
+
         update_session_status(session, 'Installatie succesvol uitgevoerd', 100)
+
+    session.status = choices.StatusChoices.running
+    session.save()
 
 
 @app.task

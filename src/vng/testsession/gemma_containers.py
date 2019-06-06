@@ -46,7 +46,7 @@ NRC = Container(
         'DB_NAME': 'nrc',
         'DB_USER': 'postgres',
         'DB_PASSWORD': 'postgres',
-        'DJANGO_SETTINGS_MODULE': 'zrc.conf.docker',
+        'DJANGO_SETTINGS_MODULE': 'nrc.conf.docker',
         'SECRET_KEY': 'x1#8uih#76j4z)+_3j-^iot)2=c#ht%&j1lcvyqxh&t+=5i@i='
     }
 )
@@ -61,7 +61,7 @@ ZTC = Container(
         'DB_NAME': 'ztc',
         'DB_USER': 'postgres',
         'DB_PASSWORD': 'postgres',
-        'DJANGO_SETTINGS_MODULE': 'zrc.conf.docker',
+        'DJANGO_SETTINGS_MODULE': 'ztc.conf.docker',
         'SECRET_KEY': '5t=%u76*^l%d97mp)6%u4-p^&wgfh(!+t1$*0pgjt&0&=oh-f!'
     }
 )
@@ -91,7 +91,7 @@ BRC = Container(
         'DB_NAME': 'brc',
         'DB_USER': 'postgres',
         'DB_PASSWORD': 'postgres',
-        'DJANGO_SETTINGS_MODULE': 'zrc.conf.docker',
+        'DJANGO_SETTINGS_MODULE': 'brc.conf.docker',
         'SECRET_KEY': 'dtd5g0#bef=sj!ii5@8pl3bkp=@$u7e68&+2p735n4ff1s22a3'
     }
 )
@@ -106,7 +106,7 @@ DRC = Container(
         'DB_NAME': 'drc',
         'DB_USER': 'postgres',
         'DB_PASSWORD': 'postgres',
-        'DJANGO_SETTINGS_MODULE': 'zrc.conf.docker',
+        'DJANGO_SETTINGS_MODULE': 'drc.conf.docker',
         'SECRET_KEY': 'h3af@_s8s@@(g0sz4py$6eaimers9zx8zu5m=3yi+kd(tjudlh'
     }
 )
@@ -121,7 +121,7 @@ AC = Container(
         'DB_NAME': 'ac',
         'DB_USER': 'postgres',
         'DB_PASSWORD': 'postgres',
-        'DJANGO_SETTINGS_MODULE': 'zrc.conf.docker',
+        'DJANGO_SETTINGS_MODULE': 'ac.conf.docker',
         'SECRET_KEY': 'l00=^9g$va8nzl8#n1g_2e=8fdq$$38&^x6x$t9-cm6=tg8$hu'
     }
 )

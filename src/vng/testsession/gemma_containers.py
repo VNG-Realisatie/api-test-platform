@@ -1,4 +1,4 @@
-from .kubernetes import *
+from vng.k8s_manager.kubernetes import *
 
 postgis = Container(
     name='postgis',

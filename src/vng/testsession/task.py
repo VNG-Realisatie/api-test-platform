@@ -7,13 +7,14 @@ from celery.utils.log import get_task_logger
 
 from django.utils.timezone import make_aware
 
+from vng.k8s_manager.kubernetes import *
+from vng.k8s_manager.container_manager import K8S
+
 from ..celery.celery import app
 from .models import ExposedUrl, Session, TestSession, VNGEndpoint, EnvironmentBoostrap
 from ..utils import choices
 from ..utils.newman import NewmanManager
-from .container_manager import K8S
 from .gemma_containers import *
-from .kubernetes import *
 
 logger = get_task_logger(__name__)
 

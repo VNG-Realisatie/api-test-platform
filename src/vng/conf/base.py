@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     'vng.servervalidation',
     'vng.openApiInspector',
     'vng.celery',
+    'vng.k8s_manager',
 
     # Rest Framework
     'rest_framework',

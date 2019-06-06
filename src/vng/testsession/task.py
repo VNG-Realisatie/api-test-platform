@@ -215,8 +215,7 @@ def bootstrap_session(session_pk, purged=False):
                 public_port=ep.port,
                 private_port=ep.port,
                 variables=variables
-                # data=
-                # filename=
+                # filename= TODO: add filename to each endpoint
             )
             containers.append(container)
     if len(containers) != 0:
@@ -240,6 +239,7 @@ def bootstrap_session(session_pk, purged=False):
         for ex in exposed_urls:
             ex.docker_url = ip
             ex.save()
+        session.status = choices.StatusChoices.running
         update_session_status(session, 'Installatie succesvol uitgevoerd', 100)
 
 

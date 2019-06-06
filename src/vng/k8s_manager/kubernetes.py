@@ -132,7 +132,7 @@ class Container(AutoAssigner):
         base = {
             'name': self.name,
             'image': self.image,
-            'imagePullPolicy': 'IfNotPresent'
+            'imagePullPolicy': 'Always'
         }
         if self.public_port and self.private_port:
             base['ports'] = [{

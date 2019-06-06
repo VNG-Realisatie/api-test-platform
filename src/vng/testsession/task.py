@@ -180,7 +180,6 @@ def bootstrap_session(session_pk, purged=False):
 
     k8s = K8S(app_name=session.name)
     # Init of the procedure
-    k8s.initialize()
     containers = []
     exposed_urls = []
 
@@ -204,6 +203,7 @@ def bootstrap_session(session_pk, purged=False):
         exposed_urls.append(bind_url)
 
         if ep.docker_image:
+            k8s.initialize()
             env_var = bind_url.vng_endpoint.environmentalvariables_set.all()
             variables = {v.key: v.value for v in env_var}
 

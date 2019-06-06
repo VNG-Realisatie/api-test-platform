@@ -232,6 +232,7 @@ class LoadBalancer(Service):
         service['spec']['type'] = 'LoadBalancer'
         service['spec']['ports'] = [{
             'protocol': 'TCP',
+            'name': 'httpport{}'.format(c.public_port),
             'port': c.public_port,
             'targetPort': c.private_port
         }for c in self.containers]

@@ -155,7 +155,7 @@ def external_ip_pooling(k8s, session, n_trial=10, purge=True):
             return None
     for i in range(n_trial):
         time.sleep(10)
-        update_session_status(session, 'Installatie voortgang {}'.format(trial + 1), percentage if percentage < 95 else 94)
+        update_session_status(session, 'Installatie voortgang {}'.format(i + 1), 36 + i * 6)
         ip = k8s.service_status()
         if ip is not None:
             return ip
@@ -207,7 +207,7 @@ def bootstrap_session(session_pk, purged=False):
             if db_IP_address:
                 variables['DB_HOST'] = db_IP_address
             container = Container(
-                name=ep.name,
+                name=session.name,
                 image=ep.docker_image,
                 public_port=ep.port,
                 private_port=ep.port,

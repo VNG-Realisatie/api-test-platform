@@ -68,12 +68,13 @@ def purge_sessions():
     return purged
 
 
-def deploy_db(session):
+def deploy_db(session, data=[]):
 
     db_k8s = K8S(app_name='db-{}'.format(session.name))
     db_k8s.initialize()
     db = copy.deepcopy(postgis)
     db.name = 'db-{}'.format(session.name)
+    db.data = data
     d_db = Deployment(
         name='db-{}'.format(session.name),
         labels='db-{}'.format(session.name),
@@ -97,7 +98,7 @@ def ZGW_deploy(session):
     k8s.initialize()
 
     # create deployment DB
-    db_IP_address = deploy_db(session)
+    db_IP_address = deploy_db(session, postgis.data)
 
     # group all the other containers in the same pod
     containers = [
@@ -185,7 +186,9 @@ def bootstrap_session(session_pk, purged=False):
 
     db_IP_address = None
     if session.session_type.database:
-        db_IP_address = deploy_db(session)
+        data = session.session_type.db_data or []
+
+        db_IP_address = deploy_db(session, data)
         if not db_IP_address:
             update_session_status(session, 'An error within the image prevented from a correct deployment')
             return

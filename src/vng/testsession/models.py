@@ -31,6 +31,7 @@ class SessionType(models.Model):
     secret = models.TextField(default=None, null=True, blank=True)
     header = models.TextField(default=None, null=True, blank=True)
     database = models.BooleanField(help_text='Check if the a postgres db is needed in the Kubernetes cluster', default=False)
+    db_data = models.TextField(default=None, null=True, blank=True)
 
     class Meta:
         verbose_name = 'Sessie type'

@@ -34,6 +34,7 @@ class KubernetesObject(AutoAssigner):
         run_command(self.create_config)
         if not settings.DEBUG:
             os.remove(filename)
+        return self
 
     def dump(self, filename):
         content = self.get_content()
@@ -63,6 +64,7 @@ class Ingress(KubernetesObject):
         ]
 
     def execute(self):
+        # TODO: use differnet commands
         self.requirements()
         filename = str(uuid.uuid4())
         self.dump(filename)
@@ -70,6 +72,7 @@ class Ingress(KubernetesObject):
         res = run_command(self.create_config)
         if not settings.DEBUG:
             os.remove(filename)
+        return self
 
     def get_content(self):
         _paths = []

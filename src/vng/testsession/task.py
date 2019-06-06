@@ -79,8 +79,7 @@ def deploy_db(session, data=[]):
         name='db-{}'.format(session.name),
         labels='db-{}'.format(session.name),
         containers=[db]
-    )
-    d_db.execute()
+    ).execute()
 
     for i in range(10):
         time.sleep(3)
@@ -127,16 +126,14 @@ def ZGW_deploy(session):
         name=session.name,
         labels=session.name,
         containers=containers
-    )
-    deployment.execute()
+    ).execute()
 
     # Crete the service forwarding the right ports
     lb = LoadBalancer(
         name='{}-loadbalancer'.format(session.name),
         app=session.name,
         containers=containers
-    )
-    lb.execute()
+    ).execute()
     ip = external_ip_pooling(k8s, session)
     for ex in exposed_urls:
         ex.docker_url = ip
@@ -224,14 +221,12 @@ def bootstrap_session(session_pk, purged=False):
             name=session.name,
             labels=session.name,
             containers=containers
-        )
-        deployment.execute()
+        ).execute()
         lb = LoadBalancer(
             name='{}-loadbalancer'.format(session.name),
             app=session.name,
             containers=containers
-        )
-        lb.execute()
+        ).execute()
         ip = external_ip_pooling(k8s, session)
         if not ip:
             update_session_status(session, 'An error within the image prevented from a correct deployment')

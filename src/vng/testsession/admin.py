@@ -142,11 +142,3 @@ class EnvironmentalVariablesAdmin(admin.ModelAdmin):
         'key',
         'value'
     ]
-
-
-@admin.register(model.EnvironmentBoostrap)
-class EnvironmentalVariablesAdmin(admin.ModelAdmin):
-    list_display = [
-        'vng_endpoint',
-        'command'
-    ]

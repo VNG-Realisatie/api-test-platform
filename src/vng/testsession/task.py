@@ -11,7 +11,7 @@ from vng.k8s_manager.kubernetes import *
 from vng.k8s_manager.container_manager import K8S
 
 from ..celery.celery import app
-from .models import ExposedUrl, Session, TestSession, VNGEndpoint, EnvironmentBoostrap
+from .models import ExposedUrl, Session, TestSession, VNGEndpoint
 from ..utils import choices
 from ..utils.newman import NewmanManager
 from .gemma_containers import *
@@ -102,9 +102,9 @@ def ZGW_deploy(session):
 
     # group all the other containers in the same pod
     containers = [
+        copy.deepcopy(ZRC),
         # copy.deepcopy(NRC),
         # copy.deepcopy(ZTC),
-        copy.deepcopy(ZRC),
         # copy.deepcopy(BRC),
         # copy.deepcopy(DRC),
         # copy.deepcopy(AC),
@@ -123,14 +123,14 @@ def ZGW_deploy(session):
         c.name = '{}-{}'.format(session.name, c.name)
         c.variables['DB_HOST'] = db_IP_address
 
-    deployment = Deployment(
+    Deployment(
         name=session.name,
         labels=session.name,
         containers=containers
     ).execute()
 
     # Crete the service forwarding the right ports
-    lb = LoadBalancer(
+    LoadBalancer(
         name='{}-loadbalancer'.format(session.name),
         app=session.name,
         containers=containers

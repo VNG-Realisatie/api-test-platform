@@ -112,12 +112,6 @@ class VNGEndpoint(models.Model):
         return self.name + " ({})".format(self.session_type)
 
 
-class EnvironmentBoostrap(models.Model):
-
-    vng_endpoint = models.ForeignKey(VNGEndpoint, on_delete=models.CASCADE)
-    command = models.TextField()
-
-
 class EnvironmentalVariables(models.Model):
 
     vng_endpoint = models.ForeignKey(VNGEndpoint, on_delete=models.CASCADE)

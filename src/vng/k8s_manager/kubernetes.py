@@ -1,6 +1,7 @@
 import uuid
 import yaml
 import os
+import random
 from django.conf import settings
 
 from ..utils.commands import run_command
@@ -112,7 +113,7 @@ class Container(AutoAssigner):
     def exec_config(self):
         if len(self.variables) != 0:
             cm = ConfigMap(
-                name='{}-configmap'.format(self.name),
+                name='{}-configmap-{}'.format(self.name, random.randint(0, 1000)),
                 labels=self.name,
                 container=self
             )
@@ -120,7 +121,7 @@ class Container(AutoAssigner):
             self.configMap = cm
         if hasattr(self, 'data'):
             data = ConfigMapData(
-                name='{}-configmap-data'.format(self.name),
+                name='{}-configmap-data-{}'.format(self.name, random.randint(0, 1000)),
                 labels=self.name,
                 container=self
             )

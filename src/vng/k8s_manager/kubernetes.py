@@ -109,6 +109,7 @@ class Container(AutoAssigner):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.cpu_limit = '0.1'
 
     def exec_config(self):
         if len(self.variables) != 0:
@@ -132,7 +133,15 @@ class Container(AutoAssigner):
         base = {
             'name': self.name,
             'image': self.image,
-            'imagePullPolicy': 'Always'
+            'imagePullPolicy': 'Always',
+            'resources': {
+                'limits': {
+                    'cpu': self.cpu_limit
+                },
+                'requests': {
+                    'cpu': str(float(self.cpu_limit) / 2)
+                }
+            }
         }
         if self.public_port and self.private_port:
             base['ports'] = [{
@@ -149,6 +158,8 @@ class Container(AutoAssigner):
                 'name': self.configMap_data.get_volume_name(),
                 'mountPath': '/docker-entrypoint-initdb.d',
             }]
+        if hasattr(self, 'command'):
+            base['command'] = self.command
         if hasattr(self, 'command'):
             base['command'] = self.command
         return base
@@ -236,7 +247,7 @@ class LoadBalancer(Service):
             'name': 'httpport{}'.format(c.public_port),
             'port': c.public_port,
             'targetPort': c.private_port
-        }for c in self.containers]
+        }for c in self.containers if c.public_port]
         return service
 
 

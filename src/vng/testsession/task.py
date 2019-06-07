@@ -2,6 +2,7 @@ import time
 import random
 import copy
 import os
+import uuid
 
 from datetime import timedelta, datetime
 from celery.utils.log import get_task_logger
@@ -143,8 +144,17 @@ def ZGW_deploy(session):
         ex.docker_url = ip
         ex.save()
 
+    filename = str(uuid.uuid4())
     file_location = os.path.join(os.path.dirname(__file__), 'kubernetes/data/dump.sql')
-    k8s_db.copy_to(file_location, 'dump.sql')
+    new_file = os.path.join(os.path.dirname(__file__), 'kubernetes/data/{}'.format(filename))
+    with open(file_location) as in_file:
+        content = in_file.read()
+        content = content.replace('BASE_IP', ip)
+    with open(new_file, 'w') as out_file:
+        out_file.write(content)
+
+    k8s_db.copy_to(new_file, 'dump.sql')
+    os.remove(new_file)
     k8s_db.exec([
         'psql',
         '-f',
@@ -152,7 +162,6 @@ def ZGW_deploy(session):
         '-U',
         'postgres'
     ])
-
     # TODO: substitute the BASE_IP and DB_IP
     session.status = choices.StatusChoices.running
     session.save()

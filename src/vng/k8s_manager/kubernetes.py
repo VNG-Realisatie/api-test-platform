@@ -161,7 +161,9 @@ class Container(AutoAssigner):
         if hasattr(self, 'command'):
             base['command'] = self.command
         if hasattr(self, 'command'):
-            base['command'] = self.command
+            base['command'] = self.command[0]
+            if len(self.command) != 0:
+                base['args'] = self.command[1:]
         return base
 
 

@@ -103,25 +103,27 @@ def ZGW_deploy(session):
     # group all the other containers in the same pod
     containers = [
         copy.deepcopy(ZRC),
-        # copy.deepcopy(NRC),
-        # copy.deepcopy(ZTC),
-        # copy.deepcopy(BRC),
-        # copy.deepcopy(DRC),
-        # copy.deepcopy(AC),
-        # copy.deepcopy(rabbitMQ),
-        # copy.deepcopy(celery)
+        copy.deepcopy(NRC),
+        copy.deepcopy(ZTC),
+        copy.deepcopy(BRC),
+        copy.deepcopy(DRC),
+        copy.deepcopy(AC),
+        copy.deepcopy(rabbitMQ),
+        copy.deepcopy(celery)
     ]
     exposed_urls = []
     for c in containers:
-        bind_url = ExposedUrl.objects.create(
-            session=session,
-            vng_endpoint=VNGEndpoint.objects.filter(session_type=session.session_type).filter(name__icontains=c.name)[0],
-            subdomain='{}'.format(int(time.time()) * 100 + random.randint(0, 99)),
-            port=c.public_port
-        )
-        exposed_urls.append(bind_url)
-        c.name = '{}-{}'.format(session.name, c.name)
-        c.variables['DB_HOST'] = db_IP_address
+        vng_endpoint = VNGEndpoint.objects.filter(session_type=session.session_type).filter(name__icontains=c.name)
+        if len(vng_endpoint) != 0:
+            bind_url = ExposedUrl.objects.create(
+                session=session,
+                vng_endpoint=vng_endpoint[0],
+                subdomain='{}'.format(int(time.time()) * 100 + random.randint(0, 99)),
+                port=c.public_port
+            )
+            exposed_urls.append(bind_url)
+            c.name = '{}-{}'.format(session.name, c.name)
+            c.variables['DB_HOST'] = db_IP_address
 
     Deployment(
         name=session.name,

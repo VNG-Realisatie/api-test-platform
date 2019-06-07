@@ -1,0 +1,20 @@
+[
+    {
+        "model": "authorizations.authorizationsconfig",
+        "pk": 1,
+        "fields": {
+            "api_root": "https://ref.tst.vng.cloud/ac/api/v1/",
+            "component": "ZRC"
+        }
+    },
+    {
+        "model": "authorizations.applicatie",
+        "pk": 1,
+        "fields": {
+            "uuid": "9ab186e5-2237-41fd-ae3d-a84033a2a835",
+            "client_ids": "[\"demo\"]",
+            "label": "demo",
+            "heeft_alle_autorisaties": true
+        }
+    }
+]

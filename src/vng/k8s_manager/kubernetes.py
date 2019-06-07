@@ -352,6 +352,6 @@ class ConfigMapData(ConfigMap):
                 }
             },
         }
-        if hasattr(self.container, 'data'):
+        if hasattr(self.container, 'data') and len(self.container.data) != 0:
             res['data'] = {self.container.filename: '\n '.join(self.container.data)}
         return res

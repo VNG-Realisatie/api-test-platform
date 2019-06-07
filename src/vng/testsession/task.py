@@ -99,8 +99,8 @@ def ZGW_deploy(session):
     k8s.initialize()
 
     # create deployment DB
-    db_IP_address, k8s_db = deploy_db(session, postgis.data)
-    file_location = os.path.join(os.path.abspath(__file__), 'kubernetes/data/dump.sql')
+    db_IP_address, k8s_db = deploy_db(session)
+    file_location = os.path.join(os.path.dirname(__file__), 'kubernetes/data/dump.sql')
     k8s_db.copy_to(file_location, 'dump.sql')
     k8s_db.exec([
         'psql',

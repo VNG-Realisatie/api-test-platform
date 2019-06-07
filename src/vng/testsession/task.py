@@ -1,6 +1,7 @@
 import time
 import random
 import copy
+import os
 
 from datetime import timedelta, datetime
 from celery.utils.log import get_task_logger
@@ -87,7 +88,7 @@ def deploy_db(session, data=[]):
         # Visualize the new pod can be not immediate, pooling is the way :(
         try:
             db_IP_address = db_k8s.get_pod_status()['status']['podIP']
-            return db_IP_address
+            return db_IP_address, db_k8s
         except:
             pass
 
@@ -98,7 +99,16 @@ def ZGW_deploy(session):
     k8s.initialize()
 
     # create deployment DB
-    db_IP_address = deploy_db(session, postgis.data)
+    db_IP_address, k8s_db = deploy_db(session, postgis.data)
+    file_location = os.path.join(os.path.abspath(__file__), 'kubernetes/data/dump.sql')
+    k8s_db.copy_to(file_location, 'dump.sql')
+    k8s_db.exec([
+        'psql',
+        '-f',
+        'dump.sql',
+        '-U',
+        'postgres'
+    ])
 
     # group all the other containers in the same pod
     containers = [
@@ -189,7 +199,7 @@ def bootstrap_session(session_pk, purged=False):
     if session.session_type.database:
         data = session.session_type.db_data or []
 
-        db_IP_address = deploy_db(session, data)
+        db_IP_address, _ = deploy_db(session, data)
         if not db_IP_address:
             update_session_status(session, 'An error within the image prevented from a correct deployment')
             return

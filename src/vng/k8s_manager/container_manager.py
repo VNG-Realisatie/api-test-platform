@@ -142,3 +142,26 @@ class K8S():
                     return ip_list[0].get('ip')
                 return None
         raise Exception('Application {} not found in the deployed cluster'.format(self.app_name))
+
+    def make_aware(self):
+        self.pod_name = self.get_pod_status()['metadata']['name']
+
+    def exec(self, commands):
+        self.make_aware()
+        exec_command = [
+            'kubectl',
+            'exec',
+            self.pod_name,
+            *commands
+        ]
+        return run_command(exec_command).decode('utf-8')
+
+    def copy_to(self, source, dest):
+        self.make_aware()
+        copy_command = [
+            'kubectl',
+            'cp',
+            source,
+            '{}:{}'.format(self.pod_name, dest)
+        ]
+        return run_command(copy_command).decode('utf-8')

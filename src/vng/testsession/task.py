@@ -108,8 +108,8 @@ def ZGW_deploy(session):
         copy.deepcopy(BRC),
         copy.deepcopy(DRC),
         copy.deepcopy(AC),
+        copy.deepcopy(NRC_CELERY),
         copy.deepcopy(rabbitMQ),
-        copy.deepcopy(celery)
     ]
     exposed_urls = []
     for c in containers:

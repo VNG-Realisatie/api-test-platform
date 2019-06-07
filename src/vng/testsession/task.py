@@ -99,16 +99,7 @@ def ZGW_deploy(session):
     k8s.initialize()
 
     # create deployment DB
-    db_IP_address, k8s_db = deploy_db(session)
-    file_location = os.path.join(os.path.dirname(__file__), 'kubernetes/data/dump.sql')
-    k8s_db.copy_to(file_location, 'dump.sql')
-    k8s_db.exec([
-        'psql',
-        '-f',
-        'dump.sql',
-        '-U',
-        'postgres'
-    ])
+    db_IP_address, k8s_db = deploy_db(session, postgis.data)
 
     # group all the other containers in the same pod
     containers = [
@@ -151,6 +142,18 @@ def ZGW_deploy(session):
     for ex in exposed_urls:
         ex.docker_url = ip
         ex.save()
+
+    file_location = os.path.join(os.path.dirname(__file__), 'kubernetes/data/dump.sql')
+    k8s_db.copy_to(file_location, 'dump.sql')
+    k8s_db.exec([
+        'psql',
+        '-f',
+        'dump.sql',
+        '-U',
+        'postgres'
+    ])
+
+    # TODO: substitute the BASE_IP and DB_IP
     session.status = choices.StatusChoices.running
     session.save()
 

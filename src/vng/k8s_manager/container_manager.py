@@ -152,7 +152,7 @@ class K8S():
             'kubectl',
             'exec',
             self.pod_name,
-            ' -- ',
+            '--',
             *commands
         ]
         return run_command(exec_command).decode('utf-8')

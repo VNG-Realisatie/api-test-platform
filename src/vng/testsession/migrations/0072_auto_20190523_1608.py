@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='session',
             name='cluster',
-            field=models.CharField(default='', max_length=50),
+            field=models.CharField(blank=True, null=True, max_length=50),
         ),
         migrations.RunPython(create_uuid),
         migrations.AlterField(

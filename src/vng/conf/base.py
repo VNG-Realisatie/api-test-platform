@@ -27,6 +27,7 @@ LOGOUT_REDIRECT_URL = "/accounts/login/"
 # Application definition
 
 INSTALLED_APPS = [
+    'whitenoise.runserver_nostatic',
 
     # Note: contenttypes should be first, see Django ticket #10827
     'django.contrib.contenttypes',
@@ -89,6 +90,7 @@ APPEND_SLASH = True
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     # 'django.middleware.locale.LocaleMiddleware',
     'subdomains.middleware.SubdomainURLRoutingMiddleware',

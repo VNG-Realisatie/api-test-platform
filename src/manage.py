@@ -3,8 +3,6 @@ import os
 import sys
 
 if __name__ == "__main__":
-    if '--nostatic' not in sys.argv:
-        sys.argv.append('--nostatic')
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "vng.conf.dev")
 
     try:

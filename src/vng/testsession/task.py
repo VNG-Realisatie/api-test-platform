@@ -113,6 +113,7 @@ def ZGW_deploy(session):
         copy.deepcopy(NRC_CELERY),
         copy.deepcopy(rabbitMQ),
     ]
+    uwsgi_containers = containers[:-2]
     exposed_urls = []
     for c in containers:
         vng_endpoint = VNGEndpoint.objects.filter(session_type=session.session_type).filter(name__icontains=c.name)
@@ -144,6 +145,11 @@ def ZGW_deploy(session):
         ex.docker_url = ip
         ex.save()
 
+    # check migrations status
+    while len(uwsgi_containers) != 0:
+        uwsgi_containers = [c for c in uwsgi_containers if 'spawned uWSGI' not in k8s.get_pod_log(c.name)]
+        time.sleep(5)
+
     filename = str(uuid.uuid4())
     file_location = os.path.join(os.path.dirname(__file__), 'kubernetes/data/dump.sql')
     new_file = os.path.join(os.path.dirname(__file__), 'kubernetes/data/{}'.format(filename))
@@ -152,6 +158,8 @@ def ZGW_deploy(session):
         content = content.replace('BASE_IP', ip)
     with open(new_file, 'w') as out_file:
         out_file.write(content)
+
+    # running the eventual migrations
 
     k8s_db.copy_to(new_file, 'dump.sql')
     os.remove(new_file)

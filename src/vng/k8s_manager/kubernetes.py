@@ -164,6 +164,15 @@ class Container(AutoAssigner):
             base['command'] = self.command
         return base
 
+    def get_init_content(self):
+        if hasattr(self, 'migration') and self.migration:
+            return {
+                'name': '{}-init'.format(self.name),
+                'image': self.image,
+                'command': ['python', 'src/manage.py', 'migrate']
+            }
+        return None
+
 
 class Service(KubernetesObject):
     '''
@@ -289,7 +298,8 @@ class Deployment(KubernetesObject):
                         }
                     },
                     'spec': {
-                        'containers': [c.get_content() for c in self.containers]
+                        'containers': [c.get_content() for c in self.containers],
+                        'initContainers': [c.get_init_content() for c in self.containers if c.get_init_content() is not None]
                     }
                 }
             }

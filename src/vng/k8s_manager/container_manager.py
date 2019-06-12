@@ -86,6 +86,21 @@ class K8S():
         run_command(clean_up)
         # TODO: remove unused resources, remember that Kubernetes has a Garbage Collector integrated
 
+    def get_pod_log(self, c_name):
+        self.make_aware()
+        log_command = [
+            'kubectl',
+            'logs',
+            self.pod_name,
+            '-c',
+            c_name,
+        ]
+        try:
+            res = run_command(log_command).decode('utf-8')
+            return res
+        except:
+            raise Exception('Application {} not found in the deployed cluster'.format(self.app_name))
+
     def get_pod_status(self):
         status_command = [
             'kubectl',
@@ -98,7 +113,7 @@ class K8S():
         items = pods.get('items')
         for item in items:
             metadata = item.get('metadata')
-            if metadata and self.app_name in metadata.get('name'):
+            if metadata and metadata.get('name').startswith(self.app_name):
                 return item
         raise Exception('Application {} not found in the deployed cluster'.format(self.app_name))
 
@@ -116,7 +131,7 @@ class K8S():
         items = pods.get('items')
         for item in items:
             metadata = item.get('metadata')
-            if metadata and self.app_name in metadata.get('name'):
+            if metadata and metadata.get('name').startswith(self.app_name):
                 status = item.get('status').get('containerStatuses')[0]
                 if item.get('status').get('phase') == 'Pending':
                     return False, status.get('state').get('waiting').get('message')
@@ -136,7 +151,7 @@ class K8S():
         items = services.get('items')
         for item in items:
             metadata = item.get('metadata')
-            if metadata and self.app_name in metadata.get('name'):
+            if metadata and metadata.get('name').startswith(self.app_name):
                 ip_list = item.get('status').get('loadBalancer').get('ingress')
                 if ip_list:
                     return ip_list[0].get('ip')

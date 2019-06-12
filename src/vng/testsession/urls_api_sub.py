@@ -8,6 +8,6 @@ from . import api_views, apps
 from ..base_url import base_urlpatterns
 app_name = apps.AppConfig.__name__
 
-urlpatterns = base_urlpatterns + [
+urlpatterns = [
     url(r'^(?P<relative_url>[-\w|/|\.]*)$', api_views.RunTest.as_view(), name='run_test'),
-]
+] + base_urlpatterns

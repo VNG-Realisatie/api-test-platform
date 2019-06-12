@@ -1,0 +1,27 @@
+{
+	"info": {
+		"_postman_id": "e501aaef-0de3-430e-b557-9cfffb510eb4",
+		"name": "test name",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Test",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{name}}",
+					"host": [
+						"{{name}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -288,9 +288,14 @@ def run_tests(session_pk):
         if not ep.test_file:
             continue
         newman = NewmanManager(ep.test_file, ep.url)
-        newman.replace_parameters({
-            ep.name: ep.url
-        })
+        if ep.url is not None:
+            newman.replace_parameters({
+                ep.name: ep.url + ep.path
+            })
+        else:
+            newman.replace_parameters({
+                ep.name: eu.docker_url
+            })
         result = newman.execute_test()
         ts = TestSession()
         ts.save_test(result)

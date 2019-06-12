@@ -95,6 +95,7 @@ def deploy_db(session, data=[]):
 
 
 def ZGW_deploy(session):
+    update_session_status(session, 'Verbinding maken met Kubernetes', 1)
 
     k8s = K8S(app_name=session.name)
     k8s.initialize()
@@ -134,22 +135,26 @@ def ZGW_deploy(session):
         containers=containers
     ).execute()
 
+    update_session_status(session, 'Deployment of pod', 5)
+
     # Crete the service forwarding the right ports
     LoadBalancer(
         name='{}-loadbalancer'.format(session.name),
         app=session.name,
         containers=containers
     ).execute()
-    ip = external_ip_pooling(k8s, session)
+    ip = external_ip_pooling(k8s, session, max_percentage=65)
     for ex in exposed_urls:
         ex.docker_url = ip
         ex.save()
 
     # check migrations status
+    update_session_status(session, 'Check migration status', 70)
     while len(uwsgi_containers) != 0:
         uwsgi_containers = [c for c in uwsgi_containers if 'spawned uWSGI' not in k8s.get_pod_log(c.name)]
         time.sleep(5)
 
+    update_session_status(session, 'Loading preconfigured models', 85)
     filename = str(uuid.uuid4())
     file_location = os.path.join(os.path.dirname(__file__), 'kubernetes/data/dump.sql')
     new_file = os.path.join(os.path.dirname(__file__), 'kubernetes/data/{}'.format(filename))
@@ -175,7 +180,7 @@ def ZGW_deploy(session):
     session.save()
 
 
-def external_ip_pooling(k8s, session, n_trial=10, purge=True):
+def external_ip_pooling(k8s, session, n_trial=10, purge=True, percentage=36, max_percentage=99):
     for i in range(n_trial):
         time.sleep(10)
         res, message = k8s.get_pod_status_deployment()
@@ -190,7 +195,7 @@ def external_ip_pooling(k8s, session, n_trial=10, purge=True):
             return None
     for i in range(n_trial):
         time.sleep(10)
-        update_session_status(session, 'Installatie voortgang {}'.format(i + 1), 36 + i * 6)
+        update_session_status(session, 'Installatie voortgang {}'.format(i + 1), min(percentage + i * 6, max_percentage))
         ip = k8s.service_status()
         if ip is not None:
             return ip

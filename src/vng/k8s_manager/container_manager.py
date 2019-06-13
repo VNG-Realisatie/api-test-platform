@@ -94,6 +94,8 @@ class K8S():
         # svc still used
 
     def get_pod_log(self, c_name):
+        if not self.pod_name:
+            self.make_aware()
         log_command = [
             'kubectl',
             'logs',

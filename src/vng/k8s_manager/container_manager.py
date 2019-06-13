@@ -4,7 +4,7 @@ import uuid
 import os
 
 from .kubernetes import *
-from ..utils.commands import run_command
+from ..utils.commands import run_command, safeget
 
 
 class K8S():
@@ -18,6 +18,8 @@ class K8S():
         self.containers = []
         self.script_folder = os.path.dirname(__file__)
         self.garbage = []
+        self.deployment = None
+        self.pod_name = None
 
     def __del__(self):
         for gfile in self.garbage:
@@ -78,16 +80,20 @@ class K8S():
         clean_up = [
             'kubectl',
             'delete',
-            'deployment',
-            '{}'.format(self.app_name),
+            'deployment'
         ]
+        deployments = self.fetch_resource('deployments')
+        for item in deployments['items']:
+            if safeget(item, 'metadata', 'name'):
+                name = item['metadata']['name']
+                if self.app_name in name:
+                    # Delete the workload
+                    run_command([*clean_up, name])
 
-        # Delete the workload
-        run_command(clean_up)
         # TODO: remove unused resources, remember that Kubernetes has a Garbage Collector integrated
+        # svc still used
 
     def get_pod_log(self, c_name):
-        self.make_aware()
         log_command = [
             'kubectl',
             'logs',
@@ -159,7 +165,9 @@ class K8S():
         raise Exception('Application {} not found in the deployed cluster'.format(self.app_name))
 
     def make_aware(self):
-        self.pod_name = self.get_pod_status()['metadata']['name']
+        status = self.get_pod_status()
+        self.pod_name = status['metadata']['name']
+        self.deployment = status['metadata']['ownerReferences']['name']
 
     def exec(self, commands):
         self.make_aware()

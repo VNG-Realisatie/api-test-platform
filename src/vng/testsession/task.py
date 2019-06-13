@@ -143,15 +143,15 @@ def ZGW_deploy(session):
         app=session.name,
         containers=containers
     ).execute()
-    ip = external_ip_pooling(k8s, session, max_percentage=65)
+    ip = external_ip_pooling(k8s, session, max_percentage=40)
     for ex in exposed_urls:
         ex.docker_url = ip
         ex.save()
 
     # check migrations status
-    update_session_status(session, 'Check migration status', 70)
     while len(uwsgi_containers) != 0:
         uwsgi_containers = [c for c in uwsgi_containers if 'spawned uWSGI' not in k8s.get_pod_log(c.name)]
+        update_session_status(session, 'Check migration status', int(40 + (6 - len(uwsgi_containers)) / 45))
         time.sleep(5)
 
     update_session_status(session, 'Loading preconfigured models', 85)
@@ -165,7 +165,6 @@ def ZGW_deploy(session):
         out_file.write(content)
 
     # running the eventual migrations
-
     k8s_db.copy_to(new_file, 'dump.sql')
     os.remove(new_file)
     k8s_db.exec([
@@ -175,7 +174,7 @@ def ZGW_deploy(session):
         '-U',
         'postgres'
     ])
-    # TODO: substitute the BASE_IP and DB_IP
+    update_session_status(session, 'Installatie succesvol uitgevoerd', 100)
     session.status = choices.StatusChoices.running
     session.save()
 

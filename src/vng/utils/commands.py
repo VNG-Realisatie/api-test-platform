@@ -29,3 +29,12 @@ def run_command_with_shell(command):
     res = subp.communicate('n\n')
     if res is not None:
         return res
+
+
+def safeget(dct, *keys):
+    for key in keys:
+        try:
+            dct = dct[key]
+        except KeyError:
+            return None
+    return dct

@@ -21,10 +21,6 @@ from .gemma_containers import *
 logger = get_task_logger(__name__)
 
 
-def get_app_name(session, bind_url):
-    return '{}{}'.format(session.name, str(bind_url.pk))
-
-
 @app.task
 def stop_session(session_pk):
     session = Session.objects.get(pk=session_pk)
@@ -34,8 +30,7 @@ def stop_session(session_pk):
     eu = ExposedUrl.objects.filter(session=session)
     for e_url in eu:
         if e_url.vng_endpoint.url is None:
-            app_name = get_app_name(session, e_url)
-            kuber = K8S(app_name=app_name)
+            kuber = K8S(app_name=session.name)
             kuber.delete()
     session.status = choices.StatusChoices.stopped
     session.save()

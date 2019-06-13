@@ -19,16 +19,12 @@ class DidNotRunException(Exception):
 class NewmanManager:
     REPORT_FOLDER = settings.MEDIA_ROOT + '/newman'
     newman_path = os.path.join(settings.BASE_DIR, 'node_modules', 'newman', 'bin', 'newman.js')
-    RUN_HTML_REPORT_EXTRA = ('{} run --reporters html {} -r htmlextra '
-                             '--reporter-htmlextra-darkTheme '
-                             '--reporter-htmlextra-testPaging '
-                             '--reporter-htmlextra-title '
-                             '--reporter-htmlextra-logs '
-                             '--reporter-htmlextra-export ' + REPORT_FOLDER + '/{}.html {}')
-
-    RUN_HTML_REPORT = ('{} run {} -r html '
-                       '--reporter-html-template ' + REPORT_FOLDER + '/default_reporter.hbs '
-                       '--reporter-html-export ' + REPORT_FOLDER + '/{}.html {}')
+    RUN_HTML_REPORT = ('{} run --reporters html {} -r htmlextra '
+                       '--reporter-htmlextra-darkTheme '
+                       '--reporter-htmlextra-testPaging '
+                       '--reporter-htmlextra-title '
+                       '--reporter-htmlextra-logs '
+                       '--reporter-htmlextra-export ' + REPORT_FOLDER + '/{}.html {}')
 
     RUN_JSON_REPORT = '{} run  {} -r json --reporter-json-export ' + REPORT_FOLDER + '/{}.json {}'
     GLOBAL_VAR_SYNTAX = ' --global-var {}={} '

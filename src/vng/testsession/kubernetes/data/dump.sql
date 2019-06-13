@@ -943,7 +943,7 @@ ALTER TABLE ONLY public.vng_api_common_jwtsecret ALTER COLUMN id SET DEFAULT nex
 --
 
 COPY public.accounts_user (id, password, last_login, is_superuser, username, first_name, last_name, email, is_staff, is_active, date_joined) FROM stdin;
-1	pbkdf2_sha256$120000$MnTdamKhPaEQ$H+DUxZKyX9Ih3kNWd/Rblask7u0mIA9XkL2+mQ+bjeM=	2019-06-07 12:17:20.364575+00	t	admin				t	t	2019-06-07 12:16:57.312322+00
+1	pbkdf2_sha256$120000$MnTdamKhPaEQ$H+DUxZKyX9Ih3kNWd/Rblask7u0mIA9XkL2+mQ+bjeM=	2019-06-13 10:21:33.888519+00	t	admin				t	t	2019-06-07 12:16:57.312322+00
 \.
 
 
@@ -1096,7 +1096,9 @@ COPY public.axes_accessattempt (id, user_agent, ip_address, username, http_accep
 --
 
 COPY public.axes_accesslog (id, user_agent, ip_address, username, trusted, http_accept, path_info, attempt_time, logout_time) FROM stdin;
-1	Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:67.0) Gecko/20100101 Firefox/67.0	10.164.0.13	admin	t	text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8	/admin/login/	2019-06-07 12:17:20.369241+00	\N
+2	Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:67.0) Gecko/20100101 Firefox/67.0	10.164.0.14	admin	t	text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8	/admin/login/	2019-06-13 10:19:23.775378+00	2019-06-13 10:21:23.072908+00
+1	Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:67.0) Gecko/20100101 Firefox/67.0	10.164.0.13	admin	t	text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8	/admin/login/	2019-06-07 12:17:20.369241+00	2019-06-13 10:21:23.072908+00
+3	Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:67.0) Gecko/20100101 Firefox/67.0	10.164.0.12	admin	t	text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8	/admin/login/	2019-06-13 10:21:33.895274+00	\N
 \.
 
 
@@ -1157,48 +1159,48 @@ COPY public.django_content_type (id, app_label, model) FROM stdin;
 --
 
 COPY public.django_migrations (id, app, name, applied) FROM stdin;
-1	contenttypes	0001_initial	2019-06-07 12:08:22.38306+00
-2	contenttypes	0002_remove_content_type_name	2019-06-07 12:08:22.543961+00
-3	auth	0001_initial	2019-06-07 12:08:22.875748+00
-4	auth	0002_alter_permission_name_max_length	2019-06-07 12:08:22.95204+00
-5	auth	0003_alter_user_email_max_length	2019-06-07 12:08:23.038963+00
-6	auth	0004_alter_user_username_opts	2019-06-07 12:08:23.145647+00
-7	auth	0005_alter_user_last_login_null	2019-06-07 12:08:23.262049+00
-8	auth	0006_require_contenttypes_0002	2019-06-07 12:08:23.278486+00
-9	auth	0007_alter_validators_add_error_messages	2019-06-07 12:08:23.387972+00
-10	auth	0008_alter_user_username_max_length	2019-06-07 12:08:23.491589+00
-11	accounts	0001_initial	2019-06-07 12:08:24.123293+00
-12	admin	0001_initial	2019-06-07 12:08:24.256097+00
-13	admin	0002_logentry_remove_auto_add	2019-06-07 12:08:24.400954+00
-14	admin	0003_logentry_add_action_flag_choices	2019-06-07 12:08:24.561809+00
-15	auth	0009_alter_user_last_name_max_length	2019-06-07 12:08:24.70979+00
-16	authorizations	0001_initial	2019-06-07 12:08:25.293756+00
-17	authorizations	0002_authorizationsconfig	2019-06-07 12:08:25.592716+00
-18	authorizations	0003_auto_20190502_0409	2019-06-07 12:08:25.662144+00
-19	authorizations	0004_auto_20190503_0941	2019-06-07 12:08:25.784774+00
-20	authorizations	0005_auto_20190506_0842	2019-06-07 12:08:25.876265+00
-21	authorizations	0006_auto_20190506_0901	2019-06-07 12:08:26.698308+00
-22	authorizations	0007_auto_20190506_1212	2019-06-07 12:08:26.882033+00
-23	axes	0001_initial	2019-06-07 12:08:27.401692+00
-24	axes	0002_auto_20151217_2044	2019-06-07 12:08:28.183005+00
-25	axes	0003_auto_20160322_0929	2019-06-07 12:08:28.585883+00
-26	axes	0004_auto_20181024_1538	2019-06-07 12:08:29.012753+00
-27	axes	0005_remove_accessattempt_trusted	2019-06-07 12:08:29.092739+00
-28	notifications	0001_initial	2019-06-07 12:08:29.600681+00
-29	notifications	0002_subscription__subscription	2019-06-07 12:08:29.781572+00
-30	notifications	0003_auto_20190319_1048	2019-06-07 12:08:30.11522+00
-31	notifications	0004_auto_20190325_1313	2019-06-07 12:08:30.217441+00
-32	notifications	0005_fix_default_nrc	2019-06-07 12:08:30.390118+00
-33	notifications	0006_auto_20190417_1142	2019-06-07 12:08:30.59456+00
-34	notifications	0007_auto_20190429_1442	2019-06-07 12:08:30.604525+00
-35	notifications	0008_auto_20190502_0415	2019-06-07 12:08:30.697907+00
-36	sessions	0001_initial	2019-06-07 12:08:30.905435+00
-37	sites	0001_initial	2019-06-07 12:08:31.115404+00
-38	sites	0002_alter_domain_unique	2019-06-07 12:08:31.273838+00
-39	vng_api_common	0001_initial	2019-06-07 12:08:31.47381+00
-40	vng_api_common	0002_apicredential	2019-06-07 12:08:31.791991+00
-41	vng_api_common	0003_auto_20190417_1145	2019-06-07 12:08:32.002823+00
-42	vng_api_common	0004_auto_20190517_0903	2019-06-07 12:08:32.116878+00
+1	contenttypes	0001_initial	2019-06-13 08:13:57.298413+00
+2	contenttypes	0002_remove_content_type_name	2019-06-13 08:13:57.431117+00
+3	auth	0001_initial	2019-06-13 08:13:58.381117+00
+4	auth	0002_alter_permission_name_max_length	2019-06-13 08:13:58.472355+00
+5	auth	0003_alter_user_email_max_length	2019-06-13 08:13:58.51199+00
+6	auth	0004_alter_user_username_opts	2019-06-13 08:13:58.614762+00
+7	auth	0005_alter_user_last_login_null	2019-06-13 08:13:58.714884+00
+8	auth	0006_require_contenttypes_0002	2019-06-13 08:13:58.728225+00
+9	auth	0007_alter_validators_add_error_messages	2019-06-13 08:13:58.82354+00
+10	auth	0008_alter_user_username_max_length	2019-06-13 08:13:58.924852+00
+11	accounts	0001_initial	2019-06-13 08:13:59.905705+00
+12	admin	0001_initial	2019-06-13 08:14:00.417438+00
+13	admin	0002_logentry_remove_auto_add	2019-06-13 08:14:00.580324+00
+14	admin	0003_logentry_add_action_flag_choices	2019-06-13 08:14:00.700317+00
+15	auth	0009_alter_user_last_name_max_length	2019-06-13 08:14:00.794894+00
+16	authorizations	0001_initial	2019-06-13 08:14:01.311714+00
+17	authorizations	0002_authorizationsconfig	2019-06-13 08:14:01.508307+00
+18	authorizations	0003_auto_20190502_0409	2019-06-13 08:14:01.583987+00
+19	authorizations	0004_auto_20190503_0941	2019-06-13 08:14:01.693725+00
+20	authorizations	0005_auto_20190506_0842	2019-06-13 08:14:01.791987+00
+21	authorizations	0006_auto_20190506_0901	2019-06-13 08:14:02.371551+00
+22	authorizations	0007_auto_20190506_1212	2019-06-13 08:14:02.499293+00
+23	axes	0001_initial	2019-06-13 08:14:02.90282+00
+24	axes	0002_auto_20151217_2044	2019-06-13 08:14:03.490422+00
+25	axes	0003_auto_20160322_0929	2019-06-13 08:14:03.800542+00
+26	axes	0004_auto_20181024_1538	2019-06-13 08:14:04.197068+00
+27	axes	0005_remove_accessattempt_trusted	2019-06-13 08:14:04.293049+00
+28	notifications	0001_initial	2019-06-13 08:14:04.78344+00
+29	notifications	0002_subscription__subscription	2019-06-13 08:14:04.878916+00
+30	notifications	0003_auto_20190319_1048	2019-06-13 08:14:05.202865+00
+31	notifications	0004_auto_20190325_1313	2019-06-13 08:14:05.305836+00
+32	notifications	0005_fix_default_nrc	2019-06-13 08:14:05.524651+00
+33	notifications	0006_auto_20190417_1142	2019-06-13 08:14:05.717119+00
+34	notifications	0007_auto_20190429_1442	2019-06-13 08:14:05.818181+00
+35	notifications	0008_auto_20190502_0415	2019-06-13 08:14:05.905968+00
+36	sessions	0001_initial	2019-06-13 08:14:06.110676+00
+37	sites	0001_initial	2019-06-13 08:14:06.222895+00
+38	sites	0002_alter_domain_unique	2019-06-13 08:14:06.395681+00
+39	vng_api_common	0001_initial	2019-06-13 08:14:06.526258+00
+40	vng_api_common	0002_apicredential	2019-06-13 08:14:06.727137+00
+41	vng_api_common	0003_auto_20190417_1145	2019-06-13 08:14:06.917988+00
+42	vng_api_common	0004_auto_20190517_0903	2019-06-13 08:14:07.011039+00
 \.
 
 
@@ -1208,6 +1210,7 @@ COPY public.django_migrations (id, app, name, applied) FROM stdin;
 
 COPY public.django_session (session_key, session_data, expire_date) FROM stdin;
 odwprqlpbudzxfy20zli3ox5iru18nl6	Mjk2YjZhODgyNjA5YTlkZjA5MjE4MzkyM2I0ZDUyOGViNzQ3NzYwZjp7Il9hdXRoX3VzZXJfaWQiOiIxIiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5kcy5Nb2RlbEJhY2tlbmQiLCJfYXV0aF91c2VyX2hhc2giOiIxM2RkYjhmZTc0M2EzZDEzYTZmMmE0YTE3MzIzMGU4N2NlM2VmOTRiIn0=	2019-06-21 12:17:20.373451+00
+s2amnkbqmymm33j4cih5l459b03np6ti	Mjk2YjZhODgyNjA5YTlkZjA5MjE4MzkyM2I0ZDUyOGViNzQ3NzYwZjp7Il9hdXRoX3VzZXJfaWQiOiIxIiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5kcy5Nb2RlbEJhY2tlbmQiLCJfYXV0aF91c2VyX2hhc2giOiIxM2RkYjhmZTc0M2EzZDEzYTZmMmE0YTE3MzIzMGU4N2NlM2VmOTRiIn0=	2019-06-27 10:21:33.980689+00
 \.
 
 
@@ -1234,7 +1237,7 @@ COPY public.notifications_notificationsconfig (id, api_root) FROM stdin;
 --
 
 COPY public.notifications_subscription (id, callback_url, client_id, secret, channels, config_id, _subscription) FROM stdin;
-1	http://BASE_IP:8004/api/v1/callback	demo	demo	{autorisaties}	1	
+1	http://BASE_IP:8004/api/v1/callback	demo	demo	{autorisaties}	1
 \.
 
 
@@ -1334,7 +1337,7 @@ SELECT pg_catalog.setval('public.axes_accessattempt_id_seq', 1, false);
 -- Name: axes_accesslog_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.axes_accesslog_id_seq', 1, true);
+SELECT pg_catalog.setval('public.axes_accesslog_id_seq', 3, true);
 
 
 --
@@ -3023,7 +3026,7 @@ ALTER TABLE ONLY public.vng_api_common_jwtsecret ALTER COLUMN id SET DEFAULT nex
 --
 
 COPY public.accounts_user (id, password, last_login, is_superuser, username, first_name, last_name, email, is_staff, is_active, date_joined) FROM stdin;
-1	pbkdf2_sha256$150000$Mqs1KNU8t3ZY$QbeI221pQq1a8MtRUeE/SHn26gOOZb/U0Oxy6cHZqfI=	2019-06-07 13:19:42.872582+00	t	admin				t	t	2019-06-07 13:19:18.668316+00
+1	pbkdf2_sha256$150000$Mqs1KNU8t3ZY$QbeI221pQq1a8MtRUeE/SHn26gOOZb/U0Oxy6cHZqfI=	2019-06-13 10:36:37.17542+00	t	admin				t	t	2019-06-07 13:19:18.668316+00
 \.
 
 
@@ -3195,6 +3198,7 @@ COPY public.axes_accessattempt (id, user_agent, ip_address, username, trusted, h
 
 COPY public.axes_accesslog (id, user_agent, ip_address, username, trusted, http_accept, path_info, attempt_time, logout_time) FROM stdin;
 1	Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:67.0) Gecko/20100101 Firefox/67.0	10.164.0.13	admin	t	text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8	/admin/login/	2019-06-07 13:19:42.96529+00	\N
+2	Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:67.0) Gecko/20100101 Firefox/67.0	10.164.0.12	admin	t	text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8	/admin/login/	2019-06-13 10:36:37.179645+00	\N
 \.
 
 
@@ -3230,6 +3234,7 @@ COPY public.django_admin_log (id, action_time, object_id, object_repr, action_fl
 9	2019-06-07 14:17:17.56678+00	3	http://BASE_IP:8003/api/v1/	1	[{"added": {}}]	11	1
 10	2019-06-07 14:17:31.48455+00	4	http://BASE_IP:8002/api/v1/	1	[{"added": {}}]	11	1
 11	2019-06-07 14:17:43.965855+00	5	http://BASE_IP:8001/api/v1/	1	[{"added": {}}]	11	1
+12	2019-06-13 10:36:43.475034+00	1	demo	1	[{"added": {}}]	10	1
 \.
 
 
@@ -3266,63 +3271,63 @@ COPY public.django_content_type (id, app_label, model) FROM stdin;
 --
 
 COPY public.django_migrations (id, app, name, applied) FROM stdin;
-1	contenttypes	0001_initial	2019-06-07 12:08:23.283836+00
-2	contenttypes	0002_remove_content_type_name	2019-06-07 12:08:23.41392+00
-3	auth	0001_initial	2019-06-07 12:08:23.639403+00
-4	auth	0002_alter_permission_name_max_length	2019-06-07 12:08:24.048822+00
-5	auth	0003_alter_user_email_max_length	2019-06-07 12:08:24.151566+00
-6	auth	0004_alter_user_username_opts	2019-06-07 12:08:24.268718+00
-7	auth	0005_alter_user_last_login_null	2019-06-07 12:08:24.377334+00
-8	auth	0006_require_contenttypes_0002	2019-06-07 12:08:24.389463+00
-9	auth	0007_alter_validators_add_error_messages	2019-06-07 12:08:24.490667+00
-10	auth	0008_alter_user_username_max_length	2019-06-07 12:08:24.616761+00
-11	auth	0009_alter_user_last_name_max_length	2019-06-07 12:08:24.703703+00
-12	accounts	0001_initial	2019-06-07 12:08:25.092876+00
-13	admin	0001_initial	2019-06-07 12:08:26.077214+00
-14	admin	0002_logentry_remove_auto_add	2019-06-07 12:08:26.474713+00
-15	admin	0003_logentry_add_action_flag_choices	2019-06-07 12:08:26.578966+00
-16	audittrails	0001_initial	2019-06-07 12:08:26.892681+00
-17	audittrails	0002_auto_20190516_0830	2019-06-07 12:08:27.067057+00
-18	audittrails	0003_auto_20190517_0844	2019-06-07 12:08:27.578793+00
-19	audittrails	0004_auto_20190520_1238	2019-06-07 12:08:27.69798+00
-20	audittrails	0005_auto_20190520_1450	2019-06-07 12:08:27.784025+00
-21	audittrails	0006_audittrail_toelichting	2019-06-07 12:08:27.890768+00
-22	audittrails	0007_auto_20190522_0916	2019-06-07 12:08:27.985666+00
-23	auth	0010_alter_group_name_max_length	2019-06-07 12:08:28.18522+00
-24	auth	0011_update_proxy_permissions	2019-06-07 12:08:28.407735+00
-25	authorizations	0001_initial	2019-06-07 12:08:28.789924+00
-26	authorizations	0002_authorizationsconfig	2019-06-07 12:08:29.072131+00
-27	authorizations	0003_auto_20190502_0409	2019-06-07 12:08:29.26506+00
-28	authorizations	0004_auto_20190503_0941	2019-06-07 12:08:29.366743+00
-29	authorizations	0005_auto_20190506_0842	2019-06-07 12:08:29.391311+00
-30	authorizations	0006_auto_20190506_0901	2019-06-07 12:08:30.099916+00
-31	authorizations	0007_auto_20190506_1212	2019-06-07 12:08:30.275627+00
-32	axes	0001_initial	2019-06-07 12:08:30.602549+00
-33	axes	0002_auto_20151217_2044	2019-06-07 12:08:31.119789+00
-34	axes	0003_auto_20160322_0929	2019-06-07 12:08:31.577175+00
-35	datamodel	0001_initial	2019-06-07 12:08:31.965308+00
-36	datamodel	0002_auto_20180906_0950	2019-06-07 12:08:32.283904+00
-37	datamodel	0003_besluit_vervalreden	2019-06-07 12:08:32.322687+00
-38	datamodel	0004_auto_20181029_0959	2019-06-07 12:08:32.565026+00
-39	datamodel	0005_auto_20181029_1150	2019-06-07 12:08:32.702184+00
-40	datamodel	0006_auto_20181119_0828	2019-06-07 12:08:32.800718+00
-41	datamodel	0007_auto_20190528_0940	2019-06-07 12:08:33.120025+00
-42	datamodel	0008_besluit__zaakbesluit	2019-06-07 12:08:33.289458+00
-43	notifications	0001_initial	2019-06-07 12:08:33.690984+00
-44	notifications	0002_subscription__subscription	2019-06-07 12:08:33.974719+00
-45	notifications	0003_auto_20190319_1048	2019-06-07 12:08:34.365977+00
-46	notifications	0004_auto_20190325_1313	2019-06-07 12:08:34.430302+00
-47	notifications	0005_fix_default_nrc	2019-06-07 12:08:34.808728+00
-48	notifications	0006_auto_20190417_1142	2019-06-07 12:08:35.663986+00
-49	notifications	0007_auto_20190429_1442	2019-06-07 12:08:35.720248+00
-50	notifications	0008_auto_20190502_0415	2019-06-07 12:08:35.798729+00
-51	sessions	0001_initial	2019-06-07 12:08:35.889857+00
-52	sites	0001_initial	2019-06-07 12:08:36.075972+00
-53	sites	0002_alter_domain_unique	2019-06-07 12:08:36.187769+00
-54	vng_api_common	0001_initial	2019-06-07 12:08:36.281846+00
-55	vng_api_common	0002_apicredential	2019-06-07 12:08:36.407989+00
-56	vng_api_common	0003_auto_20190417_1145	2019-06-07 12:08:36.509832+00
-57	vng_api_common	0004_auto_20190517_0903	2019-06-07 12:08:36.617828+00
+1	contenttypes	0001_initial	2019-06-13 08:13:56.137367+00
+2	contenttypes	0002_remove_content_type_name	2019-06-13 08:13:56.275019+00
+3	auth	0001_initial	2019-06-13 08:13:56.61644+00
+4	auth	0002_alter_permission_name_max_length	2019-06-13 08:13:57.212857+00
+5	auth	0003_alter_user_email_max_length	2019-06-13 08:13:57.320548+00
+6	auth	0004_alter_user_username_opts	2019-06-13 08:13:57.435826+00
+7	auth	0005_alter_user_last_login_null	2019-06-13 08:13:57.540788+00
+8	auth	0006_require_contenttypes_0002	2019-06-13 08:13:57.559297+00
+9	auth	0007_alter_validators_add_error_messages	2019-06-13 08:13:57.627755+00
+10	auth	0008_alter_user_username_max_length	2019-06-13 08:13:57.716086+00
+11	auth	0009_alter_user_last_name_max_length	2019-06-13 08:13:57.821394+00
+12	accounts	0001_initial	2019-06-13 08:13:58.196997+00
+13	admin	0001_initial	2019-06-13 08:13:59.023049+00
+14	admin	0002_logentry_remove_auto_add	2019-06-13 08:13:59.375048+00
+15	admin	0003_logentry_add_action_flag_choices	2019-06-13 08:13:59.491025+00
+16	audittrails	0001_initial	2019-06-13 08:13:59.742197+00
+17	audittrails	0002_auto_20190516_0830	2019-06-13 08:13:59.825895+00
+18	audittrails	0003_auto_20190517_0844	2019-06-13 08:14:00.282979+00
+19	audittrails	0004_auto_20190520_1238	2019-06-13 08:14:00.394292+00
+20	audittrails	0005_auto_20190520_1450	2019-06-13 08:14:00.481068+00
+21	audittrails	0006_audittrail_toelichting	2019-06-13 08:14:00.507269+00
+22	audittrails	0007_auto_20190522_0916	2019-06-13 08:14:00.654413+00
+23	auth	0010_alter_group_name_max_length	2019-06-13 08:14:00.810174+00
+24	auth	0011_update_proxy_permissions	2019-06-13 08:14:00.920819+00
+25	authorizations	0001_initial	2019-06-13 08:14:01.273797+00
+26	authorizations	0002_authorizationsconfig	2019-06-13 08:14:01.502177+00
+27	authorizations	0003_auto_20190502_0409	2019-06-13 08:14:01.618002+00
+28	authorizations	0004_auto_20190503_0941	2019-06-13 08:14:01.705278+00
+29	authorizations	0005_auto_20190506_0842	2019-06-13 08:14:01.783817+00
+30	authorizations	0006_auto_20190506_0901	2019-06-13 08:14:02.396155+00
+31	authorizations	0007_auto_20190506_1212	2019-06-13 08:14:02.508545+00
+32	axes	0001_initial	2019-06-13 08:14:02.901862+00
+33	axes	0002_auto_20151217_2044	2019-06-13 08:14:03.486902+00
+34	axes	0003_auto_20160322_0929	2019-06-13 08:14:03.7996+00
+35	datamodel	0001_initial	2019-06-13 08:14:04.103124+00
+36	datamodel	0002_auto_20180906_0950	2019-06-13 08:14:04.221941+00
+37	datamodel	0003_besluit_vervalreden	2019-06-13 08:14:04.316805+00
+38	datamodel	0004_auto_20181029_0959	2019-06-13 08:14:04.586918+00
+39	datamodel	0005_auto_20181029_1150	2019-06-13 08:14:04.784541+00
+40	datamodel	0006_auto_20181119_0828	2019-06-13 08:14:04.812688+00
+41	datamodel	0007_auto_20190528_0940	2019-06-13 08:14:05.117255+00
+42	datamodel	0008_besluit__zaakbesluit	2019-06-13 08:14:05.205158+00
+43	notifications	0001_initial	2019-06-13 08:14:05.482092+00
+44	notifications	0002_subscription__subscription	2019-06-13 08:14:05.636934+00
+45	notifications	0003_auto_20190319_1048	2019-06-13 08:14:05.989748+00
+46	notifications	0004_auto_20190325_1313	2019-06-13 08:14:06.01308+00
+47	notifications	0005_fix_default_nrc	2019-06-13 08:14:06.372294+00
+48	notifications	0006_auto_20190417_1142	2019-06-13 08:14:06.50937+00
+49	notifications	0007_auto_20190429_1442	2019-06-13 08:14:07.326145+00
+50	notifications	0008_auto_20190502_0415	2019-06-13 08:14:07.395914+00
+51	sessions	0001_initial	2019-06-13 08:14:07.503547+00
+52	sites	0001_initial	2019-06-13 08:14:07.721057+00
+53	sites	0002_alter_domain_unique	2019-06-13 08:14:07.873057+00
+54	vng_api_common	0001_initial	2019-06-13 08:14:08.020976+00
+55	vng_api_common	0002_apicredential	2019-06-13 08:14:08.407713+00
+56	vng_api_common	0003_auto_20190417_1145	2019-06-13 08:14:08.611593+00
+57	vng_api_common	0004_auto_20190517_0903	2019-06-13 08:14:08.690938+00
 \.
 
 
@@ -3332,6 +3337,7 @@ COPY public.django_migrations (id, app, name, applied) FROM stdin;
 
 COPY public.django_session (session_key, session_data, expire_date) FROM stdin;
 bgm6bvragksrejuvrvsco1ryhjtx1104	NWVkNzhlY2VhYmI2NDc3MTdhNGIxOGI2NzRjZTAwNTAzZDJjMzMwOTp7Il9hdXRoX3VzZXJfaWQiOiIxIiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5kcy5Nb2RlbEJhY2tlbmQiLCJfYXV0aF91c2VyX2hhc2giOiJhYmMxNTE4ZGI2MDFkYWZjMWM0ODE1N2VlODkxOGM3N2UzMTc1MzRlIn0=	2019-06-21 13:19:42.969416+00
+qjiapws1vrt74kfla7zllfvdf3dcjum1	NWVkNzhlY2VhYmI2NDc3MTdhNGIxOGI2NzRjZTAwNTAzZDJjMzMwOTp7Il9hdXRoX3VzZXJfaWQiOiIxIiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5kcy5Nb2RlbEJhY2tlbmQiLCJfYXV0aF91c2VyX2hhc2giOiJhYmMxNTE4ZGI2MDFkYWZjMWM0ODE1N2VlODkxOGM3N2UzMTc1MzRlIn0=	2019-06-27 10:36:37.184166+00
 \.
 
 
@@ -3380,6 +3386,7 @@ COPY public.vng_api_common_apicredential (id, api_root, client_id, secret, label
 --
 
 COPY public.vng_api_common_jwtsecret (id, identifier, secret) FROM stdin;
+1	demo	demo
 \.
 
 
@@ -3464,7 +3471,7 @@ SELECT pg_catalog.setval('public.axes_accessattempt_id_seq', 1, true);
 -- Name: axes_accesslog_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.axes_accesslog_id_seq', 1, true);
+SELECT pg_catalog.setval('public.axes_accesslog_id_seq', 2, true);
 
 
 --
@@ -3485,7 +3492,7 @@ SELECT pg_catalog.setval('public.datamodel_besluitinformatieobject_id_seq', 1, f
 -- Name: django_admin_log_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.django_admin_log_id_seq', 11, true);
+SELECT pg_catalog.setval('public.django_admin_log_id_seq', 12, true);
 
 
 --
@@ -3534,7 +3541,7 @@ SELECT pg_catalog.setval('public.vng_api_common_apicredential_id_seq', 5, true);
 -- Name: vng_api_common_jwtsecret_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.vng_api_common_jwtsecret_id_seq', 1, false);
+SELECT pg_catalog.setval('public.vng_api_common_jwtsecret_id_seq', 1, true);
 
 
 --
@@ -5299,7 +5306,7 @@ ALTER TABLE ONLY public.vng_api_common_jwtsecret ALTER COLUMN id SET DEFAULT nex
 --
 
 COPY public.accounts_user (id, password, last_login, is_superuser, username, first_name, last_name, email, is_staff, is_active, date_joined) FROM stdin;
-1	pbkdf2_sha256$150000$V85wgSFjoEux$8F++zQzwOvAn1PI/4U6OFD3Athtq4uAsDQg7SWIWazs=	2019-06-07 14:01:03.169608+00	t	admin				t	t	2019-06-07 14:00:49.97769+00
+1	pbkdf2_sha256$150000$V85wgSFjoEux$8F++zQzwOvAn1PI/4U6OFD3Athtq4uAsDQg7SWIWazs=	2019-06-13 10:35:04.879558+00	t	admin				t	t	2019-06-07 14:00:49.97769+00
 \.
 
 
@@ -5474,6 +5481,7 @@ COPY public.axes_accessattempt (id, user_agent, ip_address, username, trusted, h
 
 COPY public.axes_accesslog (id, user_agent, ip_address, username, trusted, http_accept, path_info, attempt_time, logout_time) FROM stdin;
 1	Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:67.0) Gecko/20100101 Firefox/67.0	10.164.0.13	admin	t	text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8	/admin/login/	2019-06-07 14:01:03.173534+00	\N
+2	Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:67.0) Gecko/20100101 Firefox/67.0	10.164.0.14	admin	t	text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8	/admin/login/	2019-06-13 10:35:04.969237+00	\N
 \.
 
 
@@ -5515,6 +5523,7 @@ COPY public.django_admin_log (id, action_time, object_id, object_repr, action_fl
 7	2019-06-07 14:13:59.765836+00	3	http://BASE_IP:8003/api/v1/	1	[{"added": {}}]	11	1
 8	2019-06-07 14:14:16.06538+00	4	http://BASE_IP:8002/api/v1/	1	[{"added": {}}]	11	1
 9	2019-06-07 14:14:28.665135+00	5	http://BASE_IP:8001/api/v1/	1	[{"added": {}}]	11	1
+10	2019-06-13 10:35:15.275164+00	1	demo	1	[{"added": {}}]	10	1
 \.
 
 
@@ -5552,93 +5561,93 @@ COPY public.django_content_type (id, app_label, model) FROM stdin;
 --
 
 COPY public.django_migrations (id, app, name, applied) FROM stdin;
-1	contenttypes	0001_initial	2019-06-07 12:08:25.992349+00
-2	contenttypes	0002_remove_content_type_name	2019-06-07 12:08:26.177797+00
-3	auth	0001_initial	2019-06-07 12:08:26.696687+00
-4	auth	0002_alter_permission_name_max_length	2019-06-07 12:08:27.383912+00
-5	auth	0003_alter_user_email_max_length	2019-06-07 12:08:27.472749+00
-6	auth	0004_alter_user_username_opts	2019-06-07 12:08:27.508326+00
-7	auth	0005_alter_user_last_login_null	2019-06-07 12:08:27.612564+00
-8	auth	0006_require_contenttypes_0002	2019-06-07 12:08:27.666651+00
-9	auth	0007_alter_validators_add_error_messages	2019-06-07 12:08:27.767019+00
-10	auth	0008_alter_user_username_max_length	2019-06-07 12:08:27.86478+00
-11	accounts	0001_initial	2019-06-07 12:08:28.303835+00
-12	admin	0001_initial	2019-06-07 12:08:29.09532+00
-13	admin	0002_logentry_remove_auto_add	2019-06-07 12:08:29.474532+00
-14	admin	0003_logentry_add_action_flag_choices	2019-06-07 12:08:29.584841+00
-15	audittrails	0001_initial	2019-06-07 12:08:29.78348+00
-16	audittrails	0002_auto_20190516_0830	2019-06-07 12:08:29.978634+00
-17	audittrails	0003_auto_20190517_0844	2019-06-07 12:08:30.365679+00
-18	audittrails	0004_auto_20190520_1238	2019-06-07 12:08:30.468549+00
-19	audittrails	0005_auto_20190520_1450	2019-06-07 12:08:30.509046+00
-20	audittrails	0006_audittrail_toelichting	2019-06-07 12:08:30.607516+00
-21	audittrails	0007_auto_20190522_0916	2019-06-07 12:08:30.714272+00
-22	auth	0009_alter_user_last_name_max_length	2019-06-07 12:08:30.874756+00
-23	auth	0010_alter_group_name_max_length	2019-06-07 12:08:30.997778+00
-24	auth	0011_update_proxy_permissions	2019-06-07 12:08:31.187778+00
-25	authorizations	0001_initial	2019-06-07 12:08:31.504587+00
-26	authorizations	0002_authorizationsconfig	2019-06-07 12:08:31.895881+00
-27	authorizations	0003_auto_20190502_0409	2019-06-07 12:08:32.090951+00
-28	authorizations	0004_auto_20190503_0941	2019-06-07 12:08:32.194766+00
-29	authorizations	0005_auto_20190506_0842	2019-06-07 12:08:32.309956+00
-30	authorizations	0006_auto_20190506_0901	2019-06-07 12:08:32.985755+00
-31	authorizations	0007_auto_20190506_1212	2019-06-07 12:08:33.164058+00
-32	axes	0001_initial	2019-06-07 12:08:33.596554+00
-33	axes	0002_auto_20151217_2044	2019-06-07 12:08:34.301785+00
-34	axes	0003_auto_20160322_0929	2019-06-07 12:08:34.788703+00
-35	datamodel	0001_initial	2019-06-07 12:08:35.009853+00
-36	datamodel	0002_auto_20180629_1504	2019-06-07 12:08:35.27583+00
-37	datamodel	0003_auto_20180701_0713	2019-06-07 12:08:35.368854+00
-38	datamodel	0004_auto_20180701_0818	2019-06-07 12:08:35.424383+00
-39	datamodel	0005_auto_20180724_1049	2019-06-07 12:08:35.603722+00
-40	datamodel	0006_auto_20180724_1049	2019-06-07 12:08:35.92138+00
-41	datamodel	0007_auto_20180724_1051	2019-06-07 12:08:36.971172+00
-42	datamodel	0008_auto_20180730_1252	2019-06-07 12:08:37.300798+00
-43	datamodel	0009_enkelvoudiginformatieobject_vertrouwelijkheidsaanduiding	2019-06-07 12:08:37.420778+00
-44	datamodel	0010_auto_20180815_1221	2019-06-07 12:08:37.511322+00
-45	datamodel	0010_auto_20180815_1104	2019-06-07 12:08:37.810008+00
-46	datamodel	0011_merge_20180815_1426	2019-06-07 12:08:37.82052+00
-47	datamodel	0012_auto_20180815_1609	2019-06-07 12:08:38.004473+00
-48	datamodel	0013_auto_20180919_1002	2019-06-07 12:08:38.985045+00
-49	datamodel	0014_auto_20180919_1008	2019-06-07 12:08:39.36404+00
-50	datamodel	0015_remove_objectinformatieobject_zaak	2019-06-07 12:08:39.435526+00
-51	datamodel	0016_auto_20180920_1240	2019-06-07 12:08:39.527897+00
-52	datamodel	0017_auto_20181010_1548	2019-06-07 12:08:39.625018+00
-53	datamodel	0018_auto_20181010_1611	2019-06-07 12:08:39.710737+00
-54	datamodel	0019_auto_20181024_1313	2019-06-07 12:08:39.830436+00
-55	datamodel	0020_objectinformatieobject_aard_relatie	2019-06-07 12:08:39.931117+00
-56	datamodel	0021_enkelvoudiginformatieobject_bestandsnaam	2019-06-07 12:08:40.029065+00
-57	datamodel	0022_auto_20181213_1332_squashed_0024_auto_20181213_1442	2019-06-07 12:08:40.482462+00
-58	datamodel	0023_enkelvoudiginformatieobject_ontvangstdatum	2019-06-07 12:08:40.593483+00
-59	datamodel	0024_enkelvoudiginformatieobject_indicatie_gebruiksrecht	2019-06-07 12:08:40.680834+00
-60	datamodel	0025_enkelvoudiginformatieobject_verzenddatum	2019-06-07 12:08:40.793985+00
-61	datamodel	0026_auto_20181219_1336	2019-06-07 12:08:40.980814+00
-62	datamodel	0027_auto_20181219_1411	2019-06-07 12:08:41.188828+00
-63	datamodel	0028_enkelvoudiginformatieobject_status	2019-06-07 12:08:41.283976+00
-64	datamodel	0029_auto_20181224_1042	2019-06-07 12:08:41.38404+00
-65	datamodel	0030_gebruiksrechten	2019-06-07 12:08:41.564069+00
-66	datamodel	0031_gebruiksrechten_uuid	2019-06-07 12:08:41.678747+00
-67	datamodel	0032_auto_20190129_1031	2019-06-07 12:08:41.781826+00
-68	datamodel	0033_auto_20190301_1442	2019-06-07 12:08:41.908734+00
-69	datamodel	0034_auto_20190528_0927	2019-06-07 12:08:42.206732+00
-70	datamodel	0034_auto_20190524_1455	2019-06-07 12:08:42.826943+00
-71	datamodel	0035_merge_20190605_1036	2019-06-07 12:08:42.875787+00
-72	datamodel	0036_auto_20190605_1047	2019-06-07 12:08:43.067977+00
-73	notifications	0001_initial	2019-06-07 12:08:43.272054+00
-74	notifications	0002_subscription__subscription	2019-06-07 12:08:43.402348+00
-75	notifications	0003_auto_20190319_1048	2019-06-07 12:08:43.694625+00
-76	notifications	0004_auto_20190325_1313	2019-06-07 12:08:43.80389+00
-77	notifications	0005_fix_default_nrc	2019-06-07 12:08:44.266758+00
-78	notifications	0006_auto_20190417_1142	2019-06-07 12:08:44.483917+00
-79	notifications	0007_auto_20190429_1442	2019-06-07 12:08:44.57697+00
-80	notifications	0008_auto_20190502_0415	2019-06-07 12:08:44.629282+00
-81	sessions	0001_initial	2019-06-07 12:08:44.723892+00
-82	sites	0001_initial	2019-06-07 12:08:44.86702+00
-83	sites	0002_alter_domain_unique	2019-06-07 12:08:44.982952+00
-84	vng_api_common	0001_initial	2019-06-07 12:08:45.08191+00
-85	vng_api_common	0002_apicredential	2019-06-07 12:08:45.189853+00
-86	vng_api_common	0003_auto_20190417_1145	2019-06-07 12:08:45.31088+00
-87	vng_api_common	0004_auto_20190517_0903	2019-06-07 12:08:45.429269+00
+1	contenttypes	0001_initial	2019-06-13 08:13:57.437251+00
+2	contenttypes	0002_remove_content_type_name	2019-06-13 08:13:57.552874+00
+3	auth	0001_initial	2019-06-13 08:13:57.930946+00
+4	auth	0002_alter_permission_name_max_length	2019-06-13 08:13:58.616094+00
+5	auth	0003_alter_user_email_max_length	2019-06-13 08:13:58.720048+00
+6	auth	0004_alter_user_username_opts	2019-06-13 08:13:58.810858+00
+7	auth	0005_alter_user_last_login_null	2019-06-13 08:13:58.918991+00
+8	auth	0006_require_contenttypes_0002	2019-06-13 08:13:58.931517+00
+9	auth	0007_alter_validators_add_error_messages	2019-06-13 08:13:59.010865+00
+10	auth	0008_alter_user_username_max_length	2019-06-13 08:13:59.090868+00
+11	accounts	0001_initial	2019-06-13 08:13:59.483312+00
+12	admin	0001_initial	2019-06-13 08:14:00.316146+00
+13	admin	0002_logentry_remove_auto_add	2019-06-13 08:14:00.789829+00
+14	admin	0003_logentry_add_action_flag_choices	2019-06-13 08:14:00.926706+00
+15	audittrails	0001_initial	2019-06-13 08:14:01.103848+00
+16	audittrails	0002_auto_20190516_0830	2019-06-13 08:14:01.205268+00
+17	audittrails	0003_auto_20190517_0844	2019-06-13 08:14:01.687067+00
+18	audittrails	0004_auto_20190520_1238	2019-06-13 08:14:01.778887+00
+19	audittrails	0005_auto_20190520_1450	2019-06-13 08:14:01.823412+00
+20	audittrails	0006_audittrail_toelichting	2019-06-13 08:14:01.907044+00
+21	audittrails	0007_auto_20190522_0916	2019-06-13 08:14:01.972051+00
+22	auth	0009_alter_user_last_name_max_length	2019-06-13 08:14:02.188296+00
+23	auth	0010_alter_group_name_max_length	2019-06-13 08:14:02.297568+00
+24	auth	0011_update_proxy_permissions	2019-06-13 08:14:02.488048+00
+25	authorizations	0001_initial	2019-06-13 08:14:02.797006+00
+26	authorizations	0002_authorizationsconfig	2019-06-13 08:14:03.115994+00
+27	authorizations	0003_auto_20190502_0409	2019-06-13 08:14:03.220041+00
+28	authorizations	0004_auto_20190503_0941	2019-06-13 08:14:03.386597+00
+29	authorizations	0005_auto_20190506_0842	2019-06-13 08:14:03.484499+00
+30	authorizations	0006_auto_20190506_0901	2019-06-13 08:14:04.270476+00
+31	authorizations	0007_auto_20190506_1212	2019-06-13 08:14:04.386822+00
+32	axes	0001_initial	2019-06-13 08:14:04.692029+00
+33	axes	0002_auto_20151217_2044	2019-06-13 08:14:05.309096+00
+34	axes	0003_auto_20160322_0929	2019-06-13 08:14:05.729335+00
+35	datamodel	0001_initial	2019-06-13 08:14:05.916026+00
+36	datamodel	0002_auto_20180629_1504	2019-06-13 08:14:06.173137+00
+37	datamodel	0003_auto_20180701_0713	2019-06-13 08:14:06.221003+00
+38	datamodel	0004_auto_20180701_0818	2019-06-13 08:14:06.32067+00
+39	datamodel	0005_auto_20180724_1049	2019-06-13 08:14:06.488912+00
+40	datamodel	0006_auto_20180724_1049	2019-06-13 08:14:06.776001+00
+41	datamodel	0007_auto_20180724_1051	2019-06-13 08:14:07.591746+00
+42	datamodel	0008_auto_20180730_1252	2019-06-13 08:14:07.805294+00
+43	datamodel	0009_enkelvoudiginformatieobject_vertrouwelijkheidsaanduiding	2019-06-13 08:14:07.999311+00
+44	datamodel	0010_auto_20180815_1221	2019-06-13 08:14:08.026887+00
+45	datamodel	0010_auto_20180815_1104	2019-06-13 08:14:08.274872+00
+46	datamodel	0011_merge_20180815_1426	2019-06-13 08:14:08.28956+00
+47	datamodel	0012_auto_20180815_1609	2019-06-13 08:14:08.422475+00
+48	datamodel	0013_auto_20180919_1002	2019-06-13 08:14:09.135228+00
+49	datamodel	0014_auto_20180919_1008	2019-06-13 08:14:09.410864+00
+50	datamodel	0015_remove_objectinformatieobject_zaak	2019-06-13 08:14:09.487864+00
+51	datamodel	0016_auto_20180920_1240	2019-06-13 08:14:09.534749+00
+52	datamodel	0017_auto_20181010_1548	2019-06-13 08:14:09.627474+00
+53	datamodel	0018_auto_20181010_1611	2019-06-13 08:14:09.70685+00
+54	datamodel	0019_auto_20181024_1313	2019-06-13 08:14:09.813443+00
+55	datamodel	0020_objectinformatieobject_aard_relatie	2019-06-13 08:14:09.894292+00
+56	datamodel	0021_enkelvoudiginformatieobject_bestandsnaam	2019-06-13 08:14:09.934907+00
+57	datamodel	0022_auto_20181213_1332_squashed_0024_auto_20181213_1442	2019-06-13 08:14:10.231236+00
+58	datamodel	0023_enkelvoudiginformatieobject_ontvangstdatum	2019-06-13 08:14:10.320779+00
+59	datamodel	0024_enkelvoudiginformatieobject_indicatie_gebruiksrecht	2019-06-13 08:14:10.413848+00
+60	datamodel	0025_enkelvoudiginformatieobject_verzenddatum	2019-06-13 08:14:10.483884+00
+61	datamodel	0026_auto_20181219_1336	2019-06-13 08:14:10.618898+00
+62	datamodel	0027_auto_20181219_1411	2019-06-13 08:14:10.825811+00
+63	datamodel	0028_enkelvoudiginformatieobject_status	2019-06-13 08:14:10.898501+00
+64	datamodel	0029_auto_20181224_1042	2019-06-13 08:14:10.937572+00
+65	datamodel	0030_gebruiksrechten	2019-06-13 08:14:11.07608+00
+66	datamodel	0031_gebruiksrechten_uuid	2019-06-13 08:14:11.193911+00
+67	datamodel	0032_auto_20190129_1031	2019-06-13 08:14:11.276302+00
+68	datamodel	0033_auto_20190301_1442	2019-06-13 08:14:11.342557+00
+69	datamodel	0034_auto_20190528_0927	2019-06-13 08:14:11.594917+00
+70	datamodel	0034_auto_20190524_1455	2019-06-13 08:14:12.042272+00
+71	datamodel	0035_merge_20190605_1036	2019-06-13 08:14:12.083203+00
+72	datamodel	0036_auto_20190605_1047	2019-06-13 08:14:12.24563+00
+73	notifications	0001_initial	2019-06-13 08:14:12.409551+00
+74	notifications	0002_subscription__subscription	2019-06-13 08:14:12.541519+00
+75	notifications	0003_auto_20190319_1048	2019-06-13 08:14:12.88708+00
+76	notifications	0004_auto_20190325_1313	2019-06-13 08:14:12.988184+00
+77	notifications	0005_fix_default_nrc	2019-06-13 08:14:13.341988+00
+78	notifications	0006_auto_20190417_1142	2019-06-13 08:14:13.529176+00
+79	notifications	0007_auto_20190429_1442	2019-06-13 08:14:13.647432+00
+80	notifications	0008_auto_20190502_0415	2019-06-13 08:14:13.705152+00
+81	sessions	0001_initial	2019-06-13 08:14:13.782099+00
+82	sites	0001_initial	2019-06-13 08:14:13.878103+00
+83	sites	0002_alter_domain_unique	2019-06-13 08:14:13.97336+00
+84	vng_api_common	0001_initial	2019-06-13 08:14:14.036677+00
+85	vng_api_common	0002_apicredential	2019-06-13 08:14:14.201161+00
+86	vng_api_common	0003_auto_20190417_1145	2019-06-13 08:14:14.307085+00
+87	vng_api_common	0004_auto_20190517_0903	2019-06-13 08:14:14.409043+00
 \.
 
 
@@ -5648,6 +5657,7 @@ COPY public.django_migrations (id, app, name, applied) FROM stdin;
 
 COPY public.django_session (session_key, session_data, expire_date) FROM stdin;
 g5tkvuo7emjve3h2x9amjl66sbmjzx3p	NDZmYzk4NjliMjBjMTFhMDdmYzhkOTVmODM1MGIxOWZiN2Y0MzNjMTp7Il9hdXRoX3VzZXJfaWQiOiIxIiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5kcy5Nb2RlbEJhY2tlbmQiLCJfYXV0aF91c2VyX2hhc2giOiIzZGI2NGNkOTRmYzE5NzAzNzljY2UwZjBlYjMwMjcxNWY5MjZlZDdlIn0=	2019-06-21 14:01:03.263786+00
+5m8u7jrkspn1l8npyjq6noi8f174xt5i	NDZmYzk4NjliMjBjMTFhMDdmYzhkOTVmODM1MGIxOWZiN2Y0MzNjMTp7Il9hdXRoX3VzZXJfaWQiOiIxIiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5kcy5Nb2RlbEJhY2tlbmQiLCJfYXV0aF91c2VyX2hhc2giOiIzZGI2NGNkOTRmYzE5NzAzNzljY2UwZjBlYjMwMjcxNWY5MjZlZDdlIn0=	2019-06-27 10:35:04.973431+00
 \.
 
 
@@ -5696,6 +5706,7 @@ COPY public.vng_api_common_apicredential (id, api_root, client_id, secret, label
 --
 
 COPY public.vng_api_common_jwtsecret (id, identifier, secret) FROM stdin;
+1	demo	demo
 \.
 
 
@@ -5780,7 +5791,7 @@ SELECT pg_catalog.setval('public.axes_accessattempt_id_seq', 1, false);
 -- Name: axes_accesslog_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.axes_accesslog_id_seq', 1, true);
+SELECT pg_catalog.setval('public.axes_accesslog_id_seq', 2, true);
 
 
 --
@@ -5808,7 +5819,7 @@ SELECT pg_catalog.setval('public.datamodel_zaakinformatieobject_id_seq', 1, fals
 -- Name: django_admin_log_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.django_admin_log_id_seq', 9, true);
+SELECT pg_catalog.setval('public.django_admin_log_id_seq', 10, true);
 
 
 --
@@ -5857,7 +5868,7 @@ SELECT pg_catalog.setval('public.vng_api_common_apicredential_id_seq', 5, true);
 -- Name: vng_api_common_jwtsecret_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.vng_api_common_jwtsecret_id_seq', 1, false);
+SELECT pg_catalog.setval('public.vng_api_common_jwtsecret_id_seq', 1, true);
 
 
 --
@@ -7668,7 +7679,7 @@ ALTER TABLE ONLY public.vng_api_common_jwtsecret ALTER COLUMN id SET DEFAULT nex
 --
 
 COPY public.accounts_user (id, password, last_login, is_superuser, username, first_name, last_name, email, is_staff, is_active, date_joined) FROM stdin;
-1	pbkdf2_sha256$120000$5whFMunA0oKn$ipFL9ZIBj9lfZ3PD7lxfNyCZie6xO4eUE9LufGGfVfk=	2019-06-07 12:26:07.180404+00	t	admin				t	t	2019-06-07 12:25:50.411475+00
+1	pbkdf2_sha256$120000$5whFMunA0oKn$ipFL9ZIBj9lfZ3PD7lxfNyCZie6xO4eUE9LufGGfVfk=	2019-06-13 10:36:58.979763+00	t	admin				t	t	2019-06-07 12:25:50.411475+00
 \.
 
 
@@ -7834,6 +7845,7 @@ COPY public.authorizations_autorisatie (id, component, zaaktype, scopes, max_ver
 --
 
 COPY public.axes_accessattempt (id, user_agent, ip_address, username, http_accept, path_info, attempt_time, get_data, post_data, failures_since_start) FROM stdin;
+1	Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:67.0) Gecko/20100101 Firefox/67.0	10.20.1.1	admin	text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8	/admin/login/	2019-06-13 10:36:53.275807+00	next=/admin/vng_api_common/jwtsecret/	csrfmiddlewaretoken=k0CoyDvee2PKg8akLMZbV55DgvIwsHnFNL84yChho09Aq83V8wM89Sba8fMoU063\nusername=admin\nnext=/admin/vng_api_common/jwtsecret/	1
 \.
 
 
@@ -7843,6 +7855,7 @@ COPY public.axes_accessattempt (id, user_agent, ip_address, username, http_accep
 
 COPY public.axes_accesslog (id, user_agent, ip_address, username, trusted, http_accept, path_info, attempt_time, logout_time) FROM stdin;
 1	Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:67.0) Gecko/20100101 Firefox/67.0	10.164.0.13	admin	t	text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8	/admin/login/	2019-06-07 12:26:07.184997+00	\N
+2	Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:67.0) Gecko/20100101 Firefox/67.0	10.164.0.14	admin	t	text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8	/admin/login/	2019-06-13 10:36:58.982903+00	\N
 \.
 
 
@@ -7872,11 +7885,6 @@ COPY public.datamodel_filter (id, key, value, filter_group_id) FROM stdin;
 --
 
 COPY public.datamodel_filtergroup (id, abonnement_id, kanaal_id) FROM stdin;
-1	1	1
-2	2	1
-3	3	1
-4	4	1
-5	5	1
 \.
 
 
@@ -7964,54 +7972,54 @@ COPY public.django_content_type (id, app_label, model) FROM stdin;
 --
 
 COPY public.django_migrations (id, app, name, applied) FROM stdin;
-1	contenttypes	0001_initial	2019-06-07 12:08:23.823964+00
-2	contenttypes	0002_remove_content_type_name	2019-06-07 12:08:24.030199+00
-3	auth	0001_initial	2019-06-07 12:08:24.415678+00
-4	auth	0002_alter_permission_name_max_length	2019-06-07 12:08:24.451011+00
-5	auth	0003_alter_user_email_max_length	2019-06-07 12:08:24.527942+00
-6	auth	0004_alter_user_username_opts	2019-06-07 12:08:24.628653+00
-7	auth	0005_alter_user_last_login_null	2019-06-07 12:08:24.716663+00
-8	auth	0006_require_contenttypes_0002	2019-06-07 12:08:24.761969+00
-9	auth	0007_alter_validators_add_error_messages	2019-06-07 12:08:24.813677+00
-10	auth	0008_alter_user_username_max_length	2019-06-07 12:08:24.893794+00
-11	accounts	0001_initial	2019-06-07 12:08:26.084537+00
-12	admin	0001_initial	2019-06-07 12:08:26.683812+00
-13	admin	0002_logentry_remove_auto_add	2019-06-07 12:08:26.874662+00
-14	admin	0003_logentry_add_action_flag_choices	2019-06-07 12:08:26.983771+00
-15	auth	0009_alter_user_last_name_max_length	2019-06-07 12:08:27.189015+00
-16	authorizations	0001_initial	2019-06-07 12:08:27.614392+00
-17	authorizations	0002_authorizationsconfig	2019-06-07 12:08:27.901575+00
-18	authorizations	0003_auto_20190502_0409	2019-06-07 12:08:27.989283+00
-19	authorizations	0004_auto_20190503_0941	2019-06-07 12:08:28.161235+00
-20	authorizations	0005_auto_20190506_0842	2019-06-07 12:08:28.266943+00
-21	authorizations	0006_auto_20190506_0901	2019-06-07 12:08:29.020179+00
-22	authorizations	0007_auto_20190506_1212	2019-06-07 12:08:29.177633+00
-23	axes	0001_initial	2019-06-07 12:08:29.599648+00
-24	axes	0002_auto_20151217_2044	2019-06-07 12:08:30.401342+00
-25	axes	0003_auto_20160322_0929	2019-06-07 12:08:30.782815+00
-26	axes	0004_auto_20181024_1538	2019-06-07 12:08:31.161265+00
-27	axes	0005_remove_accessattempt_trusted	2019-06-07 12:08:31.220461+00
-28	datamodel	0001_initial	2019-06-07 12:08:32.50111+00
-29	datamodel	0002_auto_20190318_1844	2019-06-07 12:08:33.091825+00
-30	datamodel	0003_auto_20190319_1151	2019-06-07 12:08:33.281426+00
-31	datamodel	0004_notificatie_notificatieresponse	2019-06-07 12:08:33.877963+00
-32	datamodel	0005_kanaal_filters	2019-06-07 12:08:34.084298+00
-33	datamodel	0006_auto_20190327_1101	2019-06-07 12:08:34.206673+00
-34	datamodel	0007_auto_20190327_1126	2019-06-07 12:08:34.477444+00
-35	datamodel	0008_auto_20190409_1422	2019-06-07 12:08:34.716417+00
-36	notifications	0001_initial	2019-06-07 12:08:35.123329+00
-37	notifications	0002_subscription__subscription	2019-06-07 12:08:35.24388+00
-38	notifications	0003_auto_20190319_1048	2019-06-07 12:08:35.619527+00
-39	notifications	0004_auto_20190325_1313	2019-06-07 12:08:36.486918+00
-40	notifications	0005_fix_default_nrc	2019-06-07 12:08:36.903691+00
-41	notifications	0006_auto_20190417_1142	2019-06-07 12:08:37.189511+00
-42	notifications	0007_auto_20190429_1442	2019-06-07 12:08:37.242983+00
-43	notifications	0008_auto_20190502_0415	2019-06-07 12:08:37.306816+00
-44	sessions	0001_initial	2019-06-07 12:08:37.499772+00
-45	vng_api_common	0001_initial	2019-06-07 12:08:37.721633+00
-46	vng_api_common	0002_apicredential	2019-06-07 12:08:38.000494+00
-47	vng_api_common	0003_auto_20190417_1145	2019-06-07 12:08:38.116369+00
-48	vng_api_common	0004_auto_20190517_0903	2019-06-07 12:08:38.220346+00
+1	contenttypes	0001_initial	2019-06-13 08:13:54.993206+00
+2	contenttypes	0002_remove_content_type_name	2019-06-13 08:13:55.117255+00
+3	auth	0001_initial	2019-06-13 08:13:55.376912+00
+4	auth	0002_alter_permission_name_max_length	2019-06-13 08:13:55.436815+00
+5	auth	0003_alter_user_email_max_length	2019-06-13 08:13:55.522378+00
+6	auth	0004_alter_user_username_opts	2019-06-13 08:13:55.62162+00
+7	auth	0005_alter_user_last_login_null	2019-06-13 08:13:55.714274+00
+8	auth	0006_require_contenttypes_0002	2019-06-13 08:13:55.726207+00
+9	auth	0007_alter_validators_add_error_messages	2019-06-13 08:13:55.816549+00
+10	auth	0008_alter_user_username_max_length	2019-06-13 08:13:55.917906+00
+11	accounts	0001_initial	2019-06-13 08:13:56.803855+00
+12	admin	0001_initial	2019-06-13 08:13:57.319285+00
+13	admin	0002_logentry_remove_auto_add	2019-06-13 08:13:57.534178+00
+14	admin	0003_logentry_add_action_flag_choices	2019-06-13 08:13:57.61487+00
+15	auth	0009_alter_user_last_name_max_length	2019-06-13 08:13:57.769539+00
+16	authorizations	0001_initial	2019-06-13 08:13:58.200858+00
+17	authorizations	0002_authorizationsconfig	2019-06-13 08:13:58.499908+00
+18	authorizations	0003_auto_20190502_0409	2019-06-13 08:13:58.591872+00
+19	authorizations	0004_auto_20190503_0941	2019-06-13 08:13:58.691989+00
+20	authorizations	0005_auto_20190506_0842	2019-06-13 08:13:58.786242+00
+21	authorizations	0006_auto_20190506_0901	2019-06-13 08:13:59.593061+00
+22	authorizations	0007_auto_20190506_1212	2019-06-13 08:13:59.752906+00
+23	axes	0001_initial	2019-06-13 08:14:00.125112+00
+24	axes	0002_auto_20151217_2044	2019-06-13 08:14:00.827326+00
+25	axes	0003_auto_20160322_0929	2019-06-13 08:14:01.072279+00
+26	axes	0004_auto_20181024_1538	2019-06-13 08:14:01.396341+00
+27	axes	0005_remove_accessattempt_trusted	2019-06-13 08:14:01.417442+00
+28	datamodel	0001_initial	2019-06-13 08:14:02.590375+00
+29	datamodel	0002_auto_20190318_1844	2019-06-13 08:14:03.122827+00
+30	datamodel	0003_auto_20190319_1151	2019-06-13 08:14:03.373116+00
+31	datamodel	0004_notificatie_notificatieresponse	2019-06-13 08:14:03.871425+00
+32	datamodel	0005_kanaal_filters	2019-06-13 08:14:03.996129+00
+33	datamodel	0006_auto_20190327_1101	2019-06-13 08:14:04.13031+00
+34	datamodel	0007_auto_20190327_1126	2019-06-13 08:14:04.274665+00
+35	datamodel	0008_auto_20190409_1422	2019-06-13 08:14:04.579339+00
+36	notifications	0001_initial	2019-06-13 08:14:05.083042+00
+37	notifications	0002_subscription__subscription	2019-06-13 08:14:05.199044+00
+38	notifications	0003_auto_20190319_1048	2019-06-13 08:14:05.526576+00
+39	notifications	0004_auto_20190325_1313	2019-06-13 08:14:06.302135+00
+40	notifications	0005_fix_default_nrc	2019-06-13 08:14:06.61123+00
+41	notifications	0006_auto_20190417_1142	2019-06-13 08:14:06.785917+00
+42	notifications	0007_auto_20190429_1442	2019-06-13 08:14:06.834068+00
+43	notifications	0008_auto_20190502_0415	2019-06-13 08:14:06.904042+00
+44	sessions	0001_initial	2019-06-13 08:14:07.075255+00
+45	vng_api_common	0001_initial	2019-06-13 08:14:07.20829+00
+46	vng_api_common	0002_apicredential	2019-06-13 08:14:07.501237+00
+47	vng_api_common	0003_auto_20190417_1145	2019-06-13 08:14:07.602029+00
+48	vng_api_common	0004_auto_20190517_0903	2019-06-13 08:14:07.784066+00
 \.
 
 
@@ -8021,6 +8029,7 @@ COPY public.django_migrations (id, app, name, applied) FROM stdin;
 
 COPY public.django_session (session_key, session_data, expire_date) FROM stdin;
 wb43t83i0tegr9shyzrehc0b5pgvzqfb	NGI2MmQwYzA1ZGRmMjc5MDA0ODljYjM3NTYwNmFlNjhhYmFjZTExYzp7Il9hdXRoX3VzZXJfaWQiOiIxIiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5kcy5Nb2RlbEJhY2tlbmQiLCJfYXV0aF91c2VyX2hhc2giOiJkOTk2NDkyMDhjYTJlNjg5NThlYjYxYTZiMTQ1ZDE2ZGUwOTc2ZTcxIn0=	2019-06-21 12:26:07.261911+00
+n06b2wk0mv2vvycfggewxi89ch6y1p63	NGI2MmQwYzA1ZGRmMjc5MDA0ODljYjM3NTYwNmFlNjhhYmFjZTExYzp7Il9hdXRoX3VzZXJfaWQiOiIxIiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5kcy5Nb2RlbEJhY2tlbmQiLCJfYXV0aF91c2VyX2hhc2giOiJkOTk2NDkyMDhjYTJlNjg5NThlYjYxYTZiMTQ1ZDE2ZGUwOTc2ZTcxIn0=	2019-06-27 10:36:59.072795+00
 \.
 
 
@@ -8131,14 +8140,14 @@ SELECT pg_catalog.setval('public.authorizations_autorisatie_id_seq', 1, false);
 -- Name: axes_accessattempt_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.axes_accessattempt_id_seq', 1, false);
+SELECT pg_catalog.setval('public.axes_accessattempt_id_seq', 1, true);
 
 
 --
 -- Name: axes_accesslog_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.axes_accesslog_id_seq', 1, true);
+SELECT pg_catalog.setval('public.axes_accesslog_id_seq', 2, true);
 
 
 --
@@ -9028,14 +9037,14 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: postgis; Type: EXTENSION; Schema: -; Owner: 
+-- Name: postgis; Type: EXTENSION; Schema: -; Owner:
 --
 
 CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA public;
 
 
 --
--- Name: EXTENSION postgis; Type: COMMENT; Schema: -; Owner: 
+-- Name: EXTENSION postgis; Type: COMMENT; Schema: -; Owner:
 --
 
 COMMENT ON EXTENSION postgis IS 'PostGIS geometry, geography, and raster spatial types and functions';
@@ -10433,7 +10442,7 @@ ALTER TABLE ONLY public.vng_api_common_jwtsecret ALTER COLUMN id SET DEFAULT nex
 --
 
 COPY public.accounts_user (id, password, last_login, is_superuser, username, first_name, last_name, email, is_staff, is_active, date_joined) FROM stdin;
-1	pbkdf2_sha256$150000$RrwQTRAN7cb0$8HnotTQyZjj+U7XfPR1fRgQGCk5QlJJvGII/p83lOcA=	2019-06-07 12:16:09.201421+00	t	admin				t	t	2019-06-07 12:15:50.087756+00
+1	pbkdf2_sha256$150000$RrwQTRAN7cb0$8HnotTQyZjj+U7XfPR1fRgQGCk5QlJJvGII/p83lOcA=	2019-06-13 10:34:52.586809+00	t	admin				t	t	2019-06-07 12:15:50.087756+00
 \.
 
 
@@ -10602,6 +10611,9 @@ COPY public.auth_permission (id, name, content_type_id, codename) FROM stdin;
 --
 
 COPY public.authorizations_applicatie (id, uuid, client_ids, label, heeft_alle_autorisaties) FROM stdin;
+1	b7622797-5f85-40e3-8abd-8f3ff476cf70	{demo}	ac	t
+2	5d83fd8e-395c-4232-9afa-754bd4822ef3	{demo}	nrc	t
+3	533fe769-b1f1-49ff-b9fb-5bd01cfe868b	{demo}	zrc	t
 \.
 
 
@@ -10636,6 +10648,7 @@ COPY public.axes_accessattempt (id, user_agent, ip_address, username, trusted, h
 
 COPY public.axes_accesslog (id, user_agent, ip_address, username, trusted, http_accept, path_info, attempt_time, logout_time) FROM stdin;
 1	Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:67.0) Gecko/20100101 Firefox/67.0	10.164.0.13	admin	t	text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8	/admin/login/	2019-06-07 12:16:09.266924+00	\N
+2	Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:67.0) Gecko/20100101 Firefox/67.0	10.164.0.12	admin	t	text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8	/admin/login/	2019-06-13 10:34:52.590283+00	\N
 \.
 
 
@@ -10780,117 +10793,117 @@ COPY public.django_content_type (id, app_label, model) FROM stdin;
 --
 
 COPY public.django_migrations (id, app, name, applied) FROM stdin;
-1	contenttypes	0001_initial	2019-06-07 12:08:52.094059+00
-2	contenttypes	0002_remove_content_type_name	2019-06-07 12:08:52.303969+00
-3	auth	0001_initial	2019-06-07 12:08:52.573737+00
-4	auth	0002_alter_permission_name_max_length	2019-06-07 12:08:52.664985+00
-5	auth	0003_alter_user_email_max_length	2019-06-07 12:08:52.763082+00
-6	auth	0004_alter_user_username_opts	2019-06-07 12:08:52.879162+00
-7	auth	0005_alter_user_last_login_null	2019-06-07 12:08:52.978543+00
-8	auth	0006_require_contenttypes_0002	2019-06-07 12:08:52.995666+00
-9	auth	0007_alter_validators_add_error_messages	2019-06-07 12:08:53.085426+00
-10	auth	0008_alter_user_username_max_length	2019-06-07 12:08:53.220575+00
-11	accounts	0001_initial	2019-06-07 12:08:53.442159+00
-12	admin	0001_initial	2019-06-07 12:08:53.730011+00
-13	admin	0002_logentry_remove_auto_add	2019-06-07 12:08:53.904895+00
-14	admin	0003_logentry_add_action_flag_choices	2019-06-07 12:08:54.096274+00
-15	audittrails	0001_initial	2019-06-07 12:08:54.218701+00
-16	audittrails	0002_auto_20190516_0830	2019-06-07 12:08:54.267777+00
-17	audittrails	0003_auto_20190517_0844	2019-06-07 12:08:54.805977+00
-18	audittrails	0004_auto_20190520_1238	2019-06-07 12:08:54.921727+00
-19	audittrails	0005_auto_20190520_1450	2019-06-07 12:08:55.074776+00
-20	audittrails	0006_audittrail_toelichting	2019-06-07 12:08:55.126395+00
-21	audittrails	0007_auto_20190522_0916	2019-06-07 12:08:55.214025+00
-22	auth	0009_alter_user_last_name_max_length	2019-06-07 12:08:55.404906+00
-23	auth	0010_alter_group_name_max_length	2019-06-07 12:08:55.596902+00
-24	auth	0011_update_proxy_permissions	2019-06-07 12:08:55.877766+00
-25	authorizations	0001_initial	2019-06-07 12:08:56.025127+00
-26	authorizations	0002_authorizationsconfig	2019-06-07 12:08:56.178862+00
-27	authorizations	0003_auto_20190502_0409	2019-06-07 12:08:56.314931+00
-28	authorizations	0004_auto_20190503_0941	2019-06-07 12:08:56.415058+00
-29	authorizations	0005_auto_20190506_0842	2019-06-07 12:08:56.583201+00
-30	authorizations	0006_auto_20190506_0901	2019-06-07 12:08:57.266293+00
-31	authorizations	0007_auto_20190506_1212	2019-06-07 12:08:57.427933+00
-32	axes	0001_initial	2019-06-07 12:08:57.572371+00
-33	axes	0002_auto_20151217_2044	2019-06-07 12:08:58.075849+00
-34	axes	0003_auto_20160322_0929	2019-06-07 12:08:58.508942+00
-35	datamodel	0001_initial	2019-06-07 12:08:58.6977+00
-36	datamodel	0002_zaak_zaaktype	2019-06-07 12:08:58.800761+00
-37	datamodel	0003_auto_20180608_1605	2019-06-07 12:08:59.581758+00
-38	datamodel	0004_zaakobject	2019-06-07 12:08:59.689975+00
-39	datamodel	0005_zaak_registratiedatum	2019-06-07 12:08:59.711786+00
-40	datamodel	0006_zaak_toelichting	2019-06-07 12:08:59.809205+00
-41	datamodel	0007_zaak_domein_data	2019-06-07 12:08:59.895942+00
-42	datamodel	0008_auto_20180611_1247	2019-06-07 12:09:00.187235+00
-43	datamodel	0009_klantcontact	2019-06-07 12:09:00.298364+00
-44	datamodel	0010_klantcontact_zaak	2019-06-07 12:09:00.377742+00
-45	datamodel	0011_zaakinformatieobject	2019-06-07 12:09:00.500242+00
-46	datamodel	0012_zaak_zaakgeometrie	2019-06-07 12:09:00.607784+00
-47	datamodel	0013_organisatorischeeenheid_rol	2019-06-07 12:09:00.806112+00
-48	datamodel	0014_auto_20180629_1512	2019-06-07 12:09:01.004787+00
-49	datamodel	0015_auto_20180701_1127	2019-06-07 12:09:01.165908+00
-50	datamodel	0016_auto_20180711_1346	2019-06-07 12:09:01.50144+00
-51	datamodel	0017_zaak_bronorganisatie	2019-06-07 12:09:01.612034+00
-52	datamodel	0018_auto_20180716_1259	2019-06-07 12:09:01.79789+00
-53	datamodel	0019_auto_20180724_0941	2019-06-07 12:09:02.789742+00
-54	datamodel	0020_auto_20180724_0941	2019-06-07 12:09:03.307362+00
-55	datamodel	0021_auto_20180724_0941	2019-06-07 12:09:04.382918+00
-56	datamodel	0022_auto_20180724_0958	2019-06-07 12:09:05.267908+00
-57	datamodel	0023_auto_20180725_1511	2019-06-07 12:09:05.867059+00
-58	datamodel	0024_zaakobject_object_type	2019-06-07 12:09:05.990009+00
-59	datamodel	0025_remove_rol_betrokkene	2019-06-07 12:09:06.105372+00
-60	datamodel	0026_rol_betrokkene	2019-06-07 12:09:06.278786+00
-61	datamodel	0027_delete_organisatorischeeenheid	2019-06-07 12:09:06.303573+00
-62	datamodel	0028_rol_betrokkene_type	2019-06-07 12:09:06.464889+00
-63	datamodel	0029_auto_20180725_1548	2019-06-07 12:09:06.575792+00
-64	datamodel	0030_auto_20180813_0855	2019-06-07 12:09:06.680697+00
-65	datamodel	0031_auto_20180815_1525	2019-06-07 12:09:06.968921+00
-66	datamodel	0032_auto_20180816_1451	2019-06-07 12:09:07.177692+00
-67	datamodel	0032_auto_20180816_1352	2019-06-07 12:09:07.293244+00
-68	datamodel	0033_merge_20180816_1624	2019-06-07 12:09:07.297267+00
-69	datamodel	0034_auto_20180817_1747	2019-06-07 12:09:07.881924+00
-70	datamodel	0035_auto_20180919_1103	2019-06-07 12:09:08.485012+00
-71	datamodel	0036_zaakinformatieobject_uuid	2019-06-07 12:09:08.687332+00
-72	datamodel	0037_auto_20181129_1016	2019-06-07 12:09:08.805067+00
-73	datamodel	0038_auto_20181219_1027	2019-06-07 12:09:09.092807+00
-74	datamodel	0039_auto_20181224_1626	2019-06-07 12:09:09.492358+00
-75	datamodel	0040_zaak_communicatiekanaal	2019-06-07 12:09:09.683818+00
-76	datamodel	0041_zaak_vertrouwlijkheidaanduiding	2019-06-07 12:09:09.862113+00
-77	datamodel	0042_zet_vertrouwelijkheidaanduiding	2019-06-07 12:09:10.185732+00
-78	datamodel	0043_auto_20181227_1532	2019-06-07 12:09:10.374737+00
-79	datamodel	0044_zaak_resultaattoelichting	2019-06-07 12:09:10.584863+00
-80	datamodel	0045_zaak_betalingsindicatie	2019-06-07 12:09:10.772837+00
-81	datamodel	0046_zaak_laatste_betaaldatum	2019-06-07 12:09:10.881781+00
-82	datamodel	0047_auto_20190103_1353	2019-06-07 12:09:11.189855+00
-83	datamodel	0048_auto_20190103_1649	2019-06-07 12:09:11.571814+00
-84	datamodel	0049_zaak_selectielijstklasse	2019-06-07 12:09:11.778839+00
-85	datamodel	0050_zaak_hoofdzaak	2019-06-07 12:09:11.962414+00
-86	datamodel	0051_zaak_relevante_andere_zaken	2019-06-07 12:09:12.094679+00
-87	datamodel	0052_auto_20190128_0933	2019-06-07 12:09:12.283793+00
-88	datamodel	0053_auto_20190128_1044	2019-06-07 12:09:12.46877+00
-89	datamodel	0054_auto_20190129_1204	2019-06-07 12:09:12.866858+00
-90	datamodel	0055_auto_20190226_1254	2019-06-07 12:09:14.086944+00
-91	datamodel	0056_auto_20190311_1015	2019-06-07 12:09:16.590283+00
-92	datamodel	0057_auto_20190523_1513	2019-06-07 12:09:16.98896+00
-93	datamodel	0057_auto_20190517_1351	2019-06-07 12:09:17.264071+00
-94	datamodel	0058_merge_20190531_1435	2019-06-07 12:09:17.281861+00
-95	datamodel	0059_auto_20190531_1512	2019-06-07 12:09:18.1924+00
-96	datamodel	0060_auto_20190605_0941	2019-06-07 12:09:18.474347+00
-97	notifications	0001_initial	2019-06-07 12:09:18.601786+00
-98	notifications	0002_subscription__subscription	2019-06-07 12:09:18.692373+00
-99	notifications	0003_auto_20190319_1048	2019-06-07 12:09:19.062173+00
-100	notifications	0004_auto_20190325_1313	2019-06-07 12:09:19.09216+00
-101	notifications	0005_fix_default_nrc	2019-06-07 12:09:20.714058+00
-102	notifications	0006_auto_20190417_1142	2019-06-07 12:09:20.895924+00
-103	notifications	0007_auto_20190429_1442	2019-06-07 12:09:20.993779+00
-104	notifications	0008_auto_20190502_0415	2019-06-07 12:09:21.088081+00
-105	sessions	0001_initial	2019-06-07 12:09:21.218418+00
-106	sites	0001_initial	2019-06-07 12:09:21.239808+00
-107	sites	0002_alter_domain_unique	2019-06-07 12:09:21.293984+00
-108	vng_api_common	0001_initial	2019-06-07 12:09:21.392937+00
-109	vng_api_common	0002_apicredential	2019-06-07 12:09:21.4172+00
-110	vng_api_common	0003_auto_20190417_1145	2019-06-07 12:09:21.588772+00
-111	vng_api_common	0004_auto_20190517_0903	2019-06-07 12:09:21.703538+00
+1	contenttypes	0001_initial	2019-06-13 08:14:21.301382+00
+2	contenttypes	0002_remove_content_type_name	2019-06-13 08:14:21.478131+00
+3	auth	0001_initial	2019-06-13 08:14:21.724297+00
+4	auth	0002_alter_permission_name_max_length	2019-06-13 08:14:21.828082+00
+5	auth	0003_alter_user_email_max_length	2019-06-13 08:14:21.926064+00
+6	auth	0004_alter_user_username_opts	2019-06-13 08:14:22.015967+00
+7	auth	0005_alter_user_last_login_null	2019-06-13 08:14:22.119907+00
+8	auth	0006_require_contenttypes_0002	2019-06-13 08:14:22.127826+00
+9	auth	0007_alter_validators_add_error_messages	2019-06-13 08:14:22.218062+00
+10	auth	0008_alter_user_username_max_length	2019-06-13 08:14:22.356972+00
+11	accounts	0001_initial	2019-06-13 08:14:22.496245+00
+12	admin	0001_initial	2019-06-13 08:14:22.739222+00
+13	admin	0002_logentry_remove_auto_add	2019-06-13 08:14:22.819889+00
+14	admin	0003_logentry_add_action_flag_choices	2019-06-13 08:14:22.970361+00
+15	audittrails	0001_initial	2019-06-13 08:14:23.040066+00
+16	audittrails	0002_auto_20190516_0830	2019-06-13 08:14:23.118829+00
+17	audittrails	0003_auto_20190517_0844	2019-06-13 08:14:23.588385+00
+18	audittrails	0004_auto_20190520_1238	2019-06-13 08:14:23.687222+00
+19	audittrails	0005_auto_20190520_1450	2019-06-13 08:14:23.787037+00
+20	audittrails	0006_audittrail_toelichting	2019-06-13 08:14:23.831987+00
+21	audittrails	0007_auto_20190522_0916	2019-06-13 08:14:23.903335+00
+22	auth	0009_alter_user_last_name_max_length	2019-06-13 08:14:24.025476+00
+23	auth	0010_alter_group_name_max_length	2019-06-13 08:14:24.124471+00
+24	auth	0011_update_proxy_permissions	2019-06-13 08:14:24.327884+00
+25	authorizations	0001_initial	2019-06-13 08:14:24.480917+00
+26	authorizations	0002_authorizationsconfig	2019-06-13 08:14:24.592888+00
+27	authorizations	0003_auto_20190502_0409	2019-06-13 08:14:24.643209+00
+28	authorizations	0004_auto_20190503_0941	2019-06-13 08:14:24.723069+00
+29	authorizations	0005_auto_20190506_0842	2019-06-13 08:14:24.893617+00
+30	authorizations	0006_auto_20190506_0901	2019-06-13 08:14:25.378132+00
+31	authorizations	0007_auto_20190506_1212	2019-06-13 08:14:25.484819+00
+32	axes	0001_initial	2019-06-13 08:14:25.578055+00
+33	axes	0002_auto_20151217_2044	2019-06-13 08:14:25.911791+00
+34	axes	0003_auto_20160322_0929	2019-06-13 08:14:26.283913+00
+35	datamodel	0001_initial	2019-06-13 08:14:26.404211+00
+36	datamodel	0002_zaak_zaaktype	2019-06-13 08:14:26.495852+00
+37	datamodel	0003_auto_20180608_1605	2019-06-13 08:14:27.281568+00
+38	datamodel	0004_zaakobject	2019-06-13 08:14:27.317046+00
+39	datamodel	0005_zaak_registratiedatum	2019-06-13 08:14:27.411181+00
+40	datamodel	0006_zaak_toelichting	2019-06-13 08:14:27.502056+00
+41	datamodel	0007_zaak_domein_data	2019-06-13 08:14:27.582017+00
+42	datamodel	0008_auto_20180611_1247	2019-06-13 08:14:27.802452+00
+43	datamodel	0009_klantcontact	2019-06-13 08:14:27.906738+00
+44	datamodel	0010_klantcontact_zaak	2019-06-13 08:14:27.986185+00
+45	datamodel	0011_zaakinformatieobject	2019-06-13 08:14:28.111763+00
+46	datamodel	0012_zaak_zaakgeometrie	2019-06-13 08:14:28.198051+00
+47	datamodel	0013_organisatorischeeenheid_rol	2019-06-13 08:14:28.406844+00
+48	datamodel	0014_auto_20180629_1512	2019-06-13 08:14:28.588177+00
+49	datamodel	0015_auto_20180701_1127	2019-06-13 08:14:28.690638+00
+50	datamodel	0016_auto_20180711_1346	2019-06-13 08:14:28.981141+00
+51	datamodel	0017_zaak_bronorganisatie	2019-06-13 08:14:29.086105+00
+52	datamodel	0018_auto_20180716_1259	2019-06-13 08:14:29.190856+00
+53	datamodel	0019_auto_20180724_0941	2019-06-13 08:14:29.910291+00
+54	datamodel	0020_auto_20180724_0941	2019-06-13 08:14:30.298919+00
+55	datamodel	0021_auto_20180724_0941	2019-06-13 08:14:31.115178+00
+56	datamodel	0022_auto_20180724_0958	2019-06-13 08:14:31.806704+00
+57	datamodel	0023_auto_20180725_1511	2019-06-13 08:14:32.297123+00
+58	datamodel	0024_zaakobject_object_type	2019-06-13 08:14:32.399383+00
+59	datamodel	0025_remove_rol_betrokkene	2019-06-13 08:14:32.59784+00
+60	datamodel	0026_rol_betrokkene	2019-06-13 08:14:32.69547+00
+61	datamodel	0027_delete_organisatorischeeenheid	2019-06-13 08:14:32.701885+00
+62	datamodel	0028_rol_betrokkene_type	2019-06-13 08:14:32.802508+00
+63	datamodel	0029_auto_20180725_1548	2019-06-13 08:14:32.973305+00
+64	datamodel	0030_auto_20180813_0855	2019-06-13 08:14:33.077714+00
+65	datamodel	0031_auto_20180815_1525	2019-06-13 08:14:33.294137+00
+66	datamodel	0032_auto_20180816_1451	2019-06-13 08:14:33.510486+00
+67	datamodel	0032_auto_20180816_1352	2019-06-13 08:14:33.696639+00
+68	datamodel	0033_merge_20180816_1624	2019-06-13 08:14:33.700804+00
+69	datamodel	0034_auto_20180817_1747	2019-06-13 08:14:34.185975+00
+70	datamodel	0035_auto_20180919_1103	2019-06-13 08:14:34.590303+00
+71	datamodel	0036_zaakinformatieobject_uuid	2019-06-13 08:14:34.786065+00
+72	datamodel	0037_auto_20181129_1016	2019-06-13 08:14:34.911526+00
+73	datamodel	0038_auto_20181219_1027	2019-06-13 08:14:35.17686+00
+74	datamodel	0039_auto_20181224_1626	2019-06-13 08:14:35.488048+00
+75	datamodel	0040_zaak_communicatiekanaal	2019-06-13 08:14:35.687011+00
+76	datamodel	0041_zaak_vertrouwlijkheidaanduiding	2019-06-13 08:14:35.799353+00
+77	datamodel	0042_zet_vertrouwelijkheidaanduiding	2019-06-13 08:14:36.18404+00
+78	datamodel	0043_auto_20181227_1532	2019-06-13 08:14:36.295262+00
+79	datamodel	0044_zaak_resultaattoelichting	2019-06-13 08:14:36.499055+00
+80	datamodel	0045_zaak_betalingsindicatie	2019-06-13 08:14:36.6811+00
+81	datamodel	0046_zaak_laatste_betaaldatum	2019-06-13 08:14:36.791036+00
+82	datamodel	0047_auto_20190103_1353	2019-06-13 08:14:37.093108+00
+83	datamodel	0048_auto_20190103_1649	2019-06-13 08:14:37.395035+00
+84	datamodel	0049_zaak_selectielijstklasse	2019-06-13 08:14:37.599595+00
+85	datamodel	0050_zaak_hoofdzaak	2019-06-13 08:14:37.785045+00
+86	datamodel	0051_zaak_relevante_andere_zaken	2019-06-13 08:14:37.981146+00
+87	datamodel	0052_auto_20190128_0933	2019-06-13 08:14:38.183587+00
+88	datamodel	0053_auto_20190128_1044	2019-06-13 08:14:38.315825+00
+89	datamodel	0054_auto_20190129_1204	2019-06-13 08:14:38.685916+00
+90	datamodel	0055_auto_20190226_1254	2019-06-13 08:14:39.695894+00
+91	datamodel	0056_auto_20190311_1015	2019-06-13 08:14:41.502247+00
+92	datamodel	0057_auto_20190523_1513	2019-06-13 08:14:41.800234+00
+93	datamodel	0057_auto_20190517_1351	2019-06-13 08:14:41.996931+00
+94	datamodel	0058_merge_20190531_1435	2019-06-13 08:14:41.999491+00
+95	datamodel	0059_auto_20190531_1512	2019-06-13 08:14:42.683429+00
+96	datamodel	0060_auto_20190605_0941	2019-06-13 08:14:42.790988+00
+97	notifications	0001_initial	2019-06-13 08:14:42.906897+00
+98	notifications	0002_subscription__subscription	2019-06-13 08:14:42.996999+00
+99	notifications	0003_auto_20190319_1048	2019-06-13 08:14:43.283911+00
+100	notifications	0004_auto_20190325_1313	2019-06-13 08:14:43.30258+00
+101	notifications	0005_fix_default_nrc	2019-06-13 08:14:44.775206+00
+102	notifications	0006_auto_20190417_1142	2019-06-13 08:14:44.972344+00
+103	notifications	0007_auto_20190429_1442	2019-06-13 08:14:45.000335+00
+104	notifications	0008_auto_20190502_0415	2019-06-13 08:14:45.089304+00
+105	sessions	0001_initial	2019-06-13 08:14:45.19713+00
+106	sites	0001_initial	2019-06-13 08:14:45.212817+00
+107	sites	0002_alter_domain_unique	2019-06-13 08:14:45.298621+00
+108	vng_api_common	0001_initial	2019-06-13 08:14:45.396426+00
+109	vng_api_common	0002_apicredential	2019-06-13 08:14:45.415285+00
+110	vng_api_common	0003_auto_20190417_1145	2019-06-13 08:14:45.584913+00
+111	vng_api_common	0004_auto_20190517_0903	2019-06-13 08:14:45.684918+00
 \.
 
 
@@ -10900,6 +10913,7 @@ COPY public.django_migrations (id, app, name, applied) FROM stdin;
 
 COPY public.django_session (session_key, session_data, expire_date) FROM stdin;
 7vb3mrvvbvzkm1nlfh1ko8ptm0au9wa7	NzYyMjVlYzM2NTRhNGI1ZmQ1MWM0MjAwZjIwZDk2MjczMGFhZDE4OTp7Il9hdXRoX3VzZXJfaWQiOiIxIiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5kcy5Nb2RlbEJhY2tlbmQiLCJfYXV0aF91c2VyX2hhc2giOiJmNDM3ODg4Y2UyMzg1NWRjZGJkZTNhNGMxNjZhYjdlZDA5NmE0NDM4In0=	2019-06-21 12:16:09.276538+00
+3li9ipzqeibvizcgrnzv3a7t27t9omti	NzYyMjVlYzM2NTRhNGI1ZmQ1MWM0MjAwZjIwZDk2MjczMGFhZDE4OTp7Il9hdXRoX3VzZXJfaWQiOiIxIiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5kcy5Nb2RlbEJhY2tlbmQiLCJfYXV0aF91c2VyX2hhc2giOiJmNDM3ODg4Y2UyMzg1NWRjZGJkZTNhNGMxNjZhYjdlZDA5NmE0NDM4In0=	2019-06-27 10:34:52.681373+00
 \.
 
 
@@ -11013,7 +11027,7 @@ SELECT pg_catalog.setval('public.auth_permission_id_seq', 112, true);
 -- Name: authorizations_applicatie_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.authorizations_applicatie_id_seq', 1, false);
+SELECT pg_catalog.setval('public.authorizations_applicatie_id_seq', 3, true);
 
 
 --
@@ -11041,7 +11055,7 @@ SELECT pg_catalog.setval('public.axes_accessattempt_id_seq', 1, false);
 -- Name: axes_accesslog_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.axes_accesslog_id_seq', 1, true);
+SELECT pg_catalog.setval('public.axes_accesslog_id_seq', 2, true);
 
 
 --
@@ -14510,7 +14524,7 @@ ALTER TABLE ONLY public.vng_api_common_jwtsecret ALTER COLUMN id SET DEFAULT nex
 --
 
 COPY public.accounts_user (id, password, last_login, is_superuser, username, first_name, last_name, email, is_staff, is_active, date_joined) FROM stdin;
-1	pbkdf2_sha256$100000$HA36LCR3y9v1$TvDuzwlOBp/amUibyad58zkW0bh6fRNMY6QZ3n5D2pI=	2019-06-07 13:52:49.866339+00	t	admin				t	t	2019-06-07 13:51:13.876541+00
+1	pbkdf2_sha256$100000$HA36LCR3y9v1$TvDuzwlOBp/amUibyad58zkW0bh6fRNMY6QZ3n5D2pI=	2019-06-13 10:31:59.973445+00	t	admin				t	t	2019-06-07 13:51:13.876541+00
 \.
 
 
@@ -14703,6 +14717,9 @@ COPY public.auth_permission (id, name, content_type_id, codename) FROM stdin;
 --
 
 COPY public.authorizations_applicatie (id, uuid, client_ids, label, heeft_alle_autorisaties) FROM stdin;
+1	b7622797-5f85-40e3-8abd-8f3ff476cf70	{demo}	ac	t
+2	5d83fd8e-395c-4232-9afa-754bd4822ef3	{demo}	nrc	t
+3	533fe769-b1f1-49ff-b9fb-5bd01cfe868b	{demo}	zrc	t
 \.
 
 
@@ -14728,6 +14745,8 @@ COPY public.authorizations_autorisatie (id, component, zaaktype, scopes, max_ver
 --
 
 COPY public.axes_accessattempt (id, user_agent, ip_address, username, trusted, http_accept, path_info, attempt_time, get_data, post_data, failures_since_start) FROM stdin;
+1	Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:67.0) Gecko/20100101 Firefox/67.0	10.20.1.1	admin	f	text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8	/admin/login/	2019-06-13 10:31:46.27527+00	next=/admin/	csrfmiddlewaretoken=AVfUpaKR6DSQSAsy8cWWn5VfHWfKROGw6fg7bEP6MHqizVt9hUiP2aeMbAYNMjnk\nusername=admin\nnext=/admin/	1
+2	Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:67.0) Gecko/20100101 Firefox/67.0	10.164.0.14	admin	f	text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8	/admin/login/	2019-06-13 10:31:52.07288+00	next=/admin/	csrfmiddlewaretoken=LgrBiL7QrY87YFxxCF81prAyBmmy1RlghAsO4fc572GzF0y8LnuU4wT5505BWm24\nusername=admin\nnext=/admin/	1
 \.
 
 
@@ -14736,7 +14755,7 @@ COPY public.axes_accessattempt (id, user_agent, ip_address, username, trusted, h
 --
 
 COPY public.axes_accesslog (id, user_agent, ip_address, username, trusted, http_accept, path_info, attempt_time, logout_time) FROM stdin;
-1	Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:67.0) Gecko/20100101 Firefox/67.0	DB_IP	admin	t	text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8	/admin/login/	2019-06-07 13:52:49.869756+00	\N
+2	Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:67.0) Gecko/20100101 Firefox/67.0	10.164.0.12	admin	t	text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8	/admin/login/	2019-06-13 10:31:59.976462+00	\N
 \.
 
 
@@ -14986,6 +15005,7 @@ COPY public.django_admin_log (id, action_time, object_id, object_repr, action_fl
 7	2019-06-07 14:16:08.567137+00	3	http://BASE_IP:8003/api/v1/	1	[{"added": {}}]	14	1
 8	2019-06-07 14:16:25.575453+00	4	http://BASE_IP:8002/api/v1/	1	[{"added": {}}]	14	1
 9	2019-06-07 14:16:38.266133+00	5	http://BASE_IP:8001/api/v1/	1	[{"added": {}}]	14	1
+10	2019-06-13 10:32:31.273985+00	1	demo	1	[{"added": {}}]	13	1
 \.
 
 
@@ -15042,143 +15062,143 @@ COPY public.django_content_type (id, app_label, model) FROM stdin;
 --
 
 COPY public.django_migrations (id, app, name, applied) FROM stdin;
-1	contenttypes	0001_initial	2019-06-07 12:08:25.392857+00
-2	contenttypes	0002_remove_content_type_name	2019-06-07 12:08:25.591152+00
-3	auth	0001_initial	2019-06-07 12:08:26.76771+00
-4	auth	0002_alter_permission_name_max_length	2019-06-07 12:08:26.890633+00
-5	auth	0003_alter_user_email_max_length	2019-06-07 12:08:26.904259+00
-6	auth	0004_alter_user_username_opts	2019-06-07 12:08:27.009802+00
-7	auth	0005_alter_user_last_login_null	2019-06-07 12:08:27.096759+00
-8	auth	0006_require_contenttypes_0002	2019-06-07 12:08:27.209711+00
-9	auth	0007_alter_validators_add_error_messages	2019-06-07 12:08:27.263936+00
-10	auth	0008_alter_user_username_max_length	2019-06-07 12:08:27.304524+00
-11	accounts	0001_initial	2019-06-07 12:08:28.399801+00
-12	admin	0001_initial	2019-06-07 12:08:28.886127+00
-13	admin	0002_logentry_remove_auto_add	2019-06-07 12:08:28.984491+00
-14	admin_index	0001_initial	2019-06-07 12:08:29.993816+00
-15	admin_index	0002_auto_20170802_1754	2019-06-07 12:08:30.114213+00
-16	auth	0009_alter_user_last_name_max_length	2019-06-07 12:08:30.262987+00
-17	authorizations	0001_initial	2019-06-07 12:08:30.708948+00
-18	authorizations	0002_authorizationsconfig	2019-06-07 12:08:30.907395+00
-19	authorizations	0003_auto_20190502_0409	2019-06-07 12:08:31.007809+00
-20	authorizations	0004_auto_20190503_0941	2019-06-07 12:08:31.16912+00
-21	authorizations	0005_auto_20190506_0842	2019-06-07 12:08:31.279896+00
-22	authorizations	0006_auto_20190506_0901	2019-06-07 12:08:32.071811+00
-23	authorizations	0007_auto_20190506_1212	2019-06-07 12:08:32.198992+00
-24	axes	0001_initial	2019-06-07 12:08:32.665918+00
-25	axes	0002_auto_20151217_2044	2019-06-07 12:08:33.282674+00
-26	axes	0003_auto_20160322_0929	2019-06-07 12:08:33.578895+00
-27	datamodel	0001_initial	2019-06-07 12:08:57.333181+00
-28	datamodel	0002_auto_20180130_1059	2019-06-07 12:08:59.8731+00
-29	datamodel	0003_auto_20180221_1119	2019-06-07 12:09:09.79439+00
-30	datamodel	0004_auto_20180226_1153	2019-06-07 12:09:10.466939+00
-31	datamodel	0005_auto_20180517_1455	2019-06-07 12:09:26.675855+00
-32	datamodel	0006_migrate_stuf_date_to_date	2019-06-07 12:09:27.892121+00
-33	datamodel	0007_auto_20180517_1544	2019-06-07 12:09:39.286621+00
-34	datamodel	0008_auto_20180517_1547	2019-06-07 12:09:49.589484+00
-35	datamodel	0009_auto_20180517_1642	2019-06-07 12:09:53.775881+00
-36	datamodel	0010_auto_20180618_1042	2019-06-07 12:09:54.887388+00
-37	datamodel	0011_auto_20180618_1044	2019-06-07 12:09:55.480766+00
-38	datamodel	0012_auto_20180618_1102	2019-06-07 12:09:56.673928+00
-39	datamodel	0013_auto_20180709_1638	2019-06-07 12:09:57.177756+00
-40	datamodel	0014_auto_20180724_1433	2019-06-07 12:10:01.680271+00
-41	datamodel	0015_auto_20180724_1434	2019-06-07 12:10:02.490538+00
-42	datamodel	0016_auto_20180725_1418	2019-06-07 12:10:03.979699+00
-43	datamodel	0017_auto_20180730_1637	2019-06-07 12:10:04.679191+00
-44	datamodel	0018_auto_20180730_1637	2019-06-07 12:10:05.384284+00
-45	datamodel	0019_auto_20180809_1745	2019-06-07 12:10:07.690124+00
-46	datamodel	0020_auto_20180809_1747	2019-06-07 12:10:08.167396+00
-47	datamodel	0021_mogelijkebetrokkene	2019-06-07 12:10:08.677553+00
-48	datamodel	0022_auto_20180813_1211	2019-06-07 12:10:09.087403+00
-49	datamodel	0023_auto_20180813_1211	2019-06-07 12:10:09.875987+00
-50	datamodel	0024_auto_20180813_1213	2019-06-07 12:10:10.379883+00
-51	datamodel	0025_informatieobjecttype_uuid	2019-06-07 12:10:13.990494+00
-52	datamodel	0026_auto_20180816_1658	2019-06-07 12:10:14.373689+00
-53	datamodel	0027_auto_20180906_1748	2019-06-07 12:10:17.876383+00
-54	datamodel	0028_auto_20180906_1800	2019-06-07 12:10:23.568127+00
-55	datamodel	0029_besluittype_uuid	2019-06-07 12:10:24.082506+00
-56	datamodel	0030_set_besluittype_uuid	2019-06-07 12:10:27.877193+00
-57	datamodel	0031_auto_20180911_1020	2019-06-07 12:10:28.380664+00
-58	datamodel	0032_auto_20181029_1037	2019-06-07 12:10:29.279567+00
-59	datamodel	0033_auto_20181203_1441	2019-06-07 12:10:29.767577+00
-60	datamodel	0034_auto_20181211_1725	2019-06-07 12:10:31.18184+00
-61	datamodel	0035_auto_20181211_1746	2019-06-07 12:10:34.282585+00
-62	datamodel	0036_auto_20181227_1548	2019-06-07 12:10:34.667725+00
-63	datamodel	0037_auto_20190108_1640	2019-06-07 12:10:35.082421+00
-64	datamodel	0038_auto_20190108_1643	2019-06-07 12:10:35.580513+00
-65	datamodel	0039_auto_20190108_1655	2019-06-07 12:10:35.976265+00
-66	datamodel	0040_auto_20190108_1723	2019-06-07 12:10:36.468911+00
-67	datamodel	0041_auto_20190108_1733	2019-06-07 12:10:36.866958+00
-68	datamodel	0042_auto_20190108_1742	2019-06-07 12:10:37.281073+00
-69	datamodel	0043_auto_20190108_1750	2019-06-07 12:10:37.869991+00
-70	datamodel	0044_auto_20190108_1801	2019-06-07 12:10:38.283068+00
-71	datamodel	0045_auto_20190114_1246	2019-06-07 12:10:42.770565+00
-72	datamodel	0046_ja_nee_to_boolean	2019-06-07 12:10:44.669099+00
-73	datamodel	0047_auto_20190114_1250	2019-06-07 12:10:45.072645+00
-74	datamodel	0048_auto_20190114_1254	2019-06-07 12:10:46.262801+00
-75	datamodel	0049_auto_20190114_1546	2019-06-07 12:10:46.970446+00
-76	datamodel	0050_convert_verlengingstermijn	2019-06-07 12:10:47.766727+00
-77	datamodel	0051_remove_zaaktype_old_verlengingstermijn	2019-06-07 12:10:48.165195+00
-78	datamodel	0052_auto_20190114_1614	2019-06-07 12:10:48.468652+00
-79	datamodel	0053_auto_20190114_1615	2019-06-07 12:10:48.775532+00
-80	datamodel	0054_auto_20190114_1616	2019-06-07 12:10:49.167715+00
-81	datamodel	0055_auto_20190114_1641	2019-06-07 12:10:49.472514+00
-82	datamodel	0056_auto_20190114_1654	2019-06-07 12:10:49.864866+00
-83	datamodel	0057_auto_20190115_1028	2019-06-07 12:10:53.461759+00
-84	datamodel	0058_auto_20190115_1032	2019-06-07 12:10:54.170516+00
-85	datamodel	0059_migrate_referentieproces_data	2019-06-07 12:10:54.861327+00
-86	datamodel	0060_remove_zaaktype_referentieproces_old	2019-06-07 12:10:55.361509+00
-87	datamodel	0061_delete_referentieproces	2019-06-07 12:10:55.373235+00
-88	datamodel	0062_auto_20190115_1135	2019-06-07 12:10:55.568538+00
-89	datamodel	0063_auto_20190115_1212	2019-06-07 12:10:56.170726+00
-90	datamodel	0064_auto_20190115_1301	2019-06-07 12:10:56.966064+00
-91	datamodel	0065_delete_productdienst	2019-06-07 12:10:56.975961+00
-92	datamodel	0066_zaaktype_selectielijst_procestype	2019-06-07 12:10:57.272872+00
-93	datamodel	0067_auto_20190115_1645	2019-06-07 12:10:57.67344+00
-94	datamodel	0068_auto_20190115_1651	2019-06-07 12:10:58.881514+00
-95	datamodel	0069_migrate_zaaktyperelaties	2019-06-07 12:10:59.561225+00
-96	datamodel	0070_remove_zaaktypenrelatie_zaaktype_naar	2019-06-07 12:10:59.970979+00
-97	datamodel	0071_auto_20190117_1037	2019-06-07 12:11:01.171837+00
-98	datamodel	0072_set_uuid_ziot	2019-06-07 12:11:01.770155+00
-99	datamodel	0073_auto_20190117_1039	2019-06-07 12:11:05.562177+00
-100	datamodel	0074_auto_20190129_1050	2019-06-07 12:11:05.866053+00
-101	datamodel	0075_auto_20190129_1103	2019-06-07 12:11:06.263834+00
-102	datamodel	0076_auto_20190129_1113	2019-06-07 12:11:06.678875+00
-103	datamodel	0077_auto_20190220_1147	2019-06-07 12:11:07.766124+00
-104	datamodel	0078_auto_20190220_1148	2019-06-07 12:11:08.165023+00
-105	datamodel	0079_auto_20190220_1307	2019-06-07 12:11:09.679429+00
-106	datamodel	0080_resultaattype__omschrijving_generiek	2019-06-07 12:11:10.072302+00
-107	datamodel	0081_auto_20190220_1436	2019-06-07 12:11:13.367737+00
-108	datamodel	0082_auto_20190220_1443	2019-06-07 12:11:13.667309+00
-109	datamodel	0083_auto_20190220_1523	2019-06-07 12:11:17.374579+00
-110	datamodel	0084_auto_20190220_1817	2019-06-07 12:11:18.568394+00
-111	datamodel	0085_auto_20190221_1232	2019-06-07 12:11:20.067826+00
-112	datamodel	0086_auto_20190225_1450	2019-06-07 12:11:20.769662+00
-113	datamodel	0087_auto_20190225_1450	2019-06-07 12:11:21.172656+00
-114	datamodel	0088_resultaattype_brondatum_archiefprocedure_procestermijn	2019-06-07 12:11:21.571278+00
-115	datamodel	0089_auto_20190226_1302	2019-06-07 12:11:21.968209+00
-116	datamodel	0090_auto_20190226_1305	2019-06-07 12:11:23.070877+00
-117	datamodel	0091_auto_20190226_1416	2019-06-07 12:11:23.47017+00
-118	datamodel	0092_auto_20190226_1602	2019-06-07 12:11:24.265165+00
-119	datamodel	0093_auto_20190305_1555	2019-06-07 12:11:29.665994+00
-120	datamodel	0094_auto_20190305_1557	2019-06-07 12:11:30.065685+00
-121	datamodel	0093_auto_20190304_1620	2019-06-07 12:11:31.464151+00
-122	datamodel	0095_merge_20190327_1650	2019-06-07 12:11:31.468031+00
-123	notifications	0001_initial	2019-06-07 12:11:31.668402+00
-124	notifications	0002_subscription__subscription	2019-06-07 12:11:31.681061+00
-125	notifications	0003_auto_20190319_1048	2019-06-07 12:11:32.075984+00
-126	notifications	0004_auto_20190325_1313	2019-06-07 12:11:32.161185+00
-127	notifications	0005_fix_default_nrc	2019-06-07 12:11:32.672195+00
-128	notifications	0006_auto_20190417_1142	2019-06-07 12:11:32.966806+00
-129	notifications	0007_auto_20190429_1442	2019-06-07 12:11:33.062674+00
-130	notifications	0008_auto_20190502_0415	2019-06-07 12:11:33.072612+00
-131	sessions	0001_initial	2019-06-07 12:11:33.181649+00
-132	sites	0001_initial	2019-06-07 12:11:33.269258+00
-133	sites	0002_alter_domain_unique	2019-06-07 12:11:33.371898+00
-134	vng_api_common	0001_initial	2019-06-07 12:11:33.391544+00
-135	vng_api_common	0002_apicredential	2019-06-07 12:11:33.483167+00
-136	vng_api_common	0003_auto_20190417_1145	2019-06-07 12:11:33.66649+00
-137	vng_api_common	0004_auto_20190517_0903	2019-06-07 12:11:33.770165+00
+1	contenttypes	0001_initial	2019-06-13 08:13:58.002373+00
+2	contenttypes	0002_remove_content_type_name	2019-06-13 08:13:58.20174+00
+3	auth	0001_initial	2019-06-13 08:13:59.206287+00
+4	auth	0002_alter_permission_name_max_length	2019-06-13 08:13:59.307075+00
+5	auth	0003_alter_user_email_max_length	2019-06-13 08:13:59.402682+00
+6	auth	0004_alter_user_username_opts	2019-06-13 08:13:59.509926+00
+7	auth	0005_alter_user_last_login_null	2019-06-13 08:13:59.598842+00
+8	auth	0006_require_contenttypes_0002	2019-06-13 08:13:59.60825+00
+9	auth	0007_alter_validators_add_error_messages	2019-06-13 08:13:59.734515+00
+10	auth	0008_alter_user_username_max_length	2019-06-13 08:13:59.799206+00
+11	accounts	0001_initial	2019-06-13 08:14:00.731128+00
+12	admin	0001_initial	2019-06-13 08:14:01.204138+00
+13	admin	0002_logentry_remove_auto_add	2019-06-13 08:14:01.380003+00
+14	admin_index	0001_initial	2019-06-13 08:14:02.197326+00
+15	admin_index	0002_auto_20170802_1754	2019-06-13 08:14:02.307005+00
+16	auth	0009_alter_user_last_name_max_length	2019-06-13 08:14:02.479303+00
+17	authorizations	0001_initial	2019-06-13 08:14:02.899229+00
+18	authorizations	0002_authorizationsconfig	2019-06-13 08:14:03.129647+00
+19	authorizations	0003_auto_20190502_0409	2019-06-13 08:14:03.197877+00
+20	authorizations	0004_auto_20190503_0941	2019-06-13 08:14:03.379054+00
+21	authorizations	0005_auto_20190506_0842	2019-06-13 08:14:03.485521+00
+22	authorizations	0006_auto_20190506_0901	2019-06-13 08:14:04.210842+00
+23	authorizations	0007_auto_20190506_1212	2019-06-13 08:14:04.33209+00
+24	axes	0001_initial	2019-06-13 08:14:04.696655+00
+25	axes	0002_auto_20151217_2044	2019-06-13 08:14:05.310911+00
+26	axes	0003_auto_20160322_0929	2019-06-13 08:14:05.724041+00
+27	datamodel	0001_initial	2019-06-13 08:14:25.328089+00
+28	datamodel	0002_auto_20180130_1059	2019-06-13 08:14:27.106286+00
+29	datamodel	0003_auto_20180221_1119	2019-06-13 08:14:35.292242+00
+30	datamodel	0004_auto_20180226_1153	2019-06-13 08:14:35.797467+00
+31	datamodel	0005_auto_20180517_1455	2019-06-13 08:14:49.399667+00
+32	datamodel	0006_migrate_stuf_date_to_date	2019-06-13 08:14:50.392995+00
+33	datamodel	0007_auto_20180517_1544	2019-06-13 08:14:59.270808+00
+34	datamodel	0008_auto_20180517_1547	2019-06-13 08:15:08.290544+00
+35	datamodel	0009_auto_20180517_1642	2019-06-13 08:15:11.791661+00
+36	datamodel	0010_auto_20180618_1042	2019-06-13 08:15:12.888675+00
+37	datamodel	0011_auto_20180618_1044	2019-06-13 08:15:13.2926+00
+38	datamodel	0012_auto_20180618_1102	2019-06-13 08:15:14.486399+00
+39	datamodel	0013_auto_20180709_1638	2019-06-13 08:15:14.999102+00
+40	datamodel	0014_auto_20180724_1433	2019-06-13 08:15:18.991969+00
+41	datamodel	0015_auto_20180724_1434	2019-06-13 08:15:19.690387+00
+42	datamodel	0016_auto_20180725_1418	2019-06-13 08:15:20.890763+00
+43	datamodel	0017_auto_20180730_1637	2019-06-13 08:15:21.591264+00
+44	datamodel	0018_auto_20180730_1637	2019-06-13 08:15:22.185238+00
+45	datamodel	0019_auto_20180809_1745	2019-06-13 08:15:24.29973+00
+46	datamodel	0020_auto_20180809_1747	2019-06-13 08:15:24.689932+00
+47	datamodel	0021_mogelijkebetrokkene	2019-06-13 08:15:25.199371+00
+48	datamodel	0022_auto_20180813_1211	2019-06-13 08:15:25.675125+00
+49	datamodel	0023_auto_20180813_1211	2019-06-13 08:15:26.28689+00
+50	datamodel	0024_auto_20180813_1213	2019-06-13 08:15:29.886503+00
+51	datamodel	0025_informatieobjecttype_uuid	2019-06-13 08:15:30.190729+00
+52	datamodel	0026_auto_20180816_1658	2019-06-13 08:15:30.48748+00
+53	datamodel	0027_auto_20180906_1748	2019-06-13 08:15:33.190561+00
+54	datamodel	0028_auto_20180906_1800	2019-06-13 08:15:37.79994+00
+55	datamodel	0029_besluittype_uuid	2019-06-13 08:15:40.883109+00
+56	datamodel	0030_set_besluittype_uuid	2019-06-13 08:15:41.481455+00
+57	datamodel	0031_auto_20180911_1020	2019-06-13 08:15:41.794019+00
+58	datamodel	0032_auto_20181029_1037	2019-06-13 08:15:42.578013+00
+59	datamodel	0033_auto_20181203_1441	2019-06-13 08:15:42.894166+00
+60	datamodel	0034_auto_20181211_1725	2019-06-13 08:15:44.077179+00
+61	datamodel	0035_auto_20181211_1746	2019-06-13 08:15:46.183139+00
+62	datamodel	0036_auto_20181227_1548	2019-06-13 08:15:46.575469+00
+63	datamodel	0037_auto_20190108_1640	2019-06-13 08:15:46.888669+00
+64	datamodel	0038_auto_20190108_1643	2019-06-13 08:15:47.28637+00
+65	datamodel	0039_auto_20190108_1655	2019-06-13 08:15:47.681415+00
+66	datamodel	0040_auto_20190108_1723	2019-06-13 08:15:47.98825+00
+67	datamodel	0041_auto_20190108_1733	2019-06-13 08:15:50.873493+00
+68	datamodel	0042_auto_20190108_1742	2019-06-13 08:15:51.184839+00
+69	datamodel	0043_auto_20190108_1750	2019-06-13 08:15:51.577172+00
+70	datamodel	0044_auto_20190108_1801	2019-06-13 08:15:51.877304+00
+71	datamodel	0045_auto_20190114_1246	2019-06-13 08:15:52.89037+00
+72	datamodel	0046_ja_nee_to_boolean	2019-06-13 08:15:54.78472+00
+73	datamodel	0047_auto_20190114_1250	2019-06-13 08:15:55.177886+00
+74	datamodel	0048_auto_20190114_1254	2019-06-13 08:15:56.209448+00
+75	datamodel	0049_auto_20190114_1546	2019-06-13 08:15:56.884615+00
+76	datamodel	0050_convert_verlengingstermijn	2019-06-13 08:15:57.570747+00
+77	datamodel	0051_remove_zaaktype_old_verlengingstermijn	2019-06-13 08:15:57.880804+00
+78	datamodel	0052_auto_20190114_1614	2019-06-13 08:15:58.269479+00
+79	datamodel	0053_auto_20190114_1615	2019-06-13 08:15:58.579654+00
+80	datamodel	0054_auto_20190114_1616	2019-06-13 08:16:01.47692+00
+81	datamodel	0055_auto_20190114_1641	2019-06-13 08:16:01.780075+00
+82	datamodel	0056_auto_20190114_1654	2019-06-13 08:16:02.078641+00
+83	datamodel	0057_auto_20190115_1028	2019-06-13 08:16:02.482322+00
+84	datamodel	0058_auto_20190115_1032	2019-06-13 08:16:03.174986+00
+85	datamodel	0059_migrate_referentieproces_data	2019-06-13 08:16:03.769522+00
+86	datamodel	0060_remove_zaaktype_referentieproces_old	2019-06-13 08:16:04.177502+00
+87	datamodel	0061_delete_referentieproces	2019-06-13 08:16:04.185386+00
+88	datamodel	0062_auto_20190115_1135	2019-06-13 08:16:04.375499+00
+89	datamodel	0063_auto_20190115_1212	2019-06-13 08:16:04.881327+00
+90	datamodel	0064_auto_20190115_1301	2019-06-13 08:16:05.579129+00
+91	datamodel	0065_delete_productdienst	2019-06-13 08:16:05.673207+00
+92	datamodel	0066_zaaktype_selectielijst_procestype	2019-06-13 08:16:05.97637+00
+93	datamodel	0067_auto_20190115_1645	2019-06-13 08:16:06.279666+00
+94	datamodel	0068_auto_20190115_1651	2019-06-13 08:16:07.289569+00
+95	datamodel	0069_migrate_zaaktyperelaties	2019-06-13 08:16:07.877528+00
+96	datamodel	0070_remove_zaaktypenrelatie_zaaktype_naar	2019-06-13 08:16:08.280463+00
+97	datamodel	0071_auto_20190117_1037	2019-06-13 08:16:12.379378+00
+98	datamodel	0072_set_uuid_ziot	2019-06-13 08:16:12.970653+00
+99	datamodel	0073_auto_20190117_1039	2019-06-13 08:16:13.283418+00
+100	datamodel	0074_auto_20190129_1050	2019-06-13 08:16:13.672725+00
+101	datamodel	0075_auto_20190129_1103	2019-06-13 08:16:13.973383+00
+102	datamodel	0076_auto_20190129_1113	2019-06-13 08:16:14.295346+00
+103	datamodel	0077_auto_20190220_1147	2019-06-13 08:16:15.371182+00
+104	datamodel	0078_auto_20190220_1148	2019-06-13 08:16:15.679521+00
+105	datamodel	0079_auto_20190220_1307	2019-06-13 08:16:17.082154+00
+106	datamodel	0080_resultaattype__omschrijving_generiek	2019-06-13 08:16:17.381283+00
+107	datamodel	0081_auto_20190220_1436	2019-06-13 08:16:23.173374+00
+108	datamodel	0082_auto_20190220_1443	2019-06-13 08:16:23.474457+00
+109	datamodel	0083_auto_20190220_1523	2019-06-13 08:16:23.877137+00
+110	datamodel	0084_auto_20190220_1817	2019-06-13 08:16:24.781283+00
+111	datamodel	0085_auto_20190221_1232	2019-06-13 08:16:26.172459+00
+112	datamodel	0086_auto_20190225_1450	2019-06-13 08:16:26.775686+00
+113	datamodel	0087_auto_20190225_1450	2019-06-13 08:16:27.078752+00
+114	datamodel	0088_resultaattype_brondatum_archiefprocedure_procestermijn	2019-06-13 08:16:27.380671+00
+115	datamodel	0089_auto_20190226_1302	2019-06-13 08:16:27.773413+00
+116	datamodel	0090_auto_20190226_1305	2019-06-13 08:16:28.677651+00
+117	datamodel	0091_auto_20190226_1416	2019-06-13 08:16:28.98073+00
+118	datamodel	0092_auto_20190226_1602	2019-06-13 08:16:31.978757+00
+119	datamodel	0093_auto_20190305_1555	2019-06-13 08:16:33.975796+00
+120	datamodel	0094_auto_20190305_1557	2019-06-13 08:16:34.276045+00
+121	datamodel	0093_auto_20190304_1620	2019-06-13 08:16:35.475874+00
+122	datamodel	0095_merge_20190327_1650	2019-06-13 08:16:35.47876+00
+123	notifications	0001_initial	2019-06-13 08:16:35.676546+00
+124	notifications	0002_subscription__subscription	2019-06-13 08:16:35.772594+00
+125	notifications	0003_auto_20190319_1048	2019-06-13 08:16:35.981382+00
+126	notifications	0004_auto_20190325_1313	2019-06-13 08:16:36.072777+00
+127	notifications	0005_fix_default_nrc	2019-06-13 08:16:36.57903+00
+128	notifications	0006_auto_20190417_1142	2019-06-13 08:16:36.779075+00
+129	notifications	0007_auto_20190429_1442	2019-06-13 08:16:36.874555+00
+130	notifications	0008_auto_20190502_0415	2019-06-13 08:16:36.971558+00
+131	sessions	0001_initial	2019-06-13 08:16:36.991294+00
+132	sites	0001_initial	2019-06-13 08:16:37.07779+00
+133	sites	0002_alter_domain_unique	2019-06-13 08:16:37.171846+00
+134	vng_api_common	0001_initial	2019-06-13 08:16:37.187846+00
+135	vng_api_common	0002_apicredential	2019-06-13 08:16:37.28285+00
+136	vng_api_common	0003_auto_20190417_1145	2019-06-13 08:16:37.379266+00
+137	vng_api_common	0004_auto_20190517_0903	2019-06-13 08:16:37.481034+00
 \.
 
 
@@ -15188,6 +15208,7 @@ COPY public.django_migrations (id, app, name, applied) FROM stdin;
 
 COPY public.django_session (session_key, session_data, expire_date) FROM stdin;
 lila61jrrj7kdnwy6cpnzscq0kfklunz	MjcxZWUzNzM2MzczNjUwNjMyNDU0ZDlmNmU2OTNmY2E0M2NjZTI0MDp7Il9hdXRoX3VzZXJfaWQiOiIxIiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5kcy5Nb2RlbEJhY2tlbmQiLCJfYXV0aF91c2VyX2hhc2giOiIxMGQzZjlhM2UxNTI4MGEyNjZlMDkyYTc0OTVjOTU0YmJiMjk5MDE1In0=	2019-06-21 13:52:49.963337+00
+8q5djb7dt38sely8skwrmcp3mx3f6o39	MjcxZWUzNzM2MzczNjUwNjMyNDU0ZDlmNmU2OTNmY2E0M2NjZTI0MDp7Il9hdXRoX3VzZXJfaWQiOiIxIiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5kcy5Nb2RlbEJhY2tlbmQiLCJfYXV0aF91c2VyX2hhc2giOiIxMGQzZjlhM2UxNTI4MGEyNjZlMDkyYTc0OTVjOTU0YmJiMjk5MDE1In0=	2019-06-27 10:31:59.979807+00
 \.
 
 
@@ -15236,6 +15257,7 @@ COPY public.vng_api_common_apicredential (id, api_root, client_id, secret, label
 --
 
 COPY public.vng_api_common_jwtsecret (id, identifier, secret) FROM stdin;
+1	demo	demo
 \.
 
 
@@ -15306,7 +15328,7 @@ SELECT pg_catalog.setval('public.auth_permission_id_seq', 120, true);
 -- Name: authorizations_applicatie_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.authorizations_applicatie_id_seq', 1, false);
+SELECT pg_catalog.setval('public.authorizations_applicatie_id_seq', 3, true);
 
 
 --
@@ -15327,14 +15349,14 @@ SELECT pg_catalog.setval('public.authorizations_autorisatie_id_seq', 1, false);
 -- Name: axes_accessattempt_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.axes_accessattempt_id_seq', 1, false);
+SELECT pg_catalog.setval('public.axes_accessattempt_id_seq', 2, true);
 
 
 --
 -- Name: axes_accesslog_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.axes_accesslog_id_seq', 1, true);
+SELECT pg_catalog.setval('public.axes_accesslog_id_seq', 2, true);
 
 
 --
@@ -15544,7 +15566,7 @@ SELECT pg_catalog.setval('public.datamodel_zaaktypenrelatie_id_seq', 1, false);
 -- Name: django_admin_log_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.django_admin_log_id_seq', 9, true);
+SELECT pg_catalog.setval('public.django_admin_log_id_seq', 10, true);
 
 
 --
@@ -15593,7 +15615,7 @@ SELECT pg_catalog.setval('public.vng_api_common_apicredential_id_seq', 5, true);
 -- Name: vng_api_common_jwtsecret_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.vng_api_common_jwtsecret_id_seq', 1, false);
+SELECT pg_catalog.setval('public.vng_api_common_jwtsecret_id_seq', 1, true);
 
 
 --
@@ -17372,4 +17394,3 @@ ALTER TABLE ONLY public.notifications_subscription
 --
 -- PostgreSQL database cluster dump complete
 --
-

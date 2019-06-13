@@ -266,7 +266,7 @@ class RunTest(CSRFExemptMixin, View):
         whitelist = ['host', 'cookie', 'content-length']
         request_headers = {}
         for header, value in request.headers.items():
-            if header.lower() not in whitelist:
+            if header.lower() in whitelist:
                 request_headers[header] = value
 
         if session.session_type.authentication == choices.AuthenticationChoices.jwt:

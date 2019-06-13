@@ -139,6 +139,10 @@ def ZGW_deploy(session):
         containers=containers
     ).execute()
     ip = external_ip_pooling(k8s, session, max_percentage=40)
+    if ip is None:
+        update_session_status(session, 'Impossible to deploy successfully, IP address not allocated')
+        session.status = choices.StatusChoices.error_deploy
+        session.save()
     for ex in exposed_urls:
         ex.docker_url = ip
         ex.save()
@@ -174,7 +178,7 @@ def ZGW_deploy(session):
     session.save()
 
 
-def external_ip_pooling(k8s, session, n_trial=10, purge=True, percentage=36, max_percentage=99):
+def external_ip_pooling(k8s, session, n_trial=15, purge=True, percentage=36, max_percentage=99):
     for i in range(n_trial):
         time.sleep(10)
         res, message = k8s.get_pod_status_deployment()

@@ -169,7 +169,7 @@ class K8S():
     def make_aware(self):
         status = self.get_pod_status()
         self.pod_name = status['metadata']['name']
-        self.deployment = status['metadata']['ownerReferences']['name']
+        self.deployment = status['metadata']['ownerReferences'][0]['name']
 
     def exec(self, commands):
         self.make_aware()

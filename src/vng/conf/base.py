@@ -195,7 +195,7 @@ LOCALE_PATHS = (
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = '/atvstatic/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
@@ -216,7 +216,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 POSTMAN_ROOT = os.path.join(BASE_DIR, 'postman_collection')
 
-MEDIA_URL = '/media/'
+MEDIA_URL = '/atvmedia/'
 
 FIXTURE_DIRS = (
     os.path.join(DJANGO_PROJECT_DIR, 'fixtures'),

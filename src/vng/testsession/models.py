@@ -3,6 +3,8 @@ import uuid
 import re
 import time
 
+from tinymce.models import HTMLField
+
 from django.conf import settings
 from django.core.validators import RegexValidator
 from django.core.files import File
@@ -27,7 +29,7 @@ class SessionType(models.Model):
     application = models.CharField('Applicatie', max_length=200, null=True)
     version = models.CharField('Versie', max_length=200, null=True)
     authentication = models.CharField(max_length=20, default=choices.AuthenticationChoices.no_auth, choices=choices.AuthenticationChoices.choices)
-    description = models.TextField()
+    description = HTMLField()
     client_id = models.TextField(default=None, null=True, blank=True)
     secret = models.TextField(default=None, null=True, blank=True)
     header = models.TextField(default=None, null=True, blank=True)

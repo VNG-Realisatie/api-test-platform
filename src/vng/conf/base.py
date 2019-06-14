@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'mptt',
     'drf_yasg',
     'hijack',
+    'tinymce',
     'compat',  # Part of hijack
     'hijack_admin',
     'easy_thumbnails',
@@ -75,6 +76,13 @@ INSTALLED_APPS = [
     'rest_auth',
     'rest_framework.authtoken',
 ]
+
+TINYMCE_DEFAULT_CONFIG = {
+    'plugins': "table,spellchecker,paste,searchreplace",
+    'theme': "advanced",
+    'cleanup_on_startup': True,
+    'custom_undo_redo_levels': 10,
+}
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [

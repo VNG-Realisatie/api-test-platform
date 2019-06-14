@@ -21,7 +21,7 @@
                     <div class="card-body">
                         <h5 class="card-title">Sessie type {{ session.session_type.name }}</h5>
                         <p class="card-text">
-                            Snippet: {{ session.session_type.description }}
+                            {{ session.session_type.description|safe }}
                         </p>
                     </div>
                 </div>

@@ -595,7 +595,6 @@ class TestLogNewman(WebTest):
 
         http_host = get_subdomain(call['exposedurl_set'][0]['subdomain'])
         call = self.app.get(url, extra_environ={'HTTP_HOST': '{}-example.com'.format(http_host)})
-        call = get_object(call.body)
 
         call = self.app.get(reverse('apiv1session:stop_session', kwargs={'pk': session_id}))
         call = get_object(call.body)
@@ -749,7 +748,7 @@ class TestRewriteUrl(WebTest):
         url = rt.build_url(self.eu, '')
         self.assertEqual(url, 'http://www.dummy.com/path/sub/a')
 
-        
+
 class TestPostmanRun(WebTest):
 
     def setUp(self):
@@ -766,7 +765,7 @@ class TestPostmanRun(WebTest):
         run_tests(self.session.id)
         self.assertTrue(ExposedUrl.objects.get(id=self.eu.id).test_session.is_success_test())
 
-        
+
 class TestMultipleParams(WebTest):
     csrf_checks = False
 
@@ -798,4 +797,3 @@ class TestMultipleParams(WebTest):
         report2 = Report.objects.filter(scenario_case=self.sc2).count()
         self.assertEqual(report1, 1)
         self.assertEqual(report2, 1)
-

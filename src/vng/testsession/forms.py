@@ -1,11 +1,22 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
-from .models import SessionType
+from .models import SessionType, Session
 from ..utils.choices import AuthenticationChoices
 
 
-class SessionTypeForm(forms.ModelForm):
+class CustomModelChoiceField(forms.ModelChoiceField):
+
+    def label_from_instance(self, obj):
+        """
+        Convert objects into strings and generate the labels for the choices
+        presented by this object. Subclasses can override this method to
+        customize the display of the choices.
+        """
+        return str(obj)
+
+
+class SessionTypeFormAdmin(forms.ModelForm):
 
     class Meta:
         model = SessionType
@@ -20,3 +31,12 @@ class SessionTypeForm(forms.ModelForm):
             if not cleaned_data['header']:
                 raise forms.ValidationError(_('Header must be provided with this authentication method'))
         return cleaned_data
+
+
+class SessionForm(forms.ModelForm):
+
+    session_type = CustomModelChoiceField(SessionType.objects.all(), widget=forms.RadioSelect, empty_label=None)
+
+    class Meta:
+        model = Session
+        fields = ['session_type', 'sandbox']

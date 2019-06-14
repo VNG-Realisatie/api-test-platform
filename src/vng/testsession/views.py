@@ -4,7 +4,7 @@ import logging
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, HttpResponseRedirect
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import FormView
 from django.views.generic.list import ListView
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
@@ -17,6 +17,7 @@ from vng.testsession.models import (
 )
 
 from .task import run_tests, bootstrap_session, stop_session
+from .forms import SessionForm
 from ..utils import choices
 from ..utils.views import (
     ListAppendView, OwnerMultipleObjects, OwnerSingleObject, PDFGenerator
@@ -50,14 +51,10 @@ class SessionListView(LoginRequiredMixin, ListView):
         return Session.objects.filter(user=self.request.user).order_by('-started')
 
 
-class SessionForm(CreateView):
+class SessionFormView(FormView):
 
-    model = Session
     template_name = 'testsession/session-form.html'
-    fields = ['session_type', 'sandbox']
-
-    def get_success_url(self):
-        return reverse('testsession:sessions')
+    form_class = SessionForm
 
     def form_valid(self, form):
         form.instance.user = self.request.user

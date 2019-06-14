@@ -3,7 +3,7 @@ from django.contrib import admin
 
 import vng.testsession.models as model
 
-from .forms import SessionTypeForm
+from .forms import SessionTypeFormAdmin
 
 
 class VNGEndpointInline(admin.TabularInline):
@@ -47,7 +47,7 @@ class SessionTypeAdmin(admin.ModelAdmin):
     search_fields = ['name']
 
     inlines = [VNGEndpointInline, InjectHeaderInline]
-    form = SessionTypeForm
+    form = SessionTypeFormAdmin
 
 
 @admin.register(model.Session)

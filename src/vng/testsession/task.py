@@ -133,7 +133,8 @@ def bootstrap_session(session_pk):
         session.save()
     except Exception as e:
         logger.exception(e)
-        session.delete()
+        session.status = choices.StatusChoices.error_deploy
+        update_session_status(session, 'Impossible to deploy successfully, all the resources are being used')
 
 
 @app.task

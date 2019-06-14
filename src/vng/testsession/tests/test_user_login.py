@@ -37,7 +37,7 @@ class SessionCreation(WebTest):
     def test2(self):
         call = self.app.get(reverse('testsession:session_create'), user='admin')
         form = call.forms[0]
-        form['session_type'].force_value(value='1')
+        form['session_type'] = '1'
         form.submit()
         call = self.app.get('/', user='admin')
         assert 'no session' not in str(call.body)

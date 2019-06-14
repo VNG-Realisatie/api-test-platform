@@ -58,6 +58,9 @@ class SessionFormView(FormView):
     template_name = 'testsession/session-form.html'
     form_class = SessionForm
 
+    def get_success_url(self):
+        return reverse('testsession:sessions')
+
     def form_valid(self, form):
         form.instance.user = self.request.user
         form.instance.started = timezone.now()

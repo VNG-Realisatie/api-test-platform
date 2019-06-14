@@ -13,7 +13,7 @@ class CustomModelChoiceField(forms.ModelChoiceField):
         presented by this object. Subclasses can override this method to
         customize the display of the choices.
         """
-        return str(obj)
+        return obj
 
 
 class SessionTypeFormAdmin(forms.ModelForm):

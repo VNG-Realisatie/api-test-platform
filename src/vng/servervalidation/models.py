@@ -5,6 +5,8 @@ import uuid
 
 from datetime import datetime
 
+from tinymce.models import HTMLField
+
 from django.db import models
 from django.utils import timezone
 from django.conf import settings
@@ -22,6 +24,7 @@ class TestScenario(models.Model):
 
     name = models.CharField('Naam', max_length=200, unique=True)
     authorization = models.CharField('Authorisatie', max_length=20, choices=choices.AuthenticationChoices.choices, default=choices.AuthenticationChoices.jwt)
+    description = HTMLField()
 
     def __str__(self):
         return self.name

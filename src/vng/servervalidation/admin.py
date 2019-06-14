@@ -65,7 +65,7 @@ class ServerRunAdmin(admin.ModelAdmin):
 
 @admin.register(model.TestScenario)
 class TestScenarioAdmin(admin.ModelAdmin):
-    list_display = ['name']
+    list_display = ['name', 'description']
     list_filter = ['name']
     search_fields = ['name']
 

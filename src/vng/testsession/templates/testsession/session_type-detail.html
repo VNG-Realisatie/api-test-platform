@@ -1,0 +1,27 @@
+{% extends 'master.html' %}
+{% load sniplates %}
+
+
+{% block title %}Session Type{% endblock %}
+
+
+{% block content %}
+<div id="ui-view">
+    <div class="row">
+        <div class="col-sm-8 offset-sm-2">
+            <form class="" method="post">{% csrf_token %}
+                <div class="card">
+                <div class="card-header">
+                        Sessie type {{ object.name }}
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">
+                            Snippet: {{ object.description }}
+                        </p>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endblock %}
+

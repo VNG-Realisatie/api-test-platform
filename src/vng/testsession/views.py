@@ -5,6 +5,7 @@ import logging
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic.edit import FormView
+from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
@@ -12,8 +13,9 @@ from django.utils import timezone
 from django.views import View
 
 
-from vng.testsession.models import (
-    ScenarioCase, Session, SessionLog, ExposedUrl, TestSession, Report
+from .models import (
+    ScenarioCase, Session, SessionLog, ExposedUrl,
+    TestSession, Report, SessionType
 )
 
 from .task import run_tests, bootstrap_session, stop_session
@@ -213,3 +215,9 @@ class PostmanDownloadView(View):
             response['Content-Length'] = len(response.content)
             response['Content-Disposition'] = 'attachment;filename=test{}.json'.format(eu.vng_endpoint.name)
             return response
+
+
+class SessionTypeDetail(DetailView):
+
+    model = SessionType
+    template_name = 'testsession/session_type-detail.html'

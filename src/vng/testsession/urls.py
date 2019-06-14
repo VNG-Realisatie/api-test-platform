@@ -19,4 +19,5 @@ urlpatterns = [
     url(r'^(?P<session_id>[0-9]+)/test-report/(?P<pk>[0-9]+)', views.SessionTestReport.as_view(), name='session-test_report'),
     url(r'^(?P<session_id>[0-9]+)/log/(?P<pk>\d+)', views.SessionLogDetailView.as_view(), name='session_log-detail'),
     url(r'^(?P<session_id>[0-9]+)/', views.SessionLogView.as_view(), name='session_log'),
+    url(r'^sessiontype/(?P<pk>[0-9]+)/', views.SessionTypeDetail.as_view(), name='session_type-detail'),
 ]

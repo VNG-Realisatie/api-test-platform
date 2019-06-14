@@ -253,3 +253,9 @@ class PostmanDownloadView(View):
             response['Content-Length'] = len(response.content)
             response['Content-Disposition'] = 'attachment;filename={}.json'.format(pmt.test_scenario.name)
             return response
+
+
+class SessionTypeDetail(DetailView):
+
+    model = TestScenario
+    template_name = 'servervalidation/test_scenario-detail.html'

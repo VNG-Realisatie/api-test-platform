@@ -7,7 +7,7 @@
 {% breadcrumb "Home" 'server_run:server-run_list' %}
 {% breadcrumb 'Detail' 'testsession:sessions' %}
 {% render_breadcrumbs 'components/breadcrumbs/breadcrumbs.html' %}
-{% endblock  %}
+{% endblock %}
 
 {% block content %}
 <div id="ui-view">
@@ -21,7 +21,7 @@
                     <div class='table-responsive'>
                         <table class="table table-striped">
                             <tbody>
-                                {% include 'servervalidation/table/table-server-run.html' with server_run=object postman_result=postman_result request=request only %}
+                            {% include 'servervalidation/table/table-server-run.html' with server_run=object postman_result=postman_result request=request only %}
                             </tbody>
                         </table>
                     </div>
@@ -48,98 +48,107 @@
                     <h5 class="card-title">Markdown snippet</h5>
                     <p>Paste the following in your README.md to show your badge on Github.</p>
                     <?prettify lang=html linenums=true?>
-                    <pre class="prettyprint" id='gitSnippet'>
-            <xmp>
+                        <pre class="prettyprint" id='gitSnippet'>
+                    <xmp>
 
-            </xmp>
-          </pre>
+                    </xmp>
+                    </pre>
                 </div>
-            </div>
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">HTML snippet</h5>
-                    <p>Paste the following in your HTML page to show your badge.</p>
-                    <?prettify lang=html linenums=true?>
-                    <pre class="prettyprint" id='htmlSnippet'>
-            <xmp>
-            </xmp>
-          </pre>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        {% for postman in postman_result %}
-        {% with postman.get_aggregate_results as results %}
-
-        <div class="col-sm-6">
-            <div class="card">
-                <div class="card-header">
-                    Postman collection #{{forloop.counter}} results details
-                </div>
-                <div class="card-body">
-                    <div class='table-responsive'>
-                        <table class="table">
-                            <thead>
-                                <th>Property</th>
-                                <th>Value</th>
-                            </thead>
-                            <tbody>
-                                <tr class="table-active">
-                                    <td>
-                                        Total calls
-                                    </td>
-                                    <td>
-                                        {{ results.calls.total }}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        Calls failed
-                                    </td>
-                                    <td class="table-danger">
-                                        {{ results.calls.failed }}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        Calls successful
-                                    </td>
-                                    <td class="table-success">
-                                        {{ results.calls.success }}
-                                    </td>
-                                </tr>
-                                <tr class="table-active">
-                                    <td>
-                                        Total assertions
-                                    </td>
-                                    <td>
-                                        {{ results.assertions.total }}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        Assertions failed
-                                    </td>
-                                    <td class="table-danger">
-                                        {{ results.assertions.passed }}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        Assertions passed
-                                    </td>
-                                    <td class="table-success">
-                                        {{ results.assertions.failed }}
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">HTML snippet</h5>
+                         <p>Paste the following in your HTML page to show your badge.</p>
+                        <?prettify lang=html linenums=true?>
+                            <pre class="prettyprint" id='htmlSnippet'>
+                        <xmp>
+                        </xmp>
+                    </pre>
                     </div>
                 </div>
             </div>
         </div>
+        <div class="row">
+            {% for postman in postman_result %}
+            {% with postman.get_aggregate_results as results %}
+
+            <div class="col-sm-6">
+                <div class="card">
+                    <div class="card-header">
+                        Postman collection #{{forloop.counter}} results details
+                    </div>
+                    <div class="card-body">
+                        <div class='table-responsive'>
+                            <table class="table">
+                                <thead>
+                                    <th>Property</th>
+                                    <th>Value</th>
+                                </thead>
+                                <tbody>
+                                    <tr class="table-active">
+                                        <td>
+                                            Total calls
+                                        </td>
+                                        <td>
+                                            {{ results.calls.total }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Calls failed
+                                        </td>
+                                        <td class="table-danger">
+                                            {{ results.calls.failed }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Calls successful
+                                        </td>
+                                        <td class="table-success">
+                                            {{ results.calls.success }}
+                                        </td>
+                                    </tr>
+                                    <tr class="table-active">
+                                        <td>
+                                            Total assertions
+                                        </td>
+                                        <td>
+                                            {{ results.assertions.total }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Assertions failed
+                                        </td>
+                                        <td class="table-danger">
+                                            {{ results.assertions.passed }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Assertions passed
+                                        </td>
+                                        <td class="table-success">
+                                            {{ results.assertions.failed }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="card">
+                    <div class="card-header">
+                        {{object}}
+                    </div>
+                    <div class="card-body">
+                        {{object.test_scenario.description|safe}}
+                    </div>
+                </div>
+            </div>
 
         {% endwith %}
         {% endfor %}

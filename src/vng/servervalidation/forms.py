@@ -6,13 +6,17 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
+from .models import ServerRun, Endpoint, TestScenario
 from ..utils.newman import NewmanManager
-from .models import ServerRun, Endpoint
+from ..utils.forms import CustomModelChoiceField
 
 logger = logging.getLogger(__name__)
 
 
 class CreateServerRunForm(forms.ModelForm):
+
+    test_scenario = CustomModelChoiceField(TestScenario.objects.all(), widget=forms.RadioSelect, empty_label=None)
+
     class Meta:
         model = ServerRun
         fields = ['test_scenario', 'scheduled']

@@ -3,17 +3,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from .models import SessionType, Session
 from ..utils.choices import AuthenticationChoices
-
-
-class CustomModelChoiceField(forms.ModelChoiceField):
-
-    def label_from_instance(self, obj):
-        """
-        Convert objects into strings and generate the labels for the choices
-        presented by this object. Subclasses can override this method to
-        customize the display of the choices.
-        """
-        return obj
+from ..utils.forms import CustomModelChoiceField
 
 
 class SessionTypeFormAdmin(forms.ModelForm):

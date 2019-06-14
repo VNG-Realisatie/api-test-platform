@@ -1,7 +1,8 @@
 ---
 
-- hosts: localhost.localdomain
+- hosts: melinda
   vars_files:
+    - vars/production-secrets.yml
     - vars/production.yml
     - vars/packages.yml
   become: yes
@@ -18,6 +19,7 @@
     - include: maykin-deployment/ansible/tasks/firewall.yml
     - include: maykin-deployment/ansible/tasks/logrotate.yml
     - include: maykin-deployment/ansible/tasks/postgresql-9.6.yml
+    - include: tasks/kubernetes.yml
     - include: maykin-deployment/ansible/tasks/npm.yml
     - include: maykin-deployment/ansible/tasks/set-maintenance-mode.yml
     - include: maykin-deployment/ansible/tasks/django-project-1.7.yml

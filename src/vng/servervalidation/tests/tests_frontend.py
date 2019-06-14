@@ -23,7 +23,7 @@ class TestMultipleEndpoint(WebTest):
     def test_run_collection(self):
         call = self.app.get(reverse('server_run:server-run_create_item'), user=self.user)
         form = call.forms[0]
-        form['test_scenario'].select(text=self.ts.name)
+        form['test_scenario'] = self.ts.pk
         res = form.submit().follow()
 
         form = res.forms[0]
@@ -66,7 +66,7 @@ class TestCreation(WebTest):
     def test_scenarios(self):
         call = self.app.get(reverse('server_run:server-run_create_item'), user=self.user)
         form = call.forms[0]
-        form['test_scenario'].select(text=self.tsf.test_scenario.name)
+        form['test_scenario'] = self.tsf.test_scenario.pk
 
         res = form.submit().follow()
         form = res.forms[0]
@@ -183,7 +183,7 @@ class IntegrationTest(WebTest):
     def test_badge(self):
         call = self.app.get(reverse('server_run:server-run_create_item'), user=self.user)
         form = call.forms[0]
-        form['test_scenario'].select(text=self.server_s.test_scenario.name)
+        form['test_scenario'] = self.server_s.test_scenario.pk
         res = form.submit().follow()
         form = res.forms[0]
         form['url'] = 'https://ref.tst.vng.cloud/drc/api/v1/'

@@ -23,7 +23,7 @@
                             <ul>
                             {% for radio in field %}
                                 <li>
-                                    <input name="session_type" type="radio" id="{{ radio.id_for_label }}" value="1">
+                                    {{radio.tag}}
                                     <a href="{% url 'testsession:session_type-detail' radio.choice_label.pk  %}">{{ radio.choice_label.name }}</a>
 
                                 </li>

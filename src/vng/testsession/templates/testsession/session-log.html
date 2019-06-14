@@ -14,10 +14,21 @@
 <div id="ui-view">
     <div class="row">
         <div class="col-sm-7">
+        <div class="card">
+                <div class="card-header">
+                    Test consumer {{ session }}
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Sessie type {{ session.session_type.name }}</h5>
+                    <p class="card-text">
+                        Snippet: {{ session.session_type.description }}
+                    </p>
+                </div>
+            </div>
             <div class="card-deck">
                 <div class="card">
                     <div class="card-header">
-                        Test consumer {{session}}
+                        Log
                     </div>
                     <div class="card-body">
                         <h4 class="card-title">Gestart op: {{ session.started|date }}</h4>

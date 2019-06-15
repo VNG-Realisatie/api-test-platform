@@ -1,3 +1,0 @@
-@mixin animate($duration: 0.2s, $delay: 0s, $properties: all, $function: ease-in-out) {
-  transition: $properties $duration $function $delay;
-}

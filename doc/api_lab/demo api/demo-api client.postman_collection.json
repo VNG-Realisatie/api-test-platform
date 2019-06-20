@@ -1,0 +1,316 @@
+{
+	"info": {
+		"_postman_id": "c21cc29d-77d7-4c25-b615-162957a39db3",
+		"name": "demo-api client",
+		"description": "Bla bla blah",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create a quote",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b01fe77f-681c-4107-bcaa-bb42450d2bcd",
+						"exec": [
+							"var quote = pm.response.json();",
+							"pm.globals.set(\"quote\", quote.url );  ",
+							"",
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201]);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"tekst\": \"To be or not to be\",\n    \"bronNaam\": \"Shakespeare\",\n    \"bronLink\": \"http://shakespeare.org\"\n}"
+				},
+				"url": {
+					"raw": "{{demo-api}}/quotes",
+					"host": [
+						"{{demo-api}}"
+					],
+					"path": [
+						"quotes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Vraag alle quotes op",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "59ec48c9-65be-4364-b07e-e999c439b77a",
+						"exec": [
+							"//var quotes = pm.response.json();",
+							"//pm.globals.set(\"eerste_quote\", quotes.results[0].url );  //eerste quote uit de lijst",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{demo-api}}/quotes",
+					"host": [
+						"{{demo-api}}"
+					],
+					"path": [
+						"quotes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Vraag een specifieke quote op",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "c4265920-3b31-4cd4-877e-59223d3c3137",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{quote}}",
+					"host": [
+						"{{quote}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Vervang quote in zijn geheel",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "95b15424-0a25-4fb7-b15e-569ddf411356",
+						"exec": [
+							"pm.test(\"Successful PUT  request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"Body matches string\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"Deze quote totaal vervangen\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"tekst\": \"Deze quote totaal vervangen\",\n    \"bronNaam\": \"Henri Korver\",\n    \"bronLink\": \"http://example.com\"\n}"
+				},
+				"url": {
+					"raw": "{{quote}}",
+					"host": [
+						"{{quote}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Pas een quote gedeeltelijk aan",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "dc780489-1ebc-4517-b999-7cf543057b99",
+						"exec": [
+							"pm.test(\"Successful PATCH  request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"tekst\": \"Deze quote is alleen in dit veld aangepast\"\n}"
+				},
+				"url": {
+					"raw": "{{quote}}",
+					"host": [
+						"{{quote}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verwijder een quote",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "591fd68f-84ab-4069-bf3e-fc788ea97906",
+						"exec": [
+							"pm.test(\"Successful DELETE request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([204]);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{quote}}",
+					"host": [
+						"{{quote}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Filter alle quotes op de  naam van 'Shakespeare'",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{demo-api}}/quotes?bronNaam=Shakespeare",
+					"host": [
+						"{{demo-api}}"
+					],
+					"path": [
+						"quotes"
+					],
+					"query": [
+						{
+							"key": "bronNaam",
+							"value": "Shakespeare"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Sorteer quotes op bronnaam",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{{{{{"
+				},
+				"url": {
+					"raw": "{{demo-api}}/quotes?sort=bronNaam",
+					"host": [
+						"{{demo-api}}"
+					],
+					"path": [
+						"quotes"
+					],
+					"query": [
+						{
+							"key": "sort",
+							"value": "bronNaam"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "00cc8921-920d-499f-b775-df0f6d3639ec",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "1b66d4e0-ae28-4b50-8bef-8c5ebd26db81",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

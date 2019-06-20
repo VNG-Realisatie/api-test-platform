@@ -26,3 +26,10 @@ A brief summary that conveys the number of failed/successful call is firstly sho
 IMAGE
 Scrolling down, it is possible to analyze one by one each call, see its result code and eventually its tests.
 IMAGE
+
+## Using the badges
+In the detail page, both HTML snippet and the code for the github markdown are available. IN order to have you own badge, just copy and paste the code on your website or in you repository.
+
+## Export the results
+The results are available to the download in the log section of the detail page.
+IMAGE

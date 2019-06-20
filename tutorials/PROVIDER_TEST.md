@@ -22,7 +22,7 @@ In the first part of page all the information relative to the tests are shown.
 ![](https://raw.githubusercontent.com/VNG-Realisatie/api-testvoorziening/master/tutorials/images/providers_summary.png) 
 It is also possible to see a generated HTML log that slightly differs from the detail page. Furthermore, a json and a PDF log is available to download (bear in mind that generate the PDF for quite long collection can take time).  
 A brief summary that conveys the number of failed/successful call is firstly shown.
-![](https://raw.githubusercontent.com/VNG-Realisatie/api-testvoorziening/master/tutorials/images/providers_calls_summart.png) 
+![](https://raw.githubusercontent.com/VNG-Realisatie/api-testvoorziening/master/tutorials/images/providers_calls_summary.png) 
 Scrolling down, it is possible to analyze one by one each call, see its result code and eventually its tests.
 
 

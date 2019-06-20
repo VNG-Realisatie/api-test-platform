@@ -24,7 +24,7 @@ Every call performed to one of these endpoints is logged in the detail page.
 Clicking of the report page, the list of all the calls that should be performed is shown. Once the url and the query parameters are strictly matched, the scenario case is registered, successfully if the result of the HTTP calls is not a error code.  
 Assuming the **sandbox** option has been checked, it is possible to call several times the same url path and override the result with the last one. On the other side, if the sandbox option is off, only the first result is saved.  
 It is possible to export the result clicking through the **Rapport PDF** button to download a detail PDF of the scenario cases.  
-![](https://raw.raw.githubusercontentusercontent.com/VNG-Realisatie/api-testvoorziening/master/tutorials/images/consumers_report.png) 
+![](https://raw.githubusercontent.com/VNG-Realisatie/api-testvoorziening/master/tutorials/images/consumers_report.png) 
 
 ## Run the tests
 If the session type is specifically configured, as soon as the session is turned off with the designated button, a postman collection is ran against the proxied endpoint.

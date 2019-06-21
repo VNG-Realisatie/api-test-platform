@@ -16,7 +16,9 @@ In the next page
 a list of endpoints are required. Also, according to the authentication type of the test, it might be possible that *client id* and *secret* are required in order to build a *jwt token*.
 
 ## Analyze the results
-Once the tests are performed (it can take a while according to the size of the tests), the results are displayed in the detail page.
+The returned page after having fired the tests will be a list of all the tests.
+![](https://raw.githubusercontent.com/VNG-Realisatie/api-testvoorziening/master/tutorials/images/providers_list.png) 
+You can click to the ID column link to get the data relative to the last test. Once the tests are performed (it can take a while according to the size of the tests), the results are displayed in the detail page.
 ![](https://raw.githubusercontent.com/VNG-Realisatie/api-testvoorziening/master/tutorials/images/providers_results.png) 
 In the first part of page all the information relative to the tests are shown.
 ![](https://raw.githubusercontent.com/VNG-Realisatie/api-testvoorziening/master/tutorials/images/providers_summary.png) 

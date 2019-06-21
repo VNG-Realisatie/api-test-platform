@@ -1,22 +1,15 @@
 {
     "swagger": "2.0",
     "info": {
-        "title": "Snippets API",
-        "description": "This is a demo project for the [drf-yasg](https://github.com/axnsan12/drf-yasg) Django Rest Framework library.\n\nThe `swagger-ui` view can be found [here](/cached/swagger).  \nThe `ReDoc` view can be found [here](/cached/redoc).  \nThe swagger YAML document can be found [here](/cached/swagger.yaml).  \n\nYou can log in using the pre-existing `admin` user with password `passwordadmin`.",
-        "termsOfService": "https://www.google.com/policies/terms/",
-        "contact": {
-            "email": "contact@snippets.local"
-        },
-        "license": {
-            "name": "BSD License"
-        },
+        "title": "API Testvoorziening",
+        "description": "API test platform",
         "version": "v1"
     },
-    "host": "drf-yasg-demo.herokuapp.com",
+    "host": "vng-test.maykin.nl",
     "schemes": [
         "https"
     ],
-    "basePath": "/",
+    "basePath": "/api",
     "consumes": [
         "application/json"
     ],
@@ -26,123 +19,25 @@
     "securityDefinitions": {
         "Basic": {
             "type": "basic"
-        },
-        "Bearer": {
-            "in": "header",
-            "name": "Authorization",
-            "type": "apiKey"
-        },
-        "OAuth2 password": {
-            "flow": "password",
-            "scopes": {
-                "read": "Read everything.",
-                "write": "Write everything,"
-            },
-            "tokenUrl": "/o/token/",
-            "type": "oauth2"
-        },
-        "Query": {
-            "in": "query",
-            "name": "auth",
-            "type": "apiKey"
         }
     },
     "security": [
         {
             "Basic": []
-        },
-        {
-            "Bearer": []
-        },
-        {
-            "OAuth2 password": []
-        },
-        {
-            "Query": []
         }
     ],
     "paths": {
-        "/articles/": {
-            "get": {
-                "operationId": "articles_list",
-                "description": "description from swagger_auto_schema via method_decorator",
-                "parameters": [
-                    {
-                        "name": "title",
-                        "in": "query",
-                        "description": "Filter the returned list by title",
-                        "required": false,
-                        "type": "string"
-                    },
-                    {
-                        "name": "ordering",
-                        "in": "query",
-                        "description": "Which field to use when ordering the results.",
-                        "required": false,
-                        "type": "string"
-                    },
-                    {
-                        "name": "limit",
-                        "in": "query",
-                        "description": "Number of results to return per page.",
-                        "required": false,
-                        "type": "integer"
-                    },
-                    {
-                        "name": "offset",
-                        "in": "query",
-                        "description": "The initial index from which to return the results.",
-                        "required": false,
-                        "type": "integer"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "schema": {
-                            "required": [
-                                "count",
-                                "results"
-                            ],
-                            "type": "object",
-                            "properties": {
-                                "count": {
-                                    "type": "integer"
-                                },
-                                "next": {
-                                    "type": "string",
-                                    "format": "uri",
-                                    "x-nullable": true
-                                },
-                                "previous": {
-                                    "type": "string",
-                                    "format": "uri",
-                                    "x-nullable": true
-                                },
-                                "results": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/definitions/Article"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "articles"
-                ]
-            },
+        "/auth/login/": {
             "post": {
-                "operationId": "articles_create",
-                "description": "ArticleViewSet class docstring",
+                "operationId": "auth_login_create",
+                "description": "Check the credentials and return the REST Token\nif the credentials are valid and authenticated.\nCalls Django Auth login method to register User ID\nin Django session framework\n\nAccept the following POST parameters: username, password\nReturn the REST Framework Token Object's key.",
                 "parameters": [
                     {
                         "name": "data",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/Article"
+                            "$ref": "#/definitions/Login"
                         }
                     }
                 ],
@@ -150,97 +45,163 @@
                     "201": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/Article"
+                            "$ref": "#/definitions/Login"
                         }
                     }
                 },
                 "tags": [
-                    "articles"
+                    "auth"
                 ]
             },
             "parameters": []
         },
-        "/articles/today/": {
+        "/auth/logout/": {
             "get": {
-                "operationId": "articles_today",
-                "description": "ArticleViewSet class docstring",
+                "operationId": "auth_logout_list",
+                "summary": "Calls Django logout method and delete the Token object\nassigned to the current User object.",
+                "description": "Accepts/Returns nothing.",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "auth"
+                ]
+            },
+            "post": {
+                "operationId": "auth_logout_create",
+                "summary": "Calls Django logout method and delete the Token object\nassigned to the current User object.",
+                "description": "Accepts/Returns nothing.",
+                "parameters": [],
+                "responses": {
+                    "201": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "auth"
+                ]
+            },
+            "parameters": []
+        },
+        "/auth/password/change/": {
+            "post": {
+                "operationId": "auth_password_change_create",
+                "summary": "Calls Django Auth SetPasswordForm save method.",
+                "description": "Accepts the following POST parameters: new_password1, new_password2\nReturns the success/fail message.",
                 "parameters": [
                     {
-                        "name": "title",
-                        "in": "query",
-                        "description": "Filter the returned list by title",
-                        "required": false,
-                        "type": "string"
-                    },
-                    {
-                        "name": "ordering",
-                        "in": "query",
-                        "description": "Which field to use when ordering the results.",
-                        "required": false,
-                        "type": "string"
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/PasswordChange"
+                        }
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": "",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/Article"
-                            }
+                            "$ref": "#/definitions/PasswordChange"
                         }
                     }
                 },
                 "tags": [
-                    "articles"
+                    "auth"
                 ]
             },
             "parameters": []
         },
-        "/articles/{slug}/": {
+        "/auth/password/reset/": {
+            "post": {
+                "operationId": "auth_password_reset_create",
+                "summary": "Calls Django Auth PasswordResetForm save method.",
+                "description": "Accepts the following POST parameters: email\nReturns the success/fail message.",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/PasswordReset"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/PasswordReset"
+                        }
+                    }
+                },
+                "tags": [
+                    "auth"
+                ]
+            },
+            "parameters": []
+        },
+        "/auth/password/reset/confirm/": {
+            "post": {
+                "operationId": "auth_password_reset_confirm_create",
+                "summary": "Password reset e-mail link is confirmed, therefore\nthis resets the user's password.",
+                "description": "Accepts the following POST parameters: token, uid,\n    new_password1, new_password2\nReturns the success/fail message.",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/PasswordResetConfirm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/PasswordResetConfirm"
+                        }
+                    }
+                },
+                "tags": [
+                    "auth"
+                ]
+            },
+            "parameters": []
+        },
+        "/auth/user/": {
             "get": {
-                "operationId": "articles_read",
-                "description": "retrieve class docstring",
+                "operationId": "auth_user_read",
+                "summary": "Reads and updates UserModel fields\nAccepts GET, PUT, PATCH methods.",
+                "description": "Default accepted fields: username, first_name, last_name\nDefault display fields: pk, username, email, first_name, last_name\nRead-only fields: pk, email\n\nReturns UserModel fields.",
                 "parameters": [],
                 "responses": {
                     "200": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/Article"
+                            "$ref": "#/definitions/UserDetails"
                         }
                     }
                 },
                 "tags": [
-                    "articles"
+                    "auth"
                 ]
             },
             "put": {
-                "operationId": "no_body_test",
-                "description": "update method docstring",
-                "parameters": [],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "schema": {
-                            "$ref": "#/definitions/Article"
-                        }
-                    }
-                },
-                "tags": [
-                    "articles"
-                ]
-            },
-            "patch": {
-                "operationId": "articles_partial_update",
-                "summary": "partial_update summary",
-                "description": "partial_update description override",
+                "operationId": "auth_user_update",
+                "summary": "Reads and updates UserModel fields\nAccepts GET, PUT, PATCH methods.",
+                "description": "Default accepted fields: username, first_name, last_name\nDefault display fields: pk, username, email, first_name, last_name\nRead-only fields: pk, email\n\nReturns UserModel fields.",
                 "parameters": [
                     {
                         "name": "data",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/Article"
+                            "$ref": "#/definitions/UserDetails"
                         }
                     }
                 ],
@@ -248,156 +209,47 @@
                     "200": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/Article"
+                            "$ref": "#/definitions/UserDetails"
                         }
-                    },
-                    "404": {
-                        "description": "slug not found"
                     }
                 },
                 "tags": [
-                    "articles"
-                ],
-                "deprecated": true
-            },
-            "delete": {
-                "operationId": "articles_delete",
-                "description": "destroy method docstring",
-                "parameters": [],
-                "responses": {
-                    "204": {
-                        "description": ""
-                    }
-                },
-                "tags": [
-                    "articles"
+                    "auth"
                 ]
             },
-            "parameters": [
-                {
-                    "name": "slug",
-                    "in": "path",
-                    "description": "slug model help_text",
-                    "required": true,
-                    "type": "string",
-                    "format": "slug",
-                    "pattern": "[a-z0-9]+(?:-[a-z0-9]+)"
-                }
-            ]
-        },
-        "/articles/{slug}/image/": {
-            "get": {
-                "operationId": "articles_image_read",
-                "description": "image GET description override",
-                "parameters": [],
+            "patch": {
+                "operationId": "auth_user_partial_update",
+                "summary": "Reads and updates UserModel fields\nAccepts GET, PUT, PATCH methods.",
+                "description": "Default accepted fields: username, first_name, last_name\nDefault display fields: pk, username, email, first_name, last_name\nRead-only fields: pk, email\n\nReturns UserModel fields.",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/UserDetails"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/Article"
+                            "$ref": "#/definitions/UserDetails"
                         }
                     }
                 },
-                "consumes": [
-                    "multipart/form-data"
-                ],
                 "tags": [
-                    "articles"
+                    "auth"
                 ]
             },
-            "post": {
-                "operationId": "articles_image_create",
-                "description": "image method docstring",
-                "parameters": [
-                    {
-                        "name": "what_am_i_doing",
-                        "in": "formData",
-                        "description": "test",
-                        "required": false,
-                        "type": "string",
-                        "pattern": "^69$",
-                        "default": "69",
-                        "minLength": 1,
-                        "x-nullable": true
-                    },
-                    {
-                        "name": "image_styles",
-                        "in": "formData",
-                        "description": "Parameter with Items",
-                        "required": true,
-                        "type": "array",
-                        "items": {
-                            "type": "string",
-                            "enum": [
-                                "wide",
-                                "tall",
-                                "thumb",
-                                "social"
-                            ]
-                        }
-                    },
-                    {
-                        "name": "upload",
-                        "in": "formData",
-                        "description": "image serializer help_text",
-                        "required": true,
-                        "type": "file"
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "",
-                        "schema": {
-                            "$ref": "#/definitions/ImageUpload"
-                        }
-                    }
-                },
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "tags": [
-                    "articles"
-                ]
-            },
-            "delete": {
-                "operationId": "articles_image_delete",
-                "description": "image method docstring",
-                "parameters": [
-                    {
-                        "name": "delete_form_param",
-                        "in": "formData",
-                        "description": "this should not crash (form parameter on DELETE method)",
-                        "type": "integer"
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": ""
-                    }
-                },
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "tags": [
-                    "articles"
-                ]
-            },
-            "parameters": [
-                {
-                    "name": "slug",
-                    "in": "path",
-                    "description": "slug model help_text",
-                    "required": true,
-                    "type": "string",
-                    "format": "slug",
-                    "pattern": "[a-z0-9]+(?:-[a-z0-9]+)"
-                }
-            ]
+            "parameters": []
         },
-        "/people/": {
+        "/v1/exposed_url/": {
             "get": {
-                "operationId": "people_list",
-                "description": "",
+                "operationId": "v1_exposed_url_list",
+                "summary": "Exposed url",
+                "description": "Return a list of all the exposed url of a certain session.",
                 "parameters": [],
                 "responses": {
                     "200": {
@@ -405,61 +257,20 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/Person"
+                                "$ref": "#/definitions/ExposedUrl"
                             }
                         }
                     }
                 },
                 "tags": [
-                    "people"
-                ]
-            },
-            "post": {
-                "operationId": "people_create",
-                "description": "",
-                "parameters": [
-                    {
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/Person"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "",
-                        "schema": {
-                            "$ref": "#/definitions/Person"
-                        }
-                    }
-                },
-                "tags": [
-                    "people"
+                    "exposed_url"
                 ]
             },
             "parameters": []
         },
-        "/people/{id}": {
-            "get": {
-                "operationId": "people_read",
-                "description": "",
-                "parameters": [],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "schema": {
-                            "$ref": "#/definitions/Person"
-                        }
-                    }
-                },
-                "tags": [
-                    "people"
-                ]
-            },
-            "patch": {
-                "operationId": "people_partial_update",
+        "/v1/openAPIinspector": {
+            "post": {
+                "operationId": "v1_openAPIinspector_create",
                 "description": "",
                 "parameters": [
                     {
@@ -467,7 +278,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/Person"
+                            "$ref": "#/definitions/OpenApiInspection"
                         }
                     }
                 ],
@@ -475,108 +286,47 @@
                     "200": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/Person"
+                            "$ref": "#/definitions/OpenApiInspectionResponse"
                         }
                     }
                 },
                 "tags": [
-                    "people"
+                    "openAPIinspector"
                 ]
             },
-            "delete": {
-                "operationId": "people_delete",
+            "parameters": []
+        },
+        "/v1/provider-run-shield/{id}/": {
+            "get": {
+                "operationId": "v1_provider-run-shield_read",
                 "description": "",
                 "parameters": [],
                 "responses": {
-                    "204": {
-                        "description": ""
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/ServerRunResultShield"
+                        }
                     }
                 },
                 "tags": [
-                    "people"
+                    "provider-run-shield"
                 ]
             },
             "parameters": [
                 {
                     "name": "id",
-                    "in": "path",
-                    "description": "A unique integer value identifying this person.",
-                    "required": true,
-                    "type": "integer"
-                }
-            ]
-        },
-        "/people/{person}/identity": {
-            "get": {
-                "operationId": "people_identity_read",
-                "description": "",
-                "parameters": [],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "schema": {
-                            "$ref": "#/definitions/Identity"
-                        }
-                    }
-                },
-                "tags": [
-                    "people"
-                ]
-            },
-            "patch": {
-                "operationId": "people_identity_partial_update",
-                "description": "",
-                "parameters": [
-                    {
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/Identity"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "schema": {
-                            "$ref": "#/definitions/Identity"
-                        }
-                    }
-                },
-                "tags": [
-                    "people"
-                ]
-            },
-            "parameters": [
-                {
-                    "name": "person",
                     "in": "path",
                     "required": true,
                     "type": "string"
                 }
             ]
         },
-        "/plain/": {
+        "/v1/provider-run/": {
             "get": {
-                "operationId": "plain_list",
-                "description": "",
-                "parameters": [],
-                "responses": {
-                    "200": {
-                        "description": ""
-                    }
-                },
-                "tags": [
-                    "plain"
-                ]
-            },
-            "parameters": []
-        },
-        "/snippets/": {
-            "get": {
-                "operationId": "snippetsList",
-                "description": "SnippetList classdoc",
+                "operationId": "v1_provider-run_list",
+                "summary": "Provider-run list.",
+                "description": "Return a list of all the existing provider-run.",
                 "parameters": [],
                 "responses": {
                     "200": {
@@ -584,25 +334,26 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/Snippet"
+                                "$ref": "#/definitions/ServerRun"
                             }
                         }
                     }
                 },
                 "tags": [
-                    "snippets"
+                    "provider-run"
                 ]
             },
             "post": {
-                "operationId": "snippetsCreate",
-                "description": "post method docstring",
+                "operationId": "v1_provider-run_create",
+                "summary": "Create a provider-run.",
+                "description": "Create a new provider-run instance.",
                 "parameters": [
                     {
                         "name": "data",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/Snippet"
+                            "$ref": "#/definitions/ServerRunPayloadExample"
                         }
                     }
                 ],
@@ -610,206 +361,95 @@
                     "201": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/Snippet"
+                            "$ref": "#/definitions/ServerRunPayloadExample"
                         }
                     }
                 },
                 "tags": [
-                    "snippets"
-                ]
-            },
-            "delete": {
-                "operationId": "snippetsDeleteBulk",
-                "summary": "summary from docstring",
-                "description": "description body is here, summary is not included",
-                "parameters": [
-                    {
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "body": {
-                                    "description": "this should not crash (request body on DELETE method)",
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": ""
-                    }
-                },
-                "tags": [
-                    "snippets"
+                    "provider-run"
                 ]
             },
             "parameters": []
         },
-        "/snippets/views/{snippet_pk}/": {
+        "/v1/provider-run/{id}/": {
             "get": {
-                "operationId": "snippetsViewsRead",
-                "description": "SnippetViewerList classdoc",
-                "parameters": [
-                    {
-                        "name": "page",
-                        "in": "query",
-                        "description": "A page number within the paginated result set.",
-                        "required": false,
-                        "type": "integer"
-                    }
-                ],
+                "operationId": "v1_provider-run_read",
+                "summary": "Provider-run detail.",
+                "description": "Return the given provider-run.",
+                "parameters": [],
                 "responses": {
                     "200": {
                         "description": "",
                         "schema": {
-                            "required": [
-                                "count",
-                                "results"
-                            ],
-                            "type": "object",
-                            "properties": {
-                                "count": {
-                                    "type": "integer"
-                                },
-                                "next": {
-                                    "type": "string",
-                                    "format": "uri",
-                                    "x-nullable": true
-                                },
-                                "previous": {
-                                    "type": "string",
-                                    "format": "uri",
-                                    "x-nullable": true
-                                },
-                                "results": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/definitions/SnippetViewer"
-                                    }
-                                }
-                            }
+                            "$ref": "#/definitions/ServerRun"
                         }
                     }
                 },
                 "tags": [
-                    "snippets"
+                    "provider-run"
                 ]
             },
             "parameters": [
                 {
-                    "name": "snippet_pk",
+                    "name": "id",
                     "in": "path",
                     "required": true,
                     "type": "string"
                 }
             ]
         },
-        "/snippets/{id}/": {
+        "/v1/provider-run/{id}/result": {
             "get": {
-                "operationId": "snippetsRead",
-                "description": "SnippetDetail classdoc",
+                "operationId": "v1_provider-run_result_list",
+                "summary": "Result of a Session",
+                "description": "Return for each scenario case related to the session, if that call has been performed and the global outcome.",
                 "parameters": [],
                 "responses": {
                     "200": {
-                        "description": "",
-                        "schema": {
-                            "$ref": "#/definitions/Snippet"
-                        }
+                        "description": ""
                     }
                 },
                 "tags": [
-                    "snippets"
+                    "provider-run > actions"
                 ]
             },
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }
+            ]
+        },
+        "/v1/provider-run/{id}/trigger": {
             "put": {
-                "operationId": "snippetsUpdate",
-                "description": "put class docstring",
-                "parameters": [
-                    {
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/Snippet"
-                        }
-                    }
-                ],
+                "operationId": "v1_provider-run_trigger_update",
+                "description": "",
+                "parameters": [],
                 "responses": {
                     "200": {
-                        "description": "",
-                        "schema": {
-                            "$ref": "#/definitions/Snippet"
-                        }
+                        "description": ""
                     }
                 },
                 "tags": [
-                    "snippets"
-                ]
-            },
-            "patch": {
-                "operationId": "snippetsPartialUpdate",
-                "description": "patch method docstring",
-                "parameters": [
-                    {
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/Snippet"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "schema": {
-                            "$ref": "#/definitions/Snippet"
-                        }
-                    }
-                },
-                "tags": [
-                    "snippets"
-                ]
-            },
-            "delete": {
-                "operationId": "snippetsDelete",
-                "description": "delete method docstring",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "path parameter override",
-                        "required": true,
-                        "type": "integer"
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "this should not crash (response object with no schema)"
-                    }
-                },
-                "tags": [
-                    "snippets"
+                    "provider-run > trigger"
                 ]
             },
             "parameters": [
                 {
                     "name": "id",
                     "in": "path",
-                    "description": "A unique integer value identifying this snippet.",
                     "required": true,
-                    "type": "integer"
+                    "type": "string"
                 }
             ]
         },
-        "/todo/": {
+        "/v1/sessiontypes/": {
             "get": {
-                "operationId": "todo_list",
-                "description": "",
+                "operationId": "v1_sessiontypes_list",
+                "summary": "Session types",
+                "description": "Return all the session types",
                 "parameters": [],
                 "responses": {
                     "200": {
@@ -817,70 +457,49 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/Todo"
+                                "$ref": "#/definitions/SessionTypes"
                             }
                         }
                     }
                 },
                 "tags": [
-                    "todo"
+                    "sessiontypes"
                 ]
             },
             "parameters": []
         },
-        "/todo/another/": {
+        "/v1/status/{id}/": {
             "get": {
-                "operationId": "todo_another_list",
+                "operationId": "v1_status_read",
                 "description": "",
                 "parameters": [],
                 "responses": {
                     "200": {
                         "description": "",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/TodoAnother"
-                            }
+                            "$ref": "#/definitions/SessionStatus"
                         }
                     }
                 },
                 "tags": [
-                    "todo"
-                ]
-            },
-            "parameters": []
-        },
-        "/todo/another/{id}/": {
-            "get": {
-                "operationId": "todo_another_read",
-                "description": "",
-                "parameters": [],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "schema": {
-                            "$ref": "#/definitions/TodoAnother"
-                        }
-                    }
-                },
-                "tags": [
-                    "todo"
+                    "status"
                 ]
             },
             "parameters": [
                 {
                     "name": "id",
                     "in": "path",
-                    "description": "A unique integer value identifying this todo another.",
+                    "description": "A unique integer value identifying this Sessie.",
                     "required": true,
                     "type": "integer"
                 }
             ]
         },
-        "/todo/harvest/": {
+        "/v1/testsessions/": {
             "get": {
-                "operationId": "todo_harvest_list",
-                "description": "",
+                "operationId": "v1_testsessions_list",
+                "summary": "Session list",
+                "description": "Return the list of all the sessions created by the user.",
                 "parameters": [],
                 "responses": {
                     "200": {
@@ -888,108 +507,26 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/Harvest"
+                                "$ref": "#/definitions/Session"
                             }
                         }
                     }
                 },
                 "tags": [
-                    "todo"
-                ]
-            },
-            "parameters": []
-        },
-        "/todo/harvest/{id}/": {
-            "put": {
-                "operationId": "todo_harvest_update",
-                "description": "",
-                "parameters": [
-                    {
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/Harvest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "schema": {
-                            "$ref": "#/definitions/Harvest"
-                        }
-                    }
-                },
-                "tags": [
-                    "todo"
-                ]
-            },
-            "patch": {
-                "operationId": "todo_harvest_partial_update",
-                "description": "",
-                "parameters": [
-                    {
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/Harvest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "schema": {
-                            "$ref": "#/definitions/Harvest"
-                        }
-                    }
-                },
-                "tags": [
-                    "todo"
-                ]
-            },
-            "parameters": [
-                {
-                    "name": "id",
-                    "in": "path",
-                    "description": "A unique integer value identifying this pack.",
-                    "required": true,
-                    "type": "integer"
-                }
-            ]
-        },
-        "/todo/recursive/": {
-            "get": {
-                "operationId": "todo_recursive_list",
-                "description": "",
-                "parameters": [],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/TodoRecursive"
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "todo"
+                    "testsessions"
                 ]
             },
             "post": {
-                "operationId": "todo_recursive_create",
-                "description": "",
+                "operationId": "v1_testsessions_create",
+                "summary": "Session create.",
+                "description": "Create a new session instance.",
                 "parameters": [
                     {
                         "name": "data",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/TodoRecursive"
+                            "$ref": "#/definitions/Session"
                         }
                     }
                 ],
@@ -997,358 +534,48 @@
                     "201": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/TodoRecursive"
+                            "$ref": "#/definitions/Session"
                         }
                     }
                 },
                 "tags": [
-                    "todo"
+                    "testsessions"
                 ]
             },
             "parameters": []
         },
-        "/todo/recursive/{id}/": {
+        "/v1/testsessions/{id}/": {
             "get": {
-                "operationId": "todo_recursive_read",
-                "description": "",
+                "operationId": "v1_testsessions_read",
+                "summary": "Session detail.",
+                "description": "Return the given session's detail.",
                 "parameters": [],
-                "responses": {
-                    "302": {
-                        "description": "Redirect somewhere"
-                    }
-                },
-                "tags": [
-                    "todo"
-                ]
-            },
-            "put": {
-                "operationId": "todo_recursive_update",
-                "description": "",
-                "parameters": [
-                    {
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/TodoRecursive"
-                        }
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/TodoRecursive"
+                            "$ref": "#/definitions/Session"
                         }
                     }
                 },
                 "tags": [
-                    "todo"
-                ]
-            },
-            "patch": {
-                "operationId": "todo_recursive_partial_update",
-                "description": "",
-                "parameters": [
-                    {
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/TodoRecursive"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "schema": {
-                            "$ref": "#/definitions/TodoRecursive"
-                        }
-                    }
-                },
-                "tags": [
-                    "todo"
-                ]
-            },
-            "delete": {
-                "operationId": "todo_recursive_delete",
-                "description": "",
-                "parameters": [],
-                "responses": {
-                    "204": {
-                        "description": ""
-                    }
-                },
-                "tags": [
-                    "todo"
+                    "testsessions"
                 ]
             },
             "parameters": [
                 {
                     "name": "id",
-                    "in": "path",
-                    "description": "A unique integer value identifying this todo tree.",
-                    "required": true,
-                    "type": "integer"
-                }
-            ]
-        },
-        "/todo/tree/": {
-            "get": {
-                "operationId": "todo_tree_list",
-                "description": "",
-                "parameters": [],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/TodoTree"
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "todo"
-                ]
-            },
-            "parameters": []
-        },
-        "/todo/tree/{id}/": {
-            "get": {
-                "operationId": "todo_tree_read",
-                "description": "",
-                "parameters": [],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "schema": {
-                            "$ref": "#/definitions/TodoTree"
-                        }
-                    }
-                },
-                "tags": [
-                    "todo"
-                ]
-            },
-            "parameters": [
-                {
-                    "name": "id",
-                    "in": "path",
-                    "description": "A unique integer value identifying this todo tree.",
-                    "required": true,
-                    "type": "integer"
-                }
-            ]
-        },
-        "/todo/yetanother/": {
-            "get": {
-                "operationId": "todo_yetanother_list",
-                "description": "",
-                "parameters": [],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/TodoYetAnother"
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "todo"
-                ]
-            },
-            "parameters": []
-        },
-        "/todo/yetanother/{id}/": {
-            "get": {
-                "operationId": "todo_yetanother_read",
-                "description": "",
-                "parameters": [],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "schema": {
-                            "$ref": "#/definitions/TodoYetAnother"
-                        }
-                    }
-                },
-                "tags": [
-                    "todo"
-                ]
-            },
-            "parameters": [
-                {
-                    "name": "id",
-                    "in": "path",
-                    "description": "A unique integer value identifying this todo yet another.",
-                    "required": true,
-                    "type": "integer"
-                }
-            ]
-        },
-        "/todo/{id}/": {
-            "get": {
-                "operationId": "todo_read",
-                "description": "",
-                "parameters": [],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "schema": {
-                            "$ref": "#/definitions/Todo"
-                        }
-                    }
-                },
-                "tags": [
-                    "todo"
-                ]
-            },
-            "parameters": [
-                {
-                    "name": "id",
-                    "in": "path",
-                    "description": "A unique integer value identifying this todo.",
-                    "required": true,
-                    "type": "integer"
-                }
-            ]
-        },
-        "/todo/{todo_id}/yetanothers/{yetanother_id}/": {
-            "get": {
-                "operationId": "todo_yetanothers_read",
-                "description": "",
-                "parameters": [],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "schema": {
-                            "$ref": "#/definitions/TodoYetAnother"
-                        }
-                    }
-                },
-                "tags": [
-                    "todo"
-                ]
-            },
-            "parameters": [
-                {
-                    "name": "todo_id",
-                    "in": "path",
-                    "required": true,
-                    "type": "string"
-                },
-                {
-                    "name": "yetanother_id",
                     "in": "path",
                     "required": true,
                     "type": "string"
                 }
             ]
         },
-        "/users/": {
+        "/v1/testsessions/{id}/result": {
             "get": {
-                "operationId": "users_list",
-                "description": "UserList cbv classdoc",
-                "parameters": [
-                    {
-                        "name": "username",
-                        "in": "query",
-                        "description": "this field is generated from a query_serializer",
-                        "required": false,
-                        "type": "string",
-                        "minLength": 1
-                    },
-                    {
-                        "name": "is_staff",
-                        "in": "query",
-                        "description": "this one too!",
-                        "required": false,
-                        "type": "boolean"
-                    },
-                    {
-                        "name": "styles",
-                        "in": "query",
-                        "description": "and this one is fancy!",
-                        "required": true,
-                        "type": "array",
-                        "items": {
-                            "type": "string",
-                            "enum": [
-                                "a",
-                                "b",
-                                "c",
-                                "d"
-                            ]
-                        },
-                        "collectionFormat": "multi"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/UserSerializerrr"
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "Users"
-                ]
-            },
-            "post": {
-                "operationId": "users_create",
-                "description": "apiview post description override",
-                "parameters": [
-                    {
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "required": [
-                                "username"
-                            ],
-                            "type": "object",
-                            "properties": {
-                                "username": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "",
-                        "schema": {
-                            "required": [
-                                "username"
-                            ],
-                            "type": "object",
-                            "properties": {
-                                "username": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "Users"
-                ],
-                "security": []
-            },
-            "patch": {
-                "operationId": "users_dummy",
-                "description": "dummy operation",
+                "operationId": "v1_testsessions_result_list",
+                "summary": "Result of a Session",
+                "description": "Return for each scenario case related to the session, if that call has been performed and the global outcome.",
                 "parameters": [],
                 "responses": {
                     "200": {
@@ -1356,69 +583,37 @@
                     }
                 },
                 "tags": [
-                    "Users"
+                    "testsessions > actions"
                 ]
             },
-            "parameters": []
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }
+            ]
         },
-        "/users/{id}/": {
+        "/v1/testsessions/{id}/stop": {
             "get": {
-                "operationId": "users_read",
-                "description": "user_detail fbv docstring",
-                "parameters": [
-                    {
-                        "name": "test",
-                        "in": "query",
-                        "description": "test manual param",
-                        "type": "boolean"
-                    },
-                    {
-                        "name": "test_array",
-                        "in": "query",
-                        "description": "test query array arg",
-                        "required": true,
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "collectionFormat": "multi"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "response description",
-                        "schema": {
-                            "$ref": "#/definitions/UserSerializerrr"
-                        }
-                    }
-                },
-                "tags": [
-                    "Users"
-                ]
-            },
-            "put": {
-                "operationId": "users_update",
-                "description": "user_detail fbv docstring",
-                "parameters": [
-                    {
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/UserSerializerrr"
-                        }
-                    }
-                ],
+                "operationId": "v1_testsessions_stop_list",
+                "summary": "Stop Session",
+                "description": "Stop the session and retrieve all the scenario cases related to it.",
+                "parameters": [],
                 "responses": {
                     "200": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/UserSerializerrr"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/ScenarioCase"
+                            }
                         }
                     }
                 },
                 "tags": [
-                    "Users"
+                    "testsessions > actions"
                 ]
             },
             "parameters": [
@@ -1432,695 +627,621 @@
         }
     },
     "definitions": {
-        "Article": {
+        "Login": {
             "required": [
-                "title",
-                "body",
-                "group"
+                "password"
             ],
             "type": "object",
             "properties": {
-                "title": {
-                    "description": "title model help_text",
+                "username": {
+                    "title": "Username",
+                    "type": "string"
+                },
+                "email": {
+                    "title": "Email",
                     "type": "string",
-                    "maxLength": 255,
-                    "minLength": 1
+                    "format": "email"
                 },
-                "author": {
-                    "description": "The ID of the user that created this article; if none is provided, defaults to the currently logged in user.",
-                    "type": "integer"
-                },
-                "body": {
-                    "description": "body serializer help_text",
-                    "type": "string",
-                    "maxLength": 5000,
-                    "minLength": 1
-                },
-                "slug": {
-                    "description": "slug model help_text",
-                    "type": "string",
-                    "format": "slug",
-                    "pattern": "^[-a-zA-Z0-9_]+$",
-                    "maxLength": 50
-                },
-                "date_created": {
-                    "type": "string",
-                    "format": "date-time",
-                    "readOnly": true
-                },
-                "date_modified": {
-                    "type": "string",
-                    "format": "date-time",
-                    "readOnly": true
-                },
-                "read_only_nullable": {
-                    "type": "string",
-                    "readOnly": true,
-                    "minLength": 1,
-                    "x-nullable": true
-                },
-                "references": {
-                    "description": "this is a really bad example",
-                    "type": "object",
-                    "additionalProperties": {
-                        "description": "but i needed to test these 2 fields somehow",
-                        "type": "string",
-                        "format": "uri",
-                        "minLength": 1
-                    },
-                    "readOnly": true
-                },
-                "uuid": {
-                    "description": "should articles have UUIDs?",
-                    "type": "string",
-                    "format": "uuid",
-                    "readOnly": true
-                },
-                "cover": {
-                    "type": "string",
-                    "readOnly": true,
-                    "format": "uri"
-                },
-                "cover_name": {
-                    "type": "string",
-                    "readOnly": true
-                },
-                "article_type": {
-                    "description": "IntegerField declared on model with choices=(...) and exposed via ModelSerializer",
-                    "type": "integer",
-                    "enum": [
-                        1,
-                        2,
-                        3,
-                        7,
-                        8
-                    ],
-                    "x-nullable": true
-                },
-                "group": {
-                    "type": "string",
-                    "format": "uuid"
-                },
-                "original_group": {
-                    "type": "string",
-                    "format": "uuid",
-                    "readOnly": true
-                }
-            }
-        },
-        "ImageUpload": {
-            "required": [
-                "image_styles"
-            ],
-            "type": "object",
-            "properties": {
-                "image_id": {
-                    "type": "string",
-                    "format": "uuid",
-                    "readOnly": true
-                },
-                "what_am_i_doing": {
-                    "description": "test",
-                    "type": "string",
-                    "pattern": "^69$",
-                    "default": "69",
-                    "minLength": 1,
-                    "x-nullable": true
-                },
-                "image_styles": {
-                    "description": "Parameter with Items",
-                    "type": "array",
-                    "items": {
-                        "type": "string",
-                        "enum": [
-                            "wide",
-                            "tall",
-                            "thumb",
-                            "social"
-                        ]
-                    }
-                },
-                "upload": {
-                    "description": "image serializer help_text",
-                    "type": "string",
-                    "readOnly": true,
-                    "format": "uri"
-                }
-            }
-        },
-        "Identity": {
-            "title": "Identity",
-            "type": "object",
-            "properties": {
-                "id": {
-                    "title": "ID",
-                    "type": "integer",
-                    "readOnly": true
-                },
-                "first_name": {
-                    "title": "First name",
-                    "type": "string",
-                    "maxLength": 30,
-                    "minLength": 1,
-                    "x-nullable": true
-                },
-                "last_name": {
-                    "title": "Last name",
-                    "description": "<strong>Here's some HTML!</strong>",
-                    "type": "string",
-                    "maxLength": 30,
-                    "minLength": 1,
-                    "x-nullable": true
-                }
-            }
-        },
-        "Person": {
-            "required": [
-                "identity"
-            ],
-            "type": "object",
-            "properties": {
-                "id": {
-                    "title": "ID",
-                    "type": "integer",
-                    "readOnly": true
-                },
-                "identity": {
-                    "$ref": "#/definitions/Identity"
-                }
-            }
-        },
-        "Project": {
-            "required": [
-                "projectName",
-                "githubRepo"
-            ],
-            "type": "object",
-            "properties": {
-                "projectName": {
-                    "title": "Project name",
-                    "description": "Name of the project",
-                    "type": "string",
-                    "minLength": 1
-                },
-                "githubRepo": {
-                    "title": "Github repo",
-                    "description": "Github repository of the project",
+                "password": {
+                    "title": "Password",
                     "type": "string",
                     "minLength": 1
                 }
             }
         },
-        "Snippet": {
+        "PasswordChange": {
             "required": [
-                "code",
-                "tags",
-                "language"
+                "new_password1",
+                "new_password2"
             ],
             "type": "object",
             "properties": {
-                "id": {
-                    "title": "Id",
-                    "description": "id serializer help text",
-                    "type": "integer",
-                    "readOnly": true
-                },
-                "created": {
-                    "title": "Client date time suu",
+                "new_password1": {
+                    "title": "New password1",
                     "type": "string",
-                    "format": "integer",
-                    "readOnly": true,
-                    "description": "Date time in unix timestamp format"
-                },
-                "owner": {
-                    "title": "Owner",
-                    "description": "The ID of the user that created this snippet; if none is provided, defaults to the currently logged in user.",
-                    "type": "integer"
-                },
-                "ownerAsString": {
-                    "description": "The ID of the user that created this snippet.",
-                    "type": "string",
-                    "readOnly": true,
-                    "minLength": 1,
-                    "title": "Owner as string"
-                },
-                "title": {
-                    "title": "Title",
-                    "type": "string",
-                    "maxLength": 100
-                },
-                "code": {
-                    "title": "Code",
-                    "type": "string",
+                    "maxLength": 128,
                     "minLength": 1
                 },
-                "tags": {
-                    "type": "array",
-                    "items": {
-                        "type": "string",
-                        "minLength": 2
-                    },
-                    "maxItems": 15,
-                    "minItems": 3
-                },
-                "linenos": {
-                    "title": "Linenos",
-                    "type": "boolean"
-                },
-                "language": {
-                    "description": "Sample help text for language",
-                    "type": "object",
-                    "properties": {
-                        "name": {
-                            "title": "Name",
-                            "description": "The name of the programming language",
-                            "type": "string",
-                            "enum": [
-                                "cpp",
-                                "js",
-                                "python"
-                            ],
-                            "default": "python"
-                        },
-                        "readOnlyNullable": {
-                            "title": "Read only nullable",
-                            "type": "string",
-                            "readOnly": true,
-                            "minLength": 1,
-                            "x-nullable": true
-                        }
-                    }
-                },
-                "styles": {
-                    "type": "array",
-                    "items": {
-                        "type": "string",
-                        "enum": [
-                            "monokai",
-                            "solarized-dark",
-                            "vim"
-                        ]
-                    },
-                    "default": [
-                        "solarized-dark"
-                    ]
-                },
-                "lines": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    },
-                    "x-nullable": true
-                },
-                "exampleProjects": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/Project"
-                    },
-                    "readOnly": true,
-                    "maxItems": 100
-                },
-                "difficultyFactor": {
-                    "title": "Difficulty factor",
-                    "description": "this is here just to test FloatField",
-                    "type": "number",
-                    "readOnly": true,
-                    "default": 6.9
-                },
-                "rateAsString": {
-                    "title": "Rate as string",
+                "new_password2": {
+                    "title": "New password2",
                     "type": "string",
-                    "format": "decimal",
-                    "default": "0.000"
-                },
-                "rate": {
-                    "title": "Rate",
-                    "type": "number",
-                    "format": "decimal",
-                    "default": 0.0,
-                    "minimum": 0.0
-                }
-            }
-        },
-        "SnippetViewer": {
-            "required": [
-                "snippet",
-                "viewer"
-            ],
-            "type": "object",
-            "properties": {
-                "id": {
-                    "title": "ID",
-                    "type": "integer",
-                    "readOnly": true
-                },
-                "snippet": {
-                    "title": "Snippet",
-                    "type": "integer"
-                },
-                "viewer": {
-                    "title": "Viewer",
-                    "type": "integer"
-                }
-            }
-        },
-        "Todo": {
-            "required": [
-                "title"
-            ],
-            "type": "object",
-            "properties": {
-                "title": {
-                    "title": "Title",
-                    "type": "string",
-                    "maxLength": 50,
+                    "maxLength": 128,
                     "minLength": 1
                 }
             }
         },
-        "TodoAnother": {
+        "PasswordReset": {
             "required": [
-                "title",
-                "todo"
+                "email"
             ],
             "type": "object",
             "properties": {
-                "title": {
-                    "title": "Title",
+                "email": {
+                    "title": "Email",
                     "type": "string",
-                    "maxLength": 50,
+                    "format": "email",
+                    "minLength": 1
+                }
+            }
+        },
+        "PasswordResetConfirm": {
+            "required": [
+                "new_password1",
+                "new_password2",
+                "uid",
+                "token"
+            ],
+            "type": "object",
+            "properties": {
+                "new_password1": {
+                    "title": "New password1",
+                    "type": "string",
+                    "maxLength": 128,
                     "minLength": 1
                 },
-                "todo": {
-                    "$ref": "#/definitions/Todo"
-                }
-            }
-        },
-        "Harvest": {
-            "type": "object",
-            "properties": {
-                "size_code": {
-                    "title": "Size code",
+                "new_password2": {
+                    "title": "New password2",
                     "type": "string",
-                    "enum": [
-                        "50",
-                        "100",
-                        "200"
-                    ],
-                    "readOnly": true
-                }
-            }
-        },
-        "TodoRecursive": {
-            "required": [
-                "title"
-            ],
-            "type": "object",
-            "properties": {
-                "id": {
-                    "title": "ID",
-                    "type": "integer",
-                    "readOnly": true
-                },
-                "title": {
-                    "title": "Title",
-                    "type": "string",
-                    "maxLength": 50,
+                    "maxLength": 128,
                     "minLength": 1
                 },
-                "parent": {
-                    "$ref": "#/definitions/TodoRecursive"
-                },
-                "parent_id": {
-                    "type": "integer",
-                    "title": "Parent id",
-                    "x-nullable": true
-                }
-            }
-        },
-        "TodoTree": {
-            "required": [
-                "title",
-                "children",
-                "many_children"
-            ],
-            "type": "object",
-            "properties": {
-                "id": {
-                    "title": "ID",
-                    "type": "integer",
-                    "readOnly": true
-                },
-                "title": {
-                    "title": "Title",
+                "uid": {
+                    "title": "Uid",
                     "type": "string",
-                    "maxLength": 50,
                     "minLength": 1
                 },
-                "children": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/TodoTree"
-                    }
-                },
-                "many_children": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/TodoTree"
-                    }
-                }
-            }
-        },
-        "TodoYetAnother": {
-            "required": [
-                "title"
-            ],
-            "type": "object",
-            "properties": {
-                "title": {
-                    "title": "Title",
-                    "type": "string",
-                    "maxLength": 50,
-                    "minLength": 1
-                },
-                "todo": {
-                    "required": [
-                        "title"
-                    ],
-                    "type": "object",
-                    "properties": {
-                        "id": {
-                            "title": "ID",
-                            "type": "integer",
-                            "readOnly": true
-                        },
-                        "title": {
-                            "title": "Title",
-                            "type": "string",
-                            "maxLength": 50,
-                            "minLength": 1
-                        },
-                        "todo": {
-                            "required": [
-                                "title"
-                            ],
-                            "type": "object",
-                            "properties": {
-                                "id": {
-                                    "title": "ID",
-                                    "type": "integer",
-                                    "readOnly": true
-                                },
-                                "title": {
-                                    "title": "Title",
-                                    "type": "string",
-                                    "maxLength": 50,
-                                    "minLength": 1
-                                }
-                            },
-                            "readOnly": true
-                        }
-                    },
-                    "readOnly": true
-                }
-            },
-            "example": {
-                "title": "parent",
-                "todo": {
-                    "title": "child",
-                    "todo": null
-                }
-            }
-        },
-        "OtherStuff": {
-            "title": "Other stuff",
-            "description": "the decorator should determine the serializer class for this",
-            "required": [
-                "foo"
-            ],
-            "type": "object",
-            "properties": {
-                "foo": {
-                    "title": "Foo",
+                "token": {
+                    "title": "Token",
                     "type": "string",
                     "minLength": 1
                 }
             }
         },
-        "MethodFieldExample": {
-            "title": "Hint example",
-            "type": "object",
-            "properties": {
-                "hinted_bool": {
-                    "title": "Hinted bool",
-                    "description": "the type hint on the method should determine this to be a bool",
-                    "type": "boolean",
-                    "readOnly": true
-                },
-                "hinted_int": {
-                    "title": "Hinted int",
-                    "description": "the type hint on the method should determine this to be an integer",
-                    "type": "integer",
-                    "readOnly": true
-                },
-                "hinted_float": {
-                    "title": "Hinted float",
-                    "description": "the type hint on the method should determine this to be a number",
-                    "type": "number",
-                    "readOnly": true
-                },
-                "hinted_decimal": {
-                    "title": "Hinted decimal",
-                    "description": "the type hint on the method should determine this to be a decimal",
-                    "type": "string",
-                    "format": "decimal",
-                    "readOnly": true
-                },
-                "hinted_datetime": {
-                    "title": "Hinted datetime",
-                    "description": "the type hint on the method should determine this to be a datetime",
-                    "type": "string",
-                    "format": "date-time",
-                    "readOnly": true
-                },
-                "hinted_date": {
-                    "title": "Hinted date",
-                    "description": "the type hint on the method should determine this to be a date",
-                    "type": "string",
-                    "format": "date",
-                    "readOnly": true
-                },
-                "hinted_uuid": {
-                    "title": "Hinted uuid",
-                    "description": "the type hint on the method should determine this to be a uuid",
-                    "type": "string",
-                    "format": "uuid",
-                    "readOnly": true
-                },
-                "hinted_unknown": {
-                    "title": "Hinted unknown",
-                    "description": "type hint is unknown, so is expected to fallback to string",
-                    "type": "string",
-                    "readOnly": true
-                },
-                "non_hinted_number": {
-                    "title": "Non hinted number",
-                    "description": "No hint on the method, so this is expected to fallback to string",
-                    "type": "string",
-                    "readOnly": true
-                }
-            }
-        },
-        "UserSerializerrr": {
+        "UserDetails": {
             "required": [
-                "username",
-                "articles",
-                "snippets",
-                "hint_example"
+                "username"
             ],
             "type": "object",
             "properties": {
-                "id": {
+                "pk": {
                     "title": "ID",
                     "type": "integer",
                     "readOnly": true
                 },
                 "username": {
-                    "title": "Username",
-                    "description": "Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.",
+                    "title": "Gebruikersnaam",
+                    "description": "Verplicht. Maximaal 150 tekens.",
                     "type": "string",
-                    "pattern": "^[\\w.@+-]+$",
                     "maxLength": 150,
                     "minLength": 1
                 },
                 "email": {
-                    "title": "Email address",
+                    "title": "E-mailadres",
                     "type": "string",
                     "format": "email",
-                    "maxLength": 254
-                },
-                "articles": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    },
-                    "uniqueItems": true
-                },
-                "snippets": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    },
-                    "uniqueItems": true
-                },
-                "last_connected_ip": {
-                    "title": "Last connected ip",
-                    "description": "i'm out of ideas",
-                    "type": "string",
-                    "format": "ipv4",
                     "readOnly": true,
                     "minLength": 1
                 },
-                "last_connected_at": {
-                    "title": "Last connected at",
-                    "description": "really?",
+                "first_name": {
+                    "title": "Voornaam",
                     "type": "string",
-                    "format": "date",
+                    "maxLength": 255
+                },
+                "last_name": {
+                    "title": "Achternaam",
+                    "type": "string",
+                    "maxLength": 255
+                }
+            }
+        },
+        "ExposedUrl": {
+            "required": [
+                "session"
+            ],
+            "type": "object",
+            "properties": {
+                "id": {
+                    "title": "ID",
+                    "type": "integer",
                     "readOnly": true
                 },
-                "article_slugs": {
+                "subdomain": {
+                    "title": "Subdomain",
+                    "type": "string",
+                    "maxLength": 200,
+                    "minLength": 1,
+                    "x-nullable": true
+                },
+                "session": {
+                    "title": "Session",
+                    "type": "integer"
+                },
+                "vng_endpoint": {
+                    "title": "Vng endpoint",
+                    "type": "string",
+                    "pattern": "^[^ ]*$",
+                    "readOnly": true
+                }
+            }
+        },
+        "OpenApiInspection": {
+            "required": [
+                "url"
+            ],
+            "type": "object",
+            "properties": {
+                "url": {
+                    "title": "Url",
+                    "type": "string",
+                    "format": "uri",
+                    "minLength": 1
+                }
+            }
+        },
+        "OpenApiInspectionResponse": {
+            "required": [
+                "version",
+                "satisfied"
+            ],
+            "type": "object",
+            "properties": {
+                "version": {
+                    "title": "Version",
+                    "type": "integer"
+                },
+                "satisfied": {
+                    "title": "Satisfied",
+                    "type": "boolean"
+                }
+            }
+        },
+        "ServerRunResultShield": {
+            "required": [
+                "label",
+                "message",
+                "color"
+            ],
+            "type": "object",
+            "properties": {
+                "schemaVersion": {
+                    "title": "Schemaversion",
+                    "type": "integer",
+                    "default": 1
+                },
+                "label": {
+                    "title": "Label",
+                    "type": "string",
+                    "maxLength": 200,
+                    "minLength": 1
+                },
+                "message": {
+                    "title": "Message",
+                    "type": "string",
+                    "maxLength": 200,
+                    "minLength": 1
+                },
+                "color": {
+                    "title": "Color",
+                    "type": "string",
+                    "maxLength": 200,
+                    "minLength": 1
+                }
+            }
+        },
+        "TestScenarioUrl": {
+            "title": "Test scenario url",
+            "required": [
+                "name"
+            ],
+            "type": "object",
+            "properties": {
+                "name": {
+                    "title": "Naam",
+                    "type": "string",
+                    "maxLength": 200,
+                    "minLength": 1
+                }
+            }
+        },
+        "Endpoint": {
+            "required": [
+                "url",
+                "test_scenario_url"
+            ],
+            "type": "object",
+            "properties": {
+                "url": {
+                    "title": "Url",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "test_scenario_url": {
+                    "$ref": "#/definitions/TestScenarioUrl"
+                }
+            }
+        },
+        "ServerRun": {
+            "required": [
+                "test_scenario",
+                "endpoints"
+            ],
+            "type": "object",
+            "properties": {
+                "id": {
+                    "title": "ID",
+                    "type": "integer",
+                    "readOnly": true
+                },
+                "test_scenario": {
+                    "title": "Test scenario",
+                    "type": "string"
+                },
+                "started": {
+                    "title": "Gestart op",
+                    "type": "string",
+                    "format": "date-time",
+                    "readOnly": true
+                },
+                "stopped": {
+                    "title": "Gestopt op",
+                    "type": "string",
+                    "format": "date-time",
+                    "readOnly": true
+                },
+                "client_id": {
+                    "title": "Client id",
+                    "type": "string",
+                    "x-nullable": true
+                },
+                "secret": {
+                    "title": "Secret",
+                    "type": "string",
+                    "x-nullable": true
+                },
+                "endpoints": {
                     "type": "array",
                     "items": {
-                        "type": "string",
-                        "format": "slug",
-                        "pattern": "^[-a-zA-Z0-9_]+$"
+                        "$ref": "#/definitions/Endpoint"
+                    }
+                },
+                "status": {
+                    "title": "Status",
+                    "type": "string",
+                    "enum": [
+                        "starting",
+                        "running",
+                        "shutting down",
+                        "stopped",
+                        "Error deployment",
+                        "Scheduled"
+                    ],
+                    "readOnly": true
+                },
+                "percentage_exec": {
+                    "title": "Percentage exec",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648,
+                    "x-nullable": true
+                },
+                "status_exec": {
+                    "title": "Status exec",
+                    "type": "string",
+                    "x-nullable": true
+                }
+            }
+        },
+        "ServerRunPayloadExample": {
+            "required": [
+                "test_scenario",
+                "endpoints"
+            ],
+            "type": "object",
+            "properties": {
+                "id": {
+                    "title": "ID",
+                    "type": "integer",
+                    "readOnly": true
+                },
+                "test_scenario": {
+                    "title": "Test scenario",
+                    "type": "string"
+                },
+                "started": {
+                    "title": "Gestart op",
+                    "type": "string",
+                    "format": "date-time",
+                    "readOnly": true
+                },
+                "stopped": {
+                    "title": "Gestopt op",
+                    "type": "string",
+                    "format": "date-time",
+                    "readOnly": true
+                },
+                "client_id": {
+                    "title": "Client id",
+                    "type": "string",
+                    "x-nullable": true
+                },
+                "secret": {
+                    "title": "Secret",
+                    "type": "string",
+                    "x-nullable": true
+                },
+                "endpoints": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Endpoint"
+                    }
+                },
+                "status": {
+                    "title": "Status",
+                    "type": "string",
+                    "enum": [
+                        "starting",
+                        "running",
+                        "shutting down",
+                        "stopped",
+                        "Error deployment",
+                        "Scheduled"
+                    ],
+                    "readOnly": true
+                },
+                "percentage_exec": {
+                    "title": "Percentage exec",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648,
+                    "x-nullable": true
+                },
+                "status_exec": {
+                    "title": "Status exec",
+                    "type": "string",
+                    "x-nullable": true
+                }
+            },
+            "example": {
+                "client_id": "test-api-s694H3mpvZpd",
+                "endpoints": [
+                    {
+                        "test_scenario_url": {
+                            "name": "DRC"
+                        },
+                        "url": "https://ref.tst.vng.cloud/drc/"
                     },
-                    "readOnly": true,
-                    "uniqueItems": true
-                },
-                "other_stuff": {
-                    "$ref": "#/definitions/OtherStuff"
-                },
-                "hint_example": {
-                    "$ref": "#/definitions/MethodFieldExample"
-                },
-                "help_text_example_1": {
-                    "title": "Help text example 1",
-                    "description": "help text on field is set, so this should appear in swagger",
+                    {
+                        "test_scenario_url": {
+                            "name": "ZTC"
+                        },
+                        "url": "https://ref.tst.vng.cloud/ztc/"
+                    },
+                    {
+                        "test_scenario_url": {
+                            "name": "ZRC"
+                        },
+                        "url": "https://ref.tst.vng.cloud/zrc/"
+                    }
+                ],
+                "secret": "JKzXwzfQvQlYpcnvMwIbdLsmymzzpFvC",
+                "test_scenario": "ZDS 2.0 verification test"
+            },
+            "response": {
+                "trt": 1
+            }
+        },
+        "SessionTypes": {
+            "required": [
+                "name"
+            ],
+            "type": "object",
+            "properties": {
+                "id": {
+                    "title": "ID",
                     "type": "integer",
                     "readOnly": true
                 },
-                "help_text_example_2": {
-                    "title": "Help text example 2",
-                    "description": "instance help_text is set, so should appear in swagger",
+                "name": {
+                    "title": "Naam",
+                    "type": "string",
+                    "maxLength": 200,
+                    "minLength": 1
+                },
+                "standard": {
+                    "title": "Standaard",
+                    "type": "string",
+                    "maxLength": 200,
+                    "minLength": 1,
+                    "x-nullable": true
+                },
+                "role": {
+                    "title": "Rol",
+                    "type": "string",
+                    "maxLength": 200,
+                    "minLength": 1,
+                    "x-nullable": true
+                },
+                "application": {
+                    "title": "Applicatie",
+                    "type": "string",
+                    "maxLength": 200,
+                    "minLength": 1,
+                    "x-nullable": true
+                },
+                "version": {
+                    "title": "Versie",
+                    "type": "string",
+                    "maxLength": 200,
+                    "minLength": 1,
+                    "x-nullable": true
+                },
+                "authentication": {
+                    "title": "Authentication",
+                    "type": "string",
+                    "enum": [
+                        "JWT",
+                        "Authorization header",
+                        "No Authorization"
+                    ]
+                }
+            }
+        },
+        "SessionStatus": {
+            "required": [
+                "session_type"
+            ],
+            "type": "object",
+            "properties": {
+                "id": {
+                    "title": "ID",
                     "type": "integer",
                     "readOnly": true
                 },
-                "help_text_example_3": {
-                    "title": "Help text example 3",
-                    "description": "\n        docstring is set so should appear in swagger as fallback\n        :return:\n        ",
+                "session_type": {
+                    "title": "Sessie type",
+                    "type": "integer"
+                },
+                "started": {
+                    "title": "Gestart op",
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "stopped": {
+                    "title": "Gestopt op",
+                    "type": "string",
+                    "format": "date-time",
+                    "x-nullable": true
+                },
+                "status": {
+                    "title": "Status",
+                    "type": "string",
+                    "enum": [
+                        "starting",
+                        "running",
+                        "shutting down",
+                        "stopped",
+                        "Error deployment"
+                    ]
+                },
+                "deploy_status": {
+                    "title": "Deploy status",
+                    "type": "string",
+                    "x-nullable": true
+                },
+                "deploy_percentage": {
+                    "title": "Deploy percentage",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648,
+                    "x-nullable": true
+                }
+            }
+        },
+        "Session": {
+            "required": [
+                "session_type"
+            ],
+            "type": "object",
+            "properties": {
+                "id": {
+                    "title": "ID",
                     "type": "integer",
                     "readOnly": true
+                },
+                "session_type": {
+                    "title": "Session type",
+                    "type": "string"
+                },
+                "started": {
+                    "title": "Gestart op",
+                    "type": "string",
+                    "format": "date-time",
+                    "readOnly": true
+                },
+                "stopped": {
+                    "title": "Gestopt op",
+                    "type": "string",
+                    "format": "date-time",
+                    "readOnly": true
+                },
+                "status": {
+                    "title": "Status",
+                    "type": "string",
+                    "enum": [
+                        "starting",
+                        "running",
+                        "shutting down",
+                        "stopped",
+                        "Error deployment"
+                    ],
+                    "readOnly": true
+                },
+                "exposedurl_set": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ExposedUrl"
+                    },
+                    "readOnly": true
+                },
+                "build_version": {
+                    "title": "Build version",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "sandbox": {
+                    "title": "Sandbox",
+                    "type": "boolean"
+                }
+            }
+        },
+        "ScenarioCase": {
+            "required": [
+                "url",
+                "vng_endpoint"
+            ],
+            "type": "object",
+            "properties": {
+                "url": {
+                    "title": "Url",
+                    "description": "\n    URL pattern that will be compared\n    with the request and eventually matched.\n    Wildcards can be added, e.g. '/test/{uuid}/stop'\n    will match the URL '/test/c5429dcc-6955-4e22-9832-08d52205f633/stop'.\n    ",
+                    "type": "string",
+                    "maxLength": 200,
+                    "minLength": 1
+                },
+                "http_method": {
+                    "title": "Http method",
+                    "type": "string",
+                    "enum": [
+                        "POST",
+                        "GET",
+                        "PUT",
+                        "DELETE",
+                        "PATCH"
+                    ]
+                },
+                "vng_endpoint": {
+                    "title": "Vng endpoint",
+                    "type": "integer"
                 }
             }
         }

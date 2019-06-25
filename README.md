@@ -8,17 +8,17 @@ Om de doelen van de Common Ground te bereiken hebben we een testvoorziening nodi
 * De tests moeten worden getriggerd met de aanroep van een API, niet vanuit een grafische user interface.
 * Een grafische user interface is alleen nodig voor het tonen van overzichten met resultaten en eventueel voor het instellen van wat autorisaties - wie kan beschikken over welke testresultaten.
 * De tests moeten zowel consumers als providers kunnen testen en valideren met realistische scenario's.
-* Het zou mooi zijn als de valideren test op twee manieren kan worden ingezet: 
+* Het zou mooi zijn als de validatie test op twee manieren kan worden ingezet: 
    1. voor eigen gebruik tijdens softwareontwikkeling, dan geeft het feedback over wat goed gaat en wat niet  
    2. voor het valideren van een consumer of provider, om een stempeltje “compliant met de standaard” te verkrijgen.
-* Idealiter kunnen gemeenten dezelfde constructie gebruiken om een implementatie van door leverancier ingezette software te testen tegen het testplatform.
-* Wat extraatjes zoals ‘badges’ waarmee je resultaat validatie voor een bepaalde build/versie kunt tonen zou mooi zijn.
-* De testvoorziening moet aanroepbaar zijn als API
-* Het opstarten van tests en ophalen van resultaten loopt via REST/JSON calls 
-* Integratie met een eigen CI/CD pipeline is mogelijk, voorbeeld voor het doen van regressietesten
+* Idealiter kunnen gemeenten dezelfde constructie gebruiken om een implementatie van door leverancier ingezette software te testen tegen de testvoorziening.
+* Wat extraatjes zoals ‘badges’ waarmee je het resultaat van de validatie voor een bepaalde build/versie kunt tonen zou mooi zijn.
+* De testvoorziening moet aanroepbaar zijn als API.
+* Het opstarten van tests en ophalen van resultaten loopt via REST/JSON calls.
+* Integratie met een eigen CI/CD pipeline is mogelijk, voorbeeld voor het doen van regressietesten.
 
 ## Doel
-Deze repository bevat alles wat nodig is voor de ontwikkeling van een nieuw API-testplatform
+Deze repository bevat alles wat nodig is voor de ontwikkeling van een nieuw API-testvoorziening.
 
 ## Vragen en bijdragen
 Lees meer over hoe je vragen kunt stellen, bugs kunt melden en bij kunt dragen (met code of documentatie) in [`CONTRIBUTING.md`](CONTRIBUTING.md) (EN).
@@ -27,16 +27,16 @@ Lees meer over hoe je vragen kunt stellen, bugs kunt melden en bij kunt dragen (
 Ga naar de folder [api-lab](https://github.com/VNG-Realisatie/api-testvoorziening/tree/master/doc/api_lab) voor het downloaden van de tutorial en de bijbehorende Postman collecties.
 
 ## Documentatie
-First, in order to use the API Test Platform you need to create a user, you can easily follow the tutorial [here](https://github.com/VNG-Realisatie/api-testvoorziening/blob/master/tutorials/USER.md).
-Then, you can test both provider and consumer following the steps depicted in these guides:
-1. [Consumer sessioin](https://github.com/VNG-Realisatie/api-testvoorziening/blob/master/tutorials/CONSUMER_SESSION.md)
+Om de API Testvoorzieng te kunnen gebruiken moet er eerst een gebruiker aangenaakt worden. In de [tutorial](https://github.com/VNG-Realisatie/api-testvoorziening/blob/master/tutorials/USER.md) staat beschreven hoe je dat doet.
+Daarna kan zowel een provider als een consumer getest worden d.m.v. de stappen die in de volgende handleidingen worden uitgelegd:
+1. [Consumer sessie](https://github.com/VNG-Realisatie/api-testvoorziening/blob/master/tutorials/CONSUMER_SESSION.md)
 2. [Provider test](https://github.com/VNG-Realisatie/api-testvoorziening/blob/master/tutorials/PROVIDER_TEST.md)
 
-Regarding the API endpoints, you can analyze the swagger generated schema [here](https://vng-staging.maykin.nl/api/v1/schema) or directly the OpenApi yaml [file](https://github.com/VNG-Realisatie/api-testvoorziening/blob/master/api-specificatie/openapi.yaml). 
+Wat betreft de API endpoints kun je het gegenereerde swagger schema [hier](https://vng-staging.maykin.nl/api/v1/schema) analyseren of direct de OpenApi yaml [file](https://github.com/VNG-Realisatie/api-testvoorziening/blob/master/api-specificatie/openapi.yaml). 
 
 
 ## Sofware
-The code of this project can be found [here](https://github.com/VNG-Realisatie/api-testvoorziening-code).
+De code van dit project kan je [hier](https://github.com/VNG-Realisatie/api-testvoorziening-code) vinden.
 
 
 ## Rollen

@@ -4,7 +4,7 @@
 
 ## Introduction 
 
-To reach the goals of the [Common Ground]{https://commonground.nl} for Dutch municipalities a platform to test their API's is being developed. These are the main features of the [API Test Platform](https://api-test.nl):
+To reach the goals of the [Common Ground](https://commonground.nl) for Dutch municipalities a platform to test their API's is being developed. These are the main features of the [API Test Platform](https://api-test.nl):
 
 * Functionality for testing both consumers as providers of the API's.
 * Sandbox to play with API's.

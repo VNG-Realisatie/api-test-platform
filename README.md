@@ -4,13 +4,13 @@
 
 ## Introduction 
 
-To reach the goals of the Common Ground for Dutch municipalities they need a platform to test their API's. These are the main features of the API Test Platform that is being developed:
+To reach the goals of the [Common Ground]{https://commonground.nl} for Dutch municipalities a platform to test their API's is being developed. These are the main features of the [API Test Platform](https://api-test.nl):
 
 * Functionality for testing both consumers as providers of the API's.
 * Sandbox to play with API's.
 * Facilities for demonstrating compliancy such as test reports and badges.
 * Scheduler for monitoring API's.
-* API for integration with your own CI/CD pipeline.
+* [API](https://api-test.nl/api/v1/schema) for integration with your own CI/CD pipeline.
 
 ## Documentation
 First, in order to use the API Test Platform you need to create a user, you can easily follow the tutorial [here](https://github.com/VNG-Realisatie/api-testvoorziening/blob/master/tutorials/USER.md).

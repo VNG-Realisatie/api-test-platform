@@ -15,6 +15,7 @@ To reach the goals of the [Common Ground](https://commonground.nl) for Dutch mun
 ## Documentation
 First, in order to use the API Test Platform you need to create a user, you can easily follow the tutorial [here](https://github.com/VNG-Realisatie/api-testvoorziening/blob/master/tutorials/USER.md).
 Then, you can test both provider and consumer following the steps depicted in these guides:
+
 0. [Register](https://github.com/VNG-Realisatie/api-testvoorziening/blob/master/tutorials/USER.md)
 1. [Consumer session](https://github.com/VNG-Realisatie/api-testvoorziening/blob/master/tutorials/CONSUMER_SESSION.md)
 2. [Provider test](https://github.com/VNG-Realisatie/api-testvoorziening/blob/master/tutorials/PROVIDER_TEST.md)

@@ -22,7 +22,7 @@ A list of all the possible session is presented, clicking on the name of a sessi
 The functionality of the checkbox **sandbox** is explained below.
 
 ## Using the created API
-After having created a new session, the available endpoints for this session are listed on the right hand side, under `Endpoints & Rapports`. In the case of the Demo API, only one endpoint is created.
+After having created a new session, and clicked on the session, the available endpoints for this session are listed on the right hand side, under `Endpoints & Rapports`. In the case of the Demo API, only one endpoint is created.
 
 ![](https://raw.githubusercontent.com/VNG-Realisatie/api-testvoorziening/master/tutorials/images/endpoints.png) 
 

@@ -13,7 +13,9 @@ file containing Postman testscripts.
 
 When a consumer session is started, each request made to one of the created endpoints will be logged. In order for a consumer session to succeed, all of the calls specified in the scenario cases must be made and must be successful (e.g. must have resulted in status code 200). When the consumer session is stopped, the Postman tests will be run (if a test file was supplied).
 
-For this tutorial, the [Demo API](https://demo.api-test.nl/api/v2/schema/) will be used to demonstrate consumer sessions. It is a simple API that registers quotes, allowing the user to create, read, update and delete.
+For this tutorial, the [Demo API](https://demo.api-test.nl/api/v2/schema/) will be used to demonstrate consumer sessions. It is a simple API that registers quotes, allowing the user to create, read, update and delete. 
+
+In this tutorial, Postman is used to make API calls, a tutorial for Postman can be found [here](https://learning.getpostman.com/docs/postman/launching_postman/installation_and_updates/).
 
 ## Starting a session
 To start a session click on **Start session** in the left hand side bar. 

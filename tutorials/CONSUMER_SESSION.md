@@ -24,7 +24,7 @@ A list of all the possible session is presented, clicking on the name of a sessi
 The functionality of the checkbox **sandbox** is explained below.
 
 ## Using the created API
-After having created a new session, the available endpoints for this session are listed on the right hand side, under `Endpoints & Rapports`. In the case of the Demo API, only one endpoint is created.
+After having created a new session, and clicked the Session ID the available endpoints for this session are listed on the right hand side, under `Endpoints & Rapports`. In the case of the Demo API, only one endpoint is created.
 
 ![](https://raw.githubusercontent.com/VNG-Realisatie/api-testvoorziening/master/tutorials/images/endpoints.png) 
 
@@ -46,7 +46,7 @@ It will appear in the `Report` of the session as a successful call:
 
 ![](https://raw.githubusercontent.com/VNG-Realisatie/api-testvoorziening/master/tutorials/images/consumers_report.png)
 
-Assuming the **sandbox** option has been checked, it is possible to call several times the same url path and override the result with the last one. On the other side, if the sandbox option is off, only the first result is saved.  
+If the **sandbox** option has been checked, it is possible to call several times the same url path and override the result with the last one. On the other side, if the sandbox option is off, only the first result is saved.  
 It is possible to export the result clicking through the **Rapport PDF** button to download a detail PDF of the scenario cases.  
 
 ## Running the tests

@@ -27,7 +27,6 @@ After having created a new session, and clicked the Session ID the available end
 ![](https://raw.githubusercontent.com/VNG-Realisatie/api-testvoorziening/master/tutorials/images/endpoints.png) 
 
 If we were to make a call to the Demo API endpoint by using Postman for example, the following data would be returned
-(beetje vreemde plek om nu over Postman te beginnen. Of er moet hier een Postman tutorial komen of een verwijzing naar Postman tutorials.  Aangezien het hierna over de LOG gaat, zou kan ook kunnen. (Ik weet niet hoe je alleen een commentaar moet maken. Vandaag deze edit)
 
 ![](https://raw.githubusercontent.com/VNG-Realisatie/api-testvoorziening/master/tutorials/images/postman_request1.png)
 

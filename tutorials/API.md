@@ -73,4 +73,4 @@ For the badge information, we make a request to `provider-run-shield/<uuid>`:
 
 The API also provides the `openAPIinspector` endpoint, to which you can make POST requests. A url has to be specified in the request body, which should point to an openAPI specification, and the API will validate whether the specification is conforms to OAS3.
 
-![](https://raw.githubusercontent.com/VNG-Realisatie/api-testvoorziening/master/tutorials/images/openAPIinspector.png)
+![](https://raw.githubusercontent.com/VNG-Realisatie/api-testvoorziening/master/tutorials/images/openapiinspector.png)

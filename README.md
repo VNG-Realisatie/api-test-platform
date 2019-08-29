@@ -2,8 +2,6 @@
 
 [![Build Status](https://jenkins.nlx.io/job/gemma-zaken-build-and-test/badge/icon?style=plastic)](https://jenkins.nlx.io/) ![Repo Status](https://img.shields.io/badge/status-concept-lightgrey.svg?style=plastic)
 
-[![Status badge](https://img.shields.io/endpoint.svg?style=for-the-badge&amp;url=https://vng-staging.maykin.nl/api/v1/provider-run-shield/80aa16a6-7e29-4307-807d-7ac81afe1e91/)](https://vng-staging.maykin.nl/server/80aa16a6-7e29-4307-807d-7ac81afe1e91/)
-
 ## Introduction 
 
 To reach the goals of the [Common Ground](https://commonground.nl) for Dutch municipalities a platform to test their API's is being developed. These are the main features of the [API Test Platform](https://api-test.nl):

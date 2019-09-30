@@ -6,7 +6,7 @@ Startsprint: 29-Nov-2018
 Eindsprint	13-Dec-2018
 
 ## Sprint 1	
-###Sprintdoel: Rapport zichtbaar voor clients adhv postmen scenario  
+### Sprintdoel: Rapport zichtbaar voor clients adhv postmen scenario  
 Startsprint: 13-Dec-2019       
 Eindsprint: 10-jan-2019
 
@@ -21,13 +21,13 @@ Startsprint: 7-Feb-2019
 Eindsprint:	7-Mar-2019
          
 ## Sprint 4	
-### Sprintdoel: AAA
+### Sprintdoel: Applicatie stabiel maken zodat meerdere partijen autonoom, met weinig ondersteuning kunnen testen, zodat een workshop georganiseerd kan worden.
 Startsprint: 7-Mar-2019         
-Eindsprint:	EE         
-
+Eindsprint:	4-Apr-2019
+         
 ## Sprint 5	
 ### Sprintdoel: AAA
-Startsprint: SS         
+Startsprint: 4-Apr-2019
 Eindsprint:	EE         
 
 ## Sprint 6	

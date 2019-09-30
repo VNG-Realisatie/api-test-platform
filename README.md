@@ -20,6 +20,7 @@ Then, you can test both provider and consumer following the steps depicted in th
 1. [Consumer session](https://github.com/VNG-Realisatie/api-testvoorziening/blob/master/tutorials/CONSUMER_SESSION.md)
 2. [Provider test](https://github.com/VNG-Realisatie/api-testvoorziening/blob/master/tutorials/PROVIDER_TEST.md)
 3. [API](https://github.com/VNG-Realisatie/api-testvoorziening/blob/master/tutorials/API.md)
+4. [Roadmap](https://github.com/VNG-Realisatie/api-test-platform/blob/master/doc/general/Roadmap.md)
 
 Regarding the API endpoints, you can analyze the swagger generated schema [here](https://vng-staging.maykin.nl/api/v1/schema) or directly the OpenApi yaml [file](https://github.com/VNG-Realisatie/api-testvoorziening/blob/master/api-specificatie/openapi.yaml). 
 

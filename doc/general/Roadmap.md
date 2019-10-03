@@ -42,12 +42,12 @@ Eindsprint: 11-Jul-2019
 
 ## Sprint 8	
 ### Sprintdoel: Go-Live intern (18 jul live) en directe ondersteuning vanuit productie.
-Startsprint: 13-Jun-2019           
-Eindsprint: 11-Jul-2019
+Startsprint: 11-Jul-2019           
+Eindsprint: 01-Aug-2019
 
 ## Sprint 9	
 ### Sprintdoel: MVP moet werkend zijn (ZGW, ATP en Demo API in combinatie). Documentatie op orde (op API-test.nl info pagina's). Tutorials aan de hand van de demo API uitwerken. Dockers moeten goed opgespind kunnen.  worden. 
-Startsprint: 11-Jul-2019         
+Startsprint: 01-Aug-2019         
 Eindsprint: 29-Aug-2019         
 
 ## Sprint 10

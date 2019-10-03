@@ -32,7 +32,6 @@ The code of this project can be found [here](https://github.com/VNG-Realisatie/a
 ## Roles
 
 - Client: [@TheoVNGPeters](https://github.com/TheoVNGPeters)
-- Delivery manager: [@wishalg](https://github.com/wishalg)
 - Product owner: [@HenriKorver](https://github.com/HenriKorver)
 - Scrum master:  [@JanWillemKooi](https://github.com/JanWillemKooi)
 

@@ -1,7 +1,7 @@
 # API Test Platform
 
-[![Build Status](https://jenkins.nlx.io/job/gemma-zaken-build-and-test/badge/icon?style=plastic)](https://jenkins.nlx.io/) ![Repo Status](https://img.shields.io/badge/status-concept-lightgrey.svg?style=plastic)
-[![Status badge](https://img.shields.io/endpoint.svg?style=plastic&url=https%3A//api-test.nl/api/v1/provider-latest-badge/3fa51402-62c6-42d6-89fd-e14a2b818a6c/)](https://api-test.nl/server/2/dff1f823-ecc7-4ab8-8fb6-cc20793bd60f/3fa51402-62c6-42d6-89fd-e14a2b818a6c/latest/) ![Uptime (30 days)](https://img.shields.io/uptimerobot/ratio/m782967733-af2d9fd1617222dbece6f648?style=plastic)
+[![Status badge](https://img.shields.io/endpoint.svg?style=plastic&url=https%3A//api-test.nl/api/v1/provider-latest-badge/3fa51402-62c6-42d6-89fd-e14a2b818a6c/)](https://api-test.nl/server/2/dff1f823-ecc7-4ab8-8fb6-cc20793bd60f/3fa51402-62c6-42d6-89fd-e14a2b818a6c/latest/) [![Build Status](https://jenkins.nlx.io/job/gemma-zaken-build-and-test/badge/icon?style=plastic)](https://jenkins.nlx.io/) ![Repo Status](https://img.shields.io/badge/status-concept-lightgrey.svg?style=plastic)
+ ![Uptime (30 days)](https://img.shields.io/uptimerobot/ratio/m782967733-af2d9fd1617222dbece6f648?style=plastic)
 
 ## Introduction 
 

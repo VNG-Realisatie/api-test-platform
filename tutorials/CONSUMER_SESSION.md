@@ -17,9 +17,16 @@ For this tutorial, the [Demo API](https://demo.api-test.nl/api/v2/schema/) will 
 
 In this tutorial, Postman is used to make API calls, a tutorial for Postman can be found [here](https://learning.getpostman.com/docs/postman/launching_postman/installation_and_updates/).
 
+## Select an API to test
+In the menu on the right, a list is displayed of the APIs that can be tested on the API Test Platform. Select the API that you wish to test and click on `Consumer`. For this tutorial, we will use the API of the ATP itself.
+![](https://raw.githubusercontent.com/VNG-Realisatie/api-testvoorziening/master/tutorials/images/select_consumer.png)
+
 ## Starting a session
+From the session list page, we click on `Start session` in the top right corner of the page.
+![](https://raw.githubusercontent.com/VNG-Realisatie/api-testvoorziening/master/tutorials/images/session_list.png)
+
 To start a session click on **Start session** in the left hand side bar. 
-A list of all the possible session is presented, clicking on the name of a session type, a brief description of it is displayed.  
+A list of all possible session types is presented, clicking on the name of a session type, a brief description of it is displayed.  
 ![](https://raw.githubusercontent.com/VNG-Realisatie/api-testvoorziening/master/tutorials/images/start_testrun.png)   
 The functionality of the checkbox **sandbox** is explained below.
 
@@ -40,14 +47,13 @@ Clicking of the report page, the list of all the calls that should be performed 
 
 In the case of the Demo API, if a GET request is made to the `quotes` endpoint, as shown below:
 
-![](https://raw.githubusercontent.com/VNG-Realisatie/api-testvoorziening/master/tutorials/images/postman_request2.png)
+![](https://raw.githubusercontent.com/VNG-Realisatie/api-testvoorziening/master/tutorials/images/postman_request1.png)
 
 It will appear in the `Report` of the session as a successful call:
 
 ![](https://raw.githubusercontent.com/VNG-Realisatie/api-testvoorziening/master/tutorials/images/consumers_report.png)
 
 If the **sandbox** option has been checked, it is possible to call several times the same url path and override the result with the last one. On the other side, if the sandbox option is off, only the first result is saved.  
-It is possible to export the result clicking through the **Rapport PDF** button to download a detail PDF of the scenario cases.  
 
 ## Running the tests
 When the consumer session is stopped, if a test file with Postman testscripts was provided, it will be run against the endpoints for additional validation.

@@ -19,9 +19,9 @@ paths:
     post:
       tags:
         - RPC-calls
-      summary: Generates a Postman Collection from the OAS.
+      summary: Generate Postman Collection
       operationId: generatePostmanCollection
-      description: Generates a Postman Collection from the OAS.
+      description: Generates a Postman Collection from the OAS specification.
       responses:
         '201':
           description: Created
@@ -51,9 +51,9 @@ paths:
     post:
       tags:
         - RPC-calls
-      summary: Validates an API against an OAS specification or a Postman Collection
+      summary: Validate API
       operationId: _validateAPI
-      description: Generates a Postman Collection from the OAS.
+      description: Validate API against OAS specification or Postman Collection.
       responses:
         '201':
           description: Created

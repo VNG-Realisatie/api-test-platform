@@ -1,0 +1,231 @@
+openapi: 3.0.0
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/VNGRealisatie/oas-to-testscript/0.1.0
+info:
+  title: OAS Validation API
+  description: An API for generating a "working" Postman Collection from an OAS-specification. The Postman Collection can be used for making calls to the API such that it serves as a playground. It can also be used for automatically validating a given API against its own OAS-specification.
+  version: "0.1.0"
+  contact:
+    email: henri.korver@vng.nl
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+tags:
+  - name: RPC-calls
+paths:
+  /_generatePostmanCollection:
+    post:
+      tags:
+        - RPC-calls
+      summary: Generate Postman Collection
+      operationId: generatePostmanCollection
+      description: Generates a Postman Collection from the OAS specification.
+      responses:
+        '201':
+          description: Created
+          headers:
+            API-version:
+              schema:
+                type: string
+              description: 'Geeft een specifieke API-versie aan in de context van
+                een specifieke aanroep. Voorbeeld: 0.1.0'
+            Location:
+              schema:
+                type: string
+                format: uri
+              description: URL waar de resource leeft.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeneratePostmanCollectionRespons'
+        '400':
+          description: Bad request
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GeneratePostmanCollectionRequest'
+  /_runPostmanCollection:
+    post:
+      tags:
+        - RPC-calls
+      summary: Run Postman Collection
+      operationId: runPostmanCollection
+      description: Run a Postman Collection on de API Test Platform.
+      responses:
+        '201':
+          description: Created
+          headers:
+            API-version:
+              schema:
+                type: string
+              description: 'Geeft een specifieke API-versie aan in de context van
+                een specifieke aanroep. Voorbeeld: 0.1.0'
+            Location:
+              schema:
+                type: string
+                format: uri
+              description: URL waar de resource leeft.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunPostmanCollectionRespons'
+        '400':
+          description: Bad request
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RunPostmanCollectionRequest'
+  /_validateAPI:
+    post:
+      tags:
+        - RPC-calls
+      summary: Validate API
+      operationId: _validateAPI
+      description: Validate API against its OAS specification.
+      responses:
+        '201':
+          description: Created
+          headers:
+            API-version:
+              schema:
+                type: string
+              description: 'Geeft een specifieke API-versie aan in de context van
+                een specifieke aanroep. Voorbeeld: 0.1.0'
+            Location:
+              schema:
+                type: string
+                format: uri
+              description: URL waar de resource leeft.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidateAPIRespons'
+        '400':
+          description: Bad request
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValidateAPIRequest'
+components:
+  schemas:
+    GeneratePostmanCollectionRequest:
+      type: object
+      required:
+        - oas
+      properties:
+        oas:
+          title: OAS
+          description: URL link to the OAS specification.
+          type: string
+          format: uri
+          example: 'https://demo.api-test.nl/api/v2/schema/openapi.json'
+        # apiKeyHeader:
+        #   title: API key header
+        #   description: The name of header in which the API key is stored.
+        #   type: string
+        #   example: 'Authorization'
+        # apiKey:
+        #   title: API key
+        #   description: The API key that must be included in the header.
+        #   type: string
+        #   example: 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ6Z3dfYXBpX3Rlc3RzLUd2dncyalhCazNpMyIsImNsaWVudF9pZCI6Inpnd19hcGlfdGVzdHMtR3Z2dzJqWEJrM2kzIiwidXNlcl9pZCI6IjEyMyIsInVzZXJfcmVwcmVzZW50YXRpb24iOiJEZW1vIFVzZXIiLCJpYXQiOjE1OTc5Mjk4OTd9.dmafE633YRgBWfh5NpCM9YNvKmSguzeLp6DkJ_JcyLA'
+        # api:
+        #   title: API
+        #   description: URL link to the API.
+        #   type: string
+        #   format: uri
+        #   example: 'https://demo.api-test.nl/api/v2'
+    GeneratePostmanCollectionRespons:
+      type: object
+      required:
+        - postmanCollection
+      properties:
+        postmanCollection:
+          title: Postman Collection
+          description: URL link to the Postman Collection that is generated from the OAS in JSON format.
+          type: string
+          format: uri
+          example: 'https://www.getpostman.com/collections/2a72527af35635a1974c'
+    RunPostmanCollectionRequest:
+      type: object
+      required:
+        - api
+      properties:
+        postmanCollection:
+          title: Postman Collection
+          description: URL link to the Postman Collection (possibly generated from the OAS) in JSON format.
+          type: string
+          format: uri
+          example: 'https://www.getpostman.com/collections/2a72527af35635a1974c'
+    RunPostmanCollectionRespons:
+      type: object
+      required:
+        - api
+      properties:
+        successful:
+          title: Successful
+          description: Indication whetehr or not the validation was succesful.
+          type: boolean
+          example: true
+        testPlatform:
+          title: Test platform
+          description: URL link to the run on the testplaform.
+          type: string
+          format: uri
+          example: 'https://api-test.nl/server/2/27b0bf15-b1de-4d75-ad1c-97288e05f32e'
+        report:
+          title: Report
+          description: URL link to a report of the results of the validation.
+          type: string
+          format: uri
+          example: 'https://api-test.nl/server/2/ccc5b15a-8a30-4a30-ae58-80b815735c9a/log/8753/'
+    ValidateAPIRequest:
+      type: object
+      required:
+        - api
+      properties:
+        api:
+          title: API
+          description: URL link to the API.
+          type: string
+          format: uri
+          example: 'https://demo.api-test.nl/api/v2'
+        oas:
+          title: OAS
+          description: URL link to the OAS specification.
+          type: string
+          format: uri
+          example: 'https://demo.api-test.nl/api/v2/schema/openapi.json'
+    ValidateAPIRespons:
+      type: object
+      required:
+        - succesful
+      properties:
+        successful:
+          title: Successful
+          description: Indication whetehr or not the validation was succesful.
+          type: boolean
+          example: true
+        postmanCollection:
+          title: Postman Collection
+          description: URL link to the Postman Collection that is generated from the OAS in JSON format.
+          type: string
+          format: uri
+          example: 'https://www.getpostman.com/collections/2a72527af35635a1974c'
+        testPlatform:
+          title: Test platform
+          description: URL link to the run on the testplaform.
+          type: string
+          format: uri
+          example: 'https://api-test.nl/server/2/27b0bf15-b1de-4d75-ad1c-97288e05f32e'
+        report:
+          title: Report
+          description: URL link to a report of the results of the validation.
+          type: string
+          format: uri
+          example: 'https://api-test.nl/server/2/ccc5b15a-8a30-4a30-ae58-80b815735c9a/log/8753/'
